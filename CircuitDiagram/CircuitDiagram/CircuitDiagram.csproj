@@ -16,6 +16,10 @@
     <WarningLevel>4</WarningLevel>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -28,6 +32,9 @@
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>http://circuitdiagram.codeplex.com/releases/clickonce/</InstallUrl>
     <UpdateUrl>http://circuitdiagram.codeplex.com/releases/clickonce/</UpdateUrl>
+    <SupportUrl>http://circuitdiagram.codeplex.com/documentation</SupportUrl>
+    <ProductName>Circuit Diagram</ProductName>
+    <PublisherName>Circuit Diagram</PublisherName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <ApplicationRevision>1</ApplicationRevision>
@@ -35,10 +42,6 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
