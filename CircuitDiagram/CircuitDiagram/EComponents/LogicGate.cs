@@ -81,8 +81,16 @@ namespace CircuitDiagram.EComponents
                         dc.DrawPath(null, color, 2f, "M " + StartLocation.ToString() + " m 0,-10 L " + ref1.ToString() + " m 0,20 L " + Point.Add(StartLocation, new Vector(0f, 10f)).ToString());
                         dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " m 0,-10 q 20,20 0,40 m -1,0 q 35,-5 50,-20 q -15,-15 -50,-20 m 51,20 a 2,2 -5 0,1 6,0 a 2,2 -5 0,1 -6,0 m 6,0 L " + EndLocation.ToString());
                         break;
+                    case LogicType.XOR:
+                        ref1 = Point.Add(ref0, new Vector(15, 0));
+                        dc.DrawPath(null, color, 2f, "M " + StartLocation.ToString() + " m 0,-10 L " + ref1.ToString() + " m 0,20 L " + Point.Add(StartLocation, new Vector(0f, 10f)).ToString());
+                        dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " m 0,-10 q 20,20 0,40 m 8,-40 q 20,20 0,40 m -1,0 q 35,-5 50,-20 q -15,-15 -50,-20 m 50,20 L " + EndLocation.ToString());
+                        break;
                     case LogicType.NOT:
-                        dc.DrawPath(null, color, 2f, "M" + StartLocation.ToString() + " L " + new Point(ref0.X, ref0.Y + 10f).ToString() + " M " + ref0.ToString() + " m 0,10 l 0,10 l 16,-10 l -16,-10 l 0,10 m 17,0 a 2,2 -5 0,1 6,0 a 2,2 -5 0,1 -6,0 m 6,0 L " + EndLocation.ToString());
+                        dc.DrawPath(null, color, 2f, "M" + StartLocation.ToString() + " L " + new Point(ref0.X, ref0.Y + 10f).ToString() + " M " + ref0.ToString() + " m 0,10 l 0,18 l 28,-18 l -28,-18 l 0,18 m 28,0 a 2,2 -5 0,1 6,0 a 2,2 -5 0,1 -6,0 m 6,0 L " + EndLocation.ToString());
+                        break;
+                    case LogicType.Schmitt:
+                        dc.DrawPath(null, color, 2f, "M" + StartLocation.ToString() + " L " + new Point(ref0.X, ref0.Y + 10f).ToString() + " M " + ref0.ToString() + " m 0,10 l 0,18 l 28,-18 l -28,-18 l 0,18 m 3,2.5 l 10,0 l 0,-5 m 5,0 l -10,0 l 0,5 m 0,-2.5 m 20,0 a 2,2 -5 0,1 6,0 a 2,2 -5 0,1 -6,0 m 6,0 L " + EndLocation.ToString());
                         break;
                 }
             }
@@ -111,8 +119,16 @@ namespace CircuitDiagram.EComponents
                         dc.DrawPath(null, color, 2f, "M " + StartLocation.ToString() + " m -10,0 L " + ref1.ToString() + " m 20,0 L " + Point.Add(StartLocation, new Vector(10f, 0f)).ToString());
                         dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " m -10,0 q 20,20 40,0 m 0,-1 q -5,35 -20,50 q -15,-15 -20,-50 m 20,51 a 2,2 5 1,0 0,6 a 2,2 5 1,0 0,-6 m 0,6 L " + EndLocation.ToString());
                         break;
+                    case LogicType.XOR:
+                        ref1 = Point.Add(ref0, new Vector(0, 15));
+                        dc.DrawPath(null, color, 2f, "M " + StartLocation.ToString() + " m -10,0 L " + ref1.ToString() + " m 20,0 L " + Point.Add(StartLocation, new Vector(10f, 0f)).ToString());
+                        dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " m -10,0 q 20,20 40,0 m -40,8 q 20,20 40,0 m 0,-1 q -5,35 -20,50 q -15,-15 -20,-50 m 20,50 L " + EndLocation.ToString());
+                        break;
                     case LogicType.NOT:
-                        dc.DrawPath(null, color, 2f, "M" + StartLocation.ToString() + " L " + new Point(ref0.X + 10f, ref0.Y).ToString() + " M " + ref0.ToString() + " m 10,0 l 10,0 l -10,16 l -10,-16 l 10,0 m 0,17 a 2,2 5 1,0 0,6 a 2,2 5 1,0 0,-6 m 0,6 L " + EndLocation.ToString());
+                        dc.DrawPath(null, color, 2f, "M" + StartLocation.ToString() + " L " + new Point(ref0.X + 10f, ref0.Y).ToString() + " M " + ref0.ToString() + " m 10,0 l 18,0 l -18,28 l -18,-28 l 18,0 m 0,28 a 2,2 5 1,0 0,6 a 2,2 5 1,0 0,-6 m 0,6 L " + EndLocation.ToString());
+                        break;
+                    case LogicType.Schmitt:
+                        dc.DrawPath(null, color, 2f, "M" + StartLocation.ToString() + " L " + new Point(ref0.X + 10f, ref0.Y).ToString() + " M " + ref0.ToString() + " m 10,0 l 18,0 l -18,28 l -18,-28 l 18,0 m 2.5,3 l 0,10 l -5,0 m 0,5 l 0,-10 l 5,0 m -2.5,0 m 0,20 a 2,2 5 1,0 0,6 a 2,2 5 1,0 0,-6 m 0,6 L " + EndLocation.ToString());
                         break;
                 }
             }
@@ -142,6 +158,8 @@ namespace CircuitDiagram.EComponents
         NAND,
         OR,
         NOR,
-        NOT
+        XOR,
+        NOT,
+        Schmitt
     }
 }

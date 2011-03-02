@@ -13,7 +13,9 @@
                 <RadioButton Content="NAND" Height="16" Name="radLogicNAND" />
                 <RadioButton Content="OR" Height="16" Name="radLogicOR" />
                 <RadioButton Content="NOR" Height="16" Name="radLogicNOR" />
+                <RadioButton Content="XOR" Height="16" Name="radLogicXOR" />
                 <RadioButton Content="NOT" Height="16" Name="radLogicNOT" />
+                <RadioButton Content="Schmitt Trigger NOT" Height="16" Name="radLogicSchmitt" />
             </StackPanel>
         </GroupBox>
     </Grid>
