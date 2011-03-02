@@ -23,9 +23,28 @@ namespace CircuitDiagram.EComponents
             }
         }
 
+        public override double MinimumWidth
+        {
+            get
+            {
+                return 50.0f;
+            }
+        }
+
         public Size Size
         {
             get { return new Size(EndLocation.X - StartLocation.X, EndLocation.Y - StartLocation.Y); }
+        }
+
+        public override Rect BoundingBox
+        {
+            get
+            {
+                if (Horizontal)
+                    return new Rect(new Point(StartLocation.X, StartLocation.Y - 20), new Size(EndLocation.X - StartLocation.X, 30));
+                else
+                    return new Rect(new Point(StartLocation.X - 50, StartLocation.Y), new Size(60, EndLocation.Y - StartLocation.Y));
+            }
         }
 
         public Resistor()

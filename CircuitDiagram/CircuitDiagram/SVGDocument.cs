@@ -46,7 +46,7 @@ namespace SVGLibrary
             m_writer.WriteAttributeString("cy", centre.Y.ToString());
             m_writer.WriteAttributeString("rx", radiusX.ToString());
             m_writer.WriteAttributeString("ry", radiusY.ToString());
-            m_writer.WriteAttributeString("style", "fill-opacity:" + fillOpacity + ";fill:rgb(0,0,0);stroke:rgb(0,0,0);stroke-width:" + strokeThickness.ToString());
+            m_writer.WriteAttributeString("style", String.Format("fill-opacity:" + fillOpacity + ";fill:rgb({0},{1},{2});stroke:rgb(0,0,0);stroke-width:" + strokeThickness.ToString(), fillColor.R, fillColor.G, fillColor.B));
             m_writer.WriteEndElement();
         }
 

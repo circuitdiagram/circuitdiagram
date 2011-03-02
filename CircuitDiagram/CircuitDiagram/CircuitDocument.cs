@@ -45,7 +45,7 @@ namespace CircuitDiagram
             SnapToHV = true;
         }
 
-        public void Render(IRenderer dc)
+        public void Render(IRenderer dc, DrawingContext rc = null)
         {
             foreach (EComponent component in m_components)
             {
@@ -67,6 +67,16 @@ namespace CircuitDiagram
             foreach (Point join in m_joins)
             {
                 dc.DrawEllipse(Colors.Black, Colors.Black, 1d, join, 3d, 3d);
+            }
+            // selection outlines
+            if (rc == null)
+                return;
+            foreach (EComponent component in m_components)
+            {
+                Pen dashPen = new Pen(Brushes.Gray, 1.0f);
+                dashPen.DashStyle = new DashStyle(new double[] { 4, 4 }, 0);
+                if (component == SelectedComponent)
+                    rc.DrawRectangle(null, dashPen, component.BoundingBox);
             }
         }
 
@@ -123,11 +133,15 @@ namespace CircuitDiagram
 
             if (component.Horizontal)
             {
+                if (component.EndLocation.X - component.StartLocation.X < component.MinimumWidth)
+                    component.EndLocation = new Point(component.StartLocation.X + component.MinimumWidth, component.EndLocation.Y);
                 component.StartLocation = Point.Add(component.StartLocation, new Vector(-1d, 0d));
                 component.EndLocation = Point.Add(component.EndLocation, new Vector(1d, 0d));
             }
             else
             {
+                if (component.EndLocation.Y - component.StartLocation.Y < component.MinimumWidth)
+                    component.EndLocation = new Point(component.EndLocation.X, component.StartLocation.Y + component.MinimumWidth);
                 component.StartLocation = Point.Add(component.StartLocation, new Vector(0d, -1d));
                 component.EndLocation = Point.Add(component.EndLocation, new Vector(0d, 1d));
             }

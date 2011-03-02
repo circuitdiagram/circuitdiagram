@@ -17,6 +17,17 @@ namespace CircuitDiagram.EComponents
             set { m_voltage = value; }
         }
 
+        public override Rect BoundingBox
+        {
+            get
+            {
+                if (Horizontal)
+                    return new Rect(new Point(StartLocation.X - 30, StartLocation.Y - 6), new Size(EndLocation.X - StartLocation.X + 30, 12));
+                else
+                    return new Rect(new Point(StartLocation.X - 30, StartLocation.Y - 5), new Size(34, EndLocation.Y - StartLocation.Y + 5));
+            }
+        }
+
         public Rail()
         {
             m_voltage = 5d;

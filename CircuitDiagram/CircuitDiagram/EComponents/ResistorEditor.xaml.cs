@@ -31,7 +31,14 @@ namespace CircuitDiagram.EComponents
 
         public override void UpdateChanges(EComponent component)
         {
-            ((Resistor)component).Resistance = double.Parse(tbxResistance.Text);
+            try
+            {
+                ((Resistor)component).Resistance = double.Parse(tbxResistance.Text);
+            }
+            catch (Exception)
+            {
+                // incorrect input format
+            }
         }
     }
 }

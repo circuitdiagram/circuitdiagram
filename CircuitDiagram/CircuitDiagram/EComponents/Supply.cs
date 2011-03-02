@@ -20,6 +20,17 @@ namespace CircuitDiagram.EComponents
             get { return new Size(EndLocation.X - StartLocation.X, EndLocation.Y - StartLocation.Y); }
         }
 
+        public override Rect BoundingBox
+        {
+            get
+            {
+                if (Horizontal)
+                    return new Rect(new Point(StartLocation.X, StartLocation.Y - 10), new Size(EndLocation.X - StartLocation.X, 20));
+                else
+                    return new Rect(new Point(StartLocation.X - 10, StartLocation.Y), new Size(20, EndLocation.Y - StartLocation.Y));
+            }
+        }
+
         public override bool Intersects(Point point)
         {
             Rect thisRect = new Rect(StartLocation, EndLocation - StartLocation);

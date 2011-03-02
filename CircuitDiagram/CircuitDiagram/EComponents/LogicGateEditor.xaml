@@ -13,6 +13,7 @@
                 <RadioButton Content="NAND" Height="16" Name="radLogicNAND" />
                 <RadioButton Content="OR" Height="16" Name="radLogicOR" />
                 <RadioButton Content="NOR" Height="16" Name="radLogicNOR" />
+                <RadioButton Content="NOT" Height="16" Name="radLogicNOT" />
             </StackPanel>
         </GroupBox>
     </Grid>

@@ -101,7 +101,8 @@ namespace CircuitDiagram
                 m_document.SelectedComponent = null;
                 foreach (EComponent component in m_document.Components)
                 {
-                    if (component.Intersects(e.GetPosition((IInputElement)sender)))
+                    if (component.Intersects(e.GetPosition((IInputElement)sender)) ||
+                        component.BoundingBox.IntersectsWith(new Rect(e.GetPosition((IInputElement)sender).X, e.GetPosition((IInputElement)sender).Y, 1, 1)))
                     {
                         m_document.SelectedComponent = component;
                         m_moveComponentStartPos = component.StartLocation;
@@ -145,6 +146,7 @@ namespace CircuitDiagram
                     //RenderTargetBitmap bmp = new RenderTargetBitmap((int)circuitDisplay.Width, (int)circuitDisplay.Height, 96d, 96d, PixelFormats.Default);
                     //bmp.Render(circuitDisplay);
                     PrintRenderer pRenderer = new PrintRenderer(circuitDisplay.Width, circuitDisplay.Height);
+                    pRenderer.DrawRectangle(Colors.White, Colors.White, 0.0f, new Rect(0, 0, circuitDisplay.Width, circuitDisplay.Height));
                     m_document.Render(pRenderer);
                     RenderTargetBitmap bmp = pRenderer.GetImage();
                     PngBitmapEncoder encoder = new PngBitmapEncoder();
@@ -342,6 +344,23 @@ namespace CircuitDiagram
             winAbout aboutWindow = new winAbout();
             aboutWindow.Owner = this;
             aboutWindow.ShowDialog();
+        }
+
+        private void circuitDisplay_MouseLeave(object sender, MouseEventArgs e)
+        {
+            m_document.TempComponents.Clear();
+        }
+
+        private void btnComponentsDiode_Click(object sender, RoutedEventArgs e)
+        {
+            m_moveComponent = false;
+            newComponentType = typeof(Diode);
+        }
+
+        private void btnComponentsOpAmp_Click(object sender, RoutedEventArgs e)
+        {
+            m_moveComponent = false;
+            newComponentType = typeof(OpAmp);
         }
     }
 }

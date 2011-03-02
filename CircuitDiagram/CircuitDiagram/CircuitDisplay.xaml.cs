@@ -49,7 +49,7 @@ namespace CircuitDiagram
             vRenderer.DrawingContext = drawingContext;
             base.OnRender(drawingContext);
             drawingContext.DrawRectangle(new SolidColorBrush(Colors.White), null, new Rect(0, 0, this.Width, this.Height));
-            m_document.Render(vRenderer);
+            m_document.Render(vRenderer, drawingContext);
         }
     }
 }

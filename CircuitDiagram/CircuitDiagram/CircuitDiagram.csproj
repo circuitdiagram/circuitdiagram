@@ -37,8 +37,8 @@
     <PublisherName>Circuit Diagram</PublisherName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>0.1.0.%2a</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>0.2.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -108,10 +108,12 @@
     <Compile Include="EComponents\CapacitorEditor.xaml.cs">
       <DependentUpon>CapacitorEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EComponents\Diode.cs" />
     <Compile Include="EComponents\LED.cs" />
     <Compile Include="EComponents\LogicGateEditor.xaml.cs">
       <DependentUpon>LogicGateEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EComponents\OpAmp.cs" />
     <Compile Include="EComponents\SegDecoder.cs" />
     <Compile Include="EComponents\Counter.cs" />
     <Compile Include="EComponents\LogicGate.cs" />

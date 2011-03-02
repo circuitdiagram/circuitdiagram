@@ -31,7 +31,14 @@ namespace CircuitDiagram.EComponents
 
         public override void UpdateChanges(EComponent component)
         {
-            ((Capacitor)component).Capacitance = double.Parse(tbxCapacitance.Text);
+            try
+            {
+                ((Capacitor)component).Capacitance = double.Parse(tbxCapacitance.Text);
+            }
+            catch (Exception)
+            {
+                // incorrect input format
+            }
         }
     }
 }

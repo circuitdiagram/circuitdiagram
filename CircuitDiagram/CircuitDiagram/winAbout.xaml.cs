@@ -34,13 +34,13 @@ namespace CircuitDiagram
                 string theVersion = string.Empty;
 
                 if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
-                    theVersion = ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString() + " alpha";
+                    theVersion = ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString() + " beta";
                 else
                 {
                     if (_assemblyInfo != null)
                         theVersion = _assemblyInfo.GetName().Version.ToString();
                 }
-                return theVersion + " alpha";
+                return theVersion + " beta";
             }
         }
 

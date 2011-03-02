@@ -22,6 +22,25 @@ namespace CircuitDiagram.EComponents
             get { return new Size(EndLocation.X - StartLocation.X, EndLocation.Y - StartLocation.Y); }
         }
 
+        public override double MinimumWidth
+        {
+            get
+            {
+                return 64.0d;
+            }
+        }
+
+        public override Rect BoundingBox
+        {
+            get
+            {
+                if (Horizontal)
+                    return new Rect(new Point(StartLocation.X, StartLocation.Y - 20), new Size(EndLocation.X - StartLocation.X, 40));
+                else
+                    return new Rect(new Point(StartLocation.X - 20, StartLocation.Y), new Size(40, EndLocation.Y - StartLocation.Y));
+            }
+        }
+
         public LogicGate()
         {
             m_logicType = LogicType.AND;
@@ -62,17 +81,38 @@ namespace CircuitDiagram.EComponents
                         dc.DrawPath(null, color, 2f, "M " + StartLocation.ToString() + " m 0,-10 L " + ref1.ToString() + " m 0,20 L " + Point.Add(StartLocation, new Vector(0f, 10f)).ToString());
                         dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " m 0,-10 q 20,20 0,40 m -1,0 q 35,-5 50,-20 q -15,-15 -50,-20 m 51,20 a 2,2 -5 0,1 6,0 a 2,2 -5 0,1 -6,0 m 6,0 L " + EndLocation.ToString());
                         break;
+                    case LogicType.NOT:
+                        dc.DrawPath(null, color, 2f, "M" + StartLocation.ToString() + " L " + new Point(ref0.X, ref0.Y + 10f).ToString() + " M " + ref0.ToString() + " m 0,10 l 0,10 l 16,-10 l -16,-10 l 0,10 m 17,0 a 2,2 -5 0,1 6,0 a 2,2 -5 0,1 -6,0 m 6,0 L " + EndLocation.ToString());
+                        break;
                 }
             }
             else
             {
                 Point ref0 = new Point(StartLocation.X - 10f, StartLocation.Y + Size.Height / 2 - 20f);
+                Point ref1;
 
                 switch (LogicType)
                 {
                     case LogicType.AND:
                         dc.DrawPath(null, color, 2f, "M " + StartLocation.ToString() + " m -10,0 L " + ref0.ToString() + " m 20,0 L " + Point.Add(StartLocation, new Vector(10f, 0f)).ToString());
                         dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " m -10,0 l 40,0 l 0,24 m -40,-25 l 0,24 a 5,5 90 1 0 40,0 m -20,20 L " + EndLocation.ToString());
+                        break;
+                    case LogicType.NAND:
+                        dc.DrawPath(null, color, 2f, "M " + StartLocation.ToString() + " m -10,0 L " + ref0.ToString() + " m 20,0 L " + Point.Add(StartLocation, new Vector(10f, 0f)).ToString());
+                        dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " m -10,0 l 40,0 l 0,24 m -40,-25 l 0,24 a 5,5 90 1 0 40,0 m -20,20 a 2,2 5 1,0 0,6 a 2,2 5 1,0 0,-6 m 0,6 L " + EndLocation.ToString());
+                        break;
+                    case LogicType.OR:
+                        ref1 = Point.Add(ref0, new Vector(0, 7));
+                        dc.DrawPath(null, color, 2f, "M " + StartLocation.ToString() + " m -10,0 L " + ref1.ToString() + " m 20,0 L " + Point.Add(StartLocation, new Vector(10f, 0f)).ToString());
+                        dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " m -10,0 q 20,20 40,0 m 0,-1 q -5,35 -20,50 q -15,-15 -20,-50 m 20,50 L " + EndLocation.ToString());
+                        break;
+                    case LogicType.NOR:
+                        ref1 = Point.Add(ref0, new Vector(0, 7));
+                        dc.DrawPath(null, color, 2f, "M " + StartLocation.ToString() + " m -10,0 L " + ref1.ToString() + " m 20,0 L " + Point.Add(StartLocation, new Vector(10f, 0f)).ToString());
+                        dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " m -10,0 q 20,20 40,0 m 0,-1 q -5,35 -20,50 q -15,-15 -20,-50 m 20,51 a 2,2 5 1,0 0,6 a 2,2 5 1,0 0,-6 m 0,6 L " + EndLocation.ToString());
+                        break;
+                    case LogicType.NOT:
+                        dc.DrawPath(null, color, 2f, "M" + StartLocation.ToString() + " L " + new Point(ref0.X + 10f, ref0.Y).ToString() + " M " + ref0.ToString() + " m 10,0 l 10,0 l -10,16 l -10,-16 l 10,0 m 0,17 a 2,2 5 1,0 0,6 a 2,2 5 1,0 0,-6 m 0,6 L " + EndLocation.ToString());
                         break;
                 }
             }

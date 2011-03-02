@@ -12,6 +12,8 @@ namespace CircuitDiagram
     {
         private static EditComponentWindow EditWindow { get; set; }
 
+        public virtual double MinimumWidth { get { return 10.0f; } }
+
         public Point m_startLocation;
         private Point m_endLocation;
 
@@ -25,6 +27,17 @@ namespace CircuitDiagram
         {
             get { return m_endLocation; }
             set { m_endLocation = value; }
+        }
+
+        public virtual Rect BoundingBox
+        {
+            get
+            {
+                if (Horizontal)
+                    return new Rect(new Point(StartLocation.X, StartLocation.Y - 4), new Size(EndLocation.X - StartLocation.X, 8));
+                else
+                    return new Rect(new Point(StartLocation.X - 4, StartLocation.Y), new Size(8, EndLocation.Y - StartLocation.Y));
+            }
         }
 
         protected ComponentEditor Editor { get; set; }

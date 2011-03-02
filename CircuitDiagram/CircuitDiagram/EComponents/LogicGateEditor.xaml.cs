@@ -31,6 +31,7 @@ namespace CircuitDiagram.EComponents
             radLogicOR.IsChecked = false;
             radLogicNAND.IsChecked = false;
             radLogicNOR.IsChecked = false;
+            radLogicNOT.IsChecked = false;
             switch (lGate.LogicType)
             {
                 case LogicType.AND:
@@ -44,6 +45,9 @@ namespace CircuitDiagram.EComponents
                     break;
                 case LogicType.NOR:
                     radLogicNOR.IsChecked = true;
+                    break;
+                case LogicType.NOT:
+                    radLogicNOT.IsChecked = true;
                     break;
             }
         }
@@ -59,6 +63,8 @@ namespace CircuitDiagram.EComponents
                 lGate.LogicType = LogicType.NAND;
             else if (radLogicNOR.IsChecked == true)
                 lGate.LogicType = LogicType.NOR;
+            else if (radLogicNOT.IsChecked == true)
+                lGate.LogicType = LogicType.NOT;
         }
     }
 }

@@ -44,10 +44,12 @@
                 <Button Click="btnComponentsSegDisplay_Click">Seg Display</Button>
                 <Button Click="btnComponentsCapacitor_Click">Capacitor</Button>
                 <Button Click="btnComponentsLED_Click">LED</Button>
+                <Button Click="btnComponentsDiode_Click">Diode</Button>
+                <Button Click="btnComponentsOpAmp_Click">OpAmp</Button>
             </ToolBar>
         </ToolBarTray>
         <ScrollViewer Grid.Row="1" Margin="12,32,12,29" Name="scrollViewer1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="LightGray">
-            <my:CircuitDisplay SnapsToDevicePixels="True" Width="640" Height="480" x:Name="circuitDisplay" Background="#02FFFFFF" MouseMove="circuitDisplay_MouseMove" ContextMenuOpening="circuitDisplay_ContextMenuOpening" ContextMenuClosing="circuitDisplay_ContextMenuClosing" MouseLeftButtonDown="circuitDisplay_MouseDown" MouseLeftButtonUp="circuitDisplay_MouseUp">
+            <my:CircuitDisplay SnapsToDevicePixels="True" Width="640" Height="480" x:Name="circuitDisplay" Background="#02FFFFFF" MouseMove="circuitDisplay_MouseMove" ContextMenuOpening="circuitDisplay_ContextMenuOpening" ContextMenuClosing="circuitDisplay_ContextMenuClosing" MouseLeftButtonDown="circuitDisplay_MouseDown" MouseLeftButtonUp="circuitDisplay_MouseUp" MouseLeave="circuitDisplay_MouseLeave" >
                 <my:CircuitDisplay.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Add">
