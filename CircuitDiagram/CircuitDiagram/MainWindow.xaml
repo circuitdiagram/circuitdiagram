@@ -35,17 +35,17 @@
                 <Button Click="btnMoveComponent_Click">Move</Button>
                 <Button Click="btnComponentsWire_Click">Wire</Button>
                 <Button Click="btnComponentsResistor_Click">Resistor</Button>
+                <Button Click="btnComponentsCapacitor_Click">Capacitor</Button>
                 <Button Click="btnComponentsSwitch_Click">Switch</Button>
                 <Button Click="btnComponentRail_Click">Rail</Button>
                 <Button Click="btnComponentsSupply_Click">Supply</Button>
+                <Button Click="btnComponentsLED_Click">LED</Button>
+                <Button Click="btnComponentsDiode_Click">Diode</Button>
                 <Button Click="btnComponentsLogicGate_Click">Logic Gate</Button>
+                <Button Click="btnComponentsOpAmp_Click">OpAmp</Button>
                 <Button Click="btnComponentsCounter_Click">Counter</Button>
                 <Button Click="btnComponentsSegDecoder_Click">Seg Decoder</Button>
                 <Button Click="btnComponentsSegDisplay_Click">Seg Display</Button>
-                <Button Click="btnComponentsCapacitor_Click">Capacitor</Button>
-                <Button Click="btnComponentsLED_Click">LED</Button>
-                <Button Click="btnComponentsDiode_Click">Diode</Button>
-                <Button Click="btnComponentsOpAmp_Click">OpAmp</Button>
             </ToolBar>
         </ToolBarTray>
         <ScrollViewer Grid.Row="1" Margin="12,32,12,29" Name="scrollViewer1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="LightGray">
