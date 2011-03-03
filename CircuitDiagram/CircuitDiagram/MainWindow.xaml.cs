@@ -32,12 +32,6 @@ namespace CircuitDiagram
             this.Title = "Untitled - Circuit Diagram";
         }
 
-        private void btnComponentsWire_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(Wire);
-        }
-
         bool m_moveComponent = false;
         Point m_moveComponentStartPos;
         Point m_moveComponentEndPos;
@@ -49,13 +43,43 @@ namespace CircuitDiagram
 
         Point mouseDownPos;
         Type newComponentType;
+        ComponentResizeMode m_resizing = ComponentResizeMode.None;
         private void circuitDisplay_MouseDown(object sender, MouseButtonEventArgs e)
         {
             mouseDownPos = e.GetPosition((IInputElement)sender);
+            if (m_document.SelectedComponent != null)
+            {
+                if (m_document.SelectedComponent.Horizontal)
+                {
+                    Rect leftHandle = new Rect(m_document.SelectedComponent.BoundingBox.X - 3, m_document.SelectedComponent.BoundingBox.Y +
+                        m_document.SelectedComponent.BoundingBox.Height / 2 - 3f, 6, 6);
+                    Rect rightHandle = new Rect(m_document.SelectedComponent.BoundingBox.Right - 3, m_document.SelectedComponent.BoundingBox.Y + m_document.SelectedComponent.BoundingBox.Height / 2 - 3f, 6f, 6f);
+                    if (leftHandle.IntersectsWith(new Rect(mouseDownPos.X, mouseDownPos.Y, 1, 1)))
+                        m_resizing = ComponentResizeMode.Left;
+                    else if (rightHandle.IntersectsWith(new Rect(mouseDownPos.X, mouseDownPos.Y, 1, 1)))
+                        m_resizing = ComponentResizeMode.Right;
+                }
+                else
+                {
+                    Rect topHandle = new Rect(m_document.SelectedComponent.BoundingBox.X + m_document.SelectedComponent.BoundingBox.Width / 2 - 3f, m_document.SelectedComponent.BoundingBox.Y - 3f, 6f, 6f);
+                    Rect bottomHandle = new Rect(m_document.SelectedComponent.BoundingBox.X + m_document.SelectedComponent.BoundingBox.Width / 2 - 3f, m_document.SelectedComponent.BoundingBox.Y + m_document.SelectedComponent.BoundingBox.Height - 3f, 6f, 6f);
+                    if (topHandle.IntersectsWith(new Rect(mouseDownPos.X, mouseDownPos.Y, 1, 1)))
+                        m_resizing = ComponentResizeMode.Top;
+                    else if (bottomHandle.IntersectsWith(new Rect(mouseDownPos.X, mouseDownPos.Y, 1, 1)))
+                        m_resizing = ComponentResizeMode.Bottom;
+                }
+            }
+            else
+                m_resizing = ComponentResizeMode.None;
         }
 
         private void circuitDisplay_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            if (m_resizing != ComponentResizeMode.None)
+            {
+                m_resizing = ComponentResizeMode.None;
+                return;
+            }
             if (m_moveComponent)
             {
                 m_document.SelectedComponent = null;
@@ -75,7 +99,23 @@ namespace CircuitDiagram
         bool cancelSelect = true;
         private void circuitDisplay_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && m_moveComponent && m_document.SelectedComponent != null)
+            if (e.LeftButton == MouseButtonState.Pressed && m_resizing != ComponentResizeMode.None)
+            {
+                if (m_resizing == ComponentResizeMode.Left)
+                    m_document.SelectedComponent.StartLocation = new Point(e.GetPosition(circuitDisplay).X, m_document.SelectedComponent.StartLocation.Y);
+                else if (m_resizing == ComponentResizeMode.Right)
+                    m_document.SelectedComponent.EndLocation = new Point(e.GetPosition(circuitDisplay).X, m_document.SelectedComponent.StartLocation.Y);
+                else if (m_resizing == ComponentResizeMode.Top)
+                    m_document.SelectedComponent.StartLocation = new Point(m_document.SelectedComponent.StartLocation.X, e.GetPosition(circuitDisplay).Y);
+                else if (m_resizing == ComponentResizeMode.Bottom)
+                    m_document.SelectedComponent.EndLocation = new Point(m_document.SelectedComponent.StartLocation.X, e.GetPosition(circuitDisplay).Y);
+                m_document.UpdateLayout(m_document.SelectedComponent);
+                circuitDisplay.InvalidateVisual();
+            }
+            else if (m_resizing != ComponentResizeMode.None)
+            {
+            }
+            else if (e.LeftButton == MouseButtonState.Pressed && m_moveComponent && m_document.SelectedComponent != null)
             {
                 m_document.SelectedComponent.StartLocation = Point.Add(m_moveComponentStartPos, new Vector(-mouseDownPos.X + e.GetPosition((IInputElement)sender).X, -mouseDownPos.Y + e.GetPosition((IInputElement)sender).Y));
                 m_document.SelectedComponent.EndLocation = Point.Add(m_moveComponentEndPos, new Vector(-mouseDownPos.X + e.GetPosition((IInputElement)sender).X, -mouseDownPos.Y + e.GetPosition((IInputElement)sender).Y));
@@ -110,18 +150,40 @@ namespace CircuitDiagram
                     }
                 }
             }
+
+            if (m_document.SelectedComponent != null)
+            {
+                Rect mouseRect = new Rect(e.GetPosition(circuitDisplay).X, e.GetPosition(circuitDisplay).Y, 1, 1);
+                if (m_document.SelectedComponent.Horizontal)
+                {
+                    Rect leftHandle = new Rect(m_document.SelectedComponent.BoundingBox.X - 3, m_document.SelectedComponent.BoundingBox.Y +
+                        m_document.SelectedComponent.BoundingBox.Height / 2 - 3f, 6, 6);
+                    Rect rightHandle = new Rect(m_document.SelectedComponent.BoundingBox.Right - 3, m_document.SelectedComponent.BoundingBox.Y + m_document.SelectedComponent.BoundingBox.Height / 2 - 3f, 6f, 6f);
+                    if (m_resizing != ComponentResizeMode.None || leftHandle.IntersectsWith(mouseRect) || rightHandle.IntersectsWith(mouseRect))
+                        circuitDisplay.Cursor = Cursors.SizeWE;
+                    else
+                        circuitDisplay.Cursor = Cursors.Arrow;
+                }
+                else
+                {
+                    Rect topHandle = new Rect(m_document.SelectedComponent.BoundingBox.X + m_document.SelectedComponent.BoundingBox.Width / 2 - 3f, m_document.SelectedComponent.BoundingBox.Y - 3f, 6f, 6f);
+                    Rect bottomHandle = new Rect(m_document.SelectedComponent.BoundingBox.X + m_document.SelectedComponent.BoundingBox.Width / 2 - 3f, m_document.SelectedComponent.BoundingBox.Y + m_document.SelectedComponent.BoundingBox.Height - 3f, 6f, 6f);
+                    if (m_resizing != ComponentResizeMode.None || topHandle.IntersectsWith(mouseRect) || bottomHandle.IntersectsWith(mouseRect))
+                        circuitDisplay.Cursor = Cursors.SizeNS;
+                    else
+                        circuitDisplay.Cursor = Cursors.Arrow;
+                }
+            }
+            else
+            {
+                circuitDisplay.Cursor = Cursors.Arrow;
+            }
         }
 
-        private void btnComponentsResistor_Click(object sender, RoutedEventArgs e)
+        private void circuitDisplay_MouseLeave(object sender, MouseEventArgs e)
         {
-            m_moveComponent = false;
-            newComponentType = typeof(Resistor);
-        }
-
-        private void btnComponentsSupply_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(Supply);
+            m_document.TempComponents.Clear();
+            m_resizing = ComponentResizeMode.None;
         }
 
         private void mnuExportSVG_Click(object sender, RoutedEventArgs e)
@@ -200,6 +262,25 @@ namespace CircuitDiagram
 
         }
 
+        #region New Component Type Selection
+        private void btnComponentsWire_Click(object sender, RoutedEventArgs e)
+        {
+            m_moveComponent = false;
+            newComponentType = typeof(Wire);
+        }
+
+        private void btnComponentsResistor_Click(object sender, RoutedEventArgs e)
+        {
+            m_moveComponent = false;
+            newComponentType = typeof(Resistor);
+        }
+
+        private void btnComponentsSupply_Click(object sender, RoutedEventArgs e)
+        {
+            m_moveComponent = false;
+            newComponentType = typeof(Supply);
+        }
+
         private void btnComponentRail_Click(object sender, RoutedEventArgs e)
         {
             m_moveComponent = false;
@@ -254,6 +335,20 @@ namespace CircuitDiagram
             newComponentType = typeof(LED);
         }
 
+        private void btnComponentsDiode_Click(object sender, RoutedEventArgs e)
+        {
+            m_moveComponent = false;
+            newComponentType = typeof(Diode);
+        }
+
+        private void btnComponentsOpAmp_Click(object sender, RoutedEventArgs e)
+        {
+            m_moveComponent = false;
+            newComponentType = typeof(OpAmp);
+        }
+        #endregion
+
+        #region Menu Options
         private void mnuSaveAs_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
@@ -345,22 +440,15 @@ namespace CircuitDiagram
             aboutWindow.Owner = this;
             aboutWindow.ShowDialog();
         }
+        #endregion
+    }
 
-        private void circuitDisplay_MouseLeave(object sender, MouseEventArgs e)
-        {
-            m_document.TempComponents.Clear();
-        }
-
-        private void btnComponentsDiode_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(Diode);
-        }
-
-        private void btnComponentsOpAmp_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(OpAmp);
-        }
+    enum ComponentResizeMode
+    {
+        None,
+        Left,
+        Right,
+        Top,
+        Bottom
     }
 }

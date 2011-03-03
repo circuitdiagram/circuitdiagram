@@ -76,7 +76,22 @@ namespace CircuitDiagram
                 Pen dashPen = new Pen(Brushes.Gray, 1.0f);
                 dashPen.DashStyle = new DashStyle(new double[] { 4, 4 }, 0);
                 if (component == SelectedComponent)
+                {
                     rc.DrawRectangle(null, dashPen, component.BoundingBox);
+                    if (SelectedComponent.Horizontal)
+                    {
+                        rc.DrawRectangle(Brushes.Gray, null, new Rect(SelectedComponent.BoundingBox.X - 3, SelectedComponent.BoundingBox.Y +
+                        SelectedComponent.BoundingBox.Height / 2 - 3f, 6, 6));
+                        rc.DrawRectangle(Brushes.Gray, null, new Rect(SelectedComponent.BoundingBox.Right - 3, SelectedComponent.BoundingBox.Y + SelectedComponent.BoundingBox.Height / 2 - 3f, 6f, 6f));
+                    }
+                    else
+                    {
+                        rc.DrawRectangle(Brushes.Gray, null, new Rect(SelectedComponent.BoundingBox.X + SelectedComponent.BoundingBox.Width / 2 - 3f,
+                            SelectedComponent.BoundingBox.Y - 3f, 6f, 6f));
+                        rc.DrawRectangle(Brushes.Gray, null, new Rect(SelectedComponent.BoundingBox.X + SelectedComponent.BoundingBox.Width / 2 - 3f,
+                            SelectedComponent.BoundingBox.Y + SelectedComponent.BoundingBox.Height - 3f, 6f, 6f));
+                    }
+                }
             }
         }
 
