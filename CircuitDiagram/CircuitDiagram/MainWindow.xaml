@@ -24,6 +24,8 @@
                 <MenuItem Click="mnuExit_Click" Header="E_xit" />
             </MenuItem>
             <MenuItem Header="Help">
+                <MenuItem Header="Documentation" Click="mnuHelpDocumentation_Click" />
+                <Separator />
                 <MenuItem Header="About Circuit Diagram..." Click="mnuAbout_Click" />
             </MenuItem>
         </Menu>
@@ -43,9 +45,16 @@
                 <Button Click="btnComponentsDiode_Click">Diode</Button>
                 <Button Click="btnComponentsLogicGate_Click">Logic Gate</Button>
                 <Button Click="btnComponentsOpAmp_Click">OpAmp</Button>
-                <Button Click="btnComponentsCounter_Click">Counter</Button>
-                <Button Click="btnComponentsSegDecoder_Click">Seg Decoder</Button>
-                <Button Click="btnComponentsSegDisplay_Click">Seg Display</Button>
+                <Button Click="btnComponentsMosfet_Click">MOSFET</Button>
+                <Button Click="btnComponentsLamp_Click">Lamp</Button>
+                <Button Click="btnComponentsExternalConnection_Click">External Connection</Button>
+                <Menu Background="Transparent">
+                    <MenuItem Header="Counters">
+                        <MenuItem Header="Counter" Click="btnComponentsCounter_Click" />
+                        <MenuItem Header="Seg Decoder" Click="btnComponentsSegDecoder_Click" />
+                        <MenuItem Header="Seg Display" Click="btnComponentsSegDisplay_Click" />
+                    </MenuItem>
+                </Menu>
             </ToolBar>
         </ToolBarTray>
         <ScrollViewer Grid.Row="1" Margin="12,32,12,29" Name="scrollViewer1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="LightGray">

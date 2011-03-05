@@ -12,6 +12,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CircuitDiagram.EComponents;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using Point = System.Windows.Point;
+using Size = System.Windows.Size;
 
 namespace CircuitDiagram
 {
@@ -32,7 +37,7 @@ namespace CircuitDiagram
             this.Title = "Untitled - Circuit Diagram";
         }
 
-        bool m_moveComponent = false;
+        public static bool m_moveComponent = false;
         Point m_moveComponentStartPos;
         Point m_moveComponentEndPos;
         private void btnMoveComponent_Click(object sender, RoutedEventArgs e)
@@ -47,7 +52,7 @@ namespace CircuitDiagram
         private void circuitDisplay_MouseDown(object sender, MouseButtonEventArgs e)
         {
             mouseDownPos = e.GetPosition((IInputElement)sender);
-            if (m_document.SelectedComponent != null)
+            if (m_document.SelectedComponent != null && m_moveComponent)
             {
                 if (m_document.SelectedComponent.Horizontal)
                 {
@@ -94,6 +99,7 @@ namespace CircuitDiagram
             newComponent.EndLocation = mouseUpPos;
             m_document.Components.Add(newComponent);
             m_document.UpdateLayout(newComponent);
+            circuitDisplay.InvalidateVisual();
         }
 
         bool cancelSelect = true;
@@ -151,7 +157,7 @@ namespace CircuitDiagram
                 }
             }
 
-            if (m_document.SelectedComponent != null)
+            if (m_document.SelectedComponent != null && m_moveComponent)
             {
                 Rect mouseRect = new Rect(e.GetPosition(circuitDisplay).X, e.GetPosition(circuitDisplay).Y, 1, 1);
                 if (m_document.SelectedComponent.Horizontal)
@@ -184,6 +190,7 @@ namespace CircuitDiagram
         {
             m_document.TempComponents.Clear();
             m_resizing = ComponentResizeMode.None;
+            //m_document.SelectedComponent = null;
         }
 
         private void mnuExportSVG_Click(object sender, RoutedEventArgs e)
@@ -250,16 +257,6 @@ namespace CircuitDiagram
             m_document.Components.Remove(m_document.SelectedComponent);
             m_document.SelectedComponent = null;
             m_document.InvalidateVisual();
-        }
-
-        private void CommandNew_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-
-        }
-
-        private void CommandNew_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-
         }
 
         #region New Component Type Selection
@@ -376,6 +373,7 @@ namespace CircuitDiagram
                 circuitDisplay.Width = double.Parse(nDocWin.TbxWidth);
                 circuitDisplay.Height = double.Parse(nDocWin.TbxHeight);
                 this.Title = "Untitled - Circuit Diagram";
+                m_document.UpdateLayout(null);
             }
         }
 
@@ -441,6 +439,29 @@ namespace CircuitDiagram
             aboutWindow.ShowDialog();
         }
         #endregion
+
+        private void btnComponentsMosfet_Click(object sender, RoutedEventArgs e)
+        {
+            m_moveComponent = false;
+            newComponentType = typeof(Mosfet);
+        }
+
+        private void btnComponentsLamp_Click(object sender, RoutedEventArgs e)
+        {
+            m_moveComponent = false;
+            newComponentType = typeof(Lamp);
+        }
+
+        private void btnComponentsExternalConnection_Click(object sender, RoutedEventArgs e)
+        {
+            m_moveComponent = false;
+            newComponentType = typeof(ExternalConnection);
+        }
+
+        private void mnuHelpDocumentation_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://circuitdiagram.codeplex.com/documentation");
+        }
     }
 
     enum ComponentResizeMode

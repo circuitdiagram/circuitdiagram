@@ -25,7 +25,7 @@ namespace CircuitDiagram
             lblVersionNumber.Content = AppVersion;
         }
 
-        public string AppVersion
+        public static string AppVersion
         {
             get
             {

@@ -78,6 +78,8 @@ namespace CircuitDiagram
                 if (component == SelectedComponent)
                 {
                     rc.DrawRectangle(null, dashPen, component.BoundingBox);
+                    if (!MainWindow.m_moveComponent)
+                        return;
                     if (SelectedComponent.Horizontal)
                     {
                         rc.DrawRectangle(Brushes.Gray, null, new Rect(SelectedComponent.BoundingBox.X - 3, SelectedComponent.BoundingBox.Y +
@@ -97,6 +99,12 @@ namespace CircuitDiagram
 
         public void UpdateLayout(EComponent component)
         {
+            if (component == null)
+            {
+                UpdateJoins();
+                return;
+            }
+
             // reverse points if necessary
             Point newStart = component.StartLocation;
             Point newEnd = component.EndLocation;
@@ -160,6 +168,8 @@ namespace CircuitDiagram
                 component.StartLocation = Point.Add(component.StartLocation, new Vector(0d, -1d));
                 component.EndLocation = Point.Add(component.EndLocation, new Vector(0d, 1d));
             }
+
+            UpdateJoins();
         }
 
         private static double Biggest(double one, double two)
@@ -240,6 +250,7 @@ namespace CircuitDiagram
             writer.WriteStartDocument();
             writer.WriteStartElement("circuit");
             writer.WriteAttributeString("version", "1.0");
+            writer.WriteAttributeString("cd-version", winAbout.AppVersion);
             writer.WriteAttributeString("width", displayWidth.ToString());
             writer.WriteAttributeString("height", displayHeight.ToString());
             foreach (EComponent component in m_components)

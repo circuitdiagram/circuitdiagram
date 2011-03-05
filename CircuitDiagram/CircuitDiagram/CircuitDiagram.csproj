@@ -37,8 +37,8 @@
     <PublisherName>Circuit Diagram</PublisherName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>0.2.0.%2a</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>0.3.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -109,11 +109,20 @@
       <DependentUpon>CapacitorEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="EComponents\Diode.cs" />
+    <Compile Include="EComponents\ExternalConnection.cs" />
+    <Compile Include="EComponents\ExternalConnectionEditor.xaml.cs">
+      <DependentUpon>ExternalConnectionEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EComponents\Lamp.cs" />
     <Compile Include="EComponents\LED.cs" />
     <Compile Include="EComponents\LogicGateEditor.xaml.cs">
       <DependentUpon>LogicGateEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EComponents\Mosfet.cs" />
     <Compile Include="EComponents\OpAmp.cs" />
+    <Compile Include="EComponents\OpAmpEditor.xaml.cs">
+      <DependentUpon>OpAmpEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EComponents\SegDecoder.cs" />
     <Compile Include="EComponents\Counter.cs" />
     <Compile Include="EComponents\LogicGate.cs" />
@@ -156,9 +165,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="EComponents\ExternalConnectionEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="EComponents\LogicGateEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="EComponents\OpAmpEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="EComponents\RailEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
