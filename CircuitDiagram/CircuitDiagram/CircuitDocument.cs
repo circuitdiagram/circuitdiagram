@@ -1,4 +1,22 @@
-﻿using System;
+﻿// CircuitDocument.cs
+//
+// Copyright (C) 2011  Sam Fisher
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +26,9 @@ using System.Xml;
 
 namespace CircuitDiagram
 {
-    class CircuitDocument
+    public class CircuitDocument
     {
-        const double GridSize = 10d;
+        public double GridSize = 10d;
         public event EventHandler VisualInvalidated;
 
         List<EComponent> m_components = new List<EComponent>();
@@ -78,7 +96,7 @@ namespace CircuitDiagram
                 if (component == SelectedComponent)
                 {
                     rc.DrawRectangle(null, dashPen, component.BoundingBox);
-                    if (!MainWindow.m_moveComponent)
+                    if (!MainWindow.m_moveComponent || !SelectedComponent.CanResize)
                         return;
                     if (SelectedComponent.Horizontal)
                     {
@@ -95,81 +113,6 @@ namespace CircuitDiagram
                     }
                 }
             }
-        }
-
-        public void UpdateLayout(EComponent component)
-        {
-            if (component == null)
-            {
-                UpdateJoins();
-                return;
-            }
-
-            // reverse points if necessary
-            Point newStart = component.StartLocation;
-            Point newEnd = component.EndLocation;
-            bool switched = false;
-            if (component.StartLocation.X < component.EndLocation.X)
-            {
-                newStart = component.EndLocation;
-                newEnd = component.StartLocation;
-                switched = true;
-            }
-
-            if (SnapToGrid)
-            {
-                if (Math.IEEERemainder(newStart.X, 20d) != 0)
-                    newStart.X = Snap(newStart).X;
-                if (Math.IEEERemainder(newStart.Y, 20d) != 0)
-                    newStart.Y = Snap(newStart).Y;
-                if (Math.IEEERemainder(newEnd.X, 20d) != 0)
-                    newEnd.X = Snap(newEnd).X;
-                if (Math.IEEERemainder(newEnd.Y, 20d) != 0)
-                    newEnd.Y = Snap(newEnd).Y;
-            }
-            if (SnapToHV)
-            {
-                double height = Biggest(newStart.Y, newEnd.Y) - Smallest(newStart.Y, newEnd.Y);
-                double length = Math.Sqrt(Math.Pow(newEnd.X - newStart.X, 2d) + Math.Pow(newEnd.Y - newStart.Y, 2d));
-                double bearing = Math.Acos(height / length) * (180 / Math.PI);
-
-                if (bearing <= 45 && switched)
-                    newStart.X = newEnd.X;
-                else if (bearing <= 45 && !switched)
-                    newEnd.X = newStart.X;
-                else if (bearing > 45 && switched)
-                    newStart.Y = newEnd.Y;
-                else
-                    newEnd.Y = newStart.Y;
-            }
-
-            if (newStart.X > newEnd.X || newStart.Y > newEnd.Y)
-            {
-                component.StartLocation = newEnd;
-                component.EndLocation = newStart;
-            }
-            else
-            {
-                component.StartLocation = newStart;
-                component.EndLocation = newEnd;
-            }
-
-            if (component.Horizontal)
-            {
-                if (component.EndLocation.X - component.StartLocation.X < component.MinimumWidth)
-                    component.EndLocation = new Point(component.StartLocation.X + component.MinimumWidth, component.EndLocation.Y);
-                component.StartLocation = Point.Add(component.StartLocation, new Vector(-1d, 0d));
-                component.EndLocation = Point.Add(component.EndLocation, new Vector(1d, 0d));
-            }
-            else
-            {
-                if (component.EndLocation.Y - component.StartLocation.Y < component.MinimumWidth)
-                    component.EndLocation = new Point(component.EndLocation.X, component.StartLocation.Y + component.MinimumWidth);
-                component.StartLocation = Point.Add(component.StartLocation, new Vector(0d, -1d));
-                component.EndLocation = Point.Add(component.EndLocation, new Vector(0d, 1d));
-            }
-
-            UpdateJoins();
         }
 
         private static double Biggest(double one, double two)
@@ -218,8 +161,8 @@ namespace CircuitDiagram
 
                             if (intersection != new Point())
                             {
-                                if (!m_joins.Contains(Snap(intersection)))
-                                    m_joins.Add(Snap(intersection));
+                                if (!m_joins.Contains(intersection))
+                                    m_joins.Add(intersection);
                             }
                         }
                     }
@@ -238,25 +181,32 @@ namespace CircuitDiagram
             return (result <= 1 && result >= -1);
         }
 
-        private static Point Snap(Point point)
-        {
-            return new Point(Math.Round(point.X / GridSize) * GridSize, Math.Round(point.Y / GridSize) * GridSize);
-        }
-
         public void Save(string path, double displayWidth, double displayHeight)
         {
             XmlTextWriter writer = new XmlTextWriter(path, Encoding.UTF8);
             writer.Formatting = Formatting.Indented;
             writer.WriteStartDocument();
             writer.WriteStartElement("circuit");
-            writer.WriteAttributeString("version", "1.0");
+            writer.WriteAttributeString("version", "1.1");
             writer.WriteAttributeString("cd-version", winAbout.AppVersion);
             writer.WriteAttributeString("width", displayWidth.ToString());
             writer.WriteAttributeString("height", displayHeight.ToString());
             foreach (EComponent component in m_components)
             {
-                writer.WriteStartElement(component.GetType().Name);
-                writer.WriteAttributeString("location", component.StartLocation.ToString() + "," + component.EndLocation.ToString());
+                writer.WriteStartElement("component");
+                writer.WriteAttributeString("type", component.GetType().Name);
+                writer.WriteAttributeString("x", component.StartLocation.X.ToString());
+                writer.WriteAttributeString("y", component.StartLocation.Y.ToString());
+                if (component.CanResize)
+                {
+                    if (component.Horizontal)
+                        writer.WriteAttributeString("size", (component.EndLocation.X - component.StartLocation.X).ToString());
+                    else
+                        writer.WriteAttributeString("size", (component.EndLocation.Y - component.StartLocation.Y).ToString());
+                }
+                writer.WriteAttributeString("orientation", (component.Horizontal ? "horizontal" : "vertical"));
+                if (component.CanFlip)
+                    writer.WriteAttributeString("flipped", component.IsFlipped.ToString());
                 component.SaveData(writer);
                 writer.WriteEndElement();
             }
@@ -291,19 +241,61 @@ namespace CircuitDiagram
                         errorOccurred = true;
                     }
                 }
+                else if (reader.NodeType == XmlNodeType.Element && reader.Depth == 1 && reader.LocalName == "component")
+                {
+                    try
+                    {
+                        reader.MoveToAttribute("type");
+                        string componentType = reader.Value;
+                        reader.MoveToAttribute("x");
+                        double x = float.Parse(reader.Value);
+                        reader.MoveToAttribute("y");
+                        double y = float.Parse(reader.Value);
+                        reader.MoveToAttribute("size");
+                        double size = GridSize;
+                        if (reader.HasValue)
+                            size = double.Parse(reader.Value);
+                        reader.MoveToAttribute("orientation");
+                        double width = GridSize;
+                        double height = GridSize;
+                        if (reader.Value == "horizontal")
+                            width = size;
+                        else
+                            height = size;
+                        bool isFlipped = false;
+                        reader.MoveToAttribute("flipped");
+                        if (reader.HasValue && reader.Value.ToLower() == "true")
+                            isFlipped = true;
+                        EComponent component = (EComponent)Activator.CreateInstance(Type.GetType("CircuitDiagram.EComponents." + componentType, true, false));
+                        component.StartLocation = new Point(x, y);
+                        component.EndLocation = new Point(x + width, y + height);
+                        if (component.CanFlip)
+                            component.IsFlipped = isFlipped;
+                        component.UpdateLayout(this);
+                        component.LoadData(reader);
+                        m_components.Add(component);
+                    }
+                    catch (Exception)
+                    {
+                        errorOccurred = true;
+                    }
+                }
                 else if (reader.NodeType == XmlNodeType.Element && reader.Depth == 1)
                 {
                     try
                     {
                         reader.MoveToAttribute("location");
-                        string[] locationString = reader.Value.Split(',');
-                        reader.MoveToElement();
-                        Type.GetType("CircuitDiagram.EComponents." + reader.LocalName, true, false);
-                        EComponent component = (EComponent)Activator.CreateInstance(Type.GetType("CircuitDiagram.EComponents." + reader.LocalName, true, false));
-                        component.StartLocation = new Point(int.Parse(locationString[0]), int.Parse(locationString[1]));
-                        component.EndLocation = new Point(int.Parse(locationString[2]), int.Parse(locationString[3]));
-                        component.LoadData(reader);
-                        m_components.Add(component);
+                        if (reader.HasValue)
+                        {
+                            string[] locationString = reader.Value.Split(',');
+                            reader.MoveToElement();
+                            Type.GetType("CircuitDiagram.EComponents." + reader.LocalName, true, false);
+                            EComponent component = (EComponent)Activator.CreateInstance(Type.GetType("CircuitDiagram.EComponents." + reader.LocalName, true, false));
+                            component.StartLocation = new Point(int.Parse(locationString[0]), int.Parse(locationString[1]));
+                            component.EndLocation = new Point(int.Parse(locationString[2]), int.Parse(locationString[3]));
+                            component.LoadData(reader);
+                            m_components.Add(component);
+                        }
                     }
                     catch (Exception)
                     {

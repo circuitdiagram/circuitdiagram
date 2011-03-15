@@ -1,4 +1,4 @@
-﻿// OpAmpEditor.xaml.cs
+﻿// MicrocontrollerEditor.xaml.cs
 //
 // Circuit Diagram http://circuitdiagram.codeplex.com/
 //
@@ -35,23 +35,52 @@ using System.Windows.Shapes;
 namespace CircuitDiagram.EComponents
 {
     /// <summary>
-    /// Interaction logic for OpAmpEditor.xaml
+    /// Interaction logic for MicrocontrollerEditor.xaml
     /// </summary>
-    public partial class OpAmpEditor : ComponentEditor
+    public partial class MicrocontrollerEditor : ComponentEditor
     {
-        public OpAmpEditor()
+        public MicrocontrollerEditor()
         {
             InitializeComponent();
         }
 
+        private void OnPreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !AreAllValidNumericChars(e.Text);
+            base.OnPreviewTextInput(e);
+        }
+
+        private bool AreAllValidNumericChars(string str)
+        {
+            foreach (char c in str)
+            {
+                if (!Char.IsNumber(c)) return false;
+            }
+
+            return true;
+        }
+
         public override void LoadComponent(EComponent component)
         {
-            chbFlipPN.IsChecked = ((OpAmp)component).FlipInputs;
+            tbxNumInputs.Text = ((Microcontroller)component).Inputs.ToString();
+            tbxNumOutputs.Text = ((Microcontroller)component).Outputs.ToString();
+            chbADCInput.IsChecked = ((Microcontroller)component).ADC;
+            chbDisplayPIC.IsChecked = ((Microcontroller)component).DisplayPIC;
         }
 
         public override void UpdateChanges(EComponent component)
         {
-            ((OpAmp)component).FlipInputs = chbFlipPN.IsChecked.Value;
+            try
+            {
+                Microcontroller microcontroller = (Microcontroller)component;
+                microcontroller.Inputs = int.Parse(tbxNumInputs.Text);
+                microcontroller.Outputs = int.Parse(tbxNumOutputs.Text);
+                microcontroller.ADC = chbADCInput.IsChecked.Value;
+                microcontroller.DisplayPIC = chbDisplayPIC.IsChecked.Value;
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 }

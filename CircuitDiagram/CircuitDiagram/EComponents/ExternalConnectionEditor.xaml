@@ -10,6 +10,6 @@
         <Label Content="Text" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" />
         <TextBox Height="23" Margin="116,14,12,0" Name="tbxConnectionText" VerticalAlignment="Top" />
         <CheckBox Content="Top or left" Height="16" HorizontalAlignment="Left" Margin="116,47,0,0" Name="chbTopOrLeft" VerticalAlignment="Top" />
-        <Label Content="Position" Height="28" HorizontalAlignment="Left" Margin="12,42,0,0" Name="label2" VerticalAlignment="Top" />
+        <Label Content="Text position" Height="28" HorizontalAlignment="Left" Margin="12,42,0,0" Name="label2" VerticalAlignment="Top" />
     </Grid>
 </my:ComponentEditor>

@@ -38,7 +38,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>0.3.0.0</ApplicationVersion>
+    <ApplicationVersion>0.4.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -109,6 +109,9 @@
       <DependentUpon>CapacitorEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="EComponents\Diode.cs" />
+    <Compile Include="EComponents\DiodeEditor.xaml.cs">
+      <DependentUpon>DiodeEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EComponents\ExternalConnection.cs" />
     <Compile Include="EComponents\ExternalConnectionEditor.xaml.cs">
       <DependentUpon>ExternalConnectionEditor.xaml</DependentUpon>
@@ -117,6 +120,10 @@
     <Compile Include="EComponents\LED.cs" />
     <Compile Include="EComponents\LogicGateEditor.xaml.cs">
       <DependentUpon>LogicGateEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EComponents\Microcontroller.cs" />
+    <Compile Include="EComponents\MicrocontrollerEditor.xaml.cs">
+      <DependentUpon>MicrocontrollerEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="EComponents\Mosfet.cs" />
     <Compile Include="EComponents\OpAmp.cs" />
@@ -165,6 +172,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="EComponents\DiodeEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="EComponents\ExternalConnectionEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -172,6 +183,10 @@
     <Page Include="EComponents\LogicGateEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="EComponents\MicrocontrollerEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="EComponents\OpAmpEditor.xaml">
       <SubType>Designer</SubType>

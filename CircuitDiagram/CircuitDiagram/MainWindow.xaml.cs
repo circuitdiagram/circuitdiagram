@@ -1,9 +1,47 @@
-﻿using System;
+﻿// MainWindow.xaml.cs
+//
+// Circuit Diagram http://circuitdiagram.codeplex.com/
+//
+// Copyright (C) 2011  Sam Fisher
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+// MainWindow.xaml.cs
+//
+// Copyright (C) 2011  Sam Fisher
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -35,6 +73,23 @@ namespace CircuitDiagram
             // Insert code required on object creation below this point.
             m_document = circuitDisplay.Document;
             this.Title = "Untitled - Circuit Diagram";
+
+            // check if should open file
+            if (App.AppArgs.Length > 0)
+            {
+                if (System.IO.File.Exists(App.AppArgs[0]))
+                {
+                    double displayWidth;
+                    double displayHeight;
+                    m_document.Load(App.AppArgs[0], out displayWidth, out displayHeight);
+                    circuitDisplay.Width = displayWidth;
+                    circuitDisplay.Height = displayHeight;
+                    m_docPath = App.AppArgs[0];
+                    this.Title = System.IO.Path.GetFileNameWithoutExtension(App.AppArgs[0]) + " - Circuit Diagram";
+                    m_document.InvalidateVisual();
+                    circuitDisplay.InvalidateVisual();
+                }
+            }
         }
 
         public static bool m_moveComponent = false;
@@ -52,7 +107,7 @@ namespace CircuitDiagram
         private void circuitDisplay_MouseDown(object sender, MouseButtonEventArgs e)
         {
             mouseDownPos = e.GetPosition((IInputElement)sender);
-            if (m_document.SelectedComponent != null && m_moveComponent)
+            if (m_document.SelectedComponent != null && m_moveComponent && m_document.SelectedComponent.CanResize)
             {
                 if (m_document.SelectedComponent.Horizontal)
                 {
@@ -97,8 +152,8 @@ namespace CircuitDiagram
             EComponent newComponent = (EComponent)Activator.CreateInstance(newComponentType);
             newComponent.StartLocation = mouseDownPos;
             newComponent.EndLocation = mouseUpPos;
+            newComponent.UpdateLayout(m_document);
             m_document.Components.Add(newComponent);
-            m_document.UpdateLayout(newComponent);
             circuitDisplay.InvalidateVisual();
         }
 
@@ -115,7 +170,7 @@ namespace CircuitDiagram
                     m_document.SelectedComponent.StartLocation = new Point(m_document.SelectedComponent.StartLocation.X, e.GetPosition(circuitDisplay).Y);
                 else if (m_resizing == ComponentResizeMode.Bottom)
                     m_document.SelectedComponent.EndLocation = new Point(m_document.SelectedComponent.StartLocation.X, e.GetPosition(circuitDisplay).Y);
-                m_document.UpdateLayout(m_document.SelectedComponent);
+                m_document.SelectedComponent.UpdateLayout(m_document);
                 circuitDisplay.InvalidateVisual();
             }
             else if (m_resizing != ComponentResizeMode.None)
@@ -125,7 +180,7 @@ namespace CircuitDiagram
             {
                 m_document.SelectedComponent.StartLocation = Point.Add(m_moveComponentStartPos, new Vector(-mouseDownPos.X + e.GetPosition((IInputElement)sender).X, -mouseDownPos.Y + e.GetPosition((IInputElement)sender).Y));
                 m_document.SelectedComponent.EndLocation = Point.Add(m_moveComponentEndPos, new Vector(-mouseDownPos.X + e.GetPosition((IInputElement)sender).X, -mouseDownPos.Y + e.GetPosition((IInputElement)sender).Y));
-                m_document.UpdateLayout(m_document.SelectedComponent);
+                m_document.SelectedComponent.UpdateLayout(m_document);
                 m_document.InvalidateVisual();
                 circuitDisplay.InvalidateVisual();
             }
@@ -138,7 +193,7 @@ namespace CircuitDiagram
                 newComponent.StartLocation = mouseDownPos;
                 newComponent.EndLocation = mouseUpPos;
                 m_document.TempComponents.Add(newComponent);
-                m_document.UpdateLayout(newComponent);
+                newComponent.UpdateLayout(m_document);
             }
             else
             {
@@ -147,8 +202,7 @@ namespace CircuitDiagram
                 m_document.SelectedComponent = null;
                 foreach (EComponent component in m_document.Components)
                 {
-                    if (component.Intersects(e.GetPosition((IInputElement)sender)) ||
-                        component.BoundingBox.IntersectsWith(new Rect(e.GetPosition((IInputElement)sender).X, e.GetPosition((IInputElement)sender).Y, 1, 1)))
+                    if (component.BoundingBox.IntersectsWith(new Rect(e.GetPosition((IInputElement)sender).X, e.GetPosition((IInputElement)sender).Y, 1, 1)))
                     {
                         m_document.SelectedComponent = component;
                         m_moveComponentStartPos = component.StartLocation;
@@ -157,7 +211,7 @@ namespace CircuitDiagram
                 }
             }
 
-            if (m_document.SelectedComponent != null && m_moveComponent)
+            if (m_document.SelectedComponent != null && m_moveComponent && m_document.SelectedComponent.CanResize)
             {
                 Rect mouseRect = new Rect(e.GetPosition(circuitDisplay).X, e.GetPosition(circuitDisplay).Y, 1, 1);
                 if (m_document.SelectedComponent.Horizontal)
@@ -373,7 +427,8 @@ namespace CircuitDiagram
                 circuitDisplay.Width = double.Parse(nDocWin.TbxWidth);
                 circuitDisplay.Height = double.Parse(nDocWin.TbxHeight);
                 this.Title = "Untitled - Circuit Diagram";
-                m_document.UpdateLayout(null);
+                m_document.InvalidateVisual();
+                //m_document.UpdateLayout(null);
             }
         }
 
@@ -461,6 +516,26 @@ namespace CircuitDiagram
         private void mnuHelpDocumentation_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start("http://circuitdiagram.codeplex.com/documentation");
+        }
+
+        private void btnComponentsMicrocontroller_Click(object sender, RoutedEventArgs e)
+        {
+            m_moveComponent = false;
+            newComponentType = typeof(Microcontroller);
+        }
+
+        private void CommandFlipComponent_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = (m_document.SelectedComponent != null && m_document.SelectedComponent.CanFlip);
+        }
+
+        private void CommandFlipComponent_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (m_document.SelectedComponent != null && m_document.SelectedComponent.CanFlip)
+            {
+                m_document.SelectedComponent.IsFlipped = !m_document.SelectedComponent.IsFlipped;
+                circuitDisplay.InvalidateVisual();
+            }
         }
     }
 

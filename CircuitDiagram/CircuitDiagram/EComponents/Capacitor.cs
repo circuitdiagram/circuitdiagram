@@ -1,4 +1,24 @@
-﻿using System;
+﻿// Capacitor.cs
+//
+// Circuit Diagram http://circuitdiagram.codeplex.com/
+//
+// Copyright (C) 2011  Sam Fisher
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,7 +59,7 @@ namespace CircuitDiagram.EComponents
                 else if (Capacitance >= 0.000001)
                     return (Capacitance * 1000000).ToString() + " \u00B5" + "F";
                 else
-                    return (Capacitance * 1000000000).ToString() + " pF";
+                    return (Capacitance * 1000000000).ToString() + " nF";
             }
         }
 
@@ -77,13 +97,6 @@ namespace CircuitDiagram.EComponents
                 FormattedText text = new FormattedText(CapacitanceString, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 10d, new SolidColorBrush(Colors.Black));
                 dc.DrawText(CapacitanceString, "Arial", 10d, color, new Point(StartLocation.X - 22d - text.Width, StartLocation.Y + Size.Height / 2 - text.Height / 2));
             }
-        }
-
-        public override bool Intersects(Point point)
-        {
-            Rect capacitorRect = Horizontal ? new Rect(StartLocation.X + Size.Width / 2 - 4, StartLocation.Y - 14, 8, 28) :
-                new Rect(StartLocation.X - 14, StartLocation.Y + Size.Height / 2 - 4, 28, 8);
-            return capacitorRect.IntersectsWith(new Rect(point, new Size(1,1))) || base.Intersects(point);
         }
     }
 }

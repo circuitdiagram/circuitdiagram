@@ -1,4 +1,4 @@
-﻿// OpAmpEditor.xaml.cs
+﻿// DiodeEditor.xaml.cs
 //
 // Circuit Diagram http://circuitdiagram.codeplex.com/
 //
@@ -35,23 +35,28 @@ using System.Windows.Shapes;
 namespace CircuitDiagram.EComponents
 {
     /// <summary>
-    /// Interaction logic for OpAmpEditor.xaml
+    /// Interaction logic for DiodeEditor.xaml
     /// </summary>
-    public partial class OpAmpEditor : ComponentEditor
+    public partial class DiodeEditor : ComponentEditor
     {
-        public OpAmpEditor()
+        public DiodeEditor()
         {
             InitializeComponent();
         }
 
         public override void LoadComponent(EComponent component)
         {
-            chbFlipPN.IsChecked = ((OpAmp)component).FlipInputs;
+            chbZenerDiode.IsChecked = false;
+            if (((Diode)component).ZenerDiode)
+                chbZenerDiode.IsChecked = true;
         }
 
         public override void UpdateChanges(EComponent component)
         {
-            ((OpAmp)component).FlipInputs = chbFlipPN.IsChecked.Value;
+            if (chbZenerDiode.IsChecked == true)
+                ((Diode)component).ZenerDiode = true;
+            else
+                ((Diode)component).ZenerDiode = false;
         }
     }
 }

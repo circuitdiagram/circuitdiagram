@@ -48,6 +48,7 @@
                 <Button Click="btnComponentsMosfet_Click">MOSFET</Button>
                 <Button Click="btnComponentsLamp_Click">Lamp</Button>
                 <Button Click="btnComponentsExternalConnection_Click">External Connection</Button>
+                <Button Click="btnComponentsMicrocontroller_Click">Microcontroller</Button>
                 <Menu Background="Transparent">
                     <MenuItem Header="Counters">
                         <MenuItem Header="Counter" Click="btnComponentsCounter_Click" />
@@ -69,9 +70,11 @@
                             <MenuItem Header="Switch" Click="btnComponentsSwitch_Click" />
                             <MenuItem Header="Logic Gate" Click="btnComponentsLogicGate_Click" />
                         </MenuItem>
+                        <MenuItem Header="Flip" Command="my:CustomCommands.FlipComponent" />
                         <MenuItem Header="Properties" Command="my:CustomCommands.EditComponent" />
                         <MenuItem Header="Delete" Command="my:CustomCommands.DeleteComponent" />
                         <ContextMenu.CommandBindings>
+                            <CommandBinding Command="my:CustomCommands.FlipComponent" CanExecute="CommandFlipComponent_CanExecute" Executed="CommandFlipComponent_Executed" />
                             <CommandBinding Command="my:CustomCommands.EditComponent" CanExecute="CommandEditComponent_CanExecute" Executed="CommandEditComponent_Executed" />
                             <CommandBinding Command="my:CustomCommands.DeleteComponent" CanExecute="CommandDeleteComponent_CanExecute" Executed="CommandDeleteComponent_Executed" />
                         </ContextMenu.CommandBindings>

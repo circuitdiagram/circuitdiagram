@@ -1,4 +1,24 @@
-﻿using System;
+﻿// Resistor.cs
+//
+// Circuit Diagram http://circuitdiagram.codeplex.com/
+//
+// Copyright (C) 2011  Sam Fisher
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +30,7 @@ namespace CircuitDiagram.EComponents
     public class Resistor : EComponent
     {
         public double Resistance { get; set; }
+
         private string ResistanceString
         {
             get
@@ -23,13 +44,7 @@ namespace CircuitDiagram.EComponents
             }
         }
 
-        public override double MinimumWidth
-        {
-            get
-            {
-                return 50.0f;
-            }
-        }
+        public ResistorType ResistorType { get; set; }
 
         public Size Size
         {
@@ -41,15 +56,35 @@ namespace CircuitDiagram.EComponents
             get
             {
                 if (Horizontal)
-                    return new Rect(new Point(StartLocation.X, StartLocation.Y - 20), new Size(EndLocation.X - StartLocation.X, 30));
+                {
+                    if (ResistorType == ResistorType.Potentiometer)
+                        return new Rect(new Point(StartLocation.X, StartLocation.Y - 20), new Size(EndLocation.X - StartLocation.X, 50));
+                    else if (ResistorType == ResistorType.Variable || ResistorType == EComponents.ResistorType.Thermistor)
+                        return new Rect(new Point(StartLocation.X, StartLocation.Y - 20), new Size(EndLocation.X - StartLocation.X, 40));
+                    else
+                        return new Rect(new Point(StartLocation.X, StartLocation.Y - 20), new Size(EndLocation.X - StartLocation.X, 30));
+                }
                 else
-                    return new Rect(new Point(StartLocation.X - 50, StartLocation.Y), new Size(60, EndLocation.Y - StartLocation.Y));
+                {
+                    if (ResistorType == ResistorType.Potentiometer)
+                        return new Rect(new Point(StartLocation.X - 50, StartLocation.Y), new Size(80, EndLocation.Y - StartLocation.Y));
+                    else if (ResistorType == ResistorType.Variable || ResistorType == EComponents.ResistorType.Thermistor)
+                        return new Rect(new Point(StartLocation.X - 20, StartLocation.Y), new Size(40, EndLocation.Y - StartLocation.Y));
+                    else
+                        return new Rect(new Point(StartLocation.X - 50, StartLocation.Y), new Size(60, EndLocation.Y - StartLocation.Y));
+                }
             }
         }
 
         public Resistor()
         {
             Resistance = 4700;
+            ResistorType = ResistorType.Standard;
+        }
+
+        protected override void CustomUpdateLayout()
+        {
+            ImplementMinimumSize(50f);
         }
 
         public override void Initialize()
@@ -57,62 +92,74 @@ namespace CircuitDiagram.EComponents
             base.Editor = new ResistorEditor();
         }
 
-        public override bool Intersects(Point point)
-        {
-            if (Horizontal)
-            {
-                Rect thisRect = new Rect(StartLocation, new Point(StartLocation.X + Size.Width / 2 - 20d, StartLocation.Y));
-                if (thisRect.IntersectsWith(new Rect(point, new Size(1, 1))))
-                    return true;
-                thisRect = new Rect(new Point(StartLocation.X + Size.Width / 2 + 20d, StartLocation.Y), EndLocation);
-                if (thisRect.IntersectsWith(new Rect(point, new Size(1, 1))))
-                    return true;
-                thisRect = new Rect(StartLocation.X + Size.Width / 2 - 20d, StartLocation.Y - 8d, 40d, 16d);
-                if (thisRect.IntersectsWith(new Rect(point, new Size(1, 1))))
-                    return true;
-                return false;
-            }
-            else
-            {
-                Rect thisRect = new Rect(StartLocation, new Point(StartLocation.X, StartLocation.Y + Size.Height / 2 - 20d));
-                if (thisRect.IntersectsWith(new Rect(point, new Size(1, 1))))
-                    return true;
-                thisRect = new Rect(StartLocation.X - 8d, StartLocation.Y + Size.Height / 2 - 20d, 16d, 40d);
-                if (thisRect.IntersectsWith(new Rect(point, new Size(1, 1))))
-                    return true;
-                thisRect = new Rect(new Point(StartLocation.X, StartLocation.Y + Size.Height / 2 + 20d), EndLocation);
-                if (thisRect.IntersectsWith(new Rect(point, new Size(1, 1))))
-                    return true;
-                return false;
-            }
-        }
-
         public override void Render(IRenderer dc, Color color)
         {
             if (Horizontal)
             {
-                dc.DrawLine(color, 2.0f, StartLocation, new Point(StartLocation.X + Size.Width / 2 - 20d, StartLocation.Y));
-                dc.DrawRectangle(Color.FromArgb(0, 255, 255, 255), color, 2d, new Rect(StartLocation.X + Size.Width / 2 - 20d, StartLocation.Y - 8d, 40d, 16d));
-                dc.DrawLine(color, 2.0f, new Point(StartLocation.X + Size.Width / 2 + 20d, StartLocation.Y), EndLocation);
+                Point point0 = new Point(StartLocation.X + Size.Width / 2 - 20d, StartLocation.Y);
+                if (ResistorType == EComponents.ResistorType.Potentiometer && point0.X % 10 != 0)
+                    point0.X = point0.X + 5d;
+                dc.DrawLine(color, 2.0f, StartLocation, point0);
+                dc.DrawRectangle(Color.FromArgb(0, 255, 255, 255), color, 2d, new Rect(point0.X, StartLocation.Y - 8d, 40d, 16d));
+                dc.DrawLine(color, 2.0f, new Point(point0.X + 40f, point0.Y), EndLocation);
                 FormattedText text = new FormattedText(ResistanceString, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 10d, new SolidColorBrush(Colors.Black));
-                dc.DrawText(ResistanceString, "Arial", 10d, color, new Point(StartLocation.X + Size.Width / 2 - text.Width / 2, StartLocation.Y - 15d - text.Height / 2));
+                if (ResistorType != EComponents.ResistorType.Variable && ResistorType != ResistorType.Thermistor)
+                    dc.DrawText(ResistanceString, "Arial", 10d, color, new Point(point0.X + 20d - text.Width / 2, StartLocation.Y - 17d - text.Height / 2));
+
+                if (ResistorType == ResistorType.Potentiometer)
+                {
+                    dc.DrawPath(null, color, 2f, String.Format("M {0} m 14,16 l 6,-6 l 6,6 m -6,-5 l 0,18", point0));
+                }
+                else if (ResistorType == ResistorType.Variable)
+                {
+                    dc.DrawPath(null, color, 2f, String.Format("M {0} m 3,17 l 32,-35 m -6,0 l 6,0 l 0,6", point0));
+                }
+                else if (ResistorType == EComponents.ResistorType.Thermistor)
+                {
+                    dc.DrawPath(null, color, 2f, String.Format("M {0} m -20,17 l 10,0 l 32,-35", new Point(point0.X + 20f, point0.Y)));
+                }
             }
             if (!Horizontal)
             {
-                dc.DrawLine(color, 2.0f, StartLocation, new Point(StartLocation.X, StartLocation.Y + Size.Height / 2 - 20d));
-                dc.DrawRectangle(Color.FromArgb(0, 255, 255, 255), color, 2d, new Rect(StartLocation.X - 8d, StartLocation.Y + Size.Height / 2 - 20d, 16d, 40d));
-                dc.DrawLine(color, 2.0f, new Point(StartLocation.X, StartLocation.Y + Size.Height / 2 + 20d), EndLocation);
+                Point point0 = new Point(StartLocation.X, StartLocation.Y + Size.Height / 2 - 20d);
+                if (ResistorType == EComponents.ResistorType.Potentiometer && point0.Y % 10 != 0)
+                    point0.Y = point0.Y + 5d;
+                dc.DrawLine(color, 2.0f, StartLocation, point0);
+                dc.DrawRectangle(Color.FromArgb(0, 255, 255, 255), color, 2d, new Rect(StartLocation.X - 8d, point0.Y, 16d, 40d));
+                dc.DrawLine(color, 2.0f, new Point(point0.X, point0.Y + 40f), EndLocation);
                 FormattedText text = new FormattedText(ResistanceString, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 10d, new SolidColorBrush(Colors.Black));
-                dc.DrawText(ResistanceString, "Arial", 10d, color, new Point(StartLocation.X - 15d - text.Width, StartLocation.Y + Size.Height / 2 - text.Height / 2));
+                if (ResistorType != EComponents.ResistorType.Variable && ResistorType != ResistorType.Thermistor)
+                    dc.DrawText(ResistanceString, "Arial", 10d, color, new Point(StartLocation.X - 15d - text.Width, point0.Y + 20d - text.Height / 2));
+
+                if (ResistorType == ResistorType.Potentiometer)
+                {
+                    dc.DrawPath(null, color, 2f, String.Format("M {0} m 16,14 l -6,6 l 6,6 m -5,-6 l 18,0", point0));
+                }
+                else if (ResistorType == ResistorType.Variable)
+                {
+                    dc.DrawPath(null, color, 2f, String.Format("M {0} m -17,17 l 35,-32 m 0,6 l 0,-6 l -6,0", new Point(point0.X, point0.Y + 20f)));
+                }
+                else if (ResistorType == EComponents.ResistorType.Thermistor)
+                {
+                    dc.DrawPath(null, color, 2f, String.Format("M {0} m -17,-20 l 0,10 l 35,32", new Point(point0.X, point0.Y + 20f)));
+                }
             }
         }
 
         public override void LoadData(System.Xml.XmlReader reader)
         {
+            ResistorType = EComponents.ResistorType.Standard;
             try
             {
-                reader.MoveToAttribute("resistance");
-                Resistance = reader.ReadContentAsDouble();
+                string resistorType = reader.GetAttribute("resistortype");
+                if (resistorType != null)
+                    ResistorType = (ResistorType)int.Parse(resistorType);
+
+                if (ResistorType != ResistorType.Variable && ResistorType != ResistorType.Thermistor)
+                {
+                    reader.MoveToAttribute("resistance");
+                    Resistance = reader.ReadContentAsDouble();
+                }
             }
             catch (Exception)
             {
@@ -121,8 +168,22 @@ namespace CircuitDiagram.EComponents
 
         public override void SaveData(System.Xml.XmlWriter writer)
         {
-            writer.WriteAttributeString("resistance", Resistance.ToString());
+            if (ResistorType != ResistorType.Standard)
+            {
+                writer.WriteAttributeString("resistortype", ((int)ResistorType).ToString());
+            }
+            if (ResistorType != ResistorType.Variable && ResistorType != ResistorType.Thermistor)
+                writer.WriteAttributeString("resistance", Resistance.ToString());
         }
 
+    }
+
+    public enum ResistorType
+    {
+        Standard = 0,
+        Potentiometer = 1,
+        LDR = 2,
+        Thermistor = 3,
+        Variable = 4
     }
 }

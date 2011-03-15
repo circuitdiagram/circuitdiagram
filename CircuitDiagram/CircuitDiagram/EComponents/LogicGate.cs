@@ -1,4 +1,24 @@
-﻿using System;
+﻿// LogicGate.cs
+//
+// Circuit Diagram http://circuitdiagram.codeplex.com/
+//
+// Copyright (C) 2011  Sam Fisher
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,14 +42,6 @@ namespace CircuitDiagram.EComponents
             get { return new Size(EndLocation.X - StartLocation.X, EndLocation.Y - StartLocation.Y); }
         }
 
-        public override double MinimumWidth
-        {
-            get
-            {
-                return 64.0d;
-            }
-        }
-
         public override Rect BoundingBox
         {
             get
@@ -47,11 +59,9 @@ namespace CircuitDiagram.EComponents
             base.Editor = new LogicGateEditor();
         }
 
-        public override bool Intersects(Point point)
+        protected override void CustomUpdateLayout()
         {
-            Rect thisRect = new Rect(StartLocation, EndLocation - StartLocation);
-            Rect thisRect2 = new Rect(new Point(StartLocation.X + Size.Width / 2 - 20f, StartLocation.Y - 10f), new Point(StartLocation.X + Size.Width / 2 + 20f, StartLocation.Y + 10f));
-            return thisRect.IntersectsWith(new Rect(point, new Size(1, 1))) || thisRect2.IntersectsWith(new Rect(point, new Size(1,1)));
+            ImplementMinimumSize(64f);
         }
 
         public override void Render(IRenderer dc, Color color)
@@ -138,7 +148,7 @@ namespace CircuitDiagram.EComponents
         {
             try
             {
-                reader.MoveToAttribute("type");
+                reader.MoveToAttribute("logictype");
                 LogicType = (LogicType)reader.ReadContentAsInt();
             }
             catch (Exception)
@@ -148,7 +158,7 @@ namespace CircuitDiagram.EComponents
 
         public override void SaveData(System.Xml.XmlWriter writer)
         {
-            writer.WriteAttributeString("type", ((int)LogicType).ToString());
+            writer.WriteAttributeString("logictype", ((int)LogicType).ToString());
         }
     }
 
