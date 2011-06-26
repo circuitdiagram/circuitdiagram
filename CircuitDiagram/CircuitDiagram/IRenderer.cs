@@ -33,6 +33,7 @@ namespace CircuitDiagram
         void DrawEllipse(Color fillColor, Color strokeColor, double strokeThickness, Point centre, double radiusX, double radiusY);
         void DrawRectangle(Color fillColor, Color strokeColor, double strokeThickness, Rect rectangle);
         void DrawText(string text, string fontName, double emSize, Color foreColor, Point origin);
+        void DrawFormattedText(FormattedText text, Point origin);
         void DrawPath(Color? fillColor, Color strokeColor, double thickness, string path);
     }
 }

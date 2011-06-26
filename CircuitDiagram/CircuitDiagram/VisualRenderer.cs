@@ -52,6 +52,11 @@ namespace CircuitDiagram
             DrawingContext.DrawText(new FormattedText(text, System.Globalization.CultureInfo.CurrentCulture, System.Windows.FlowDirection.LeftToRight, new Typeface(fontName), emSize, new SolidColorBrush(foreColor)), origin);
         }
 
+        public void DrawFormattedText(FormattedText text, Point origin)
+        {
+            DrawingContext.DrawText(text, origin);
+        }
+
         public void DrawPath(Color? fillColor, Color strokeColor, double thickness, string path)
         {
             Geometry geometry = Geometry.Parse(path);

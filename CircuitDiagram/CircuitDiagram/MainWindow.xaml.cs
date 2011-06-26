@@ -24,24 +24,6 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-// MainWindow.xaml.cs
-//
-// Copyright (C) 2011  Sam Fisher
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -65,6 +47,9 @@ namespace CircuitDiagram
     {
         CircuitDocument m_document;
         string m_docPath = "";
+        UndoManager m_undoManager;
+
+        UndoManager UndoManager { get { return m_undoManager; } }
 
         public MainWindow()
         {
@@ -90,6 +75,9 @@ namespace CircuitDiagram
                     circuitDisplay.InvalidateVisual();
                 }
             }
+
+            m_undoManager = new UndoManager();
+            m_undoManager.ActionDelegate = UndoActionProcessor;
         }
 
         public static bool m_moveComponent = false;
@@ -142,6 +130,17 @@ namespace CircuitDiagram
             }
             if (m_moveComponent)
             {
+                if (m_document.SelectedComponent != null)
+                {
+                    UndoAction undoAction = new UndoAction(UndoCommand.MoveComponent, "Move component", m_document.SelectedComponent);
+                    undoAction.AddData("fromStart", fromStart);
+                    undoAction.AddData("fromEnd", fromEnd);
+                    undoAction.AddData("toStart", m_document.SelectedComponent.StartLocation);
+                    undoAction.AddData("toEnd", m_document.SelectedComponent.EndLocation);
+                    UndoManager.AddAction(undoAction);
+                    fromStart = null;
+                    fromEnd = null;
+                }
                 m_document.SelectedComponent = null;
                 return;
             }
@@ -155,9 +154,14 @@ namespace CircuitDiagram
             newComponent.UpdateLayout(m_document);
             m_document.Components.Add(newComponent);
             circuitDisplay.InvalidateVisual();
+
+            // add undo action
+            UndoManager.AddAction(new UndoAction(UndoCommand.AddComponent, "Add component", newComponent));
         }
 
         bool cancelSelect = true;
+        Point? fromStart;
+        Point? fromEnd;
         private void circuitDisplay_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed && m_resizing != ComponentResizeMode.None)
@@ -178,6 +182,10 @@ namespace CircuitDiagram
             }
             else if (e.LeftButton == MouseButtonState.Pressed && m_moveComponent && m_document.SelectedComponent != null)
             {
+                if (!fromStart.HasValue)
+                    fromStart = m_document.SelectedComponent.StartLocation;
+                if (!fromEnd.HasValue)
+                    fromEnd = m_document.SelectedComponent.EndLocation;
                 m_document.SelectedComponent.StartLocation = Point.Add(m_moveComponentStartPos, new Vector(-mouseDownPos.X + e.GetPosition((IInputElement)sender).X, -mouseDownPos.Y + e.GetPosition((IInputElement)sender).Y));
                 m_document.SelectedComponent.EndLocation = Point.Add(m_moveComponentEndPos, new Vector(-mouseDownPos.X + e.GetPosition((IInputElement)sender).X, -mouseDownPos.Y + e.GetPosition((IInputElement)sender).Y));
                 m_document.SelectedComponent.UpdateLayout(m_document);
@@ -194,6 +202,8 @@ namespace CircuitDiagram
                 newComponent.EndLocation = mouseUpPos;
                 m_document.TempComponents.Add(newComponent);
                 newComponent.UpdateLayout(m_document);
+
+                //Clipboard.SetData("CircuitDiagram.EComponent", newComponent);
             }
             else
             {
@@ -251,7 +261,7 @@ namespace CircuitDiagram
         {
             System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
             sfd.Title = "Export";
-            sfd.Filter = "PNG (*.png)|*.png|Scalable Vector Graphics (*.svg)|*.svg";
+            sfd.Filter = "PNG (*.png)|*.png|Scalable Vector Graphics (*.svg)|*.svg"; //"PNG (*.png)|*.png|Scalable Vector Graphics (*.svg)|*.svg|Enhanced Metafile (*.emf)|*.emf";
             sfd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
             if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -268,15 +278,29 @@ namespace CircuitDiagram
                 {
                     //RenderTargetBitmap bmp = new RenderTargetBitmap((int)circuitDisplay.Width, (int)circuitDisplay.Height, 96d, 96d, PixelFormats.Default);
                     //bmp.Render(circuitDisplay);
-                    PrintRenderer pRenderer = new PrintRenderer(circuitDisplay.Width, circuitDisplay.Height);
-                    pRenderer.DrawRectangle(Colors.White, Colors.White, 0.0f, new Rect(0, 0, circuitDisplay.Width, circuitDisplay.Height));
-                    m_document.Render(pRenderer);
-                    RenderTargetBitmap bmp = pRenderer.GetImage();
-                    PngBitmapEncoder encoder = new PngBitmapEncoder();
-                    encoder.Frames.Add(BitmapFrame.Create(bmp));
-                    System.IO.FileStream stream = new System.IO.FileStream(sfd.FileName, System.IO.FileMode.Create);
-                    encoder.Save(stream);
-                    stream.Close();
+                    winExportPNG wEP = new winExportPNG();
+                    wEP.Owner = this;
+                    wEP.OriginalWidth = circuitDisplay.Width;
+                    wEP.OriginalHeight = circuitDisplay.Height;
+                    wEP.Update();
+                    if (wEP.ShowDialog() == true)
+                    {
+                        PrintRenderer pRenderer = new PrintRenderer(circuitDisplay.Width, circuitDisplay.Height, wEP.OutputWidth, wEP.OutputHeight);
+                        pRenderer.DrawRectangle(Colors.White, Colors.White, 0.0f, new Rect(0, 0, circuitDisplay.Width, circuitDisplay.Height));
+                        m_document.Render(pRenderer);
+                        RenderTargetBitmap bmp = pRenderer.GetImage();
+                        PngBitmapEncoder encoder = new PngBitmapEncoder();
+                        encoder.Frames.Add(BitmapFrame.Create(bmp));
+                        System.IO.FileStream stream = new System.IO.FileStream(sfd.FileName, System.IO.FileMode.Create);
+                        encoder.Save(stream);
+                        stream.Close();
+                    }
+                }
+                else if (extension == ".emf")
+                {
+                    EnhMetafileRenderer renderer = new EnhMetafileRenderer((int)circuitDisplay.Width, (int)circuitDisplay.Height);
+                    m_document.Render(renderer);
+                    renderer.SaveEnhMetafile(sfd.FileName);
                 }
             }
         }
@@ -437,7 +461,7 @@ namespace CircuitDiagram
             PrintDialog pDlg = new PrintDialog();
             if (pDlg.ShowDialog() == true)
             {
-                PrintRenderer printRenderer = new PrintRenderer(circuitDisplay.Width, circuitDisplay.Height);
+                PrintRenderer printRenderer = new PrintRenderer(circuitDisplay.Width, circuitDisplay.Height, circuitDisplay.Width, circuitDisplay.Height);
                 m_document.Render(printRenderer);
                 FixedDocument document = printRenderer.GetDocument(new Size(pDlg.PrintableAreaWidth, pDlg.PrintableAreaHeight));
                 pDlg.PrintDocument(document.DocumentPaginator, "Circuit Diagram");
@@ -536,6 +560,64 @@ namespace CircuitDiagram
                 m_document.SelectedComponent.IsFlipped = !m_document.SelectedComponent.IsFlipped;
                 circuitDisplay.InvalidateVisual();
             }
+        }
+
+        private void btnComponentsMeter_Click(object sender, RoutedEventArgs e)
+        {
+            m_moveComponent = false;
+            newComponentType = typeof(Meter);
+        }
+
+        private void CommandUndo_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = UndoManager.CanStepBackwards();
+        }
+
+        private void CommandUndo_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            UndoManager.StepBackwards();
+        }
+
+        private void CommandRedo_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = UndoManager.CanStepForwards();
+        }
+
+        private void CommandRedo_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            UndoManager.StepForwards();
+        }
+
+        void UndoActionProcessor(object sender, UndoActionEventArgs e)
+        {
+            if (e.Event == UndoActionEvent.Remove)
+            {
+                switch (e.Action.Command)
+                {
+                    case UndoCommand.AddComponent:
+                        m_document.Components.Remove((EComponent)e.Action.GetDefaultData());
+                        break;
+                    case UndoCommand.MoveComponent:
+                        ((EComponent)e.Action.GetDefaultData()).StartLocation = e.Action.GetData<Point>("fromStart");
+                        ((EComponent)e.Action.GetDefaultData()).EndLocation = e.Action.GetData<Point>("fromEnd");
+                        break;
+                }
+            }
+            else
+            {
+                switch (e.Action.Command)
+                {
+                    case UndoCommand.AddComponent:
+                        m_document.Components.Add((EComponent)e.Action.GetDefaultData());
+                        break;
+                    case UndoCommand.MoveComponent:
+                        ((EComponent)e.Action.GetDefaultData()).StartLocation = e.Action.GetData<Point>("toStart");
+                        ((EComponent)e.Action.GetDefaultData()).EndLocation = e.Action.GetData<Point>("toEnd");
+                        break;
+                }
+            }
+            m_document.InvalidateVisual();
+            circuitDisplay.InvalidateVisual();
         }
     }
 

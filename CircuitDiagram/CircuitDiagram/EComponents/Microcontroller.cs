@@ -68,20 +68,20 @@ namespace CircuitDiagram.EComponents
                 dc.DrawRectangle(Colors.Transparent, color, 2f, new Rect(BoundingBox.X + 10f, BoundingBox.Y, BoundingBox.Width - 20f, BoundingBox.Height));
                 for (int i = 0; i < Inputs; i++)
                 {
-                    dc.DrawLine(color, 2f, new Point(StartLocation.X - 50f, StartLocation.Y + 11f + 20f * i), new Point(StartLocation.X - 40f, StartLocation.Y + 11f + 20f * i));
-                    dc.DrawText("I", "Arial", 12f, color, new Point(StartLocation.X - 35f, StartLocation.Y + 11f + 20f * i - 6f));
-                    dc.DrawText((Inputs - 1 - i).ToString(), "Arial", 8f, color, new Point(StartLocation.X - 32f, StartLocation.Y + 11f + 20f * i));
+                    dc.DrawLine(color, 2f, new Point(StartLocation.X - 50f, StartLocation.Y + 10f + 20f * i), new Point(StartLocation.X - 40f, StartLocation.Y + 10f + 20f * i));
+                    dc.DrawText("I", "Arial", 12f, color, new Point(StartLocation.X - 35f, StartLocation.Y + 10f + 20f * i - 6f));
+                    dc.DrawText((Inputs - 1 - i).ToString(), "Arial", 8f, color, new Point(StartLocation.X - 32f, StartLocation.Y + 10f + 20f * i));
                 }
                 for (int i = 0; i < Outputs; i++)
                 {
-                    dc.DrawLine(color, 2f, new Point(StartLocation.X + 40f, StartLocation.Y + 11f + 20f * i), new Point(StartLocation.X + 50f, StartLocation.Y + 11f + 20f * i));
-                    dc.DrawText("Q", "Arial", 12f, color, new Point(StartLocation.X + 24f, StartLocation.Y + 11f + 20f * i - 6f));
-                    dc.DrawText((Outputs - 1 -i).ToString(), "Arial", 8f, color, new Point(StartLocation.X + 33f, StartLocation.Y + 11f + 20f * i));
+                    dc.DrawLine(color, 2f, new Point(StartLocation.X + 40f, StartLocation.Y + 10f + 20f * i), new Point(StartLocation.X + 50f, StartLocation.Y + 10f + 20f * i));
+                    dc.DrawText("Q", "Arial", 12f, color, new Point(StartLocation.X + 24f, StartLocation.Y + 10f + 20f * i - 6f));
+                    dc.DrawText((Outputs - 1 -i).ToString(), "Arial", 8f, color, new Point(StartLocation.X + 33f, StartLocation.Y + 10f + 20f * i));
                 }
                 if (ADC)
                 {
-                    dc.DrawLine(color, 2f, new Point(StartLocation.X - 50f, StartLocation.Y + 11f + 20f * Inputs), new Point(StartLocation.X - 40f, StartLocation.Y + 11f + 20f * Inputs));
-                    dc.DrawText("adc", "Arial", 12f, color, new Point(StartLocation.X - 35f, StartLocation.Y + 11f + 20f * Inputs - 7f));
+                    dc.DrawLine(color, 2f, new Point(StartLocation.X - 50f, StartLocation.Y + 10f + 20f * Inputs), new Point(StartLocation.X - 40f, StartLocation.Y + 10f + 20f * Inputs));
+                    dc.DrawText("adc", "Arial", 12f, color, new Point(StartLocation.X - 35f, StartLocation.Y + 10f + 20f * Inputs - 7f));
                 }
                 if (DisplayPIC)
                 {
@@ -94,19 +94,19 @@ namespace CircuitDiagram.EComponents
                 dc.DrawRectangle(Colors.Transparent, color, 2f, new Rect(BoundingBox.X, BoundingBox.Y + 10f, BoundingBox.Width, BoundingBox.Height - 20f));
                 for (int i = 0; i < Inputs; i++)
                 {
-                    dc.DrawLine(color, 2f, new Point(StartLocation.X + 11f + 20f * i, StartLocation.Y - 50f), new Point(StartLocation.X + 11f + 20f * i, StartLocation.Y - 40f));
+                    dc.DrawLine(color, 2f, new Point(StartLocation.X + 10f + 20f * i, StartLocation.Y - 50f), new Point(StartLocation.X + 10f + 20f * i, StartLocation.Y - 40f));
                     dc.DrawText("I", "Arial", 12f, color, new Point(StartLocation.X + 14f + 20f * i - 6f, StartLocation.Y - 38f));
-                    dc.DrawText((Inputs - 1 - i).ToString(), "Arial", 8f, color, new Point(StartLocation.X + 11f + 20f * i, StartLocation.Y - 32f));
+                    dc.DrawText((Inputs - 1 - i).ToString(), "Arial", 8f, color, new Point(StartLocation.X + 10f + 20f * i, StartLocation.Y - 32f));
                 }
                 for (int i = 0; i < Outputs; i++)
                 {
-                    dc.DrawLine(color, 2f, new Point(StartLocation.X + 11f + 20f * i, StartLocation.Y + 40f), new Point(StartLocation.X + 11f + 20f * i, StartLocation.Y + 50f));
-                    dc.DrawText("Q", "Arial", 12f, color, new Point(StartLocation.X + 11f + 20f * i - 6f, StartLocation.Y + 24f));
+                    dc.DrawLine(color, 2f, new Point(StartLocation.X + 10f + 20f * i, StartLocation.Y + 40f), new Point(StartLocation.X + 10f + 20f * i, StartLocation.Y + 50f));
+                    dc.DrawText("Q", "Arial", 12f, color, new Point(StartLocation.X + 10f + 20f * i - 6f, StartLocation.Y + 24f));
                     dc.DrawText((Outputs - 1 - i).ToString(), "Arial", 8f, color, new Point(StartLocation.X + 14f + 20f * i, StartLocation.Y + 30f));
                 }
                 if (ADC)
                 {
-                    dc.DrawLine(color, 2f, new Point(StartLocation.X + 11f + 20f * Inputs, StartLocation.Y - 50f), new Point(StartLocation.X + 11f + 20f * Inputs, StartLocation.Y - 40f));
+                    dc.DrawLine(color, 2f, new Point(StartLocation.X + 10f + 20f * Inputs, StartLocation.Y - 50f), new Point(StartLocation.X + 10f + 20f * Inputs, StartLocation.Y - 40f));
                     dc.DrawText("adc", "Arial", 12f, color, new Point(StartLocation.X + 8f + 20f * Inputs - 7f, StartLocation.Y - 38f));
                 }
                 if (DisplayPIC)

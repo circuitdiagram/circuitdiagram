@@ -38,7 +38,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>0.4.0.0</ApplicationVersion>
+    <ApplicationVersion>0.5.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -108,6 +108,9 @@
     <Compile Include="EComponents\CapacitorEditor.xaml.cs">
       <DependentUpon>CapacitorEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EComponents\MeterEditor.xaml.cs">
+      <DependentUpon>MeterEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EComponents\Diode.cs" />
     <Compile Include="EComponents\DiodeEditor.xaml.cs">
       <DependentUpon>DiodeEditor.xaml</DependentUpon>
@@ -121,6 +124,7 @@
     <Compile Include="EComponents\LogicGateEditor.xaml.cs">
       <DependentUpon>LogicGateEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EComponents\Meter.cs" />
     <Compile Include="EComponents\Microcontroller.cs" />
     <Compile Include="EComponents\MicrocontrollerEditor.xaml.cs">
       <DependentUpon>MicrocontrollerEditor.xaml</DependentUpon>
@@ -148,6 +152,7 @@
       <DependentUpon>ResistorEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="EComponents\Supply.cs" />
+    <Compile Include="EnhMetafileRenderer.cs" />
     <Compile Include="IRenderer.cs" />
     <Compile Include="NewDocument.xaml.cs">
       <DependentUpon>NewDocument.xaml</DependentUpon>
@@ -156,10 +161,18 @@
     <Compile Include="Range.cs" />
     <Compile Include="SVGDocument.cs" />
     <Compile Include="SVGRenderer.cs" />
+    <Compile Include="UndoManager.cs" />
     <Compile Include="VisualRenderer.cs" />
     <Compile Include="winAbout.xaml.cs">
       <DependentUpon>winAbout.xaml</DependentUpon>
     </Compile>
+    <Compile Include="winExportPNG.xaml.cs">
+      <DependentUpon>winExportPNG.xaml</DependentUpon>
+    </Compile>
+    <Page Include="AboutImage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="CircuitDisplay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -171,6 +184,10 @@
     <Page Include="EComponents\CapacitorEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EComponents\MeterEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="EComponents\DiodeEditor.xaml">
       <SubType>Designer</SubType>
@@ -229,6 +246,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="winExportPNG.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -278,6 +299,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="AboutImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Logo32.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

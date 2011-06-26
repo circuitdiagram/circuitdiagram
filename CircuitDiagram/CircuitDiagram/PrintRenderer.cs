@@ -35,18 +35,24 @@ namespace CircuitDiagram
     class PrintRenderer : IRenderer
     {
         private Canvas m_canvas;
+        private double m_renderWidth;
+        private double m_renderHeight;
 
-        public PrintRenderer(double width, double height)
+        public PrintRenderer(double width, double height, double renderWidth, double renderHeight)
         {
             m_canvas = new Canvas();
             m_canvas.Width = width;
             m_canvas.Height = height;
+            m_renderWidth = renderWidth;
+            m_renderHeight = renderHeight;
         }
 
         public RenderTargetBitmap GetImage()
         {
             m_canvas.Arrange(new Rect(0, 0, m_canvas.Width, m_canvas.Height));
-            RenderTargetBitmap bmp = new RenderTargetBitmap((int)m_canvas.Width, (int)m_canvas.Height, 96d, 96d, PixelFormats.Default);
+            double dpiX = (m_renderWidth / m_canvas.Width) * 96d;
+            double dpiY = (m_renderHeight / m_canvas.Height) * 96d;
+            RenderTargetBitmap bmp = new RenderTargetBitmap((int)m_renderWidth, (int)m_renderHeight, dpiX, dpiY, PixelFormats.Default);
             bmp.Render(m_canvas);
             return bmp;
         }
@@ -97,6 +103,10 @@ namespace CircuitDiagram
             textBlock.SetValue(Canvas.LeftProperty, origin.X);
             textBlock.SetValue(Canvas.TopProperty, origin.Y);
             m_canvas.Children.Add(textBlock);
+        }
+
+        public void DrawFormattedText(FormattedText text, Point origin)
+        {
         }
 
         public void DrawPath(Color? filColor, Color strokColor, double thickness, string path)
