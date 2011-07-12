@@ -1,6 +1,6 @@
 ﻿// Microcontroller.cs
 //
-// Circuit Diagram http://circuitdiagram.codeplex.com/
+// Circuit Diagram http://www.circuit-diagram.org/
 //
 // Copyright (C) 2011  Sam Fisher
 //
@@ -142,6 +142,31 @@ namespace CircuitDiagram.EComponents
             writer.WriteAttributeString("outputs", Outputs.ToString());
             writer.WriteAttributeString("adc", ADC.ToString());
             writer.WriteAttributeString("displaypic", DisplayPIC.ToString());
+        }
+
+        public override void SaveData(System.IO.TextWriter writer)
+        {
+            base.SaveData(writer);
+            EComponent.WriteProperty(writer, "inputs", Inputs.ToString());
+            EComponent.WriteProperty(writer, "outputs", Outputs.ToString());
+            EComponent.WriteProperty(writer, "adc", ADC.ToString().ToLower());
+            EComponent.WriteProperty(writer, "displaypic", DisplayPIC.ToString().ToLower());
+        }
+
+        public override void LoadData(System.IO.TextReader reader)
+        {
+            Dictionary<string, string> properties;
+            base.LoadData(reader, out properties);
+            if (properties.ContainsKey("inputs"))
+                Inputs = int.Parse(properties["inputs"]);
+            if (properties.ContainsKey("outputs"))
+                Outputs = int.Parse(properties["outputs"]);
+            ADC = false;
+            if (properties.ContainsKey("adc") && properties["adc"] == "true")
+                ADC = true;
+            DisplayPIC = false;
+            if (properties.ContainsKey("displaypic") && properties["displaypic"] == "true")
+                DisplayPIC = true;
         }
     }
 }

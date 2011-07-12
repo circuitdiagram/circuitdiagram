@@ -10,7 +10,7 @@
                 <Label Content="1.0" Height="28" Name="lblVersionNumber" HorizontalAlignment="Left" />
             </StackPanel>
             <Label Height="28" HorizontalAlignment="Left">
-                <Hyperlink NavigateUri="http://circuitdiagram.codeplex.com/" RequestNavigate="Hyperlink_RequestNavigate">http://circuitdiagram.codeplex.com/</Hyperlink>
+                <Hyperlink NavigateUri="http://www.circuit-diagram.org/" RequestNavigate="Hyperlink_RequestNavigate">http://www.circuit-diagram.org/</Hyperlink>
             </Label>
             <Label Content="Created by Sam Fisher" Height="28" Name="label3" HorizontalAlignment="Left" />
         </StackPanel>

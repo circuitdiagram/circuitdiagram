@@ -1,6 +1,6 @@
 ﻿// Capacitor.cs
 //
-// Circuit Diagram http://circuitdiagram.codeplex.com/
+// Circuit Diagram http://www.circuit-diagram.org/
 //
 // Copyright (C) 2011  Sam Fisher
 //
@@ -97,6 +97,20 @@ namespace CircuitDiagram.EComponents
                 FormattedText text = new FormattedText(CapacitanceString, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 10d, new SolidColorBrush(Colors.Black));
                 dc.DrawText(CapacitanceString, "Arial", 10d, color, new Point(StartLocation.X - 22d - text.Width, StartLocation.Y + Size.Height / 2 - text.Height / 2));
             }
+        }
+
+        public override void SaveData(System.IO.TextWriter writer)
+        {
+            base.SaveData(writer);
+            EComponent.WriteProperty(writer, "capacitance", Capacitance.ToString());
+        }
+
+        public override void LoadData(System.IO.TextReader reader)
+        {
+            Dictionary<string, string> properties;
+            base.LoadData(reader, out properties);
+            if (properties.ContainsKey("capacitance"))
+                Capacitance = double.Parse(properties["capacitance"]);
         }
     }
 }

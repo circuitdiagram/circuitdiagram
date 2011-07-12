@@ -1,6 +1,6 @@
 ﻿// EComponent.cs
 //
-// Circuit Diagram http://circuitdiagram.codeplex.com/
+// Circuit Diagram http://www.circuit-diagram.org/
 //
 // Copyright (C) 2011  Sam Fisher
 //
@@ -224,7 +224,100 @@ namespace CircuitDiagram
 
         public virtual void LoadData(XmlReader reader)
         {
-            
+        }
+
+        public virtual void SaveData(System.IO.TextWriter writer)
+        {
+            WriteProperty(writer, "type", this.GetType().Name);
+            WriteProperty(writer, "x", StartLocation.X.ToString());
+            WriteProperty(writer, "y", StartLocation.Y.ToString());
+            if (CanResize)
+            {
+                if (Horizontal)
+                    WriteProperty(writer, "size", (EndLocation.X - StartLocation.X).ToString());
+                else
+                    WriteProperty(writer, "size", (EndLocation.Y - StartLocation.Y).ToString());
+            }
+           WriteProperty(writer, "orientation", (Horizontal ? "horizontal" : "vertical"));
+            if (CanFlip)
+                WriteProperty(writer, "flipped", IsFlipped.ToString());
+        }
+
+        public virtual void LoadData(System.IO.TextReader reader)
+        {
+            Dictionary<string, string> properties = LoadProperties(reader);
+            if (properties.ContainsKey("x"))
+                m_startLocation.X = double.Parse(properties["x"]);
+            if (properties.ContainsKey("y"))
+                m_startLocation.Y = double.Parse(properties["y"]);
+            bool horizontal = true;
+            if (properties.ContainsKey("orientation") && properties["orientation"].ToLower() == "vertical")
+                horizontal = false;
+            if (properties.ContainsKey("size"))
+            {
+                double size = double.Parse(properties["size"]);
+                if (horizontal)
+                {
+                    m_endLocation.X = m_startLocation.X + size;
+                    m_endLocation.Y = m_startLocation.Y;
+                }
+                else
+                {
+                    m_endLocation.X = m_startLocation.X;
+                    m_endLocation.Y = m_startLocation.Y + size;
+                }
+            }
+            IsFlipped = false;
+            if (properties.ContainsKey("flipped") && properties["flipped"].ToLower() == "true")
+                IsFlipped = true;
+        }
+
+        public void LoadData(System.IO.TextReader reader, out Dictionary<string, string> properties)
+        {
+            properties = LoadProperties(reader);
+            if (properties.ContainsKey("x"))
+                m_startLocation.X = double.Parse(properties["x"]);
+            if (properties.ContainsKey("y"))
+                m_startLocation.Y = double.Parse(properties["y"]);
+            bool horizontal = true;
+            if (properties.ContainsKey("orientation") && properties["orientation"].ToLower() == "vertical")
+                horizontal = false;
+            if (properties.ContainsKey("size"))
+            {
+                double size = double.Parse(properties["size"]);
+                if (horizontal)
+                {
+                    m_endLocation.X = m_startLocation.X + size;
+                    m_endLocation.Y = m_startLocation.Y;
+                }
+                else
+                {
+                    m_endLocation.X = m_startLocation.X;
+                    m_endLocation.Y = m_startLocation.Y + size;
+                }
+            }
+            IsFlipped = false;
+            if (properties.ContainsKey("flipped") && properties["flipped"].ToLower() == "true")
+                IsFlipped = true;
+        }
+
+        public static Dictionary<string, string> LoadProperties(System.IO.TextReader reader)
+        {
+            Dictionary<string, string> returnDict = new Dictionary<string, string>();
+            string line = reader.ReadLine();
+            while (line != null)
+            {
+                string[] parameters = line.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parameters.Length >= 2)
+                    returnDict.Add(parameters[0], parameters[1]);
+                line = reader.ReadLine();
+            }
+            return returnDict;
+        }
+
+        public static void WriteProperty(System.IO.TextWriter writer, string key, string value)
+        {
+            writer.WriteLine("{0}:{1}", key, value);
         }
     }
 }

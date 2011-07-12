@@ -37,36 +37,48 @@ namespace CircuitDiagram.EComponents
     /// <summary>
     /// Interaction logic for ResistorEditor.xaml
     /// </summary>
-    public partial class MeterEditor : ComponentEditor
+    public partial class TransistorEditor : ComponentEditor
     {
-        public MeterEditor()
+        public TransistorEditor()
         {
             InitializeComponent();
         }
 
         public override void LoadComponent(EComponent component)
         {
-            Meter meter = (Meter)component;
-            radAmmeter.IsChecked = false;
-            radVoltmeter.IsChecked = false;
-            switch (meter.Type)
+            Transistor transistor = (Transistor)component;
+            radBipolarNPN.IsChecked = false;
+            radBipolarPNP.IsChecked = false;
+            radMosfetN.IsChecked = false;
+            radMosfetP.IsChecked = false;
+            switch (transistor.Type)
             {
-                case Meter.MeterType.Ammeter:
-                    radAmmeter.IsChecked = true;
+                case Transistor.TransistorType.NPN:
+                    radBipolarNPN.IsChecked = true;
                     break;
-                case Meter.MeterType.Voltmeter:
-                    radVoltmeter.IsChecked = true;
+                case Transistor.TransistorType.PNP:
+                    radBipolarPNP.IsChecked = true;
+                    break;
+                case Transistor.TransistorType.NChannel:
+                    radMosfetN.IsChecked = true;
+                    break;
+                case Transistor.TransistorType.PChannel:
+                    radMosfetP.IsChecked = true;
                     break;
             }
         }
 
         public override void UpdateChanges(EComponent component)
         {
-            Meter meter = (Meter)component;
-            if (radAmmeter.IsChecked == true)
-                meter.Type = Meter.MeterType.Ammeter;
-            else if (radVoltmeter.IsChecked == true)
-                meter.Type = Meter.MeterType.Voltmeter;
+            Transistor transistor = (Transistor)component;
+            if (radBipolarNPN.IsChecked == true)
+                transistor.Type = Transistor.TransistorType.NPN;
+            else if (radBipolarPNP.IsChecked == true)
+                transistor.Type = Transistor.TransistorType.PNP;
+            else if (radMosfetN.IsChecked == true)
+                transistor.Type = Transistor.TransistorType.NChannel;
+            else if (radMosfetP.IsChecked == true)
+                transistor.Type = Transistor.TransistorType.PChannel;
         }
     }
 }

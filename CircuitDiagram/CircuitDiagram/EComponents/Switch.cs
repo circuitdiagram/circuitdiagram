@@ -1,6 +1,6 @@
 ﻿// Switch.cs
 //
-// Circuit Diagram http://circuitdiagram.codeplex.com/
+// Circuit Diagram http://www.circuit-diagram.org/
 //
 // Copyright (C) 2011  Sam Fisher
 //
@@ -45,8 +45,16 @@ namespace CircuitDiagram.EComponents
             }
         }
 
+        public SwitchType Type
+        {
+            get;
+            set;
+        }
+
         public Switch()
         {
+            Type = SwitchType.Push;
+            this.Editor = new SwitchEditor();
         }
 
         protected override void CustomUpdateLayout()
@@ -64,16 +72,71 @@ namespace CircuitDiagram.EComponents
                 dc.DrawEllipse(Colors.White, color, 2d, gapStart, 3d, 3d);
                 dc.DrawLine(color, 2d, gapEnd, EndLocation);
                 dc.DrawEllipse(Colors.White, color, 2d, gapEnd, 3d, 3d);
-                dc.DrawPath(null, color, 2f, "M " + gapStart.ToString() + " m -2,-8 l 28,0 m -14,0 l 0,-6 m -6,0 l 12,0");
+                if (Type == SwitchType.Push)
+                {
+                    dc.DrawPath(null, color, 2f, "M " + gapStart.ToString() + " m -2,-8 l 28,0 m -14,0 l 0,-6 m -6,0 l 12,0");
+                }
+                else if (Type == SwitchType.Toggle)
+                {
+                    dc.DrawLine(color, 2d, Point.Add(gapStart, new Vector(3d, -1d)), Point.Add(gapEnd, new Vector(0, -8d)));
+                }
             }
             if (!Horizontal)
             {
                 Point gapStart = new Point(StartLocation.X, StartLocation.Y + Size.Height / 2 - 12);
+                Point gapEnd = new Point(StartLocation.X, StartLocation.Y+ Size.Height / 2 + 12);
                 dc.DrawPath(null, color, 2f, "M " + StartLocation.ToString() + " L " + gapStart.ToString() + " m 0,24 L" + EndLocation.ToString());
                 dc.DrawEllipse(Colors.White, color, 2d, gapStart, 3d, 3d);
                 dc.DrawEllipse(Colors.White, color, 2d, Point.Add(gapStart, new Vector(0, 24d)), 3d, 3d);
-                dc.DrawPath(null, color, 2f, "M " + gapStart.ToString() + " m -8,-2 l 0,28 m 0,-14 l -6,0 m 0,-6 l 0,12");
+                if (Type == SwitchType.Push)
+                {
+                    dc.DrawPath(null, color, 2f, "M " + gapStart.ToString() + " m -8,-2 l 0,28 m 0,-14 l -6,0 m 0,-6 l 0,12");
+                }
+                else if (Type == SwitchType.Toggle)
+                {
+                    dc.DrawLine(color, 2d, Point.Add(gapStart, new Vector(-1d, 3d)), Point.Add(gapEnd, new Vector(-8d, 0)));
+                }
             }
         }
+
+        public override void LoadData(System.Xml.XmlReader reader)
+        {
+            Type = SwitchType.Push;
+
+            try
+            {
+                string switchType = reader.GetAttribute("t");
+                if (switchType != null)
+                    Type = (SwitchType)int.Parse(switchType);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        public override void SaveData(System.Xml.XmlWriter writer)
+        {
+            writer.WriteAttributeString("t", ((int)Type).ToString());
+        }
+
+        public override void LoadData(System.IO.TextReader reader)
+        {
+            Dictionary<string, string> properties;
+            base.LoadData(reader, out properties);
+            if (properties.ContainsKey("t"))
+                Type = (SwitchType)int.Parse(properties["t"]);
+        }
+
+        public override void SaveData(System.IO.TextWriter writer)
+        {
+            base.SaveData(writer);
+            writer.WriteLine("t:{0}", (int)Type);
+        }
+    }
+
+    public enum SwitchType
+    {
+        Push,
+        Toggle
     }
 }

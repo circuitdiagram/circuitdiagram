@@ -12,14 +12,17 @@ namespace CircuitDiagram
 
         List<UndoAction> m_actions;
 
+        private int LastSavedIndex { get; set; }
         private int CurrentActionIndex { get; set; }
 
+        public event EventHandler ActionOccurred;
         internal UndoActionDelegate ActionDelegate { get { return m_undoActionDelegate; } set { m_undoActionDelegate = value; } }
 
         public UndoManager()
         {
             m_actions = new List<UndoAction>();
             CurrentActionIndex = -1;
+            LastSavedIndex = -1;
         }
 
         public void AddAction(UndoAction action)
@@ -28,6 +31,8 @@ namespace CircuitDiagram
                 m_actions.RemoveRange(CurrentActionIndex + 1, m_actions.Count - (CurrentActionIndex + 1));
             m_actions.Add(action);
             CurrentActionIndex = m_actions.Count - 1;
+            if (ActionOccurred != null)
+                ActionOccurred(this, new EventArgs());
         }
 
         public bool CanStepBackwards()
@@ -44,6 +49,8 @@ namespace CircuitDiagram
                     m_undoActionDelegate(this, new UndoActionEventArgs(m_actions[CurrentActionIndex], UndoActionEvent.Remove));
                 }
                 CurrentActionIndex--;
+                if (ActionOccurred != null)
+                    ActionOccurred(this, new EventArgs());
             }
         }
 
@@ -61,7 +68,19 @@ namespace CircuitDiagram
                 {
                     m_undoActionDelegate(this, new UndoActionEventArgs(m_actions[CurrentActionIndex], UndoActionEvent.Apply));
                 }
+                if (ActionOccurred != null)
+                    ActionOccurred(this, new EventArgs());
             }
+        }
+
+        public void SetSaveIndex()
+        {
+            LastSavedIndex = CurrentActionIndex;
+        }
+
+        public bool IsSavedState()
+        {
+            return (LastSavedIndex == CurrentActionIndex);
         }
     }
 
@@ -129,7 +148,9 @@ namespace CircuitDiagram
     {
         AddComponent,
         MoveComponent,
-        ResizeComponent
+        ResizeComponent,
+        EditComponent,
+        DeleteComponent
     }
 
     enum UndoActionEvent

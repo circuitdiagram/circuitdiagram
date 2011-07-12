@@ -1,6 +1,6 @@
 ﻿// Diode.cs
 //
-// Circuit Diagram http://circuitdiagram.codeplex.com/
+// Circuit Diagram http://www.circuit-diagram.org/
 //
 // Copyright (C) 2011  Sam Fisher
 //
@@ -124,6 +124,21 @@ namespace CircuitDiagram.EComponents
         {
             if (ZenerDiode)
                 writer.WriteAttributeString("zener", "true");
+        }
+
+        public override void SaveData(System.IO.TextWriter writer)
+        {
+            base.SaveData(writer);
+            EComponent.WriteProperty(writer, "zener", ZenerDiode.ToString().ToLower());
+        }
+
+        public override void LoadData(System.IO.TextReader reader)
+        {
+            Dictionary<string, string> properties;
+            base.LoadData(reader, out properties);
+            ZenerDiode = false;
+            if (properties.ContainsKey("zener") && properties["zener"].ToLower() == "true")
+                ZenerDiode = true;
         }
     }
 }

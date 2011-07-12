@@ -15,6 +15,7 @@
                 <RadioButton Content="Variable" Height="16" Name="radTypeVariable" />
                 <RadioButton Content="Potentiometer" Height="16" Name="radTypePotentiometer" />
                 <RadioButton Content="Thermistor" Height="16" Name="radTypeThermistor" />
+                <RadioButton Content="LDR" Height="16" Name="radTypeLDR" />
             </StackPanel>
         </GroupBox>
     </Grid>

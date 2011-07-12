@@ -1,6 +1,6 @@
 ﻿// ExternalConnection.cs
 //
-// Circuit Diagram http://circuitdiagram.codeplex.com/
+// Circuit Diagram http://www.circuit-diagram.org/
 //
 // Copyright (C) 2011  Sam Fisher
 //
@@ -119,6 +119,24 @@ namespace CircuitDiagram.EComponents
         {
             writer.WriteAttributeString("text", ConnectionText);
             writer.WriteAttributeString("topleft", ConnectionTopLeft.ToString());
+        }
+
+        public override void SaveData(System.IO.TextWriter writer)
+        {
+            base.SaveData(writer);
+            EComponent.WriteProperty(writer, "text", ConnectionText);
+            EComponent.WriteProperty(writer, "topleft", ConnectionTopLeft.ToString().ToLower());
+        }
+
+        public override void LoadData(System.IO.TextReader reader)
+        {
+            Dictionary<string, string> properties;
+            base.LoadData(reader, out properties);
+            if (properties.ContainsKey("text"))
+                ConnectionText = properties["text"];
+            ConnectionTopLeft = false;
+            if (properties.ContainsKey("topleft") && properties["topleft"] == "true")
+                ConnectionTopLeft = true;
         }
     }
 }

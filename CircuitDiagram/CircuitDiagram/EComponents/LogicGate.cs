@@ -1,6 +1,6 @@
 ﻿// LogicGate.cs
 //
-// Circuit Diagram http://circuitdiagram.codeplex.com/
+// Circuit Diagram http://www.circuit-diagram.org/
 //
 // Copyright (C) 2011  Sam Fisher
 //
@@ -159,6 +159,20 @@ namespace CircuitDiagram.EComponents
         public override void SaveData(System.Xml.XmlWriter writer)
         {
             writer.WriteAttributeString("logictype", ((int)LogicType).ToString());
+        }
+
+        public override void SaveData(System.IO.TextWriter writer)
+        {
+            base.SaveData(writer);
+            EComponent.WriteProperty(writer, "t", ((int)LogicType).ToString());
+        }
+
+        public override void LoadData(System.IO.TextReader reader)
+        {
+            Dictionary<string, string> properties;
+            base.LoadData(reader, out properties);
+            if (properties.ContainsKey("t"))
+                LogicType = (LogicType)int.Parse(properties["t"]);
         }
     }
 

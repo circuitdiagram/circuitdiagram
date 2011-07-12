@@ -37,36 +37,36 @@ namespace CircuitDiagram.EComponents
     /// <summary>
     /// Interaction logic for ResistorEditor.xaml
     /// </summary>
-    public partial class MeterEditor : ComponentEditor
+    public partial class SwitchEditor : ComponentEditor
     {
-        public MeterEditor()
+        public SwitchEditor()
         {
             InitializeComponent();
         }
 
         public override void LoadComponent(EComponent component)
         {
-            Meter meter = (Meter)component;
-            radAmmeter.IsChecked = false;
-            radVoltmeter.IsChecked = false;
-            switch (meter.Type)
+            Switch cSwitch = (Switch)component;
+            radPush.IsChecked = false;
+            radToggle.IsChecked = false;
+            switch (cSwitch.Type)
             {
-                case Meter.MeterType.Ammeter:
-                    radAmmeter.IsChecked = true;
+                case SwitchType.Push:
+                    radPush.IsChecked = true;
                     break;
-                case Meter.MeterType.Voltmeter:
-                    radVoltmeter.IsChecked = true;
+                case SwitchType.Toggle:
+                    radToggle.IsChecked = true;
                     break;
             }
         }
 
         public override void UpdateChanges(EComponent component)
         {
-            Meter meter = (Meter)component;
-            if (radAmmeter.IsChecked == true)
-                meter.Type = Meter.MeterType.Ammeter;
-            else if (radVoltmeter.IsChecked == true)
-                meter.Type = Meter.MeterType.Voltmeter;
+            Switch cSwitch = (Switch)component;
+            if (radPush.IsChecked == true)
+                cSwitch.Type = SwitchType.Push;
+            else if (radToggle.IsChecked == true)
+                cSwitch.Type = SwitchType.Toggle;
         }
     }
 }

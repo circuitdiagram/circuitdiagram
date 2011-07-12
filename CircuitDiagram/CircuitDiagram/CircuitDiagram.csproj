@@ -38,7 +38,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>0.5.0.0</ApplicationVersion>
+    <ApplicationVersion>0.6.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -108,6 +108,12 @@
     <Compile Include="EComponents\CapacitorEditor.xaml.cs">
       <DependentUpon>CapacitorEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EComponents\SwitchEditor.xaml.cs">
+      <DependentUpon>SwitchEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EComponents\TransistorEditor.xaml.cs">
+      <DependentUpon>TransistorEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EComponents\MeterEditor.xaml.cs">
       <DependentUpon>MeterEditor.xaml</DependentUpon>
     </Compile>
@@ -129,7 +135,7 @@
     <Compile Include="EComponents\MicrocontrollerEditor.xaml.cs">
       <DependentUpon>MicrocontrollerEditor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EComponents\Mosfet.cs" />
+    <Compile Include="EComponents\Transistor.cs" />
     <Compile Include="EComponents\OpAmp.cs" />
     <Compile Include="EComponents\OpAmpEditor.xaml.cs">
       <DependentUpon>OpAmpEditor.xaml</DependentUpon>
@@ -184,6 +190,14 @@
     <Page Include="EComponents\CapacitorEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EComponents\SwitchEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="EComponents\TransistorEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="EComponents\MeterEditor.xaml">
       <Generator>MSBuild:Compile</Generator>

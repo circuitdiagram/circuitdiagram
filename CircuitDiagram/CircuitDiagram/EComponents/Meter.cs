@@ -1,6 +1,6 @@
 ﻿// Meter.cs
 //
-// Circuit Diagram http://circuitdiagram.codeplex.com/
+// Circuit Diagram http://www.circuit-diagram.org/
 //
 // Copyright (C) 2011  Sam Fisher
 //
@@ -104,7 +104,7 @@ namespace CircuitDiagram.EComponents
         {
             try
             {
-                reader.MoveToAttribute("metertype");
+                reader.MoveToAttribute("t");
                 Type = (MeterType)reader.ReadContentAsInt();
             }
             catch (Exception)
@@ -114,7 +114,21 @@ namespace CircuitDiagram.EComponents
 
         public override void SaveData(System.Xml.XmlWriter writer)
         {
-            writer.WriteAttributeString("metertype", ((int)Type).ToString());
+            writer.WriteAttributeString("t", ((int)Type).ToString());
+        }
+
+        public override void LoadData(System.IO.TextReader reader)
+        {
+            Dictionary<string, string> properties;
+            base.LoadData(reader, out properties);
+            if (properties.ContainsKey("t"))
+                Type = (MeterType)int.Parse(properties["t"]);
+        }
+
+        public override void SaveData(System.IO.TextWriter writer)
+        {
+            base.SaveData(writer);
+            EComponent.WriteProperty(writer, "t", ((int)Type).ToString());
         }
 
         public enum MeterType

@@ -1,6 +1,6 @@
 ﻿// ResistorEditor.cs
 //
-// Circuit Diagram http://circuitdiagram.codeplex.com/
+// Circuit Diagram http://www.circuit-diagram.org/
 //
 // Copyright (C) 2011  Sam Fisher
 //
@@ -52,6 +52,7 @@ namespace CircuitDiagram.EComponents
             radTypeVariable.IsChecked = false;
             radTypePotentiometer.IsChecked = false;
             radTypeThermistor.IsChecked = false;
+            radTypeLDR.IsChecked = false;
             switch (((Resistor)component).ResistorType)
             {
                 case ResistorType.Standard:
@@ -64,7 +65,10 @@ namespace CircuitDiagram.EComponents
                     radTypePotentiometer.IsChecked = true;
                     break;
                 case ResistorType.Thermistor:
-                    radTypeThermistor.IsChecked = false;
+                    radTypeThermistor.IsChecked = true;
+                    break;
+                case ResistorType.LDR:
+                    radTypeLDR.IsChecked = true;
                     break;
             }
         }
@@ -90,6 +94,8 @@ namespace CircuitDiagram.EComponents
                     resistor.ResistorType = ResistorType.Potentiometer;
                 else if (radTypeThermistor.IsChecked == true)
                     resistor.ResistorType = ResistorType.Thermistor;
+                else if (radTypeLDR.IsChecked == true)
+                    resistor.ResistorType = ResistorType.LDR;
             }
         }
     }
