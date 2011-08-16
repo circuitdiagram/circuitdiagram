@@ -27,7 +27,7 @@ using System.Windows.Media;
 
 namespace CircuitDiagram.EComponents
 {
-    class Microcontroller : EComponent
+    public class Microcontroller : EComponent
     {
         public bool DisplayPIC { get; set; }
         public int Inputs { get; set; }
@@ -53,7 +53,7 @@ namespace CircuitDiagram.EComponents
 
         public Microcontroller()
         {
-            this.Editor = new MicrocontrollerEditor();
+            this.Editor = new MicrocontrollerEditor(this);
             CanResize = false;
             Inputs = 4;
             Outputs = 4;

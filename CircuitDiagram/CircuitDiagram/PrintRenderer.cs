@@ -109,11 +109,13 @@ namespace CircuitDiagram
         {
         }
 
-        public void DrawPath(Color? filColor, Color strokColor, double thickness, string path)
+        public void DrawPath(Color? filColor, Color strokeColor, double thickness, string path, double translateOffsetX = 0.0, double translateOffsetY = 0.0)
         {
             Path pathElement = new Path();
             pathElement.Data = Geometry.Parse(path);
-            pathElement.Stroke = new SolidColorBrush(strokColor);
+            pathElement.Stroke = new SolidColorBrush(strokeColor);
+            if (translateOffsetX != 0.0 || translateOffsetY != 0.0)
+                pathElement.RenderTransform = new TranslateTransform(translateOffsetX, translateOffsetY);
             if (filColor.HasValue)
                 pathElement.Fill = new SolidColorBrush(filColor.Value);
             pathElement.StrokeThickness = thickness;

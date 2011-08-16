@@ -1,0 +1,190 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:tb="clr-namespace:Toolbox;assembly=Toolbox" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d">
+    <Style x:Key="StatusBarStyle" TargetType="{x:Type StatusBar}">
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush StartPoint="0.517109,0.000500778" EndPoint="0.517109,0.998927">
+                	<GradientStop Color="#FF909090" Offset="0"/>
+                	<GradientStop Color="#FF525252" Offset="1"/>
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="MenuStyle" TargetType="{x:Type Menu}">
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush StartPoint="0.517108,0.000498212" EndPoint="0.517108,0.998927">
+                	<GradientStop Color="#FF909090" Offset="0"/>
+                	<GradientStop Color="#FF525252" Offset="1"/>
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <SolidColorBrush x:Key="WindowBackground" Color="#FFA5A5A5"/>
+    <BorderGapMaskConverter x:Key="BorderGapMaskConverter"/>
+    <Style x:Key="{x:Type GroupBox}"
+       TargetType="{x:Type GroupBox}">
+        <Setter Property="BorderBrush"
+          Value="Gray"/>
+        <Setter Property="BorderThickness"
+          Value="1"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type GroupBox}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="4"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="4"/>
+                        </Grid.RowDefinitions>
+                        <Border CornerRadius="4"
+                  Grid.Row="1"
+                  Grid.RowSpan="3"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="4"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  BorderBrush="Transparent"
+                  Background="{TemplateBinding Background}"/>
+                        <!-- ContentPresenter for the header -->
+                        <Border x:Name="Header"
+                  Padding="6,0,6,0"
+                  Grid.Row="0"
+                  Grid.RowSpan="2"
+                  Grid.Column="1">
+                            <ContentPresenter ContentSource="Header" 
+                              RecognizesAccessKey="True" />
+                        </Border>
+                        <!-- Primary content for GroupBox -->
+                        <ContentPresenter Grid.Row="2"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="2"
+                            Margin="{TemplateBinding Padding}"/>
+                        <Border CornerRadius="2"
+                  Grid.Row="1"
+                  Grid.RowSpan="3"
+                  Grid.ColumnSpan="4"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  BorderBrush="{TemplateBinding BorderBrush}">
+                            <Border.OpacityMask>
+                                <MultiBinding Converter=
+                            "{StaticResource BorderGapMaskConverter}"
+                            ConverterParameter="6">
+                                    <Binding ElementName="Header"
+                         Path="ActualWidth"/>
+                                    <Binding RelativeSource="{RelativeSource Self}"
+                         Path="ActualWidth"/>
+                                    <Binding RelativeSource="{RelativeSource Self}"
+                         Path="ActualHeight"/>
+                                </MultiBinding>
+                            </Border.OpacityMask>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type tb:ToolboxCategory}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type tb:ToolboxCategory}">
+                    <Grid Width="45" Height="45">
+                        <Border Name="MainBorder" Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter Content="{TemplateBinding MainItem}" />
+                        </Border>
+                        <Canvas Name="ExpanderCanvas" Visibility="Collapsed">
+                            <Path Width="5.57359" Height="8.70267" Canvas.Right="6" Canvas.Bottom="4" Stretch="Fill" Fill="#FF5E5E5E" Data="F1 M 44.1443,39.0107L 38.5707,34.6594L 38.5707,43.362L 44.1443,39.0107 Z "/>
+                        </Canvas>
+                        <Popup Name="Popup" Placement="Right" IsOpen="{TemplateBinding IsExpanded}" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade" VerticalOffset="-3">
+                            <Border Name="SubmenuBorder" SnapsToDevicePixels="True" BorderThickness="0" Background="#FF4E4E4E" Padding="0,4,4,4" CornerRadius="3">
+                                <StackPanel Orientation="Horizontal" IsItemsHost="True" />
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsExpanderVisible" Value="True">
+                            <Setter TargetName="ExpanderCanvas" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="Gray" />
+                            <Setter TargetName="MainBorder" Property="CornerRadius" Value="3" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Margin" Value="5,5,5,0" />
+    </Style>
+
+    <Style TargetType="{x:Type tb:ToolboxItem}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type tb:ToolboxItem}">
+                    <Grid Width="45" Height="45">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3">
+                            <ContentPresenter />
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Width" Value="45" />
+        <Setter Property="Height" Value="45" />
+        <Setter Property="Background" Value="#FF4E4E4E" />
+        <Setter Property="Margin" Value="3,0,0,0" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="Gray" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="ToolboxScrollViewer" TargetType="{x:Type ScrollViewer}">
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <ScrollContentPresenter Grid.Column="1"/>
+
+                        <ScrollBar Name="PART_VerticalScrollBar"
+            Value="{TemplateBinding VerticalOffset}"
+            Maximum="{TemplateBinding ScrollableHeight}"
+            ViewportSize="{TemplateBinding ViewportHeight}"
+            Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+                        <ScrollBar Name="PART_HorizontalScrollBar"
+            Orientation="Horizontal"
+            Grid.Row="1"
+            Grid.Column="1"
+            Value="{TemplateBinding HorizontalOffset}"
+            Maximum="{TemplateBinding ScrollableWidth}"
+            ViewportSize="{TemplateBinding ViewportWidth}"
+            Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

@@ -4,15 +4,20 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:my="clr-namespace:CircuitDiagram"
+             xmlns:myc="clr-namespace:CircuitDiagram.EComponents"
+             x:TypeArguments="myc:Transistor"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <GroupBox Header="Transistor type" Margin="12" Name="groupBox1">
-            <StackPanel Name="stackPanel1">
-                <RadioButton Content="Bipolar NPN" Height="16" Name="radBipolarNPN" />
-                <RadioButton Content="Bipolar PNP" Height="16" Name="radBipolarPNP" />
-                <RadioButton Content="MOSFET N-Channel" Height="16" Name="radMosfetN" />
-                <RadioButton Content="MOSFET P-Channel" Height="16" Name="radMosfetP" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <GroupBox Grid.Row="0" Header="Transistor type">
+            <StackPanel>
+                <RadioButton Content="Bipolar NPN" Height="16" Name="radBipolarNPN" Checked="RadioChecked" />
+                <RadioButton Content="Bipolar PNP" Height="16" Name="radBipolarPNP" Checked="RadioChecked" />
+                <RadioButton Content="MOSFET N-Channel" Height="16" Name="radMosfetN" Checked="RadioChecked" />
+                <RadioButton Content="MOSFET P-Channel" Height="16" Name="radMosfetP" Checked="RadioChecked" />
             </StackPanel>
         </GroupBox>
     </Grid>

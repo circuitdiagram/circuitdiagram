@@ -4,14 +4,26 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:my="clr-namespace:CircuitDiagram"
+             xmlns:myc="clr-namespace:CircuitDiagram.EComponents"
+             x:TypeArguments="myc:Microcontroller"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <Label Content="Number of inputs" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" />
-        <Label Content="Number of outputs" Height="28" HorizontalAlignment="Left" Margin="12,46,0,0" Name="label2" VerticalAlignment="Top" />
-        <TextBox Height="23" Margin="149,14,12,0" Name="tbxNumInputs" VerticalAlignment="Top" PreviewTextInput="OnPreviewTextInput" />
-        <TextBox Height="23" Margin="149,48,12,0" Name="tbxNumOutputs" VerticalAlignment="Top" PreviewTextInput="OnPreviewTextInput" />
-        <CheckBox Content="ADC Input" Height="16" HorizontalAlignment="Left" Margin="149,77,0,0" Name="chbADCInput" VerticalAlignment="Top" />
-        <CheckBox Content="Display 'PIC'" Height="16" HorizontalAlignment="Left" Margin="149,99,0,0" Name="chbDisplayPIC" VerticalAlignment="Top" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Grid.Column="0" Content="Inputs" HorizontalAlignment="Left" />
+        <Label Grid.Row="1" Grid.Column="0" Content="Outputs" HorizontalAlignment="Left" />
+        <TextBox Grid.Row="0" Grid.Column="1" Name="tbxNumInputs" Margin="5" PreviewTextInput="OnPreviewTextInput" TextChanged="TextChanged" />
+        <TextBox Grid.Row="1" Grid.Column="1" Name="tbxNumOutputs" Margin="5" PreviewTextInput="OnPreviewTextInput" TextChanged="TextChanged" />
+        <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="ADC Input" Margin="5" Name="chbADCInput" Checked="CheckboxChecked" Unchecked="CheckboxChecked" />
+        <CheckBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Content="Display 'PIC'" Margin="5" Name="chbDisplayPIC" Checked="CheckboxChecked" Unchecked="CheckboxChecked" />
     </Grid>
 </my:ComponentEditor>

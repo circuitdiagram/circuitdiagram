@@ -34,31 +34,44 @@ using System.Windows.Shapes;
 
 namespace CircuitDiagram.EComponents
 {
+    using T = ExternalConnection;
+
     /// <summary>
     /// Interaction logic for ExternalConnectionEditor.xaml
     /// </summary>
-    public partial class ExternalConnectionEditor : ComponentEditor
+    partial class ExternalConnectionEditor : ComponentEditor<T>
     {
-        public ExternalConnectionEditor()
+        public ExternalConnectionEditor(T component)
+            : base(component)
         {
             InitializeComponent();
         }
 
-        public override void LoadComponent(EComponent component)
+        public override void LoadComponent()
         {
-            if (component.Horizontal)
+            IsLoadingComponent = true;
+            if (Component.Horizontal)
                 chbTopOrLeft.Content = "Left";
             else
                 chbTopOrLeft.Content = "Top";
 
-             tbxConnectionText.Text = ((ExternalConnection)component).ConnectionText;
-             chbTopOrLeft.IsChecked = ((ExternalConnection)component).ConnectionTopLeft;
+            tbxConnectionText.Text = ((ExternalConnection)Component).ConnectionText;
+            chbTopOrLeft.IsChecked = ((ExternalConnection)Component).ConnectionTopLeft;
+            IsLoadingComponent = false;
         }
 
-        public override void UpdateChanges(EComponent component)
+        private void tbxConnectionText_TextChanged(object sender, TextChangedEventArgs e)
         {
-            ((ExternalConnection)component).ConnectionText = tbxConnectionText.Text;
-            ((ExternalConnection)component).ConnectionTopLeft = chbTopOrLeft.IsChecked.Value;
+            string previousData = GetComponentData();
+            Component.ConnectionText = tbxConnectionText.Text;
+            base.CallComponentUpdated(previousData);
+        }
+
+        private void chbTopOrLeftChecked(object sender, EventArgs e)
+        {
+            string previousData = GetComponentData();
+            Component.ConnectionTopLeft = chbTopOrLeft.IsChecked.Value;
+            base.CallComponentUpdated(previousData);
         }
     }
 }

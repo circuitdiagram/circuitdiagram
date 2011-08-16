@@ -57,10 +57,14 @@ namespace CircuitDiagram
             DrawingContext.DrawText(text, origin);
         }
 
-        public void DrawPath(Color? fillColor, Color strokeColor, double thickness, string path)
+        public void DrawPath(Color? fillColor, Color strokeColor, double thickness, string path, double translateOffsetX = 0.0, double translateOffsetY = 0.0)
         {
             Geometry geometry = Geometry.Parse(path);
+            if (translateOffsetX != 0.0 || translateOffsetY != 0.0)
+                DrawingContext.PushTransform(new TranslateTransform(translateOffsetX, translateOffsetY));
             DrawingContext.DrawGeometry((fillColor.HasValue ? new SolidColorBrush(fillColor.Value) : null), new Pen(new SolidColorBrush(strokeColor), thickness), geometry);
+            if (translateOffsetX != 0.0 || translateOffsetY != 0.0)
+                DrawingContext.Pop();
         }
     }
 }

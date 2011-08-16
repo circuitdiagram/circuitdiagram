@@ -34,24 +34,31 @@ using System.Windows.Shapes;
 
 namespace CircuitDiagram.EComponents
 {
+    using T = OpAmp;
+
     /// <summary>
     /// Interaction logic for OpAmpEditor.xaml
     /// </summary>
-    public partial class OpAmpEditor : ComponentEditor
+    public partial class OpAmpEditor : ComponentEditor<T>
     {
-        public OpAmpEditor()
+        public OpAmpEditor(T component)
+            :base(component)
         {
             InitializeComponent();
         }
 
-        public override void LoadComponent(EComponent component)
+        public override void LoadComponent()
         {
-            chbFlipPN.IsChecked = ((OpAmp)component).FlipInputs;
+            IsLoadingComponent = true;
+            chbFlipPN.IsChecked = ((OpAmp)Component).FlipInputs;
+            IsLoadingComponent = false;
         }
 
-        public override void UpdateChanges(EComponent component)
+        private void FlipInputTerminals_Checked(object sender, EventArgs e)
         {
-            ((OpAmp)component).FlipInputs = chbFlipPN.IsChecked.Value;
+            string previousData = GetComponentData();
+            Component.FlipInputs = chbFlipPN.IsChecked.Value;
+            base.CallComponentUpdated(previousData);
         }
     }
 }

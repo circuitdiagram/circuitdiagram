@@ -4,18 +4,24 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:my="clr-namespace:CircuitDiagram"
+             xmlns:myc="clr-namespace:CircuitDiagram.EComponents"
+             x:TypeArguments="myc:LogicGate"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <GroupBox Header="Gate Type" Margin="12" Name="groupBox1">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <GroupBox Header="Gate Type">
             <StackPanel Name="stackPanel1">
-                <RadioButton Content="AND" Height="16" Name="radLogicAND" />
-                <RadioButton Content="NAND" Height="16" Name="radLogicNAND" />
-                <RadioButton Content="OR" Height="16" Name="radLogicOR" />
-                <RadioButton Content="NOR" Height="16" Name="radLogicNOR" />
-                <RadioButton Content="XOR" Height="16" Name="radLogicXOR" />
-                <RadioButton Content="NOT" Height="16" Name="radLogicNOT" />
-                <RadioButton Content="Schmitt Trigger NOT" Height="16" Name="radLogicSchmitt" />
+                <RadioButton Content="AND" Height="16" Name="radLogicAND" Checked="RadioChecked" />
+                <RadioButton Content="NAND" Height="16" Name="radLogicNAND" Checked="RadioChecked" />
+                <RadioButton Content="OR" Height="16" Name="radLogicOR" Checked="RadioChecked" />
+                <RadioButton Content="NOR" Height="16" Name="radLogicNOR" Checked="RadioChecked" />
+                <RadioButton Content="XOR" Height="16" Name="radLogicXOR" Checked="RadioChecked" />
+                <RadioButton Content="NOT" Height="16" Name="radLogicNOT" Checked="RadioChecked" />
+                <RadioButton Content="Schmitt Trigger NOT" Height="16" Name="radLogicSchmitt" Checked="RadioChecked" />
             </StackPanel>
         </GroupBox>
     </Grid>

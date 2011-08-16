@@ -50,7 +50,7 @@ namespace CircuitDiagram.EComponents
         public OpAmp()
         {
             FlipInputs = false;
-            this.Editor = new OpAmpEditor();
+            this.Editor = new OpAmpEditor(this);
         }
 
         protected override void CustomUpdateLayout()

@@ -32,13 +32,13 @@
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>http://circuitdiagram.codeplex.com/releases/clickonce/</InstallUrl>
     <UpdateUrl>http://circuitdiagram.codeplex.com/releases/clickonce/</UpdateUrl>
-    <SupportUrl>http://circuitdiagram.codeplex.com/documentation</SupportUrl>
+    <SupportUrl>http://www.circuit-diagram.org/help</SupportUrl>
     <ProductName>Circuit Diagram</ProductName>
     <PublisherName>Circuit Diagram</PublisherName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>0.6.0.0</ApplicationVersion>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -79,6 +79,7 @@
   <PropertyGroup>
     <SignManifests>true</SignManifests>
   </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -89,6 +90,9 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Toolbox">
+      <HintPath>..\..\Toolbox\Toolbox\bin\Debug\Toolbox.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -99,6 +103,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CDDXIO.cs" />
     <Compile Include="CircuitDocument.cs" />
     <Compile Include="CustomCommands.cs" />
     <Compile Include="EComponents\BasicComponentEditor.xaml.cs">
@@ -108,6 +113,14 @@
     <Compile Include="EComponents\CapacitorEditor.xaml.cs">
       <DependentUpon>CapacitorEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EComponents\ComponentEditorBase.cs" />
+    <Compile Include="EComponents\Crystal.cs" />
+    <Compile Include="EComponents\Microphone.cs" />
+    <Compile Include="EComponents\OutputDeviceEditor.xaml.cs">
+      <DependentUpon>OutputDeviceEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EComponents\Inductor.cs" />
+    <Compile Include="EComponents\OutputDevice.cs" />
     <Compile Include="EComponents\SwitchEditor.xaml.cs">
       <DependentUpon>SwitchEditor.xaml</DependentUpon>
     </Compile>
@@ -126,7 +139,6 @@
       <DependentUpon>ExternalConnectionEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="EComponents\Lamp.cs" />
-    <Compile Include="EComponents\LED.cs" />
     <Compile Include="EComponents\LogicGateEditor.xaml.cs">
       <DependentUpon>LogicGateEditor.xaml</DependentUpon>
     </Compile>
@@ -147,9 +159,6 @@
     <Compile Include="EComponents\Switch.cs" />
     <Compile Include="EComponents\RailEditor.xaml.cs">
       <DependentUpon>RailEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EComponents\EditComponentWindow.xaml.cs">
-      <DependentUpon>EditComponentWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="EComponents\ComponentEditor.cs" />
     <Compile Include="EComponents\Rail.cs" />
@@ -175,11 +184,21 @@
     <Compile Include="winExportPNG.xaml.cs">
       <DependentUpon>winExportPNG.xaml</DependentUpon>
     </Compile>
+    <Compile Include="winNewVersion.xaml.cs">
+      <DependentUpon>winNewVersion.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="winOptions.xaml.cs">
+      <DependentUpon>winOptions.xaml</DependentUpon>
+    </Compile>
     <Page Include="AboutImage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="CircuitDisplay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DefaultDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -190,6 +209,10 @@
     <Page Include="EComponents\CapacitorEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EComponents\OutputDeviceEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="EComponents\SwitchEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -227,10 +250,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="EComponents\EditComponentWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="EComponents\ResistorEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -256,11 +275,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ToolboxDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="winAbout.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="winExportPNG.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="winNewVersion.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="winOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -280,7 +311,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
@@ -319,6 +350,74 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Logo32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Capacitor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\PushSwitch.png" />
+    <Resource Include="Images\Resistor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\ANDGate.png" />
+    <Resource Include="Images\ToggleSwitch.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\NOTGate.png" />
+    <Resource Include="Images\NPNTransistor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\OpAmp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\ZenerDiode.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Lamp.png" />
+    <Resource Include="Images\PNPTransistor.png" />
+    <Resource Include="Images\Supply.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\PolarisedCapacitor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\ammeter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\voltmeter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\TrimmerCapacitor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\VariableCapacitor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Thermistor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\VariableResistor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\LDR.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Potentiometer.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Wire.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Switch.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\NANDGate.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Microcontroller.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fileIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

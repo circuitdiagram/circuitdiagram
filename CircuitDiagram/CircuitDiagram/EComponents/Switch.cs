@@ -54,7 +54,7 @@ namespace CircuitDiagram.EComponents
         public Switch()
         {
             Type = SwitchType.Push;
-            this.Editor = new SwitchEditor();
+            this.Editor = new SwitchEditor(this);
         }
 
         protected override void CustomUpdateLayout()

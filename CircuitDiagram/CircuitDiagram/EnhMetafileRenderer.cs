@@ -74,7 +74,7 @@ namespace CircuitDiagram
         {
         }
 
-        public void DrawPath(System.Windows.Media.Color? fillColor, System.Windows.Media.Color strokeColor, double thickness, string path)
+        public void DrawPath(System.Windows.Media.Color? fillColor, System.Windows.Media.Color strokeColor, double thickness, string path, double translateOffsetX = 0.0, double translateOffsetY = 0.0)
         {
             Regex regex = new Regex("[a-zA-Z]+[ \\-0-9,]+");
             MatchCollection collection = regex.Matches(path);

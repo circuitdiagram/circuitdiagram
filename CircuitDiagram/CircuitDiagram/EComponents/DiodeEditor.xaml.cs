@@ -34,29 +34,62 @@ using System.Windows.Shapes;
 
 namespace CircuitDiagram.EComponents
 {
+    using T = Diode;
+
     /// <summary>
     /// Interaction logic for DiodeEditor.xaml
     /// </summary>
-    public partial class DiodeEditor : ComponentEditor
+    public partial class DiodeEditor : ComponentEditor<T>
     {
-        public DiodeEditor()
+        public DiodeEditor(T component)
+            : base(component)
         {
             InitializeComponent();
         }
 
-        public override void LoadComponent(EComponent component)
+        public override void LoadComponent()
         {
-            chbZenerDiode.IsChecked = false;
-            if (((Diode)component).ZenerDiode)
-                chbZenerDiode.IsChecked = true;
+            IsLoadingComponent = true;
+            radTypeStandard.IsChecked = false;
+            radTypeZener.IsChecked = false;
+            radTypeLED.IsChecked = false;
+            radTypePhoto.IsChecked = false;
+            radTypeBridge.IsChecked = false;
+            switch (Component.Type)
+            {
+                case DiodeType.Standard:
+                    radTypeStandard.IsChecked = true;
+                    break;
+                case DiodeType.Zener:
+                    radTypeZener.IsChecked = true;
+                    break;
+                case DiodeType.LED:
+                    radTypeLED.IsChecked = true;
+                    break;
+                case DiodeType.Photo:
+                    radTypePhoto.IsChecked = true;
+                    break;
+                case DiodeType.Bridge:
+                    radTypeBridge.IsChecked = true;
+                    break;
+            }
+            IsLoadingComponent = false;
         }
 
-        public override void UpdateChanges(EComponent component)
+        private void RadioChecked(object sender, EventArgs e)
         {
-            if (chbZenerDiode.IsChecked == true)
-                ((Diode)component).ZenerDiode = true;
-            else
-                ((Diode)component).ZenerDiode = false;
+            string previousData = GetComponentData();
+            if (radTypeStandard.IsChecked == true)
+                Component.Type = DiodeType.Standard;
+            else if (radTypeZener.IsChecked == true)
+                Component.Type = DiodeType.Zener;
+            else if (radTypeLED.IsChecked == true)
+                Component.Type = DiodeType.LED;
+            else if (radTypePhoto.IsChecked == true)
+                Component.Type = DiodeType.Photo;
+            else if (radTypeBridge.IsChecked == true)
+                Component.Type = DiodeType.Bridge;
+            base.CallComponentUpdated(previousData);
         }
     }
 }

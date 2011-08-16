@@ -23,24 +23,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Controls;
+using System.IO;
 
 namespace CircuitDiagram
 {
-    public class ComponentEditor : UserControl
+    public class ComponentEditor<T> : ComponentEditorBase where T : EComponent
     {
-        public string Title { get; set; }
+        protected T Component { get; private set; }
+
+        public string GetComponentData()
+        {
+            StringWriter writer = new StringWriter();
+            Component.SaveData(writer);
+            return writer.ToString();
+        }
 
         public ComponentEditor()
         {
-            
+            // For design purposes only
         }
 
-        public virtual void LoadComponent(EComponent component)
+        protected void CallComponentUpdated(string previousData)
         {
+            if (this.IsLoaded && !IsLoadingComponent)
+                CallComponentUpdated(Component, previousData);
         }
 
-        public virtual void UpdateChanges(EComponent component)
+        protected override sealed void CallComponentUpdated(EComponent component, string previousData)
         {
+            Component.UpdateLayout(base.Document);
+            base.CallComponentUpdated(component, previousData);
+        }
+
+        public ComponentEditor(T component)
+        {
+            this.Padding = new System.Windows.Thickness(10);
+            Component = component;
         }
     }
 }

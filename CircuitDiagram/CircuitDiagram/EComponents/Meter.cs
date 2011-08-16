@@ -27,7 +27,7 @@ using System.Windows.Media;
 
 namespace CircuitDiagram.EComponents
 {
-    class Meter : EComponent
+    public class Meter : EComponent
     {
         public Size Size
         {
@@ -50,7 +50,7 @@ namespace CircuitDiagram.EComponents
         public Meter()
         {
             Type = MeterType.Voltmeter;
-            this.Editor = new MeterEditor();
+            this.Editor = new MeterEditor(this);
         }
 
         protected override void CustomUpdateLayout()

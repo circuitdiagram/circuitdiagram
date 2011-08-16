@@ -49,7 +49,7 @@ namespace CircuitDiagram.EComponents
         public Transistor()
         {
             Type = TransistorType.NPN;
-            this.Editor = new TransistorEditor();
+            this.Editor = new TransistorEditor(this);
         }
 
         protected override void CustomUpdateLayout()

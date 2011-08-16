@@ -34,31 +34,67 @@ using System.Windows.Shapes;
 
 namespace CircuitDiagram.EComponents
 {
+    using T = Capacitor;
+
     /// <summary>
     /// Interaction logic for CapacitorEditor.xaml
     /// </summary>
-    public partial class CapacitorEditor : ComponentEditor
+    public partial class CapacitorEditor : ComponentEditor<T>
     {
-        public CapacitorEditor()
+        public CapacitorEditor(T component)
+            :base(component)
         {
             InitializeComponent();
         }
 
-        public override void LoadComponent(EComponent component)
+        public override void LoadComponent()
         {
-            tbxCapacitance.Text = ((Capacitor)component).Capacitance.ToString();
+            IsLoadingComponent = true;
+            tbxCapacitance.Text = Component.Capacitance.ToString();
+
+            radTypeStandard.IsChecked = false;
+            radTypeVariable.IsChecked = false;
+            radTypeTrimmer.IsChecked = false;
+            radTypePolarised.IsChecked = false;
+            switch (Component.Type)
+            {
+                case CapacitorType.Standard:
+                    radTypeStandard.IsChecked = true;
+                    break;
+                case CapacitorType.Variable:
+                    radTypeVariable.IsChecked = true;
+                    break;
+                case CapacitorType.Trimmer:
+                    radTypeTrimmer.IsChecked = true;
+                    break;
+                case CapacitorType.Polarised:
+                    radTypePolarised.IsChecked = true;
+                    break;
+            }
+            IsLoadingComponent = false;
         }
 
-        public override void UpdateChanges(EComponent component)
+        private void tbxCapacitance_TextChanged(object sender, TextChangedEventArgs e)
         {
-            try
-            {
-                ((Capacitor)component).Capacitance = double.Parse(tbxCapacitance.Text);
-            }
-            catch (Exception)
-            {
-                // incorrect input format
-            }
+            string previousData = GetComponentData();
+            double convertedValue;
+            double.TryParse(tbxCapacitance.Text, out convertedValue);
+            Component.Capacitance = convertedValue;
+            CallComponentUpdated(previousData);
+        }
+
+        private void RadioChecked(object sender, EventArgs e)
+        {
+            string previousData = GetComponentData();
+            if (radTypeStandard.IsChecked == true)
+                Component.Type = CapacitorType.Standard;
+            else if (radTypeVariable.IsChecked == true)
+                Component.Type = CapacitorType.Variable;
+            else if (radTypeTrimmer.IsChecked == true)
+                Component.Type = CapacitorType.Trimmer;
+            else if (radTypePolarised.IsChecked == true)
+                Component.Type = CapacitorType.Polarised;
+            CallComponentUpdated(previousData);
         }
     }
 }

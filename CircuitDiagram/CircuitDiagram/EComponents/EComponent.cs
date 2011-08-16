@@ -30,12 +30,23 @@ namespace CircuitDiagram
 {
     public abstract class EComponent
     {
+        public static EComponent Create(string creationData)
+        {
+            creationData = creationData.Replace(",", "\r\n");
+            EComponent newComponent;
+            System.IO.StringReader reader = new System.IO.StringReader(creationData);
+            Dictionary<string, string> properties = LoadProperties(reader);
+            newComponent = (EComponent)Activator.CreateInstance(Type.GetType("CircuitDiagram.EComponents." + properties["type"], true, true));
+            reader.Dispose();
+            reader = new System.IO.StringReader(creationData);
+            newComponent.LoadData(reader);
+            return newComponent;
+        }
+
         #region Properties
         public bool CanResize { get; protected set; }
         public bool CanFlip { get; protected set; }
         public bool IsFlipped { get; set; }
-
-        private static EditComponentWindow EditWindow { get; set; }
 
         private Point m_startLocation;
         private Point m_endLocation;
@@ -85,53 +96,22 @@ namespace CircuitDiagram
             }
         }
 
-        protected ComponentEditor Editor { get; set; }
+        public ComponentEditorBase Editor { get; set; }
 
         public bool Horizontal { get { return StartLocation.Y == EndLocation.Y; } }
         #endregion
 
         public EComponent()
         {
-            StaticInitialize();
             IsFlipped = false;
             CanFlip = false;
             CanResize = true;
             Initialize();
         }
 
-        private static void StaticInitialize()
-        {
-            if (EditWindow == null)
-            {
-                EditWindow = new EditComponentWindow();
-                EditWindow.Closing += new System.ComponentModel.CancelEventHandler(EditWindow_Closing);
-            }
-        }
-
-        public static Window EditWindowParent { get { return EditWindow.Owner; } set { EditWindow.Owner = value; } }
-
-        static void EditWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            e.Cancel = true;
-            EditWindow.Hide();
-        }
-
         public virtual void Initialize()
         {
-            Editor = new BasicComponentEditor();
-            Editor.Title = this.GetType().Name.ToString() + " Properties";
-        }
-
-        public void ShowEditor()
-        {
-            Editor.Title = this.GetType().Name;
-            Editor.LoadComponent(this);
-            EditWindow.SetEditor(Editor);
-            EditWindow.ShowDialog();
-            if (EditWindow.CustomResult == true)
-            {
-                Editor.UpdateChanges(this);
-            }
+            Editor = new BasicComponentEditor(this);
         }
 
         private static double Biggest(double one, double two)

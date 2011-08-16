@@ -91,13 +91,15 @@ namespace SVGLibrary
             m_writer.WriteEndElement();
         }
 
-        public void DrawPath(Color fillColor, Color strokeColor, double strokeThickness, string data)
+        public void DrawPath(Color fillColor, Color strokeColor, double strokeThickness, string data, double translateOffsetX = 0.0, double translateOffsetY = 0.0)
         {
             string fillOpacity = ((float)fillColor.A / 255f).ToString();
 
             m_writer.WriteStartElement("path");
             m_writer.WriteAttributeString("d", data);
             m_writer.WriteAttributeString("style", "fill-opacity:" + fillOpacity + ";fill:rgb(0,0,0);stroke:rgb(0,0,0);stroke-width:" + strokeThickness.ToString());
+            if (translateOffsetX != 0.0 || translateOffsetY != 0.0)
+                m_writer.WriteAttributeString("transform", String.Format("translate({0} {1})", translateOffsetX, translateOffsetY));
             m_writer.WriteEndElement();
         }
 

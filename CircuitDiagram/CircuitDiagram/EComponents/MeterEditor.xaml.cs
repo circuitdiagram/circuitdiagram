@@ -34,22 +34,25 @@ using System.Windows.Shapes;
 
 namespace CircuitDiagram.EComponents
 {
+    using T = Meter;
+
     /// <summary>
     /// Interaction logic for ResistorEditor.xaml
     /// </summary>
-    public partial class MeterEditor : ComponentEditor
+    partial class MeterEditor : ComponentEditor<T>
     {
-        public MeterEditor()
+        public MeterEditor(T component)
+            :base(component)
         {
             InitializeComponent();
         }
 
-        public override void LoadComponent(EComponent component)
+        public override void LoadComponent()
         {
-            Meter meter = (Meter)component;
+            IsLoadingComponent = true;
             radAmmeter.IsChecked = false;
             radVoltmeter.IsChecked = false;
-            switch (meter.Type)
+            switch (Component.Type)
             {
                 case Meter.MeterType.Ammeter:
                     radAmmeter.IsChecked = true;
@@ -58,15 +61,17 @@ namespace CircuitDiagram.EComponents
                     radVoltmeter.IsChecked = true;
                     break;
             }
+            IsLoadingComponent = false;
         }
 
-        public override void UpdateChanges(EComponent component)
+        private void RadioChecked(object sender, RoutedEventArgs e)
         {
-            Meter meter = (Meter)component;
+            string previousData = GetComponentData();
             if (radAmmeter.IsChecked == true)
-                meter.Type = Meter.MeterType.Ammeter;
+                Component.Type = Meter.MeterType.Ammeter;
             else if (radVoltmeter.IsChecked == true)
-                meter.Type = Meter.MeterType.Voltmeter;
+                Component.Type = Meter.MeterType.Voltmeter;
+            base.CallComponentUpdated(previousData);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace CircuitDiagram.EComponents
         {
             get
             {
-                return new Rect(RenderStartLocation.X - 60f, RenderStartLocation.Y - 25f, 120f, 50f);
+                return new Rect(RenderStartLocation.X + 16d, RenderStartLocation.Y - 25f, 120f, 50f);
             }
         }
 

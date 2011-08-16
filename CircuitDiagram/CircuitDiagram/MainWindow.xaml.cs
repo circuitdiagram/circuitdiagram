@@ -37,6 +37,8 @@ using System.Drawing.Imaging;
 using System.IO;
 using Point = System.Windows.Point;
 using Size = System.Windows.Size;
+using System.ComponentModel;
+using Toolbox;
 
 namespace CircuitDiagram
 {
@@ -45,7 +47,7 @@ namespace CircuitDiagram
     /// </summary>
     public partial class MainWindow : Window
     {
-        CircuitDocument m_document;
+        CircuitDocument m_document { get { return circuitDisplay.Document; } set { circuitDisplay.Document = value; } }
         string m_docPath = "";
         UndoManager m_undoManager;
 
@@ -58,7 +60,6 @@ namespace CircuitDiagram
             InitializeComponent();
 
             // Insert code required on object creation below this point.
-            m_document = circuitDisplay.Document;
             m_documentTitle = "Untitled";
             this.Title = "Untitled - Circuit Diagram";
 
@@ -67,11 +68,20 @@ namespace CircuitDiagram
             {
                 if (System.IO.File.Exists(App.AppArgs[0]))
                 {
-                    double displayWidth;
-                    double displayHeight;
-                    m_document.Load(App.AppArgs[0], out displayWidth, out displayHeight);
-                    circuitDisplay.Width = displayWidth;
-                    circuitDisplay.Height = displayHeight;
+                    if (System.IO.Path.GetExtension(App.AppArgs[0]) == ".cddx")
+                    {
+                        m_document = CDDXIO.Read(App.AppArgs[0]);
+                        circuitDisplay.Width = m_document.Size.Width;
+                        circuitDisplay.Height = m_document.Size.Height;
+                    }
+                    else
+                    {
+                        double displayWidth;
+                        double displayHeight;
+                        m_document.Load(App.AppArgs[0], out displayWidth, out displayHeight);
+                        circuitDisplay.Width = displayWidth;
+                        circuitDisplay.Height = displayHeight;
+                    }
                     m_docPath = App.AppArgs[0];
                     this.Title = System.IO.Path.GetFileNameWithoutExtension(App.AppArgs[0]) + " - Circuit Diagram";
                     m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(App.AppArgs[0]);
@@ -83,6 +93,23 @@ namespace CircuitDiagram
             m_undoManager = new UndoManager();
             m_undoManager.ActionDelegate = UndoActionProcessor;
             m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
+
+            this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
+
+            if (Properties.Settings.Default.IsToolboxScrollBarVisible)
+                toolboxScroll.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            else
+                toolboxScroll.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+        }
+
+        void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            // check for updates
+            if (Properties.Settings.Default.CheckForUpdatesOnStartup)
+            {
+                if (DateTime.Now.Subtract(Properties.Settings.Default.LastCheckedForUpdates).TotalDays >= 1.0)
+                    CheckForUpdates(false);
+            }
         }
 
         void m_undoManager_ActionOccurred(object sender, EventArgs e)
@@ -106,13 +133,26 @@ namespace CircuitDiagram
             newComponentType = null;
         }
 
+        bool m_wasMouseDown = false;
         Point mouseDownPos;
-        Type newComponentType;
+        string newComponentType;
         ComponentResizeMode m_resizing = ComponentResizeMode.None;
         string previousData = "";
         private void circuitDisplay_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            m_wasMouseDown = true;
             mouseDownPos = e.GetPosition((IInputElement)sender);
+
+            bool clear = true;
+            if (m_document.SelectedComponent != null && m_moveComponent)
+            {
+                if (propProperties.Children.Count != 0)
+                    propProperties.Children.Clear();
+                m_document.SelectedComponent.Editor.LoadComponent();
+                propProperties.Children.Add(m_document.SelectedComponent.Editor);
+                clear = false;
+            }
+
             if (m_document.SelectedComponent != null && m_moveComponent && m_document.SelectedComponent.CanResize)
             {
                 StringWriter writer = new StringWriter();
@@ -139,8 +179,11 @@ namespace CircuitDiagram
                         m_resizing = ComponentResizeMode.Bottom;
                 }
             }
-            else
+            else if (clear)
+            {
                 m_resizing = ComponentResizeMode.None;
+                propProperties.Children.Clear();
+            }
         }
 
         private void circuitDisplay_MouseUp(object sender, MouseButtonEventArgs e)
@@ -162,7 +205,7 @@ namespace CircuitDiagram
             }
             if (m_moveComponent)
             {
-                if (m_document.SelectedComponent != null)
+                if (m_document.SelectedComponent != null && fromStart != null)
                 {
                     UndoAction undoAction = new UndoAction(UndoCommand.MoveComponent, "Move component", m_document.SelectedComponent);
                     undoAction.AddData("fromStart", fromStart);
@@ -176,14 +219,17 @@ namespace CircuitDiagram
                 m_document.SelectedComponent = null;
                 return;
             }
-            if (newComponentType == null)
+            if (newComponentType == null || !m_wasMouseDown)
                 return;
+            m_wasMouseDown = false;
             m_document.TempComponents.Clear();
             Point mouseUpPos = e.GetPosition((IInputElement)sender);
-            EComponent newComponent = (EComponent)Activator.CreateInstance(newComponentType);
+            EComponent newComponent = EComponent.Create(newComponentType);
             newComponent.StartLocation = mouseDownPos;
             newComponent.EndLocation = mouseUpPos;
             newComponent.UpdateLayout(m_document);
+            newComponent.Editor.Document = m_document;
+            newComponent.Editor.ComponentUpdated += new CircuitDiagram.ComponentEditorBase.ComponentUpdatedDelegate(Editor_ComponentUpdated);
             m_document.Components.Add(newComponent);
             circuitDisplay.InvalidateVisual();
 
@@ -225,18 +271,17 @@ namespace CircuitDiagram
                 m_document.InvalidateVisual();
                 circuitDisplay.InvalidateVisual();
             }
-            else if (e.LeftButton == MouseButtonState.Pressed && newComponentType != null)
+            else if (e.LeftButton == MouseButtonState.Pressed && newComponentType != null && m_wasMouseDown)
             {
                 m_document.TempComponents.Clear();
                 Point mouseUpPos = e.GetPosition((IInputElement)sender);
-                EComponent newComponent = (EComponent)Activator.CreateInstance(newComponentType);
-                EComponent.EditWindowParent = this;
+                EComponent newComponent = EComponent.Create(newComponentType);
                 newComponent.StartLocation = mouseDownPos;
                 newComponent.EndLocation = mouseUpPos;
                 m_document.TempComponents.Add(newComponent);
                 newComponent.UpdateLayout(m_document);
-
-                //Clipboard.SetData("CircuitDiagram.EComponent", newComponent);
+                newComponent.Editor.Document = m_document;
+                newComponent.Editor.ComponentUpdated += new CircuitDiagram.ComponentEditorBase.ComponentUpdatedDelegate(Editor_ComponentUpdated);
             }
             else
             {
@@ -283,11 +328,23 @@ namespace CircuitDiagram
             }
         }
 
+        void Editor_ComponentUpdated(object sender, ComponentUpdatedEventArgs e)
+        {
+            StringWriter newWriter = new StringWriter();
+            e.Component.SaveData(newWriter);
+            UndoAction newAction = new UndoAction(UndoCommand.EditComponent, "Edit component", e.Component);
+            newAction.AddData("before", e.PreviousData);
+            newAction.AddData("after", newWriter.ToString());
+            UndoManager.AddAction(newAction);
+            circuitDisplay.InvalidateVisual();
+        }
+
         private void circuitDisplay_MouseLeave(object sender, MouseEventArgs e)
         {
             m_document.TempComponents.Clear();
             m_resizing = ComponentResizeMode.None;
             //m_document.SelectedComponent = null;
+            m_wasMouseDown = false;
         }
 
         private void mnuExportSVG_Click(object sender, RoutedEventArgs e)
@@ -355,18 +412,18 @@ namespace CircuitDiagram
 
         private void CommandEditComponent_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            StringWriter writer = new StringWriter();
-            m_document.SelectedComponent.SaveData(writer);
-            m_document.SelectedComponent.ShowEditor();
-            StringWriter newWriter = new StringWriter();
-            m_document.SelectedComponent.SaveData(newWriter);
-            if (writer.ToString() != newWriter.ToString())
-            {
-                UndoAction newAction = new UndoAction(UndoCommand.EditComponent, "Edit component", m_document.SelectedComponent);
-                newAction.AddData("before", writer.ToString());
-                newAction.AddData("after", newWriter.ToString());
-                UndoManager.AddAction(newAction);
-            }
+            //StringWriter writer = new StringWriter();
+            //m_document.SelectedComponent.SaveData(writer);
+            //m_document.SelectedComponent.ShowEditor();
+            //StringWriter newWriter = new StringWriter();
+            //m_document.SelectedComponent.SaveData(newWriter);
+            //if (writer.ToString() != newWriter.ToString())
+            //{
+            //    UndoAction newAction = new UndoAction(UndoCommand.EditComponent, "Edit component", m_document.SelectedComponent);
+            //    newAction.AddData("before", writer.ToString());
+            //    newAction.AddData("after", newWriter.ToString());
+            //    UndoManager.AddAction(newAction);
+            //}
         }
 
         private void CommandDeleteComponent_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -383,102 +440,30 @@ namespace CircuitDiagram
             m_document.InvalidateVisual();
         }
 
-        #region New Component Type Selection
-        private void btnComponentsWire_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(Wire);
-        }
-
-        private void btnComponentsResistor_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(Resistor);
-        }
-
-        private void btnComponentsSupply_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(Supply);
-        }
-
-        private void btnComponentRail_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(Rail);
-        }
-
         private void RibbonWindow_Closed(object sender, EventArgs e)
         {
             Application.Current.Shutdown();
         }
-
-        private void btnComponentsSwitch_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(Switch);
-        }
-
-        private void btnComponentsLogicGate_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(LogicGate);
-        }
-
-        private void btnComponentsCounter_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(Counter);
-        }
-
-        private void btnComponentsSegDecoder_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(SegDecoder);
-        }
-
-        private void btnComponentsSegDisplay_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(SegDisplay);
-        }
-
-        private void btnComponentsCapacitor_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(Capacitor);
-        }
-
-
-        private void btnComponentsLED_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(LED);
-        }
-
-        private void btnComponentsDiode_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(Diode);
-        }
-
-        private void btnComponentsOpAmp_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(OpAmp);
-        }
-        #endregion
 
         #region Menu Options
         private void mnuSaveAs_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
             sfd.Title = "Save As";
-            sfd.Filter = "XML Files (*.xml)|*.xml";
+            sfd.Filter = "Circuit Diagram Document (*.cddx)|*.cddx|XML Files (*.xml)|*.xml";
             sfd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
             if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                m_document.Save(sfd.FileName, circuitDisplay.Width, circuitDisplay.Height);
+                if (System.IO.Path.GetExtension(sfd.FileName) == ".cddx")
+                {
+                    m_document.Size = new Size(circuitDisplay.Width, circuitDisplay.Height);
+                    CDDXIO.Write(sfd.FileName, m_document);
+                }
+                else
+                {
+                    // Save in XML format
+                    m_document.Save(sfd.FileName, circuitDisplay.Width, circuitDisplay.Height);
+                }
                 m_docPath = sfd.FileName;
                 this.Title = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName) + " - Circuit Diagram";
                 m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName);
@@ -525,7 +510,16 @@ namespace CircuitDiagram
         {
             if (m_docPath != "")
             {
-                m_document.Save(m_docPath, circuitDisplay.Width, circuitDisplay.Height);
+                if (System.IO.Path.GetExtension(m_docPath) == ".cddx")
+                {
+                    // Save in CDDX format
+                    CDDXIO.Write(m_docPath, m_document);
+                }
+                else
+                {
+                    // Save in XML format
+                    m_document.Save(m_docPath, circuitDisplay.Width, circuitDisplay.Height);
+                }
                 UndoManager.SetSaveIndex();
             }
             else
@@ -541,15 +535,24 @@ namespace CircuitDiagram
         {
             System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
             ofd.Title = "Open";
-            ofd.Filter = "XML Files (*.xml)|*.xml|All Files (*.*)|*.*";
+            ofd.Filter = "Supported Formats|*.cddx;*.xml|All Files (*.*)|*.*";
             ofd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
             if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 double displayWidth;
                 double displayHeight;
-                m_document.Load(ofd.FileName, out displayWidth, out displayHeight);
-                circuitDisplay.Width = displayWidth;
-                circuitDisplay.Height = displayHeight;
+                if (System.IO.Path.GetExtension(ofd.FileName) == ".cddx")
+                {
+                    m_document = CDDXIO.Read(ofd.FileName);
+                    circuitDisplay.Width = m_document.Size.Width;
+                    circuitDisplay.Height = m_document.Size.Height;
+                }
+                else
+                {
+                    m_document.Load(ofd.FileName, out displayWidth, out displayHeight);
+                    circuitDisplay.Width = displayWidth;
+                    circuitDisplay.Height = displayHeight;
+                }
                 m_docPath = ofd.FileName;
                 this.Title = System.IO.Path.GetFileNameWithoutExtension(ofd.FileName) + " - Circuit Diagram";
                 m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(ofd.FileName);
@@ -575,33 +578,9 @@ namespace CircuitDiagram
         }
         #endregion
 
-        private void btnComponentsTransistor_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(Transistor);
-        }
-
-        private void btnComponentsLamp_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(Lamp);
-        }
-
-        private void btnComponentsExternalConnection_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(ExternalConnection);
-        }
-
         private void mnuHelpDocumentation_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start("http://www.circuit-diagram.org/help");
-        }
-
-        private void btnComponentsMicrocontroller_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(Microcontroller);
         }
 
         private void CommandFlipComponent_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -616,12 +595,6 @@ namespace CircuitDiagram
                 m_document.SelectedComponent.IsFlipped = !m_document.SelectedComponent.IsFlipped;
                 circuitDisplay.InvalidateVisual();
             }
-        }
-
-        private void btnComponentsMeter_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = false;
-            newComponentType = typeof(Meter);
         }
 
         private void CommandUndo_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -728,6 +701,114 @@ namespace CircuitDiagram
                     e.Cancel = true;
                 }
             }
+        }
+
+        private void mnuHelpCheckForUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            CheckForUpdates(true);
+        }
+
+        private void CheckForUpdates(bool notifyIfNoUpdate)
+        {
+            // Check for new version
+            System.Xml.XmlTextReader reader = new System.Xml.XmlTextReader("http://www.circuit-diagram.org/app/version.xml");
+            System.Reflection.Assembly _assemblyInfo = System.Reflection.Assembly.GetExecutingAssembly();
+            Version thisVersion = _assemblyInfo.GetName().Version;
+            Version serverVersion = null;
+            string downloadUrl = null;
+            string elementName = null;
+            try
+            {
+                reader.MoveToContent();
+                if (reader.NodeType == System.Xml.XmlNodeType.Element && reader.Name == "application")
+                {
+                    while (reader.Read())
+                    {
+                        if (reader.NodeType == System.Xml.XmlNodeType.Element)
+                            elementName = reader.Name;
+                        else if (reader.NodeType == System.Xml.XmlNodeType.Text)
+                        {
+                            if (elementName == "version" && reader.HasValue)
+                            {
+                                serverVersion = new Version(reader.Value);
+                            }
+                            else if (elementName == "url" && reader.HasValue)
+                            {
+                                downloadUrl = reader.Value;
+                            }
+                        }
+                    }
+                }
+
+                if (serverVersion != null && thisVersion.CompareTo(serverVersion) < 0 && downloadUrl != null)
+                {
+                    winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverVersion.ToString(), downloadUrl);
+                }
+                else if (thisVersion.CompareTo(serverVersion) >= 0)
+                {
+                    if (notifyIfNoUpdate)
+                        winNewVersion.Show(this, NewVersionWindowType.NoNewVersionAvailable, null);
+                }
+                else
+                {
+                    if (notifyIfNoUpdate)
+                        winNewVersion.Show(this, NewVersionWindowType.Error, null, "http://www.circuit-diagram.org/");
+                }
+
+                Properties.Settings.Default.LastCheckedForUpdates = DateTime.Now;
+                Properties.Settings.Default.Save();
+            }
+            catch (Exception)
+            {
+                if (notifyIfNoUpdate)
+                    winNewVersion.Show(this, NewVersionWindowType.Error, null, "http://www.circuit-diagram.org/");
+            }
+        }
+
+        private void mnuToolsOptions_Click(object sender, RoutedEventArgs e)
+        {
+            winOptions optionsWindow = new winOptions();
+            optionsWindow.Owner = this;
+            optionsWindow.ShowDialog();
+            if (Properties.Settings.Default.IsToolboxScrollBarVisible)
+                toolboxScroll.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            else
+                toolboxScroll.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+        }
+
+        private void StackPanel_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Panel panel = ((Panel)sender);
+            for (int i = 1; i < panel.Children.Count; i++)
+                panel.Children[i].Visibility = System.Windows.Visibility.Collapsed;
+            ((Canvas)panel.Parent).ClipToBounds = true;
+        }
+
+        private void tbrButton1_LongPress(object sender, MouseButtonEventArgs e)
+        {
+            Panel panel = ((Panel)((Control)sender).Parent);
+            if (panel.Children.IndexOf((UIElement)sender) != 0)
+                return;
+            for (int i = 1; i < panel.Children.Count; i++)
+                panel.Children[i].Visibility = System.Windows.Visibility.Visible;
+            ((Canvas)panel.Parent).ClipToBounds = false;
+        }
+
+        private void ToolboxComponentButton_Click(object sender, RoutedEventArgs e)
+        {
+            newComponentType = (string)((Control)sender).Tag;
+            m_moveComponent = false;
+        }
+
+        private void sliderZoom_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (circuitDisplay != null)
+                circuitDisplay.LayoutTransform = new ScaleTransform(e.NewValue / 50, e.NewValue  / 50);
+        }
+
+        private void lblSliderZoom_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            sliderZoom.Value = 50;
         }
     }
 

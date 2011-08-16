@@ -1,0 +1,25 @@
+﻿<my:ComponentEditor x:Class="CircuitDiagram.EComponents.OutputDeviceEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:my="clr-namespace:CircuitDiagram"
+             xmlns:myc="clr-namespace:CircuitDiagram.EComponents"
+             x:TypeArguments="myc:OutputDevice"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <GroupBox Header="Type">
+            <StackPanel>
+                <RadioButton Content="Loudspeaker" Height="16" Name="radLoudspeaker" Checked="RadioChecked" />
+                <RadioButton Content="Buzzer" Height="16" Name="radBuzzer" Checked="RadioChecked" />
+                <RadioButton Content="Motor" Height="16" Name="radMotor" Checked="RadioChecked" />
+                <RadioButton Content="Heater" Height="16" Name="radHeater" Checked="RadioChecked" />
+            </StackPanel>
+        </GroupBox>
+    </Grid>
+</my:ComponentEditor>

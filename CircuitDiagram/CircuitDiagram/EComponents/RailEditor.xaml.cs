@@ -34,24 +34,35 @@ using System.Windows.Shapes;
 
 namespace CircuitDiagram.EComponents
 {
+    using T = Rail;
+
     /// <summary>
     /// Interaction logic for ResistorEditor.xaml
     /// </summary>
-    public partial class RailEditor : ComponentEditor
+    public partial class RailEditor : ComponentEditor<T>
     {
-        public RailEditor()
+        public RailEditor(T component)
+            :base(component)
         {
             InitializeComponent();
         }
 
-        public override void LoadComponent(EComponent component)
+        public override void LoadComponent()
         {
-            tbxVoltage.Text = ((Rail)component).Voltage.ToString();
+            IsLoadingComponent = true;
+            tbxVoltage.Text = ((Rail)Component).Voltage.ToString();
+            IsLoadingComponent = false;
         }
 
-        public override void UpdateChanges(EComponent component)
+        private void tbxVoltage_TextChanged(object sender, TextChangedEventArgs e)
         {
-            ((Rail)component).Voltage = double.Parse(tbxVoltage.Text);
+            string previousData = GetComponentData();
+            double newVoltage;
+            if (double.TryParse(tbxVoltage.Text, out newVoltage))
+            {
+                Component.Voltage = newVoltage;
+            }
+            base.CallComponentUpdated(previousData);
         }
     }
 }

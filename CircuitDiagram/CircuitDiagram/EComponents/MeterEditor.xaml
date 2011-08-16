@@ -4,13 +4,19 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:my="clr-namespace:CircuitDiagram"
+             xmlns:myc="clr-namespace:CircuitDiagram.EComponents"
+             x:TypeArguments="myc:Meter"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <GroupBox Header="Meter Type" Margin="12" Name="groupBox1">
-            <StackPanel Name="stackPanel1">
-                <RadioButton Content="Ammeter" Height="16" Name="radAmmeter" />
-                <RadioButton Content="Voltmeter" Height="16" Name="radVoltmeter" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <GroupBox Header="Meter Type" Name="groupBox1">
+            <StackPanel>
+                <RadioButton Content="Ammeter" Height="16" Name="radAmmeter" Checked="RadioChecked" />
+                <RadioButton Content="Voltmeter" Height="16" Name="radVoltmeter" Checked="RadioChecked" />
             </StackPanel>
         </GroupBox>
     </Grid>

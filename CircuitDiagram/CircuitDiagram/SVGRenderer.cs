@@ -56,9 +56,9 @@ namespace CircuitDiagram
         {
         }
 
-        public void DrawPath(Color? fillColor, Color strokeColor, double thickness, string path)
+        public void DrawPath(Color? fillColor, Color strokeColor, double thickness, string path, double translateOffsetX = 0.0, double translateOffsetY = 0.0)
         {
-            SVGDocument.DrawPath((fillColor.HasValue ? fillColor.Value : Colors.Transparent), strokeColor, thickness, path);
+            SVGDocument.DrawPath((fillColor.HasValue ? fillColor.Value : Colors.Transparent), strokeColor, thickness, path, translateOffsetX, translateOffsetY);
         }
     }
 }

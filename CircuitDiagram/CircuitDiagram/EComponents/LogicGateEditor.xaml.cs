@@ -34,19 +34,22 @@ using System.Windows.Shapes;
 
 namespace CircuitDiagram.EComponents
 {
+    using T = LogicGate;
+
     /// <summary>
     /// Interaction logic for ResistorEditor.xaml
     /// </summary>
-    public partial class LogicGateEditor : ComponentEditor
+    public partial class LogicGateEditor : ComponentEditor<T>
     {
-        public LogicGateEditor()
+        public LogicGateEditor(T component)
+            :base(component)
         {
             InitializeComponent();
         }
 
-        public override void LoadComponent(EComponent component)
+        public override void LoadComponent()
         {
-            LogicGate lGate = (LogicGate)component;
+            IsLoadingComponent = true;
             radLogicAND.IsChecked = false;
             radLogicOR.IsChecked = false;
             radLogicNAND.IsChecked = false;
@@ -54,7 +57,7 @@ namespace CircuitDiagram.EComponents
             radLogicXOR.IsChecked = false;
             radLogicNOT.IsChecked = false;
             radLogicSchmitt.IsChecked = false;
-            switch (lGate.LogicType)
+            switch (Component.LogicType)
             {
                 case LogicType.AND:
                     radLogicAND.IsChecked = true;
@@ -78,25 +81,27 @@ namespace CircuitDiagram.EComponents
                     radLogicSchmitt.IsChecked = true;
                     break;
             }
+            IsLoadingComponent = false;
         }
 
-        public override void UpdateChanges(EComponent component)
+        private void RadioChecked(object sender, EventArgs e)
         {
-            LogicGate lGate = (LogicGate)component;
+            string previousData = GetComponentData();
             if (radLogicAND.IsChecked == true)
-                lGate.LogicType = LogicType.AND;
+                Component.LogicType = LogicType.AND;
             else if (radLogicOR.IsChecked == true)
-                lGate.LogicType = LogicType.OR;
+                Component.LogicType = LogicType.OR;
             else if (radLogicNAND.IsChecked == true)
-                lGate.LogicType = LogicType.NAND;
+                Component.LogicType = LogicType.NAND;
             else if (radLogicNOR.IsChecked == true)
-                lGate.LogicType = LogicType.NOR;
+                Component.LogicType = LogicType.NOR;
             else if (radLogicXOR.IsChecked == true)
-                lGate.LogicType = LogicType.XOR;
+                Component.LogicType = LogicType.XOR;
             else if (radLogicNOT.IsChecked == true)
-                lGate.LogicType = LogicType.NOT;
+                Component.LogicType = LogicType.NOT;
             else if (radLogicSchmitt.IsChecked == true)
-                lGate.LogicType = LogicType.Schmitt;
+                Component.LogicType = LogicType.Schmitt;
+            base.CallComponentUpdated(previousData);
         }
     }
 }

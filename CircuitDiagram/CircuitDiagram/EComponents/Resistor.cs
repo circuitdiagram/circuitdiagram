@@ -93,7 +93,7 @@ namespace CircuitDiagram.EComponents
 
         public override void Initialize()
         {
-            base.Editor = new ResistorEditor();
+            base.Editor = new ResistorEditor(this);
         }
 
         public override void Render(IRenderer dc, Color color)

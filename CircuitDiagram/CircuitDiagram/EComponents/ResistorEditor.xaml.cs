@@ -34,26 +34,30 @@ using System.Windows.Shapes;
 
 namespace CircuitDiagram.EComponents
 {
+    using T = Resistor;
+
     /// <summary>
     /// Interaction logic for ResistorEditor.xaml
     /// </summary>
-    public partial class ResistorEditor : ComponentEditor
+    public partial class ResistorEditor : ComponentEditor<T>
     {
-        public ResistorEditor()
+        public ResistorEditor(T component)
+            :base(component)
         {
             InitializeComponent();
         }
 
-        public override void LoadComponent(EComponent component)
+        public override void LoadComponent()
         {
-            tbxResistance.Text = ((Resistor)component).Resistance.ToString();
+            IsLoadingComponent = true;
+            tbxResistance.Text = Component.Resistance.ToString();
 
             radTypeStandard.IsChecked = false;
             radTypeVariable.IsChecked = false;
             radTypePotentiometer.IsChecked = false;
             radTypeThermistor.IsChecked = false;
             radTypeLDR.IsChecked = false;
-            switch (((Resistor)component).ResistorType)
+            switch (Component.ResistorType)
             {
                 case ResistorType.Standard:
                     radTypeStandard.IsChecked = true;
@@ -71,32 +75,38 @@ namespace CircuitDiagram.EComponents
                     radTypeLDR.IsChecked = true;
                     break;
             }
+            IsLoadingComponent = false;
         }
 
-        public override void UpdateChanges(EComponent component)
+        private void tbxResistance_TextChanged(object sender, TextChangedEventArgs e)
         {
-            try
-            {
-                ((Resistor)component).Resistance = double.Parse(tbxResistance.Text);
-            }
-            catch (Exception)
-            {
-                // incorrect input format
-            }
-            finally
-            {
-                Resistor resistor = (Resistor)component;
-                if (radTypeStandard.IsChecked == true)
-                    resistor.ResistorType = ResistorType.Standard;
-                else if (radTypeVariable.IsChecked == true)
-                    resistor.ResistorType = ResistorType.Variable;
-                else if (radTypePotentiometer.IsChecked == true)
-                    resistor.ResistorType = ResistorType.Potentiometer;
-                else if (radTypeThermistor.IsChecked == true)
-                    resistor.ResistorType = ResistorType.Thermistor;
-                else if (radTypeLDR.IsChecked == true)
-                    resistor.ResistorType = ResistorType.LDR;
-            }
+            string previousData = GetComponentData();
+            double resistance;
+            double.TryParse(tbxResistance.Text, out resistance);
+            Component.Resistance = resistance;
+            CallComponentUpdated(previousData);
+        }
+
+        private void OnPreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !ComponentEditorBase.AreAllValidNumericChars(e.Text);
+            base.OnPreviewTextInput(e);
+        }
+
+        private void RadioChecked(object sender, EventArgs e)
+        {
+            string previousData = GetComponentData();
+            if (radTypeStandard.IsChecked == true)
+                Component.ResistorType = ResistorType.Standard;
+            else if (radTypeVariable.IsChecked == true)
+                Component.ResistorType = ResistorType.Variable;
+            else if (radTypePotentiometer.IsChecked == true)
+                Component.ResistorType = ResistorType.Potentiometer;
+            else if (radTypeThermistor.IsChecked == true)
+                Component.ResistorType = ResistorType.Thermistor;
+            else if (radTypeLDR.IsChecked == true)
+                Component.ResistorType = ResistorType.LDR;
+            base.CallComponentUpdated(previousData);
         }
     }
 }

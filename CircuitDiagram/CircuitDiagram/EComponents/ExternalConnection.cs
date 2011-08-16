@@ -27,7 +27,7 @@ using System.Windows.Media;
 
 namespace CircuitDiagram.EComponents
 {
-    class ExternalConnection : EComponent
+    public class ExternalConnection : EComponent
     {
         public string ConnectionText { get; set; }
         public bool ConnectionTopLeft { get; set; }
@@ -36,7 +36,7 @@ namespace CircuitDiagram.EComponents
         {
             ConnectionText = "input";
             ConnectionTopLeft = true;
-            this.Editor = new ExternalConnectionEditor();
+            this.Editor = new ExternalConnectionEditor(this);
         }
 
         public override Rect BoundingBox

@@ -34,24 +34,27 @@ using System.Windows.Shapes;
 
 namespace CircuitDiagram.EComponents
 {
+    using T = Transistor;
+
     /// <summary>
     /// Interaction logic for ResistorEditor.xaml
     /// </summary>
-    public partial class TransistorEditor : ComponentEditor
+    public partial class TransistorEditor : ComponentEditor<T>
     {
-        public TransistorEditor()
+        public TransistorEditor(T component)
+            :base(component)
         {
             InitializeComponent();
         }
 
-        public override void LoadComponent(EComponent component)
+        public override void LoadComponent()
         {
-            Transistor transistor = (Transistor)component;
+            IsLoadingComponent = true;
             radBipolarNPN.IsChecked = false;
             radBipolarPNP.IsChecked = false;
             radMosfetN.IsChecked = false;
             radMosfetP.IsChecked = false;
-            switch (transistor.Type)
+            switch (Component.Type)
             {
                 case Transistor.TransistorType.NPN:
                     radBipolarNPN.IsChecked = true;
@@ -66,19 +69,21 @@ namespace CircuitDiagram.EComponents
                     radMosfetP.IsChecked = true;
                     break;
             }
+            IsLoadingComponent = false;
         }
 
-        public override void UpdateChanges(EComponent component)
+        private void RadioChecked(object sender, EventArgs e)
         {
-            Transistor transistor = (Transistor)component;
+            string previousData = GetComponentData();
             if (radBipolarNPN.IsChecked == true)
-                transistor.Type = Transistor.TransistorType.NPN;
+                Component.Type = Transistor.TransistorType.NPN;
             else if (radBipolarPNP.IsChecked == true)
-                transistor.Type = Transistor.TransistorType.PNP;
+                Component.Type = Transistor.TransistorType.PNP;
             else if (radMosfetN.IsChecked == true)
-                transistor.Type = Transistor.TransistorType.NChannel;
+                Component.Type = Transistor.TransistorType.NChannel;
             else if (radMosfetP.IsChecked == true)
-                transistor.Type = Transistor.TransistorType.PChannel;
+                Component.Type = Transistor.TransistorType.PChannel;
+            base.CallComponentUpdated(previousData);
         }
     }
 }

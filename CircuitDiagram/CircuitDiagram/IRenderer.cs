@@ -34,6 +34,6 @@ namespace CircuitDiagram
         void DrawRectangle(Color fillColor, Color strokeColor, double strokeThickness, Rect rectangle);
         void DrawText(string text, string fontName, double emSize, Color foreColor, Point origin);
         void DrawFormattedText(FormattedText text, Point origin);
-        void DrawPath(Color? fillColor, Color strokeColor, double thickness, string path);
+        void DrawPath(Color? fillColor, Color strokeColor, double thickness, string path, double trandlateOffsetX = 0.0, double translateOffsetY = 0.0);
     }
 }

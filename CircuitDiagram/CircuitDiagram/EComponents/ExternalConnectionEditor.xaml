@@ -4,12 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:my="clr-namespace:CircuitDiagram"
+             xmlns:myc="clr-namespace:CircuitDiagram.EComponents"
+             x:TypeArguments="myc:ExternalConnection"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Label Content="Text" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" />
-        <TextBox Height="23" Margin="116,14,12,0" Name="tbxConnectionText" VerticalAlignment="Top" />
-        <CheckBox Content="Top or left" Height="16" HorizontalAlignment="Left" Margin="116,47,0,0" Name="chbTopOrLeft" VerticalAlignment="Top" />
+        <TextBox Height="23" Margin="116,14,12,0" Name="tbxConnectionText" VerticalAlignment="Top" TextChanged="tbxConnectionText_TextChanged" />
+        <CheckBox Content="Top or left" Height="16" HorizontalAlignment="Left" Margin="116,47,0,0" Name="chbTopOrLeft" VerticalAlignment="Top" Checked="chbTopOrLeftChecked" Unchecked="chbTopOrLeftChecked" />
         <Label Content="Text position" Height="28" HorizontalAlignment="Left" Margin="12,42,0,0" Name="label2" VerticalAlignment="Top" />
     </Grid>
 </my:ComponentEditor>

@@ -56,7 +56,7 @@ namespace CircuitDiagram.EComponents
         public LogicGate()
         {
             m_logicType = LogicType.AND;
-            base.Editor = new LogicGateEditor();
+            base.Editor = new LogicGateEditor(this);
         }
 
         protected override void CustomUpdateLayout()

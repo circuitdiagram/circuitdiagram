@@ -33,6 +33,8 @@ namespace CircuitDiagram
         public double GridSize = 10d;
         public event EventHandler VisualInvalidated;
 
+        public Size Size;
+
         List<EComponent> m_components = new List<EComponent>();
         List<EComponent> m_tempComponents = new List<EComponent>();
 
@@ -63,6 +65,7 @@ namespace CircuitDiagram
         {
             SnapToGrid = true;
             SnapToHV = true;
+            Size = new Size(640, 480);
         }
 
         public void Render(IRenderer dc, DrawingContext rc = null)
@@ -183,6 +186,41 @@ namespace CircuitDiagram
             return (result <= 1 && result >= -1);
         }
 
+        public void Save(System.IO.Stream stream)
+        {
+            XmlTextWriter writer = new XmlTextWriter(stream, Encoding.UTF8);
+            writer.Formatting = Formatting.Indented;
+            writer.WriteStartDocument();
+            writer.WriteStartElement("circuit");
+            writer.WriteAttributeString("version", "1.1");
+            writer.WriteAttributeString("cd-version", winAbout.AppVersion);
+            writer.WriteAttributeString("width", Size.Width.ToString());
+            writer.WriteAttributeString("height", Size.Height.ToString());
+            foreach (EComponent component in m_components)
+            {
+                writer.WriteStartElement("component");
+                writer.WriteAttributeString("type", component.GetType().Name);
+                writer.WriteAttributeString("x", component.StartLocation.X.ToString());
+                writer.WriteAttributeString("y", component.StartLocation.Y.ToString());
+                if (component.CanResize)
+                {
+                    if (component.Horizontal)
+                        writer.WriteAttributeString("size", (component.EndLocation.X - component.StartLocation.X).ToString());
+                    else
+                        writer.WriteAttributeString("size", (component.EndLocation.Y - component.StartLocation.Y).ToString());
+                }
+                writer.WriteAttributeString("orientation", (component.Horizontal ? "horizontal" : "vertical"));
+                if (component.CanFlip)
+                    writer.WriteAttributeString("flipped", component.IsFlipped.ToString());
+                component.SaveData(writer);
+                writer.WriteEndElement();
+            }
+            writer.WriteEndElement();
+            writer.WriteEndDocument();
+            writer.Flush();
+            writer.Close();
+        }
+
         public void Save(string path, double displayWidth, double displayHeight)
         {
             XmlTextWriter writer = new XmlTextWriter(path, Encoding.UTF8);
@@ -216,6 +254,98 @@ namespace CircuitDiagram
             writer.WriteEndDocument();
             writer.Flush();
             writer.Close();
+        }
+
+        public DocumentLoadResult Load(System.IO.Stream stream)
+        {
+            XmlTextReader reader = new XmlTextReader(stream);
+            m_tempComponents.Clear();
+            m_components.Clear();
+            bool errorOccurred = false;
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element && reader.Depth == 0)
+                {
+                    try
+                    {
+                        reader.MoveToAttribute("width");
+                        Size.Width = double.Parse(reader.Value);
+                        reader.MoveToAttribute("height");
+                        Size.Height = double.Parse(reader.Value);
+                        reader.MoveToElement();
+                    }
+                    catch (Exception)
+                    {
+                        errorOccurred = true;
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.Element && reader.Depth == 1 && reader.LocalName == "component")
+                {
+                    try
+                    {
+                        reader.MoveToAttribute("type");
+                        string componentType = reader.Value;
+                        reader.MoveToAttribute("x");
+                        double x = float.Parse(reader.Value);
+                        reader.MoveToAttribute("y");
+                        double y = float.Parse(reader.Value);
+                        reader.MoveToAttribute("size");
+                        double size = GridSize;
+                        if (reader.HasValue)
+                            size = double.Parse(reader.Value);
+                        reader.MoveToAttribute("orientation");
+                        double width = GridSize;
+                        double height = GridSize;
+                        if (reader.Value == "horizontal")
+                            width = size;
+                        else
+                            height = size;
+                        bool isFlipped = false;
+                        reader.MoveToAttribute("flipped");
+                        if (reader.HasValue && reader.Value.ToLower() == "true")
+                            isFlipped = true;
+                        EComponent component = (EComponent)Activator.CreateInstance(Type.GetType("CircuitDiagram.EComponents." + componentType, true, false));
+                        component.StartLocation = new Point(x, y);
+                        component.EndLocation = new Point(x + width, y + height);
+                        if (component.CanFlip)
+                            component.IsFlipped = isFlipped;
+                        component.UpdateLayout(this);
+                        component.LoadData(reader);
+                        m_components.Add(component);
+                    }
+                    catch (Exception)
+                    {
+                        errorOccurred = true;
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.Element && reader.Depth == 1)
+                {
+                    try
+                    {
+                        reader.MoveToAttribute("location");
+                        if (reader.HasValue)
+                        {
+                            string[] locationString = reader.Value.Split(',');
+                            reader.MoveToElement();
+                            Type.GetType("CircuitDiagram.EComponents." + reader.LocalName, true, false);
+                            EComponent component = (EComponent)Activator.CreateInstance(Type.GetType("CircuitDiagram.EComponents." + reader.LocalName, true, false));
+                            component.StartLocation = new Point(int.Parse(locationString[0]), int.Parse(locationString[1]));
+                            component.EndLocation = new Point(int.Parse(locationString[2]), int.Parse(locationString[3]));
+                            component.LoadData(reader);
+                            m_components.Add(component);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        errorOccurred = true;
+                    }
+                }
+            }
+            reader.Close();
+            if (errorOccurred)
+                return DocumentLoadResult.FailIncorrectFormat;
+            else
+                return DocumentLoadResult.Success;
         }
 
         public void Load(string path, out double displayWidth, out double displayHeight)

@@ -34,22 +34,25 @@ using System.Windows.Shapes;
 
 namespace CircuitDiagram.EComponents
 {
+    using T = Switch;
+
     /// <summary>
     /// Interaction logic for ResistorEditor.xaml
     /// </summary>
-    public partial class SwitchEditor : ComponentEditor
+    public partial class SwitchEditor : ComponentEditor<T>
     {
-        public SwitchEditor()
+        public SwitchEditor(T component)
+            :base(component)
         {
             InitializeComponent();
         }
 
-        public override void LoadComponent(EComponent component)
+        public override void LoadComponent()
         {
-            Switch cSwitch = (Switch)component;
+            IsLoadingComponent = true;
             radPush.IsChecked = false;
             radToggle.IsChecked = false;
-            switch (cSwitch.Type)
+            switch (Component.Type)
             {
                 case SwitchType.Push:
                     radPush.IsChecked = true;
@@ -58,15 +61,17 @@ namespace CircuitDiagram.EComponents
                     radToggle.IsChecked = true;
                     break;
             }
+            IsLoadingComponent = false;
         }
 
-        public override void UpdateChanges(EComponent component)
+        private void RadioChecked(object sender, EventArgs e)
         {
-            Switch cSwitch = (Switch)component;
+            string previousData = GetComponentData();
             if (radPush.IsChecked == true)
-                cSwitch.Type = SwitchType.Push;
+                Component.Type = SwitchType.Push;
             else if (radToggle.IsChecked == true)
-                cSwitch.Type = SwitchType.Toggle;
+                Component.Type = SwitchType.Toggle;
+            base.CallComponentUpdated(previousData);
         }
     }
 }

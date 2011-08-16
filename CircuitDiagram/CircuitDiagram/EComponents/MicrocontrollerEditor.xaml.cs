@@ -34,12 +34,15 @@ using System.Windows.Shapes;
 
 namespace CircuitDiagram.EComponents
 {
+    using T = Microcontroller;
+
     /// <summary>
     /// Interaction logic for MicrocontrollerEditor.xaml
     /// </summary>
-    public partial class MicrocontrollerEditor : ComponentEditor
+    partial class MicrocontrollerEditor : ComponentEditor<T>
     {
-        public MicrocontrollerEditor()
+        public MicrocontrollerEditor(T component)
+            : base(component)
         {
             InitializeComponent();
         }
@@ -50,37 +53,41 @@ namespace CircuitDiagram.EComponents
             base.OnPreviewTextInput(e);
         }
 
-        private bool AreAllValidNumericChars(string str)
+        public override void LoadComponent()
         {
-            foreach (char c in str)
-            {
-                if (!Char.IsNumber(c)) return false;
-            }
-
-            return true;
+            IsLoadingComponent = true;
+            tbxNumInputs.Text = ((Microcontroller)Component).Inputs.ToString();
+            tbxNumOutputs.Text = ((Microcontroller)Component).Outputs.ToString();
+            chbADCInput.IsChecked = ((Microcontroller)Component).ADC;
+            chbDisplayPIC.IsChecked = ((Microcontroller)Component).DisplayPIC;
+            IsLoadingComponent = false;
         }
 
-        public override void LoadComponent(EComponent component)
+        private void TextChanged(object sender, TextChangedEventArgs e)
         {
-            tbxNumInputs.Text = ((Microcontroller)component).Inputs.ToString();
-            tbxNumOutputs.Text = ((Microcontroller)component).Outputs.ToString();
-            chbADCInput.IsChecked = ((Microcontroller)component).ADC;
-            chbDisplayPIC.IsChecked = ((Microcontroller)component).DisplayPIC;
-        }
-
-        public override void UpdateChanges(EComponent component)
-        {
+            string previousData = GetComponentData();
             try
             {
-                Microcontroller microcontroller = (Microcontroller)component;
-                microcontroller.Inputs = int.Parse(tbxNumInputs.Text);
-                microcontroller.Outputs = int.Parse(tbxNumOutputs.Text);
-                microcontroller.ADC = chbADCInput.IsChecked.Value;
-                microcontroller.DisplayPIC = chbDisplayPIC.IsChecked.Value;
+                Component.Inputs = int.Parse(tbxNumInputs.Text);
+                Component.Outputs = int.Parse(tbxNumOutputs.Text);
             }
             catch (Exception)
             {
             }
+            finally
+            {
+                Component.Inputs = Math.Min(Component.Inputs, 20);
+                Component.Outputs = Math.Min(Component.Outputs, 20);
+                base.CallComponentUpdated(previousData);
+            }
+        }
+
+        private void CheckboxChecked(object sender, EventArgs e)
+        {
+            string previousData = GetComponentData();
+            Component.ADC = chbADCInput.IsChecked.Value;
+            Component.DisplayPIC = chbDisplayPIC.IsChecked.Value;
+            base.CallComponentUpdated(previousData);
         }
     }
 }

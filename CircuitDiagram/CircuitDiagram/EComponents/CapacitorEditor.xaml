@@ -4,10 +4,30 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:my="clr-namespace:CircuitDiagram"
+             xmlns:myc="clr-namespace:CircuitDiagram.EComponents"
+             x:TypeArguments="myc:Capacitor"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <Label Content="Capacitance" Height="28" HorizontalAlignment="Left" Margin="10,10,0,0" Name="label1" VerticalAlignment="Top" Width="136" />
-        <TextBox Height="23" Margin="166,12,14,0" Name="tbxCapacitance" VerticalAlignment="Top" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="23" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Label Grid.Row="0" Grid.Column="0" Content="Capacitance" HorizontalAlignment="Left" Name="label1" VerticalAlignment="Top" />
+        <TextBox Grid.Row="0" Grid.Column="1" Name="tbxCapacitance" TextChanged="tbxCapacitance_TextChanged" />
+        <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Header="Type" Name="groupBox1" VerticalAlignment="Top">
+            <Grid>
+                <StackPanel>
+                    <RadioButton Content="Standard" Height="16" Name="radTypeStandard" Checked="RadioChecked" />
+                    <RadioButton Content="Variable" Height="16" Name="radTypeVariable" Checked="RadioChecked" />
+                    <RadioButton Content="Trimmer" Height="16" Name="radTypeTrimmer" Checked="RadioChecked" />
+                    <RadioButton Content="Polarised" Height="16" Name="radTypePolarised" Checked="RadioChecked" />
+                </StackPanel>
+            </Grid>
+        </GroupBox>
     </Grid>
 </my:ComponentEditor>

@@ -37,9 +37,10 @@ namespace CircuitDiagram
     /// <summary>
     /// Interaction logic for BasicComponentEditor.xaml
     /// </summary>
-    public partial class BasicComponentEditor : ComponentEditor
+    public partial class BasicComponentEditor : ComponentEditor<EComponent>
     {
-        public BasicComponentEditor()
+        public BasicComponentEditor(EComponent component)
+            :base(component)
         {
             InitializeComponent();
         }

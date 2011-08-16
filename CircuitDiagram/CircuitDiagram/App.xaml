@@ -5,6 +5,11 @@
              Startup="Application_Startup">
     <Application.Resources>
 		<!-- Resources scoped at the Application level should be defined here. -->
-        
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="DefaultDictionary.xaml" />
+                <ResourceDictionary Source="ToolboxDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

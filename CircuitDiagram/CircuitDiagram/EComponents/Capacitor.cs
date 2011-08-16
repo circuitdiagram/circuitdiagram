@@ -39,11 +39,23 @@ namespace CircuitDiagram.EComponents
             get
             {
                 if (Horizontal)
-                    return new Rect(new Point(StartLocation.X, StartLocation.Y - 30), new Size(EndLocation.X - StartLocation.X, 45));
+                {
+                    if (Type == CapacitorType.Trimmer || Type == CapacitorType.Variable)
+                        return new Rect(new Point(StartLocation.X, StartLocation.Y - 15), new Size(EndLocation.X - StartLocation.X, 30));
+                    else
+                        return new Rect(new Point(StartLocation.X, StartLocation.Y - 30), new Size(EndLocation.X - StartLocation.X, 45));
+                }
                 else
-                    return new Rect(new Point(StartLocation.X - 50, StartLocation.Y), new Size(65, EndLocation.Y - StartLocation.Y));
+                {
+                    if (Type == CapacitorType.Trimmer || Type == CapacitorType.Variable)
+                        return new Rect(new Point(StartLocation.X - 15, StartLocation.Y), new Size(30, EndLocation.Y - StartLocation.Y));
+                    else
+                        return new Rect(new Point(StartLocation.X - 50, StartLocation.Y), new Size(65, EndLocation.Y - StartLocation.Y));
+                }
             }
         }
+
+        public CapacitorType Type { get; set; }
 
         public double Capacitance { get; set; }
 
@@ -70,39 +82,93 @@ namespace CircuitDiagram.EComponents
 
         public override void Initialize()
         {
-            base.Editor = new CapacitorEditor();
+            base.Editor = new CapacitorEditor(this);
         }
 
-        public override void Render(IRenderer dc, Color color)
+        public override void Render(IRenderer dc, Color colour)
         {
             if (Horizontal)
             {
                 Point gapStart = new Point(StartLocation.X + Size.Width / 2 - 4, StartLocation.Y);
                 Point gapEnd = new Point(StartLocation.X + Size.Width / 2 + 4, StartLocation.Y);
-                dc.DrawLine(color, 2d, StartLocation, gapStart);
-                dc.DrawLine(color, 2d, gapEnd, EndLocation);
-                dc.DrawLine(color, 2d, Point.Add(gapStart, new Vector(0, -14)), Point.Add(gapStart, new Vector(0, 14)));
-                dc.DrawLine(color, 2d, Point.Add(gapEnd, new Vector(0, -14)), Point.Add(gapEnd, new Vector(0, 14)));
+                dc.DrawLine(colour, 2d, StartLocation, gapStart);
+                dc.DrawLine(colour, 2d, gapEnd, EndLocation);
+                if (Type != CapacitorType.Polarised)
+                {
+                    dc.DrawLine(colour, 2d, Point.Add(gapStart, new Vector(0, -14)), Point.Add(gapStart, new Vector(0, 14)));
+                    dc.DrawLine(colour, 2d, Point.Add(gapEnd, new Vector(0, -14)), Point.Add(gapEnd, new Vector(0, 14)));
+                }
+                else
+                {
+                    dc.DrawRectangle(Colors.White, colour, 2d, new Rect(gapStart.X, gapStart.Y - 14, 4, 28));
+                    dc.DrawRectangle(colour, colour, 2d, new Rect(gapEnd.X, gapEnd.Y - 14, 4, 28));
+                    dc.DrawPath(null, colour, 2d, String.Format("M {0} m -8,-12 l 6,0 m -3,-3 l 0,6", gapStart));
+                }
                 FormattedText text = new FormattedText(CapacitanceString, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 10d, new SolidColorBrush(Colors.Black));
-                dc.DrawText(CapacitanceString, "Arial", 10d, color, new Point(StartLocation.X + Size.Width / 2 - text.Width / 2, StartLocation.Y - 22d - text.Height / 2));
+                if (Type == CapacitorType.Standard || Type == CapacitorType.Polarised)
+                    dc.DrawText(CapacitanceString, "Arial", 10d, colour, new Point(StartLocation.X + Size.Width / 2 - text.Width / 2, StartLocation.Y - 22d - text.Height / 2));
+                if (Type == CapacitorType.Trimmer)
+                    dc.DrawPath(null, colour, 2f, String.Format("M {0} m -8,13 l 24,-26 m -3,-3 l 6,6", gapStart));
+                else if (Type == CapacitorType.Variable)
+                    dc.DrawPath(null, colour, 2f, String.Format("M {0} m -8,13 l 24,-26 m -6,0 l 6,0 l 0,6", gapStart));
             }
             if (!Horizontal)
             {
                 Point gapStart = new Point(StartLocation.X, StartLocation.Y + Size.Height / 2 - 4);
                 Point gapEnd = new Point(StartLocation.X, StartLocation.Y + Size.Height / 2 + 4);
-                dc.DrawLine(color, 2d, StartLocation, gapStart);
-                dc.DrawLine(color, 2d, gapEnd, EndLocation);
-                dc.DrawLine(color, 2d, Point.Add(gapStart, new Vector(-14, 0)), Point.Add(gapStart, new Vector(14, 0)));
-                dc.DrawLine(color, 2d, Point.Add(gapEnd, new Vector(-14, 0)), Point.Add(gapEnd, new Vector(14, 0)));
+                dc.DrawLine(colour, 2d, StartLocation, gapStart);
+                dc.DrawLine(colour, 2d, gapEnd, EndLocation);
+                if (Type != CapacitorType.Polarised)
+                {
+                    dc.DrawLine(colour, 2d, Point.Add(gapStart, new Vector(-14, 0)), Point.Add(gapStart, new Vector(14, 0)));
+                    dc.DrawLine(colour, 2d, Point.Add(gapEnd, new Vector(-14, 0)), Point.Add(gapEnd, new Vector(14, 0)));
+                }
+                else
+                {
+                    dc.DrawRectangle(Colors.White, colour, 2d, new Rect(gapStart.X - 14, gapStart.Y, 28, 4));
+                    dc.DrawRectangle(colour, colour, 2d, new Rect(gapEnd.X - 14, gapEnd.Y, 28, 4));
+                    dc.DrawPath(null, colour, 2d, String.Format("M {0} m 8,-6 l 6,0 m -3,-3 l 0,6", gapStart));
+                }
                 FormattedText text = new FormattedText(CapacitanceString, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 10d, new SolidColorBrush(Colors.Black));
-                dc.DrawText(CapacitanceString, "Arial", 10d, color, new Point(StartLocation.X - 22d - text.Width, StartLocation.Y + Size.Height / 2 - text.Height / 2));
+                if (Type == CapacitorType.Standard || Type == CapacitorType.Polarised)
+                    dc.DrawText(CapacitanceString, "Arial", 10d, colour, new Point(StartLocation.X - 22d - text.Width, StartLocation.Y + Size.Height / 2 - text.Height / 2));
+                if (Type == CapacitorType.Trimmer)
+                    dc.DrawPath(null, colour, 2f, String.Format("M {0} m -12,10 l 24,-26 m -3,-3 l 6,6", gapEnd));
+                else if (Type == CapacitorType.Variable)
+                    dc.DrawPath(null, colour, 2f, String.Format("M {0} m -11,10 l 24,-26 m -6,0 l 6,0 l 0,6", gapEnd));
             }
+        }
+
+        public override void LoadData(System.Xml.XmlReader reader)
+        {
+            try
+            {
+                string type = reader.GetAttribute("t");
+                if (type != null)
+                    Type = (CapacitorType)int.Parse(type);
+
+                if (Type != CapacitorType.Variable && Type != CapacitorType.Trimmer)
+                {
+                    reader.MoveToAttribute("capacitance");
+                    Capacitance = reader.ReadContentAsDouble();
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        public override void SaveData(System.Xml.XmlWriter writer)
+        {
+            writer.WriteAttributeString("capacitance", Capacitance.ToString());
+            writer.WriteAttributeString("t", ((int)Type).ToString());
         }
 
         public override void SaveData(System.IO.TextWriter writer)
         {
             base.SaveData(writer);
             EComponent.WriteProperty(writer, "capacitance", Capacitance.ToString());
+            EComponent.WriteProperty(writer, "t", ((int)Type).ToString());
         }
 
         public override void LoadData(System.IO.TextReader reader)
@@ -111,6 +177,17 @@ namespace CircuitDiagram.EComponents
             base.LoadData(reader, out properties);
             if (properties.ContainsKey("capacitance"))
                 Capacitance = double.Parse(properties["capacitance"]);
+            Type = CapacitorType.Standard;
+            if (properties.ContainsKey("t"))
+                Type = (CapacitorType)int.Parse(properties["t"]);
         }
+    }
+
+    public enum CapacitorType
+    {
+        Standard,
+        Variable,
+        Trimmer,
+        Polarised
     }
 }

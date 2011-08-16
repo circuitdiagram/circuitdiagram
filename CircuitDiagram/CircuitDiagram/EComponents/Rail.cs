@@ -53,7 +53,7 @@ namespace CircuitDiagram.EComponents
         public Rail()
         {
             m_voltage = 5d;
-            base.Editor = new RailEditor();
+            base.Editor = new RailEditor(this);
         }
 
         public override void Render(IRenderer dc, Color color)
