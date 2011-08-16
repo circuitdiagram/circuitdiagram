@@ -553,6 +553,8 @@ namespace CircuitDiagram
                     circuitDisplay.Width = displayWidth;
                     circuitDisplay.Height = displayHeight;
                 }
+                foreach (EComponent component in m_document.Components)
+                    component.Editor.ComponentUpdated += new CircuitDiagram.ComponentEditorBase.ComponentUpdatedDelegate(Editor_ComponentUpdated);
                 m_docPath = ofd.FileName;
                 this.Title = System.IO.Path.GetFileNameWithoutExtension(ofd.FileName) + " - Circuit Diagram";
                 m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(ofd.FileName);

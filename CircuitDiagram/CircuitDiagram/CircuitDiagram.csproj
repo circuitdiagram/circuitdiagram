@@ -315,7 +315,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="CircuitDiagram_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -359,25 +358,6 @@
     <Resource Include="Images\Resistor.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\ANDGate.png" />
-    <Resource Include="Images\ToggleSwitch.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\NOTGate.png" />
-    <Resource Include="Images\NPNTransistor.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\OpAmp.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\ZenerDiode.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Lamp.png" />
-    <Resource Include="Images\PNPTransistor.png" />
-    <Resource Include="Images\Supply.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\PolarisedCapacitor.png" />
   </ItemGroup>
   <ItemGroup>
@@ -409,12 +389,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Switch.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\NANDGate.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Microcontroller.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fileIcon.ico" />

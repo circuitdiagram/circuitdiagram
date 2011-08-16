@@ -310,6 +310,7 @@ namespace CircuitDiagram
                         if (component.CanFlip)
                             component.IsFlipped = isFlipped;
                         component.UpdateLayout(this);
+                        component.Editor.Document = this;
                         component.LoadData(reader);
                         m_components.Add(component);
                     }
@@ -331,6 +332,7 @@ namespace CircuitDiagram
                             EComponent component = (EComponent)Activator.CreateInstance(Type.GetType("CircuitDiagram.EComponents." + reader.LocalName, true, false));
                             component.StartLocation = new Point(int.Parse(locationString[0]), int.Parse(locationString[1]));
                             component.EndLocation = new Point(int.Parse(locationString[2]), int.Parse(locationString[3]));
+                            component.Editor.Document = this;
                             component.LoadData(reader);
                             m_components.Add(component);
                         }
@@ -404,6 +406,7 @@ namespace CircuitDiagram
                         if (component.CanFlip)
                             component.IsFlipped = isFlipped;
                         component.UpdateLayout(this);
+                        component.Editor.Document = this;
                         component.LoadData(reader);
                         m_components.Add(component);
                     }
@@ -425,6 +428,7 @@ namespace CircuitDiagram
                             EComponent component = (EComponent)Activator.CreateInstance(Type.GetType("CircuitDiagram.EComponents." + reader.LocalName, true, false));
                             component.StartLocation = new Point(int.Parse(locationString[0]), int.Parse(locationString[1]));
                             component.EndLocation = new Point(int.Parse(locationString[2]), int.Parse(locationString[3]));
+                            component.Editor.Document = this;
                             component.LoadData(reader);
                             m_components.Add(component);
                         }
