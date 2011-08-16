@@ -129,6 +129,9 @@
         <Canvas x:Key="MicrocontrollerIcon" Width="45" Height="45">
             <Path Width="34" Height="35.9167" Canvas.Left="5.5" Canvas.Top="4.54167" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="M 12.0833,5.04167L 32.9167,5.04167L 32.9167,8.42188L 39,8.42188L 39,10.7552L 32.9167,10.7552L 32.9167,16.9497L 39,16.9497L 39,19.283L 32.9167,19.283L 32.9167,25.4774L 39,25.4774L 39,27.8108L 32.9167,27.8108L 32.9167,34.0052L 39,34.0052L 39,36.3385L 32.9167,36.3385L 32.9167,39.9583L 12.0833,39.9583L 12.0833,35.375L 6,35.375L 6,33.0417L 12.0833,33.0417L 12.0833,27.1806L 6,27.1806L 6,24.8472L 12.0833,24.8472L 12.0833,18.9861L 6,18.9861L 6,16.6528L 12.0833,16.6528L 12.0833,10.7917L 6,10.7917L 6,8.45834L 12.0833,8.45834L 12.0833,5.04167 Z "/>
         </Canvas>
+        <Canvas x:Key="CounterIcon" Width="45" Height="45" SnapsToDevicePixels="True">
+            <Path Width="35.9167" Height="34" Canvas.Left="4.54166" Canvas.Top="5.5" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="M 5.04166,32.9167L 5.04166,12.0833L 8.42187,12.0833L 8.42187,6L 10.7552,6L 10.7552,12.0833L 16.9496,12.0833L 16.9496,6L 19.283,6L 19.283,12.0833L 25.4774,12.0833L 25.4774,6L 27.8108,6L 27.8108,12.0833L 34.0052,12.0833L 34.0052,6L 36.3385,6L 36.3385,12.0833L 39.9583,12.0833L 39.9583,32.9167L 35.375,32.9167L 35.375,39L 33.0417,39L 33.0417,32.9167L 27.1806,32.9167L 27.1806,39L 24.8472,39L 24.8472,32.9167L 18.9861,32.9167L 18.9861,39L 16.6528,39L 16.6528,32.9167L 10.7917,32.9167L 10.7917,39L 8.45833,39L 8.45833,32.9167L 5.04166,32.9167 Z M 24.5525,29L 24.5525,27.5067L 21.1392,27.5067L 21.1392,13.8533L 15.9358,15.4267L 15.9358,17.0533L 19.4325,16.02L 19.4325,27.5067L 16.0192,27.5067L 16.0192,29L 24.5525,29 Z M 29.2458,26.6533L 27.5192,26.6533L 26.2592,31.7733L 27.5192,31.7733L 29.2458,26.6533 Z "/>
+        </Canvas>
         <Canvas x:Key="SegDisplayIcon" Width="45" Height="45" SnapsToDevicePixels="True">
             <Path Width="23.5" Height="38.5315" Canvas.Left="10.75" Canvas.Top="3.23424" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="M 11.25,3.73424L 33.75,3.73424L 33.75,41.2658L 11.25,41.2658L 11.25,3.73424 Z M 14.0861,6.66493L 14.0861,20.6565L 30.9139,20.6565L 30.9139,6.66493L 14.0861,6.66493 Z M 14.0861,24.6271L 14.0861,38.0515L 30.9139,38.0515L 30.9139,24.6271L 14.0861,24.6271 Z "/>
         </Canvas>
@@ -259,6 +262,7 @@
                     <tb:ToolboxItem Content="{StaticResource MicrocontrollerIcon}" ToolTip="Microcontroller" Click="ToolboxComponentButton_Click" Tag="type:Microcontroller" />
                 </tb:ToolboxCategory>
                 <tb:ToolboxCategory>
+                    <tb:ToolboxItem Content="{StaticResource CounterIcon}" ToolTip="Counter" Click="ToolboxComponentButton_Click" Tag="type:Counter" />
                     <tb:ToolboxItem Content="{StaticResource SegDisplayIcon}" ToolTip="7 Segment Display" Click="ToolboxComponentButton_Click" Tag="type:SegDisplay" />
                     <tb:ToolboxItem Content="{StaticResource SegDecoderIcon}" ToolTip="7 Segment Decoder" Click="ToolboxComponentButton_Click" Tag="type:SegDecoder" />
                 </tb:ToolboxCategory>
