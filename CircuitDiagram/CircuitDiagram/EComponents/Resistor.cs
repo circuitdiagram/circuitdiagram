@@ -29,6 +29,7 @@ namespace CircuitDiagram.EComponents
 {
     public class Resistor : EComponent
     {
+        [ComponentSerializable(ComponentSerializeOptions.Lowercase)]
         public double Resistance { get; set; }
 
         private string ResistanceString
@@ -44,6 +45,7 @@ namespace CircuitDiagram.EComponents
             }
         }
 
+        [ComponentSerializable("t")]
         public ResistorType ResistorType { get; set; }
 
         public Size Size
@@ -84,16 +86,12 @@ namespace CircuitDiagram.EComponents
         {
             Resistance = 4700;
             ResistorType = ResistorType.Standard;
-        }
-
-        protected override void CustomUpdateLayout()
-        {
-            ImplementMinimumSize(50f);
-        }
-
-        public override void Initialize()
-        {
             base.Editor = new ResistorEditor(this);
+        }
+
+        public override void UpdateLayout()
+        {
+            this.ImplementMinimumSize(50f);
         }
 
         public override void Render(IRenderer dc, Color color)
@@ -160,53 +158,6 @@ namespace CircuitDiagram.EComponents
                     dc.DrawPath(color, color, 2.0f, String.Format("M {0} m -32,-10 l 8,8 m 1,1 l -2,-4 l -2,2 l 4,2 l -2,-4", point0));
                 }
             }
-        }
-
-        public override void LoadData(System.Xml.XmlReader reader)
-        {
-            ResistorType = EComponents.ResistorType.Standard;
-            try
-            {
-                string resistorType = reader.GetAttribute("resistortype");
-                if (resistorType != null)
-                    ResistorType = (ResistorType)int.Parse(resistorType);
-
-                if (ResistorType != ResistorType.Variable && ResistorType != ResistorType.Thermistor)
-                {
-                    reader.MoveToAttribute("resistance");
-                    Resistance = reader.ReadContentAsDouble();
-                }
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        public override void SaveData(System.Xml.XmlWriter writer)
-        {
-            if (ResistorType != ResistorType.Standard)
-            {
-                writer.WriteAttributeString("resistortype", ((int)ResistorType).ToString());
-            }
-            if (ResistorType != ResistorType.Variable && ResistorType != ResistorType.Thermistor)
-                writer.WriteAttributeString("resistance", Resistance.ToString());
-        }
-
-        public override void LoadData(System.IO.TextReader reader)
-        {
-            Dictionary<string, string> properties;
-            base.LoadData(reader, out properties);
-            if (properties.ContainsKey("t"))
-                ResistorType = (ResistorType)int.Parse(properties["t"]);
-            if (properties.ContainsKey("resistance"))
-                Resistance = double.Parse(properties["resistance"]);
-        }
-
-        public override void SaveData(System.IO.TextWriter writer)
-        {
-            base.SaveData(writer);
-            writer.WriteLine("t:{0}", (int)ResistorType);
-            writer.WriteLine("resistance:{0}", Resistance.ToString());
         }
     }
 

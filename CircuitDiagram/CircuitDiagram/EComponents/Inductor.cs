@@ -44,9 +44,9 @@ namespace CircuitDiagram.EComponents
             }
         }
 
-        protected override void CustomUpdateLayout()
+        public override void UpdateLayout()
         {
-            ImplementMinimumSize(60d);
+            this.ImplementMinimumSize(60d);
         }
 
         public override void Render(IRenderer dc, System.Windows.Media.Color colour)

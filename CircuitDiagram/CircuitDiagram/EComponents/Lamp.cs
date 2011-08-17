@@ -49,9 +49,9 @@ namespace CircuitDiagram.EComponents
         {
         }
 
-        protected override void CustomUpdateLayout()
+        public override void UpdateLayout()
         {
-            ImplementMinimumSize(30f);
+            this.ImplementMinimumSize(30f);
         }
 
         public override void Render(IRenderer dc, Color color)

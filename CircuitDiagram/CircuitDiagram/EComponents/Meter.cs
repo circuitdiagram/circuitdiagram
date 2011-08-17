@@ -34,6 +34,7 @@ namespace CircuitDiagram.EComponents
             get { return new Size(EndLocation.X - StartLocation.X, EndLocation.Y - StartLocation.Y); }
         }
 
+        [ComponentSerializable("t")]
         public MeterType Type { get; set; }
 
         public override Rect BoundingBox
@@ -53,9 +54,9 @@ namespace CircuitDiagram.EComponents
             this.Editor = new MeterEditor(this);
         }
 
-        protected override void CustomUpdateLayout()
+        public override void UpdateLayout()
         {
-            ImplementMinimumSize(30f);
+            this.ImplementMinimumSize(30f);
         }
 
         public override void Render(IRenderer dc, Color color)
@@ -98,37 +99,6 @@ namespace CircuitDiagram.EComponents
                 {
                 }
             }
-        }
-
-        public override void LoadData(System.Xml.XmlReader reader)
-        {
-            try
-            {
-                reader.MoveToAttribute("t");
-                Type = (MeterType)reader.ReadContentAsInt();
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        public override void SaveData(System.Xml.XmlWriter writer)
-        {
-            writer.WriteAttributeString("t", ((int)Type).ToString());
-        }
-
-        public override void LoadData(System.IO.TextReader reader)
-        {
-            Dictionary<string, string> properties;
-            base.LoadData(reader, out properties);
-            if (properties.ContainsKey("t"))
-                Type = (MeterType)int.Parse(properties["t"]);
-        }
-
-        public override void SaveData(System.IO.TextWriter writer)
-        {
-            base.SaveData(writer);
-            EComponent.WriteProperty(writer, "t", ((int)Type).ToString());
         }
 
         public enum MeterType

@@ -29,6 +29,7 @@ namespace CircuitDiagram.EComponents
 {
     public class OutputDevice : EComponent
     {
+        [ComponentSerializable("t")]
         public OutputDeviceType Type { get; set; }
 
         public override Rect BoundingBox
@@ -65,12 +66,12 @@ namespace CircuitDiagram.EComponents
             Type = OutputDeviceType.Loudspeaker;
         }
 
-        protected override void CustomUpdateLayout()
+        public override void UpdateLayout()
         {
             if (Type == OutputDeviceType.Heater)
-                ImplementMinimumSize(80d);
+                this.ImplementMinimumSize(80d);
             else
-                ImplementMinimumSize(70f);
+                this.ImplementMinimumSize(70f);
         }
 
         public override void Render(IRenderer dc, Color colour)
@@ -155,37 +156,6 @@ namespace CircuitDiagram.EComponents
                     dc.DrawFormattedText(text, new Point(StartLocation.X - text.Width / 2, StartLocation.Y + Size.Height / 2 - text.Height / 2 - 2));
                 }
             }
-        }
-
-        public override void LoadData(System.Xml.XmlReader reader)
-        {
-            try
-            {
-                reader.MoveToAttribute("t");
-                Type = (OutputDeviceType)reader.ReadContentAsInt();
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        public override void SaveData(System.Xml.XmlWriter writer)
-        {
-            writer.WriteAttributeString("t", ((int)Type).ToString());
-        }
-
-        public override void LoadData(System.IO.TextReader reader)
-        {
-            Dictionary<string, string> properties;
-            base.LoadData(reader, out properties);
-            if (properties.ContainsKey("t"))
-                Type = (OutputDeviceType)int.Parse(properties["t"]);
-        }
-
-        public override void SaveData(System.IO.TextWriter writer)
-        {
-            base.SaveData(writer);
-            EComponent.WriteProperty(writer, "t", ((int)Type).ToString());
         }
     }
 

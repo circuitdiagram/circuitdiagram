@@ -32,6 +32,7 @@ namespace CircuitDiagram.EComponents
     {
         private double m_voltage;
 
+        [ComponentSerializable("voltage")]
         public double Voltage
         {
             get { return m_voltage; }
@@ -61,37 +62,6 @@ namespace CircuitDiagram.EComponents
             FormattedText text = new FormattedText((Voltage > 0 ? "+" : "") + Voltage.ToString() + "V", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 12d, new SolidColorBrush(Colors.Black));
             dc.DrawLine(color, 2.0f, StartLocation, EndLocation);
             dc.DrawText((Voltage >0? "+" : "") + Voltage.ToString() + "V", "Arial", 12d, color, Point.Add(StartLocation, new Vector(-(text.Width + 5), -6)));
-        }
-
-        public override void LoadData(System.Xml.XmlReader reader)
-        {
-            try
-            {
-                reader.MoveToAttribute("voltage");
-                Voltage = reader.ReadContentAsDouble();
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        public override void SaveData(System.Xml.XmlWriter writer)
-        {
-            writer.WriteAttributeString("voltage", Voltage.ToString());
-        }
-
-        public override void SaveData(System.IO.TextWriter writer)
-        {
-            base.SaveData(writer);
-            EComponent.WriteProperty(writer, "voltage", Voltage.ToString());
-        }
-
-        public override void LoadData(System.IO.TextReader reader)
-        {
-            Dictionary<string, string> properties;
-            base.LoadData(reader, out properties);
-            if (properties.ContainsKey("voltage"))
-                Voltage = double.Parse(properties["voltage"]);
         }
     }
 }

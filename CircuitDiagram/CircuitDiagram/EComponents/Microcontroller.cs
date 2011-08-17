@@ -29,9 +29,13 @@ namespace CircuitDiagram.EComponents
 {
     public class Microcontroller : EComponent
     {
+        [ComponentSerializable(ComponentSerializeOptions.Lowercase)]
         public bool DisplayPIC { get; set; }
+        [ComponentSerializable(ComponentSerializeOptions.Lowercase)]
         public int Inputs { get; set; }
+        [ComponentSerializable(ComponentSerializeOptions.Lowercase)]
         public int Outputs { get; set; }
+        [ComponentSerializable(ComponentSerializeOptions.Lowercase)]
         public bool ADC { get; set; }
 
         public override System.Windows.Rect BoundingBox
@@ -114,59 +118,6 @@ namespace CircuitDiagram.EComponents
                     dc.DrawText("PIC", "Arial", 12f, color, new Point(StartLocation.X + 4f, StartLocation.Y - 4f));
                 }
             }
-        }
-
-        public override void LoadData(System.Xml.XmlReader reader)
-        {
-            try
-            {
-                reader.MoveToAttribute("inputs");
-                Inputs = reader.ReadContentAsInt();
-                reader.MoveToAttribute("outputs");
-                Outputs = reader.ReadContentAsInt();
-                reader.MoveToAttribute("adc");
-                string hasADC = reader.ReadContentAsString();
-                ADC = (hasADC.ToLower() == "true");
-                reader.MoveToAttribute("displaypic");
-                string displayPic = reader.ReadContentAsString();
-                DisplayPIC = (displayPic.ToLower() == "true");
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        public override void SaveData(System.Xml.XmlWriter writer)
-        {
-            writer.WriteAttributeString("inputs", Inputs.ToString());
-            writer.WriteAttributeString("outputs", Outputs.ToString());
-            writer.WriteAttributeString("adc", ADC.ToString());
-            writer.WriteAttributeString("displaypic", DisplayPIC.ToString());
-        }
-
-        public override void SaveData(System.IO.TextWriter writer)
-        {
-            base.SaveData(writer);
-            EComponent.WriteProperty(writer, "inputs", Inputs.ToString());
-            EComponent.WriteProperty(writer, "outputs", Outputs.ToString());
-            EComponent.WriteProperty(writer, "adc", ADC.ToString().ToLower());
-            EComponent.WriteProperty(writer, "displaypic", DisplayPIC.ToString().ToLower());
-        }
-
-        public override void LoadData(System.IO.TextReader reader)
-        {
-            Dictionary<string, string> properties;
-            base.LoadData(reader, out properties);
-            if (properties.ContainsKey("inputs"))
-                Inputs = int.Parse(properties["inputs"]);
-            if (properties.ContainsKey("outputs"))
-                Outputs = int.Parse(properties["outputs"]);
-            ADC = false;
-            if (properties.ContainsKey("adc") && properties["adc"] == "true")
-                ADC = true;
-            DisplayPIC = false;
-            if (properties.ContainsKey("displaypic") && properties["displaypic"] == "true")
-                DisplayPIC = true;
         }
     }
 }

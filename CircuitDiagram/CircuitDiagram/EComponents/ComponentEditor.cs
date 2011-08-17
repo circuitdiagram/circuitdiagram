@@ -33,9 +33,9 @@ namespace CircuitDiagram
 
         public string GetComponentData()
         {
-            StringWriter writer = new StringWriter();
-            Component.SaveData(writer);
-            return writer.ToString();
+            Dictionary<string, object> properties = new Dictionary<string, object>();
+            Component.Serialize(properties);
+            return ComponentStringDescription.ConvertToString(properties);
         }
 
         public ComponentEditor()
@@ -51,7 +51,7 @@ namespace CircuitDiagram
 
         protected override sealed void CallComponentUpdated(EComponent component, string previousData)
         {
-            Component.UpdateLayout(base.Document);
+            Component.UpdateLayout();
             base.CallComponentUpdated(component, previousData);
         }
 

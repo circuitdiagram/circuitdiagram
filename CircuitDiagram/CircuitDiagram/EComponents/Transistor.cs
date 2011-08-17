@@ -40,6 +40,7 @@ namespace CircuitDiagram.EComponents
             }
         }
 
+        [ComponentSerializable("t")]
         public TransistorType Type
         {
             get;
@@ -52,9 +53,9 @@ namespace CircuitDiagram.EComponents
             this.Editor = new TransistorEditor(this);
         }
 
-        protected override void CustomUpdateLayout()
+        public override void UpdateLayout()
         {
-            ImplementMinimumSize(64f);
+            this.ImplementMinimumSize(64f);
         }
 
         public override void Render(IRenderer dc, Color color)
@@ -113,37 +114,6 @@ namespace CircuitDiagram.EComponents
                 dc.DrawRectangle(Colors.Transparent, color, 1d, BoundingBox);
                 dc.DrawText("This component can only be displayed vertically.", "Arial", 10d, color, Point.Add(StartLocation, new Vector(2d, -5d)));
             }
-        }
-
-        public override void LoadData(System.Xml.XmlReader reader)
-        {
-            try
-            {
-                reader.MoveToAttribute("t");
-                Type = (TransistorType)reader.ReadContentAsInt();
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        public override void SaveData(System.Xml.XmlWriter writer)
-        {
-            writer.WriteAttributeString("t", ((int)Type).ToString());
-        }
-
-        public override void SaveData(System.IO.TextWriter writer)
-        {
-            base.SaveData(writer);
-            EComponent.WriteProperty(writer, "t", ((int)Type).ToString());
-        }
-
-        public override void LoadData(System.IO.TextReader reader)
-        {
-            Dictionary<string, string> properties;
-            base.LoadData(reader, out properties);
-            if (properties.ContainsKey("t"))
-                Type = (TransistorType)int.Parse(properties["t"]);
         }
 
         public enum TransistorType

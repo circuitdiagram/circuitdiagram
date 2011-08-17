@@ -25,6 +25,8 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Xml;
+using System.Reflection;
+using CircuitDiagram.EComponents;
 
 namespace CircuitDiagram
 {
@@ -34,12 +36,9 @@ namespace CircuitDiagram
         {
             creationData = creationData.Replace(",", "\r\n");
             EComponent newComponent;
-            System.IO.StringReader reader = new System.IO.StringReader(creationData);
-            Dictionary<string, string> properties = LoadProperties(reader);
+            Dictionary<string, object> properties = ComponentStringDescription.ConvertToDictionary(creationData);
             newComponent = (EComponent)Activator.CreateInstance(Type.GetType("CircuitDiagram.EComponents." + properties["type"], true, true));
-            reader.Dispose();
-            reader = new System.IO.StringReader(creationData);
-            newComponent.LoadData(reader);
+            newComponent.Deserialize(properties);
             return newComponent;
         }
 
@@ -106,198 +105,139 @@ namespace CircuitDiagram
             IsFlipped = false;
             CanFlip = false;
             CanResize = true;
-            Initialize();
-        }
-
-        public virtual void Initialize()
-        {
             Editor = new BasicComponentEditor(this);
+            Serialize(new Dictionary<string, object>());
         }
 
-        private static double Biggest(double one, double two)
-        {
-            return (one >= two ? one : two);
-        }
-
-        private static double Smallest(double one, double two)
-        {
-            return (one < two ? one : two);
-        }
-
-        private static Point Snap(Point point, double gridSize)
-        {
-            return new Point(Math.Round(point.X / gridSize) * gridSize, Math.Round(point.Y / gridSize) * gridSize);
-        }
-
-        public void UpdateLayout(CircuitDocument document)
-        {
-            // reverse points if necessary
-            Point newStart = this.StartLocation;
-            Point newEnd = this.EndLocation;
-            bool switched = false;
-            if (this.StartLocation.X < this.EndLocation.X)
-            {
-                newStart = this.EndLocation;
-                newEnd = this.StartLocation;
-                switched = true;
-            }
-
-            if (document.SnapToGrid) // snap to grid
-            {
-                if (Math.IEEERemainder(newStart.X, 20d) != 0)
-                    newStart.X = Snap(newStart, document.GridSize).X;
-                if (Math.IEEERemainder(newStart.Y, 20d) != 0)
-                    newStart.Y = Snap(newStart, document.GridSize).Y;
-                if (Math.IEEERemainder(newEnd.X, 20d) != 0)
-                    newEnd.X = Snap(newEnd, document.GridSize).X;
-                if (Math.IEEERemainder(newEnd.Y, 20d) != 0)
-                    newEnd.Y = Snap(newEnd, document.GridSize).Y;
-            }
-            if (document.SnapToHV) // snap to horizontal or vertical
-            {
-                double height = Biggest(newStart.Y, newEnd.Y) - Smallest(newStart.Y, newEnd.Y);
-                double length = Math.Sqrt(Math.Pow(newEnd.X - newStart.X, 2d) + Math.Pow(newEnd.Y - newStart.Y, 2d));
-                double bearing = Math.Acos(height / length) * (180 / Math.PI);
-
-                if (bearing <= 45 && switched)
-                    newStart.X = newEnd.X;
-                else if (bearing <= 45 && !switched)
-                    newEnd.X = newStart.X;
-                else if (bearing > 45 && switched)
-                    newStart.Y = newEnd.Y;
-                else
-                    newEnd.Y = newStart.Y;
-            }
-
-            if (newStart.X > newEnd.X || newStart.Y > newEnd.Y)
-            {
-                this.StartLocation = newEnd;
-                this.EndLocation = newStart;
-            }
-            else
-            {
-                this.StartLocation = newStart;
-                this.EndLocation = newEnd;
-            }
-
-            ImplementMinimumSize(document.GridSize);
-            CustomUpdateLayout();
-        }
-
-        protected void ImplementMinimumSize(double size)
-        {
-            if (Horizontal && EndLocation.X - StartLocation.X < size)
-                EndLocation = new Point(StartLocation.X + size, EndLocation.Y);
-            else if (!Horizontal && EndLocation.Y - StartLocation.Y < size)
-                EndLocation = new Point(EndLocation.X, StartLocation.Y + size);
-        }
-
-        protected virtual void CustomUpdateLayout()
+        public virtual void UpdateLayout()
         {
         }
 
         public abstract void Render(IRenderer dc, Color color);
 
-        public virtual void SaveData(XmlWriter writer)
+        public void Serialize(Dictionary<string, object> properties)
         {
-        }
-
-        public virtual void LoadData(XmlReader reader)
-        {
-        }
-
-        public virtual void SaveData(System.IO.TextWriter writer)
-        {
-            WriteProperty(writer, "type", this.GetType().Name);
-            WriteProperty(writer, "x", StartLocation.X.ToString());
-            WriteProperty(writer, "y", StartLocation.Y.ToString());
+            // add common properties
+            properties.Add("type", this.GetType().Name);
+            properties.Add("x", StartLocation.X);
+            properties.Add("y", StartLocation.Y);
+            properties.Add("orientation", (Horizontal ? "horizontal" : "vertical"));
             if (CanResize)
             {
                 if (Horizontal)
-                    WriteProperty(writer, "size", (EndLocation.X - StartLocation.X).ToString());
+                    properties.Add("size", (EndLocation.X - StartLocation.X));
                 else
-                    WriteProperty(writer, "size", (EndLocation.Y - StartLocation.Y).ToString());
+                    properties.Add("size", (EndLocation.Y - StartLocation.Y));
             }
-           WriteProperty(writer, "orientation", (Horizontal ? "horizontal" : "vertical"));
             if (CanFlip)
-                WriteProperty(writer, "flipped", IsFlipped.ToString());
+                properties.Add("flipped", IsFlipped);
+
+            // add custom properties
+            PropertyInfo[] classProperties = this.GetType().GetProperties();
+            foreach (PropertyInfo propertyInfo in classProperties)
+            {
+                ComponentSerializableAttribute attribute = Attribute.GetCustomAttribute(propertyInfo, typeof(ComponentSerializableAttribute)) as ComponentSerializableAttribute;
+                if (attribute != null)
+                {
+                    string serializeAs = attribute.SerializedName;
+                    if (serializeAs == null && (attribute.Options & ComponentSerializeOptions.Lowercase) == ComponentSerializeOptions.Lowercase)
+                        serializeAs = propertyInfo.Name.ToLower();
+                    else if (serializeAs == null)
+                        serializeAs = propertyInfo.Name;
+                    if (propertyInfo.PropertyType.IsEnum)
+                        properties.Add(serializeAs, (int)propertyInfo.GetValue(this, null));
+                    else
+                        properties.Add(serializeAs, propertyInfo.GetValue(this, null));
+                }
+            }
         }
 
-        public virtual void LoadData(System.IO.TextReader reader)
+        private static object GetAsCorrectType(Type type, object value)
         {
-            Dictionary<string, string> properties = LoadProperties(reader);
-            if (properties.ContainsKey("x"))
-                m_startLocation.X = double.Parse(properties["x"]);
-            if (properties.ContainsKey("y"))
-                m_startLocation.Y = double.Parse(properties["y"]);
+            if (type.IsAssignableFrom(value.GetType()))
+                return value;
+
+            if (type == typeof(double))
+            {
+                return double.Parse(value.ToString());
+            }
+            if (type.IsEnum)
+            {
+                return int.Parse(value.ToString());
+            }
+            if (type == typeof(bool))
+            {
+                return bool.Parse(value.ToString());
+            }
+
+            return value;
+        }
+
+        public void Deserialize(Dictionary<string, object> properties)
+        {
+            bool hasCheckedOrientation = false;
             bool horizontal = true;
-            if (properties.ContainsKey("orientation") && properties["orientation"].ToLower() == "vertical")
-                horizontal = false;
-            if (properties.ContainsKey("size"))
+            foreach (KeyValuePair<string, object> property in properties)
             {
-                double size = double.Parse(properties["size"]);
-                if (horizontal)
+                // load common properties
+                if (property.Key == "x")
+                    m_startLocation.X = (double)GetAsCorrectType(typeof(double), property.Value);
+                if (property.Key == "y")
+                    m_startLocation.Y = (double)GetAsCorrectType(typeof(double), property.Value);
+                if (property.Key == "orientation" && property.Value.ToString().ToLower() == "vertical")
                 {
-                    m_endLocation.X = m_startLocation.X + size;
-                    m_endLocation.Y = m_startLocation.Y;
+                    horizontal = false;
+                    hasCheckedOrientation = true;
                 }
+                if (property.Key == "size")
+                {
+                    if (!hasCheckedOrientation) // size property may be before orientation property
+                    {
+                        if (properties.ContainsKey("orientation") && properties["orientation"].ToString().ToLower() == "vertical")
+                        {
+                            horizontal = false;
+                            hasCheckedOrientation = true;
+                        }
+                    }
+                    double size = (double)GetAsCorrectType(typeof(double), property.Value);
+                    if (horizontal)
+                    {
+                        m_endLocation.X = m_startLocation.X + size;
+                        m_endLocation.Y = m_startLocation.Y;
+                    }
+                    else
+                    {
+                        m_endLocation.X = m_startLocation.X;
+                        m_endLocation.Y = m_startLocation.Y + size;
+                    }
+                }
+                IsFlipped = false;
+                if (property.Key == "flipped" && property.Value.ToString().ToLower() == "true")
+                    IsFlipped = true;
+
+                // load custom properties
+                MemberInfo[] memerInfo = this.GetType().FindMembers(MemberTypes.Property, BindingFlags.Public | BindingFlags.Instance, new MemberFilter(IsPropertySerializedMatch), property.Key);
+                if (memerInfo.Length > 0)
+                    (memerInfo[0] as PropertyInfo).SetValue(this, GetAsCorrectType((memerInfo[0] as PropertyInfo).PropertyType, property.Value), null);
+            }
+        }
+
+        private bool IsPropertySerializedMatch(MemberInfo info, object filterCriteria)
+        {
+            // return false unless property has a ComponentSerializable attribute
+            ComponentSerializableAttribute attribute = Attribute.GetCustomAttribute(info, typeof(ComponentSerializableAttribute)) as ComponentSerializableAttribute;
+            if (attribute != null)
+            {
+                // check whether serialized name is explicitly defined
+                if (attribute.SerializedName != null)
+                    return attribute.SerializedName == filterCriteria as string; // check serialized name
+                else if ((attribute.Options & ComponentSerializeOptions.Lowercase) == ComponentSerializeOptions.Lowercase)
+                    return info.Name.ToLower() == filterCriteria as string; // check if lowercase match
                 else
-                {
-                    m_endLocation.X = m_startLocation.X;
-                    m_endLocation.Y = m_startLocation.Y + size;
-                }
+                    return info.Name == filterCriteria as string; // check property name
             }
-            IsFlipped = false;
-            if (properties.ContainsKey("flipped") && properties["flipped"].ToLower() == "true")
-                IsFlipped = true;
-        }
 
-        public void LoadData(System.IO.TextReader reader, out Dictionary<string, string> properties)
-        {
-            properties = LoadProperties(reader);
-            if (properties.ContainsKey("x"))
-                m_startLocation.X = double.Parse(properties["x"]);
-            if (properties.ContainsKey("y"))
-                m_startLocation.Y = double.Parse(properties["y"]);
-            bool horizontal = true;
-            if (properties.ContainsKey("orientation") && properties["orientation"].ToLower() == "vertical")
-                horizontal = false;
-            if (properties.ContainsKey("size"))
-            {
-                double size = double.Parse(properties["size"]);
-                if (horizontal)
-                {
-                    m_endLocation.X = m_startLocation.X + size;
-                    m_endLocation.Y = m_startLocation.Y;
-                }
-                else
-                {
-                    m_endLocation.X = m_startLocation.X;
-                    m_endLocation.Y = m_startLocation.Y + size;
-                }
-            }
-            IsFlipped = false;
-            if (properties.ContainsKey("flipped") && properties["flipped"].ToLower() == "true")
-                IsFlipped = true;
-        }
-
-        public static Dictionary<string, string> LoadProperties(System.IO.TextReader reader)
-        {
-            Dictionary<string, string> returnDict = new Dictionary<string, string>();
-            string line = reader.ReadLine();
-            while (line != null)
-            {
-                string[] parameters = line.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-                if (parameters.Length >= 2)
-                    returnDict.Add(parameters[0], parameters[1]);
-                line = reader.ReadLine();
-            }
-            return returnDict;
-        }
-
-        public static void WriteProperty(System.IO.TextWriter writer, string key, string value)
-        {
-            writer.WriteLine("{0}:{1}", key, value);
+            return false;
         }
     }
 }

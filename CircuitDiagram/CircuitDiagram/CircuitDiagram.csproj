@@ -105,6 +105,8 @@
     </ApplicationDefinition>
     <Compile Include="CDDXIO.cs" />
     <Compile Include="CircuitDocument.cs" />
+    <Compile Include="ComponentHelper.cs" />
+    <Compile Include="ComponentStringDescription.cs" />
     <Compile Include="CustomCommands.cs" />
     <Compile Include="EComponents\BasicComponentEditor.xaml.cs">
       <DependentUpon>BasicComponentEditor.xaml</DependentUpon>
@@ -113,6 +115,7 @@
     <Compile Include="EComponents\CapacitorEditor.xaml.cs">
       <DependentUpon>CapacitorEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EComponents\ComponentAttributes.cs" />
     <Compile Include="EComponents\ComponentEditorBase.cs" />
     <Compile Include="EComponents\Crystal.cs" />
     <Compile Include="EComponents\Microphone.cs" />

@@ -72,22 +72,19 @@ namespace CircuitDiagram.EComponents
             }
         }
 
+        [ComponentSerializable("t")]
         public DiodeType Type { get; set; }
 
         public Diode()
         {
             CanFlip = true;
             Type = DiodeType.Standard;
-        }
-
-        public override void Initialize()
-        {
             base.Editor = new DiodeEditor(this);
         }
 
-        protected override void CustomUpdateLayout()
+        public override void UpdateLayout()
         {
-            ImplementMinimumSize(30f);
+            this.ImplementMinimumSize(30f);
             if (Type == DiodeType.Bridge)
             {
                 CanFlip = false;
@@ -184,37 +181,6 @@ namespace CircuitDiagram.EComponents
                     }
                 }
             }
-        }
-
-        public override void LoadData(System.Xml.XmlReader reader)
-        {
-            try
-            {
-                Type = DiodeType.Standard;
-                Type = (DiodeType)int.Parse(reader.GetAttribute("t"));
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        public override void SaveData(System.Xml.XmlWriter writer)
-        {
-            writer.WriteAttributeString("t", ((int)Type).ToString());
-        }
-
-        public override void SaveData(System.IO.TextWriter writer)
-        {
-            base.SaveData(writer);
-            EComponent.WriteProperty(writer, "t", ((int)Type).ToString());
-        }
-
-        public override void LoadData(System.IO.TextReader reader)
-        {
-            Dictionary<string, string> properties;
-            base.LoadData(reader, out properties);
-            if (properties.ContainsKey("t"))
-                Type = (DiodeType)int.Parse(properties["t"]);
         }
     }
 

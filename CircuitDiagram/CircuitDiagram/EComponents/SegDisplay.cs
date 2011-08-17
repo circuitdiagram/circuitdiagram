@@ -33,7 +33,7 @@ namespace CircuitDiagram.EComponents
         {
         }
 
-        protected override void CustomUpdateLayout()
+        public override void UpdateLayout()
         {
             if (EndLocation.Y - StartLocation.Y < 110f)
                 EndLocation = new Point(EndLocation.X, StartLocation.Y + 110f);

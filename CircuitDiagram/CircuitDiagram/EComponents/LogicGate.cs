@@ -31,6 +31,7 @@ namespace CircuitDiagram.EComponents
     {
         private LogicType m_logicType;
 
+        [ComponentSerializable("logictype")]
         public LogicType LogicType
         {
             get { return m_logicType; }
@@ -59,9 +60,9 @@ namespace CircuitDiagram.EComponents
             base.Editor = new LogicGateEditor(this);
         }
 
-        protected override void CustomUpdateLayout()
+        public override void UpdateLayout()
         {
-            ImplementMinimumSize(64f);
+            this.ImplementMinimumSize(64f);
         }
 
         public override void Render(IRenderer dc, Color color)
@@ -142,37 +143,6 @@ namespace CircuitDiagram.EComponents
                         break;
                 }
             }
-        }
-
-        public override void LoadData(System.Xml.XmlReader reader)
-        {
-            try
-            {
-                reader.MoveToAttribute("logictype");
-                LogicType = (LogicType)reader.ReadContentAsInt();
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        public override void SaveData(System.Xml.XmlWriter writer)
-        {
-            writer.WriteAttributeString("logictype", ((int)LogicType).ToString());
-        }
-
-        public override void SaveData(System.IO.TextWriter writer)
-        {
-            base.SaveData(writer);
-            EComponent.WriteProperty(writer, "t", ((int)LogicType).ToString());
-        }
-
-        public override void LoadData(System.IO.TextReader reader)
-        {
-            Dictionary<string, string> properties;
-            base.LoadData(reader, out properties);
-            if (properties.ContainsKey("t"))
-                LogicType = (LogicType)int.Parse(properties["t"]);
         }
     }
 

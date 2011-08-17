@@ -29,7 +29,9 @@ namespace CircuitDiagram.EComponents
 {
     public class ExternalConnection : EComponent
     {
+        [ComponentSerializable("text")]
         public string ConnectionText { get; set; }
+        [ComponentSerializable("topleft")]
         public bool ConnectionTopLeft { get; set; }
 
         public ExternalConnection()
@@ -53,7 +55,7 @@ namespace CircuitDiagram.EComponents
             }
         }
 
-        protected override void CustomUpdateLayout()
+        public override void UpdateLayout()
         {
             if (Horizontal && EndLocation.X - StartLocation.X < 40f)
                 EndLocation = new Point(StartLocation.X + 40f, EndLocation.Y);
@@ -95,48 +97,6 @@ namespace CircuitDiagram.EComponents
                     dc.DrawText(ConnectionText, "Arial", 12f, color, Point.Add(EndLocation, new Vector(-txt.Width / 2, -txt.Height)));
                 }
             }
-        }
-
-        public override void LoadData(System.Xml.XmlReader reader)
-        {
-            try
-            {
-                reader.MoveToAttribute("text");
-                ConnectionText = reader.ReadContentAsString();
-                reader.MoveToAttribute("topleft");
-                string connectionTL = reader.ReadContentAsString();
-                if (connectionTL.ToLower() == "true")
-                    ConnectionTopLeft = true;
-                else
-                    ConnectionTopLeft = false;
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        public override void SaveData(System.Xml.XmlWriter writer)
-        {
-            writer.WriteAttributeString("text", ConnectionText);
-            writer.WriteAttributeString("topleft", ConnectionTopLeft.ToString());
-        }
-
-        public override void SaveData(System.IO.TextWriter writer)
-        {
-            base.SaveData(writer);
-            EComponent.WriteProperty(writer, "text", ConnectionText);
-            EComponent.WriteProperty(writer, "topleft", ConnectionTopLeft.ToString().ToLower());
-        }
-
-        public override void LoadData(System.IO.TextReader reader)
-        {
-            Dictionary<string, string> properties;
-            base.LoadData(reader, out properties);
-            if (properties.ContainsKey("text"))
-                ConnectionText = properties["text"];
-            ConnectionTopLeft = false;
-            if (properties.ContainsKey("topleft") && properties["topleft"] == "true")
-                ConnectionTopLeft = true;
         }
     }
 }

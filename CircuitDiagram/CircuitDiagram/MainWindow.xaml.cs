@@ -155,9 +155,9 @@ namespace CircuitDiagram
 
             if (m_document.SelectedComponent != null && m_moveComponent && m_document.SelectedComponent.CanResize)
             {
-                StringWriter writer = new StringWriter();
-                m_document.SelectedComponent.SaveData(writer);
-                previousData = writer.ToString();
+                Dictionary<string, object> properties = new Dictionary<string,object>();
+                m_document.SelectedComponent.Serialize(properties);
+                previousData = ComponentStringDescription.ConvertToString(properties);
 
                 if (m_document.SelectedComponent.Horizontal)
                 {
@@ -190,13 +190,15 @@ namespace CircuitDiagram
         {
             if (m_resizing != ComponentResizeMode.None)
             {
-                StringWriter newWriter = new StringWriter();
-                m_document.SelectedComponent.SaveData(newWriter);
-                if (previousData != newWriter.ToString())
+                Dictionary<string, object> properties = new Dictionary<string, object>();
+                m_document.SelectedComponent.Serialize(properties);
+                string newData = ComponentStringDescription.ConvertToString(properties);
+
+                if (previousData != newData)
                 {
                     UndoAction newAction = new UndoAction(UndoCommand.ResizeComponent, "Resize component", m_document.SelectedComponent);
                     newAction.AddData("before", previousData);
-                    newAction.AddData("after", newWriter.ToString());
+                    newAction.AddData("after", newData);
                     UndoManager.AddAction(newAction);
                 }
 
@@ -227,7 +229,7 @@ namespace CircuitDiagram
             EComponent newComponent = EComponent.Create(newComponentType);
             newComponent.StartLocation = mouseDownPos;
             newComponent.EndLocation = mouseUpPos;
-            newComponent.UpdateLayout(m_document);
+            m_document.UpdateComponent(newComponent);
             newComponent.Editor.Document = m_document;
             newComponent.Editor.ComponentUpdated += new CircuitDiagram.ComponentEditorBase.ComponentUpdatedDelegate(Editor_ComponentUpdated);
             m_document.Components.Add(newComponent);
@@ -252,7 +254,7 @@ namespace CircuitDiagram
                     m_document.SelectedComponent.StartLocation = new Point(m_document.SelectedComponent.StartLocation.X, e.GetPosition(circuitDisplay).Y);
                 else if (m_resizing == ComponentResizeMode.Bottom)
                     m_document.SelectedComponent.EndLocation = new Point(m_document.SelectedComponent.StartLocation.X, e.GetPosition(circuitDisplay).Y);
-                m_document.SelectedComponent.UpdateLayout(m_document);
+                m_document.UpdateComponent(m_document.SelectedComponent);
 
                 circuitDisplay.InvalidateVisual();
             }
@@ -267,7 +269,7 @@ namespace CircuitDiagram
                     fromEnd = m_document.SelectedComponent.EndLocation;
                 m_document.SelectedComponent.StartLocation = Point.Add(m_moveComponentStartPos, new Vector(-mouseDownPos.X + e.GetPosition((IInputElement)sender).X, -mouseDownPos.Y + e.GetPosition((IInputElement)sender).Y));
                 m_document.SelectedComponent.EndLocation = Point.Add(m_moveComponentEndPos, new Vector(-mouseDownPos.X + e.GetPosition((IInputElement)sender).X, -mouseDownPos.Y + e.GetPosition((IInputElement)sender).Y));
-                m_document.SelectedComponent.UpdateLayout(m_document);
+                m_document.UpdateComponent(m_document.SelectedComponent);
                 m_document.InvalidateVisual();
                 circuitDisplay.InvalidateVisual();
             }
@@ -279,7 +281,7 @@ namespace CircuitDiagram
                 newComponent.StartLocation = mouseDownPos;
                 newComponent.EndLocation = mouseUpPos;
                 m_document.TempComponents.Add(newComponent);
-                newComponent.UpdateLayout(m_document);
+                m_document.UpdateComponent(newComponent);
                 newComponent.Editor.Document = m_document;
                 newComponent.Editor.ComponentUpdated += new CircuitDiagram.ComponentEditorBase.ComponentUpdatedDelegate(Editor_ComponentUpdated);
             }
@@ -330,11 +332,12 @@ namespace CircuitDiagram
 
         void Editor_ComponentUpdated(object sender, ComponentUpdatedEventArgs e)
         {
-            StringWriter newWriter = new StringWriter();
-            e.Component.SaveData(newWriter);
+            Dictionary<string, object> properties = new Dictionary<string, object>();
+            e.Component.Serialize(properties);
+            string newData = ComponentStringDescription.ConvertToString(properties);
             UndoAction newAction = new UndoAction(UndoCommand.EditComponent, "Edit component", e.Component);
             newAction.AddData("before", e.PreviousData);
-            newAction.AddData("after", newWriter.ToString());
+            newAction.AddData("after", newData);
             UndoManager.AddAction(newAction);
             circuitDisplay.InvalidateVisual();
         }
@@ -520,6 +523,7 @@ namespace CircuitDiagram
                     // Save in XML format
                     m_document.Save(m_docPath, circuitDisplay.Width, circuitDisplay.Height);
                 }
+                this.Title = System.IO.Path.GetFileNameWithoutExtension(m_docPath) + " - Circuit Diagram";
                 UndoManager.SetSaveIndex();
             }
             else
@@ -634,14 +638,12 @@ namespace CircuitDiagram
                         break;
                     case UndoCommand.ResizeComponent:
                         {
-                            StringReader reader = new StringReader(e.Action.GetData<string>("before"));
-                            ((EComponent)e.Action.GetDefaultData()).LoadData(reader);
+                            ((EComponent)e.Action.GetDefaultData()).Deserialize(ComponentStringDescription.ConvertToDictionary(e.Action.GetData<string>("before")));
                         }
                         break;
                     case UndoCommand.EditComponent:
                         {
-                            StringReader reader = new StringReader(e.Action.GetData<string>("before"));
-                            ((EComponent)e.Action.GetDefaultData()).LoadData(reader);
+                            ((EComponent)e.Action.GetDefaultData()).Deserialize(ComponentStringDescription.ConvertToDictionary(e.Action.GetData<string>("before")));
                         }
                         break;
                     case UndoCommand.DeleteComponent:
@@ -666,14 +668,12 @@ namespace CircuitDiagram
                         break;
                     case UndoCommand.ResizeComponent:
                         {
-                            StringReader reader = new StringReader(e.Action.GetData<string>("after"));
-                            ((EComponent)e.Action.GetDefaultData()).LoadData(reader);
+                            ((EComponent)e.Action.GetDefaultData()).Deserialize(ComponentStringDescription.ConvertToDictionary(e.Action.GetData<string>("after")));
                         }
                         break;
                     case UndoCommand.EditComponent:
                         {
-                            StringReader reader = new StringReader(e.Action.GetData<string>("after"));
-                            ((EComponent)e.Action.GetDefaultData()).LoadData(reader);
+                            ((EComponent)e.Action.GetDefaultData()).Deserialize(ComponentStringDescription.ConvertToDictionary(e.Action.GetData<string>("after")));
                         }
                         break;
                     case UndoCommand.DeleteComponent:

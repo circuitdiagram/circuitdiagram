@@ -55,8 +55,10 @@ namespace CircuitDiagram.EComponents
             }
         }
 
+        [ComponentSerializable("t")]
         public CapacitorType Type { get; set; }
 
+        [ComponentSerializable(ComponentSerializeOptions.Lowercase)]
         public double Capacitance { get; set; }
 
         private string CapacitanceString
@@ -78,10 +80,6 @@ namespace CircuitDiagram.EComponents
         public Capacitor()
         {
             Capacitance = 1 * Math.Pow(10, -3);
-        }
-
-        public override void Initialize()
-        {
             base.Editor = new CapacitorEditor(this);
         }
 
@@ -137,49 +135,6 @@ namespace CircuitDiagram.EComponents
                 else if (Type == CapacitorType.Variable)
                     dc.DrawPath(null, colour, 2f, String.Format("M {0} m -11,10 l 24,-26 m -6,0 l 6,0 l 0,6", gapEnd));
             }
-        }
-
-        public override void LoadData(System.Xml.XmlReader reader)
-        {
-            try
-            {
-                string type = reader.GetAttribute("t");
-                if (type != null)
-                    Type = (CapacitorType)int.Parse(type);
-
-                if (Type != CapacitorType.Variable && Type != CapacitorType.Trimmer)
-                {
-                    reader.MoveToAttribute("capacitance");
-                    Capacitance = reader.ReadContentAsDouble();
-                }
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        public override void SaveData(System.Xml.XmlWriter writer)
-        {
-            writer.WriteAttributeString("capacitance", Capacitance.ToString());
-            writer.WriteAttributeString("t", ((int)Type).ToString());
-        }
-
-        public override void SaveData(System.IO.TextWriter writer)
-        {
-            base.SaveData(writer);
-            EComponent.WriteProperty(writer, "capacitance", Capacitance.ToString());
-            EComponent.WriteProperty(writer, "t", ((int)Type).ToString());
-        }
-
-        public override void LoadData(System.IO.TextReader reader)
-        {
-            Dictionary<string, string> properties;
-            base.LoadData(reader, out properties);
-            if (properties.ContainsKey("capacitance"))
-                Capacitance = double.Parse(properties["capacitance"]);
-            Type = CapacitorType.Standard;
-            if (properties.ContainsKey("t"))
-                Type = (CapacitorType)int.Parse(properties["t"]);
         }
     }
 

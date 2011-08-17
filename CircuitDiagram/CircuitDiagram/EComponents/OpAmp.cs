@@ -45,6 +45,7 @@ namespace CircuitDiagram.EComponents
             get { return new Size(EndLocation.X - StartLocation.X, EndLocation.Y - StartLocation.Y); }
         }
 
+        [ComponentSerializable(ComponentSerializeOptions.Lowercase)]
         public bool FlipInputs { get; set; }
 
         public OpAmp()
@@ -53,9 +54,9 @@ namespace CircuitDiagram.EComponents
             this.Editor = new OpAmpEditor(this);
         }
 
-        protected override void CustomUpdateLayout()
+        public override void UpdateLayout()
         {
-            ImplementMinimumSize(60f);
+            this.ImplementMinimumSize(60f);
         }
 
         public override void Render(IRenderer dc, Color color)
@@ -80,42 +81,6 @@ namespace CircuitDiagram.EComponents
                 else
                     dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " l 30,0 l -30,44 l -30,-44 l 30,0 m -10,5 l 0,10 m 15,-5 l 10,0 m -5,-5 l 0,10 m -10,28 L " + EndLocation.ToString());
             }
-        }
-
-        public override void LoadData(System.Xml.XmlReader reader)
-        {
-            try
-            {
-                reader.MoveToAttribute("flipinputs");
-                string flipInputs = reader.ReadContentAsString();
-                if (flipInputs.ToLower() == "true")
-                    FlipInputs = true;
-                else
-                    FlipInputs = false;
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        public override void SaveData(System.Xml.XmlWriter writer)
-        {
-            writer.WriteAttributeString("flipinputs", FlipInputs.ToString());
-        }
-
-        public override void SaveData(System.IO.TextWriter writer)
-        {
-            base.SaveData(writer);
-            EComponent.WriteProperty(writer, "flipinputs", FlipInputs.ToString().ToLower());
-        }
-
-        public override void LoadData(System.IO.TextReader reader)
-        {
-            Dictionary<string, string> properties;
-            base.LoadData(reader, out properties);
-            FlipInputs = false;
-            if (properties.ContainsKey("flipinputs") && properties["flipinputs"] == "true")
-                FlipInputs = true;
         }
     }
 }

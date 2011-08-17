@@ -45,6 +45,7 @@ namespace CircuitDiagram.EComponents
             }
         }
 
+        [ComponentSerializable("t")]
         public SwitchType Type
         {
             get;
@@ -57,9 +58,9 @@ namespace CircuitDiagram.EComponents
             this.Editor = new SwitchEditor(this);
         }
 
-        protected override void CustomUpdateLayout()
+        public override void UpdateLayout()
         {
-            ImplementMinimumSize(30d);
+            this.ImplementMinimumSize(30d);
         }
 
         public override void Render(IRenderer dc, Color color)
@@ -97,40 +98,6 @@ namespace CircuitDiagram.EComponents
                     dc.DrawLine(color, 2d, Point.Add(gapStart, new Vector(-1d, 3d)), Point.Add(gapEnd, new Vector(-8d, 0)));
                 }
             }
-        }
-
-        public override void LoadData(System.Xml.XmlReader reader)
-        {
-            Type = SwitchType.Push;
-
-            try
-            {
-                string switchType = reader.GetAttribute("t");
-                if (switchType != null)
-                    Type = (SwitchType)int.Parse(switchType);
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        public override void SaveData(System.Xml.XmlWriter writer)
-        {
-            writer.WriteAttributeString("t", ((int)Type).ToString());
-        }
-
-        public override void LoadData(System.IO.TextReader reader)
-        {
-            Dictionary<string, string> properties;
-            base.LoadData(reader, out properties);
-            if (properties.ContainsKey("t"))
-                Type = (SwitchType)int.Parse(properties["t"]);
-        }
-
-        public override void SaveData(System.IO.TextWriter writer)
-        {
-            base.SaveData(writer);
-            writer.WriteLine("t:{0}", (int)Type);
         }
     }
 
