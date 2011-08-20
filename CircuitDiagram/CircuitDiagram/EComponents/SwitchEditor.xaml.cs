@@ -52,6 +52,7 @@ namespace CircuitDiagram.EComponents
             IsLoadingComponent = true;
             radPush.IsChecked = false;
             radToggle.IsChecked = false;
+            radAnalogue.IsChecked = false;
             switch (Component.Type)
             {
                 case SwitchType.Push:
@@ -59,6 +60,9 @@ namespace CircuitDiagram.EComponents
                     break;
                 case SwitchType.Toggle:
                     radToggle.IsChecked = true;
+                    break;
+                case SwitchType.Analogue:
+                    radAnalogue.IsChecked = true;
                     break;
             }
             IsLoadingComponent = false;
@@ -71,6 +75,8 @@ namespace CircuitDiagram.EComponents
                 Component.Type = SwitchType.Push;
             else if (radToggle.IsChecked == true)
                 Component.Type = SwitchType.Toggle;
+            else if (radAnalogue.IsChecked == true)
+                Component.Type = SwitchType.Analogue;
             base.CallComponentUpdated(previousData);
         }
     }

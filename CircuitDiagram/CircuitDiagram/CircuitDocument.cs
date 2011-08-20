@@ -347,58 +347,67 @@ namespace CircuitDiagram
 
         public void Load(string path, out double displayWidth, out double displayHeight)
         {
-            XmlTextReader reader = new XmlTextReader(path);
-            m_tempComponents.Clear();
-            m_components.Clear();
             bool errorOccurred = false;
-            displayWidth = 640;
-            displayHeight = 480;
-            while (reader.Read())
+            try
             {
-                if (reader.NodeType == XmlNodeType.Element && reader.Depth == 0)
+                XmlTextReader reader = new XmlTextReader(path);
+                m_tempComponents.Clear();
+                m_components.Clear();
+                displayWidth = 640;
+                displayHeight = 480;
+                while (reader.Read())
                 {
-                    try
+                    if (reader.NodeType == XmlNodeType.Element && reader.Depth == 0)
                     {
-                        reader.MoveToAttribute("width");
-                        displayWidth = double.Parse(reader.Value);
-                        reader.MoveToAttribute("height");
-                        displayHeight = double.Parse(reader.Value);
-                        reader.MoveToElement();
-                    }
-                    catch (Exception)
-                    {
-                        errorOccurred = true;
-                    }
-                }
-                else if (reader.NodeType == XmlNodeType.Element && reader.Depth == 1 && reader.LocalName == "component")
-                {
-                    try
-                    {
-                        reader.MoveToAttribute("type");
-                        string componentType = reader.Value;
-                        reader.MoveToElement();
-                        EComponent component = (EComponent)Activator.CreateInstance(Type.GetType("CircuitDiagram.EComponents." + componentType, true, false));
-                        Dictionary<string, object> properties = new Dictionary<string, object>();
-                        reader.MoveToNextAttribute();
-                        for (int i = 0; i < reader.AttributeCount; i++)
+                        try
                         {
-                            properties.Add(reader.Name, reader.Value);
-                            reader.MoveToNextAttribute();
+                            reader.MoveToAttribute("width");
+                            displayWidth = double.Parse(reader.Value);
+                            reader.MoveToAttribute("height");
+                            displayHeight = double.Parse(reader.Value);
+                            reader.MoveToElement();
                         }
-                        reader.MoveToElement();
-                        component.Deserialize(properties);
-                        UpdateComponent(component);
-                        component.Editor.Document = this;
-
-                        m_components.Add(component);
+                        catch (Exception)
+                        {
+                            errorOccurred = true;
+                        }
                     }
-                    catch (Exception)
+                    else if (reader.NodeType == XmlNodeType.Element && reader.Depth == 1 && reader.LocalName == "component")
                     {
-                        errorOccurred = true;
+                        try
+                        {
+                            reader.MoveToAttribute("type");
+                            string componentType = reader.Value;
+                            reader.MoveToElement();
+                            EComponent component = (EComponent)Activator.CreateInstance(Type.GetType("CircuitDiagram.EComponents." + componentType, true, false));
+                            Dictionary<string, object> properties = new Dictionary<string, object>();
+                            reader.MoveToNextAttribute();
+                            for (int i = 0; i < reader.AttributeCount; i++)
+                            {
+                                properties.Add(reader.Name, reader.Value);
+                                reader.MoveToNextAttribute();
+                            }
+                            reader.MoveToElement();
+                            component.Deserialize(properties);
+                            UpdateComponent(component);
+                            component.Editor.Document = this;
+
+                            m_components.Add(component);
+                        }
+                        catch (Exception)
+                        {
+                            errorOccurred = true;
+                        }
                     }
                 }
+                reader.Close();
             }
-            reader.Close();
+            catch (Exception)
+            {
+                displayWidth = 640;
+                displayHeight = 480;
+                errorOccurred = true;
+            }
             if (errorOccurred)
                 MessageBox.Show("The document was not in the correct format.", "Error Loading Document", MessageBoxButton.OK, MessageBoxImage.Error);
         }

@@ -123,6 +123,8 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Margin" Value="5,5,5,0" />
     </Style>
 
@@ -140,6 +142,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Width" Value="45" />
         <Setter Property="Height" Value="45" />
         <Setter Property="Background" Value="#FF4E4E4E" />

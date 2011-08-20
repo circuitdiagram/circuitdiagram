@@ -24,6 +24,16 @@ namespace CircuitDiagram
 
             chbUpdatesStartup.IsChecked = Properties.Settings.Default.CheckForUpdatesOnStartup;
             chbShowToolboxScrollBar.IsChecked = Properties.Settings.Default.IsToolboxScrollBarVisible;
+
+            this.Loaded += new RoutedEventHandler(winOptions_Loaded);
+        }
+
+        void winOptions_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (this.Owner is MainWindow)
+                btnClearRecentFilesMenu.IsEnabled = !((this.Owner as MainWindow).RecentFiles.Count == 1 && (this.Owner as MainWindow).RecentFiles[0] == "(empty)");
+            else
+                btnClearRecentFilesMenu.IsEnabled = false;
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
@@ -38,6 +48,18 @@ namespace CircuitDiagram
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void btnClearRecentFilesMenu_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.RecentFiles = "";
+            Properties.Settings.Default.Save();
+            if (this.Owner is MainWindow)
+            {
+                (this.Owner as MainWindow).RecentFiles.Clear();
+                (this.Owner as MainWindow).RecentFiles.Add("(empty)");
+            }
+            btnClearRecentFilesMenu.IsEnabled = false;
         }
     }
 }

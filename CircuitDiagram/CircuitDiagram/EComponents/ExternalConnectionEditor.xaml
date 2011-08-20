@@ -9,9 +9,17 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <Label Content="Text" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" />
-        <TextBox Height="23" Margin="116,14,12,0" Name="tbxConnectionText" VerticalAlignment="Top" TextChanged="tbxConnectionText_TextChanged" />
-        <CheckBox Content="Top or left" Height="16" HorizontalAlignment="Left" Margin="116,47,0,0" Name="chbTopOrLeft" VerticalAlignment="Top" Checked="chbTopOrLeftChecked" Unchecked="chbTopOrLeftChecked" />
-        <Label Content="Text position" Height="28" HorizontalAlignment="Left" Margin="12,42,0,0" Name="label2" VerticalAlignment="Top" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Label Grid.Column="0" Grid.Row="0" Content="Text" Height="28" Padding="2,5,5,5" />
+        <TextBox Grid.Column="1" Height="23" Margin="4" Name="tbxConnectionText" TextChanged="tbxConnectionText_TextChanged" />
+        <CheckBox Grid.Column="1" Grid.Row="1" Margin="4" Content="Top or left" Height="16" Name="chbTopOrLeft" Checked="chbTopOrLeftChecked" Unchecked="chbTopOrLeftChecked" />
+        <Label Grid.Column="0" Grid.Row="1" Content="Text position" Height="28" Padding="2,5,5,5" />
     </Grid>
 </my:ComponentEditor>

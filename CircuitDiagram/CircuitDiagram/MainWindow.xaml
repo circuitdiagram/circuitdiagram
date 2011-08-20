@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:my="clr-namespace:CircuitDiagram"
         xmlns:tb="clr-namespace:Toolbox;assembly=Toolbox"
+        xmlns:col="clr-namespace:System.Collections;assembly=mscorlib"
         Title="Circuit Diagram"
 		x:Name="RibbonWindow" Focusable="False" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" Closed="RibbonWindow_Closed" Height="685" Width="940" Closing="RibbonWindow_Closing" Icon="Logo32.png">
     <Window.Resources>
@@ -25,9 +26,13 @@
             <Path Width="12" Height="13.0833" Canvas.Left="17" Canvas.Top="21" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="F1 M 6.16667,14.0833L 17.1667,14.0833L 17.1667,18.2499L 13.375,18.2499L 13.375,26.1666L 9.95833,26.1666L 9.95833,18.2499L 6.16667,18.2499L 6.16667,14.0833 Z "/>
             <Path Width="23.3333" Height="12.3333" Canvas.Left="11" Canvas.Top="8" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="F1 M 0.5,8.5L 9.95833,8.5L 9.95833,0.5L 13.375,0.5L 13.375,8.5L 22.8333,8.5L 22.8333,11.8333L 0.5,11.8333L 0.5,8.5 Z "/>
         </Canvas>
+        <Image x:Key="GroundIcon" Width="45" Height="45" Source="Images/Ground.png" RenderOptions.BitmapScalingMode="NearestNeighbor" />
         <Image x:Key="SwitchIcon" Width="45" Height="45" Source="Images/Switch.png" RenderOptions.BitmapScalingMode="NearestNeighbor" />
         <Canvas x:Key="ToggleSwitchIcon" Width="45" Height="45" SnapsToDevicePixels="True">
             <Path Width="41.5625" Height="17.2042" Canvas.Left="1.81251" Canvas.Top="15.3584" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="M 42.875,26.625L 34.6652,26.625C 34.038,25.6831 32.9665,25.0625 31.75,25.0625C 29.817,25.0625 28.25,26.6295 28.25,28.5625C 28.25,30.4955 29.817,32.0625 31.75,32.0625C 32.9932,32.0625 34.085,31.4143 34.7059,30.4375L 42.875,30.4375L 42.875,26.625 Z M 2.31251,26.625L 10.5222,26.625C 11.1495,25.6831 12.221,25.0625 13.4375,25.0625C 13.9322,25.0625 14.4029,25.1651 14.8296,25.3503L 29.3078,15.8584L 31.2953,18.8899L 16.9285,28.3088C 16.9345,28.3926 16.9375,28.4772 16.9375,28.5625C 16.9375,30.4955 15.3705,32.0625 13.4375,32.0625C 12.1943,32.0625 11.1025,31.4143 10.4816,30.4375L 2.31251,30.4375L 2.31251,26.625 Z "/>
+        </Canvas>
+        <Canvas x:Key="AnalogueSwitchIcon" Width="45" Height="45" SnapsToDevicePixels="True">
+            <Path Width="37.5625" Height="37.4167" Canvas.Left="3.71876" Canvas.Top="3.79167" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="M 4.21876,24.0208L 7.75,24.0208L 7.75,11.2083L 20.7917,11.2083L 20.7917,4.29167L 24.2083,4.29167L 24.2083,11.2083L 37.25,11.2083L 37.25,24.0208L 40.7812,24.0208L 40.7812,27.8333L 37.25,27.8333L 37.25,40.7083L 7.75,40.7083L 7.75,27.8333L 4.21876,27.8333L 4.21876,24.0208 Z M 12.4285,24.0208C 13.0557,23.079 14.1273,22.4583 15.3438,22.4583C 17.2768,22.4583 18.8438,24.0253 18.8438,25.9583C 18.8438,27.8913 17.2767,29.4583 15.3438,29.4583C 14.1006,29.4583 13.0087,28.8102 12.3878,27.8333L 11.0833,27.8333L 11.0833,37.375L 33.9167,37.375L 33.9167,27.8333L 32.6122,27.8333C 31.9912,28.8102 30.8994,29.4583 29.6562,29.4583C 27.7232,29.4583 26.1562,27.8913 26.1562,25.9583C 26.1562,24.0253 27.7232,22.4583 29.6562,22.4583C 30.8727,22.4583 31.9443,23.079 32.5715,24.0208L 33.9167,24.0208L 33.9167,14.5417L 11.0833,14.5417L 11.0833,24.0208L 12.4285,24.0208 Z M 13.5417,31.625L 31.4583,31.625L 31.4583,34.875L 13.5417,34.875L 13.5417,31.625 Z "/>
         </Canvas>
         <Canvas x:Key="NANDGateIcon" Width="45" Height="45" SnapsToDevicePixels="True">
             <Path Width="36.3333" Height="23.5352" Canvas.Left="4.01042" Canvas.Top="10.7272" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="F1 M 9.90625,11.2272L 24.7522,11.2272L 24.8294,11.2272C 29.9828,11.2272 34.2492,15.3962 34.9824,20.8295C 35.3207,20.5923 35.7326,20.4531 36.1771,20.4531C 36.8587,20.4531 37.4638,20.7804 37.8439,21.2865L 39.8437,21.2865L 39.8437,23.7031L 37.9034,23.7031C 37.5288,24.2563 36.8954,24.6198 36.1771,24.6198C 35.728,24.6198 35.3121,24.4777 34.9719,24.236C 34.2087,29.6322 29.9515,33.7624 24.7522,33.7621L 9.90625,33.7624L 9.90625,30.2031L 4.51042,30.2031L 4.51042,27.7865L 9.90625,27.7865L 9.90625,18.3698L 4.51042,18.3698L 4.51042,15.9531L 9.90625,15.9531L 9.90625,11.2272 Z "/>
@@ -144,31 +149,32 @@
     </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top" Style="{StaticResource MenuStyle}">
-            <MenuItem Header="File">
+            <MenuItem Header="_File">
                 <MenuItem Click="mnuNew_Click" Header="_New" />
                 <MenuItem Command="Open" Header="_Open" />
+                <MenuItem Header="_Recent Files" Name="mnuRecentItems" Click="mnuRecentItem_Click" />
                 <MenuItem Command="Save" Header="_Save" />
                 <MenuItem Click="mnuSaveAs_Click" Header="Save _As" />
                 <Separator />
-                <MenuItem Header="Export" Click="mnuExportSVG_Click" />
+                <MenuItem Header="_Export" Click="mnuExportSVG_Click" />
                 <Separator />
-                <MenuItem Click="mnuPrint_Click" Header="Print" />
+                <MenuItem Click="mnuPrint_Click" Header="_Print" />
                 <Separator />
                 <MenuItem Click="mnuExit_Click" Header="E_xit" />
             </MenuItem>
-            <MenuItem Header="Edit">
-                <MenuItem Command="Undo" />
-                <MenuItem Command="Redo" />
+            <MenuItem Header="_Edit">
+                <MenuItem Command="Undo" Header="_Undo" />
+                <MenuItem Command="Redo" Header="_Redo" />
             </MenuItem>
-            <MenuItem Header="Tools">
-                <MenuItem Header="Options" Click="mnuToolsOptions_Click" />
+            <MenuItem Header="_Tools">
+                <MenuItem Header="_Options" Click="mnuToolsOptions_Click" />
             </MenuItem>
-            <MenuItem Header="Help">
-                <MenuItem Header="Documentation" Click="mnuHelpDocumentation_Click" />
+            <MenuItem Header="_Help">
+                <MenuItem Header="_Documentation" Click="mnuHelpDocumentation_Click" />
                 <Separator />
-                <MenuItem Header="Check for Updates" Click="mnuHelpCheckForUpdates_Click" />
+                <MenuItem Header="Check for _Updates" Click="mnuHelpCheckForUpdates_Click" />
                 <Separator />
-                <MenuItem Header="About Circuit Diagram..." Click="mnuAbout_Click" />
+                <MenuItem Header="_About Circuit Diagram..." Click="mnuAbout_Click" />
             </MenuItem>
         </Menu>
         <StatusBar DockPanel.Dock="Bottom" Grid.Row="1" Name="statusBar1" Height="23" VerticalAlignment="Bottom" Style="{StaticResource StatusBarStyle}">
@@ -208,10 +214,12 @@
                 <tb:ToolboxCategory>
                     <tb:ToolboxItem Content="{StaticResource RailIcon}" ToolTip="Rail" Click="ToolboxComponentButton_Click" Tag="type:Rail" />
                     <tb:ToolboxItem Content="{StaticResource SupplyIcon}" ToolTip="Supply" Click="ToolboxComponentButton_Click" Tag="type:Supply" />
+                    <tb:ToolboxItem Content="{StaticResource GroundIcon}" ToolTip="Ground" Click="ToolboxComponentButton_Click" Tag="type:Ground" />
                 </tb:ToolboxCategory>
                 <tb:ToolboxCategory>
                     <tb:ToolboxItem Content="{StaticResource SwitchIcon}" ToolTip="Push Switch" Click="ToolboxComponentButton_Click" Tag="type:Switch,t:0" />
                     <tb:ToolboxItem Content="{StaticResource ToggleSwitchIcon}" ToolTip="Toggle Switch" Click="ToolboxComponentButton_Click" Tag="type:Switch,t:1" />
+                    <tb:ToolboxItem Content="{StaticResource AnalogueSwitchIcon}" ToolTip="Analogue Switch" Click="ToolboxComponentButton_Click" Tag="type:Switch,t:2" />
                 </tb:ToolboxCategory>
                 <tb:ToolboxCategory>
                     <tb:ToolboxItem Content="{StaticResource NANDGateIcon}" ToolTip="NAND Gate" Click="ToolboxComponentButton_Click" Tag="type:LogicGate,t:1" />

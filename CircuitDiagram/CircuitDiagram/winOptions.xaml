@@ -4,10 +4,11 @@
         Title="Options" WindowStartupLocation="CenterOwner" SizeToContent="WidthAndHeight" ResizeMode="NoResize" ShowInTaskbar="False">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="220" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
@@ -16,7 +17,9 @@
         <Label Grid.Row="0" Grid.Column="0" Margin="3" Content="Application launch:" Height="28" HorizontalAlignment="Left" Name="label1" FontWeight="Bold" />
         <Label Grid.Row="1" Grid.Column="0" Margin="3" Content="User interface:" Height="28" HorizontalAlignment="Left" Name="label2" FontWeight="Bold" />
         <CheckBox Grid.Row="1" Grid.Column="1" Margin="12" Content="Show toolbox scroll bar" Height="16" HorizontalAlignment="Left" Name="chbShowToolboxScrollBar" />
-        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+        <Label Grid.Row="2" Grid.Column="0" Margin="3" Content="Recent files menu:" FontWeight="Bold" Height="28" HorizontalAlignment="Left" />
+        <Button Content="Clear" Grid.Column="1" Grid.Row="2" Height="23" HorizontalAlignment="Left" Margin="12,0,0,0" Name="btnClearRecentFilesMenu" VerticalAlignment="Center" Width="75" Click="btnClearRecentFilesMenu_Click" />
+        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
             <Button Content="OK" Height="23" Name="btnOK" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="btnOK_Click" Margin="12,6,6,12" />
             <Button Content="Cancel" Name="btnCancel" Height="23" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="btnCancel_Click" Margin="6,6,12,12" />
         </StackPanel>

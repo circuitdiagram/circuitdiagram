@@ -39,6 +39,7 @@ using Point = System.Windows.Point;
 using Size = System.Windows.Size;
 using System.ComponentModel;
 using Toolbox;
+using System.Xml;
 
 namespace CircuitDiagram
 {
@@ -47,6 +48,7 @@ namespace CircuitDiagram
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region Variables
         CircuitDocument m_document { get { return circuitDisplay.Document; } set { circuitDisplay.Document = value; } }
         string m_docPath = "";
         UndoManager m_undoManager;
@@ -54,6 +56,21 @@ namespace CircuitDiagram
         UndoManager UndoManager { get { return m_undoManager; } }
 
         string m_documentTitle;
+
+        public System.Collections.ObjectModel.ObservableCollection<string> RecentFiles = new System.Collections.ObjectModel.ObservableCollection<string>();
+
+        bool m_wasMouseDown = false;
+        Point mouseDownPos;
+        string newComponentType;
+        ComponentResizeMode m_resizing = ComponentResizeMode.None;
+        string previousData = "";
+        bool cancelSelect = true;
+        Point? fromStart;
+        Point? fromEnd;
+        public static bool m_moveComponent = false;
+        Point m_moveComponentStartPos;
+        Point m_moveComponentEndPos;
+        #endregion
 
         public MainWindow()
         {
@@ -100,6 +117,10 @@ namespace CircuitDiagram
                 toolboxScroll.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
             else
                 toolboxScroll.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+
+            // load recent items
+            LoadRecentFiles();
+            mnuRecentItems.ItemsSource = RecentFiles;
         }
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -112,32 +133,7 @@ namespace CircuitDiagram
             }
         }
 
-        void m_undoManager_ActionOccurred(object sender, EventArgs e)
-        {
-            if (UndoManager.IsSavedState())
-            {
-                this.Title = m_documentTitle + " - Circuit Diagram";
-            }
-            else
-            {
-                this.Title = m_documentTitle + "* - Circuit Diagram";
-            }
-        }
-
-        public static bool m_moveComponent = false;
-        Point m_moveComponentStartPos;
-        Point m_moveComponentEndPos;
-        private void btnMoveComponent_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = true;
-            newComponentType = null;
-        }
-
-        bool m_wasMouseDown = false;
-        Point mouseDownPos;
-        string newComponentType;
-        ComponentResizeMode m_resizing = ComponentResizeMode.None;
-        string previousData = "";
+        #region Circuit Mouse Events
         private void circuitDisplay_MouseDown(object sender, MouseButtonEventArgs e)
         {
             m_wasMouseDown = true;
@@ -238,10 +234,7 @@ namespace CircuitDiagram
             // add undo action
             UndoManager.AddAction(new UndoAction(UndoCommand.AddComponent, "Add component", newComponent));
         }
-
-        bool cancelSelect = true;
-        Point? fromStart;
-        Point? fromEnd;
+        
         private void circuitDisplay_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed && m_resizing != ComponentResizeMode.None)
@@ -330,18 +323,6 @@ namespace CircuitDiagram
             }
         }
 
-        void Editor_ComponentUpdated(object sender, ComponentUpdatedEventArgs e)
-        {
-            Dictionary<string, object> properties = new Dictionary<string, object>();
-            e.Component.Serialize(properties);
-            string newData = ComponentStringDescription.ConvertToString(properties);
-            UndoAction newAction = new UndoAction(UndoCommand.EditComponent, "Edit component", e.Component);
-            newAction.AddData("before", e.PreviousData);
-            newAction.AddData("after", newData);
-            UndoManager.AddAction(newAction);
-            circuitDisplay.InvalidateVisual();
-        }
-
         private void circuitDisplay_MouseLeave(object sender, MouseEventArgs e)
         {
             m_document.TempComponents.Clear();
@@ -349,7 +330,9 @@ namespace CircuitDiagram
             //m_document.SelectedComponent = null;
             m_wasMouseDown = false;
         }
+        #endregion
 
+        #region Main Menu
         private void mnuExportSVG_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
@@ -398,57 +381,6 @@ namespace CircuitDiagram
             }
         }
 
-        private void circuitDisplay_ContextMenuOpening(object sender, ContextMenuEventArgs e)
-        {
-            cancelSelect = false;
-        }
-
-        private void circuitDisplay_ContextMenuClosing(object sender, ContextMenuEventArgs e)
-        {
-            cancelSelect = true;
-        }
-
-        private void CommandEditComponent_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = (m_document.SelectedComponent != null);
-        }
-
-        private void CommandEditComponent_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            //StringWriter writer = new StringWriter();
-            //m_document.SelectedComponent.SaveData(writer);
-            //m_document.SelectedComponent.ShowEditor();
-            //StringWriter newWriter = new StringWriter();
-            //m_document.SelectedComponent.SaveData(newWriter);
-            //if (writer.ToString() != newWriter.ToString())
-            //{
-            //    UndoAction newAction = new UndoAction(UndoCommand.EditComponent, "Edit component", m_document.SelectedComponent);
-            //    newAction.AddData("before", writer.ToString());
-            //    newAction.AddData("after", newWriter.ToString());
-            //    UndoManager.AddAction(newAction);
-            //}
-        }
-
-        private void CommandDeleteComponent_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = (m_document.SelectedComponent != null);
-        }
-
-        private void CommandDeleteComponent_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            UndoAction newAction = new UndoAction(UndoCommand.DeleteComponent, "Delete component", m_document.SelectedComponent);
-            UndoManager.AddAction(newAction);
-            m_document.Components.Remove(m_document.SelectedComponent);
-            m_document.SelectedComponent = null;
-            m_document.InvalidateVisual();
-        }
-
-        private void RibbonWindow_Closed(object sender, EventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
-
-        #region Menu Options
         private void mnuSaveAs_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
@@ -543,32 +475,39 @@ namespace CircuitDiagram
             ofd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
             if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                double displayWidth;
-                double displayHeight;
-                if (System.IO.Path.GetExtension(ofd.FileName) == ".cddx")
-                {
-                    m_document = CDDXIO.Read(ofd.FileName);
-                    circuitDisplay.Width = m_document.Size.Width;
-                    circuitDisplay.Height = m_document.Size.Height;
-                }
-                else
-                {
-                    m_document.Load(ofd.FileName, out displayWidth, out displayHeight);
-                    circuitDisplay.Width = displayWidth;
-                    circuitDisplay.Height = displayHeight;
-                }
-                foreach (EComponent component in m_document.Components)
-                    component.Editor.ComponentUpdated += new CircuitDiagram.ComponentEditorBase.ComponentUpdatedDelegate(Editor_ComponentUpdated);
-                m_docPath = ofd.FileName;
-                this.Title = System.IO.Path.GetFileNameWithoutExtension(ofd.FileName) + " - Circuit Diagram";
-                m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(ofd.FileName);
-                m_undoManager = new UndoManager();
-                m_undoManager.ActionDelegate = UndoActionProcessor;
-                m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
-                UndoManager.SetSaveIndex();
-                m_document.InvalidateVisual();
-                circuitDisplay.InvalidateVisual();
+                OpenDocument(ofd.FileName);
             }
+        }
+
+        private void OpenDocument(string path)
+        {
+            double displayWidth;
+            double displayHeight;
+            if (System.IO.Path.GetExtension(path) == ".cddx")
+            {
+                m_document = CDDXIO.Read(path);
+                circuitDisplay.Width = m_document.Size.Width;
+                circuitDisplay.Height = m_document.Size.Height;
+            }
+            else
+            {
+                m_document.Load(path, out displayWidth, out displayHeight);
+                circuitDisplay.Width = displayWidth;
+                circuitDisplay.Height = displayHeight;
+            }
+            foreach (EComponent component in m_document.Components)
+                component.Editor.ComponentUpdated += new CircuitDiagram.ComponentEditorBase.ComponentUpdatedDelegate(Editor_ComponentUpdated);
+            m_docPath = path;
+            this.Title = System.IO.Path.GetFileNameWithoutExtension(path) + " - Circuit Diagram";
+            m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
+            m_undoManager = new UndoManager();
+            m_undoManager.ActionDelegate = UndoActionProcessor;
+            m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
+            UndoManager.SetSaveIndex();
+            m_document.InvalidateVisual();
+            circuitDisplay.InvalidateVisual();
+
+            AddRecentFile(path);
         }
 
         private void mnuExit_Click(object sender, RoutedEventArgs e)
@@ -582,11 +521,49 @@ namespace CircuitDiagram
             aboutWindow.Owner = this;
             aboutWindow.ShowDialog();
         }
-        #endregion
 
         private void mnuHelpDocumentation_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start("http://www.circuit-diagram.org/help");
+        }
+
+        private void mnuHelpCheckForUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            CheckForUpdates(true);
+        }
+
+        private void mnuRecentItem_Click(object sender, RoutedEventArgs e)
+        {
+            // Load the clicked item
+            if ((e.OriginalSource as MenuItem).Header is string && System.IO.File.Exists((e.OriginalSource as MenuItem).Header as string))
+                OpenDocument((e.OriginalSource as MenuItem).Header as string);
+        }
+
+        private void mnuToolsOptions_Click(object sender, RoutedEventArgs e)
+        {
+            winOptions optionsWindow = new winOptions();
+            optionsWindow.Owner = this;
+            optionsWindow.ShowDialog();
+            if (Properties.Settings.Default.IsToolboxScrollBarVisible)
+                toolboxScroll.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            else
+                toolboxScroll.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+        }
+        #endregion
+
+        #region Commands
+        private void CommandDeleteComponent_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = (m_document.SelectedComponent != null);
+        }
+
+        private void CommandDeleteComponent_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            UndoAction newAction = new UndoAction(UndoCommand.DeleteComponent, "Delete component", m_document.SelectedComponent);
+            UndoManager.AddAction(newAction);
+            m_document.Components.Remove(m_document.SelectedComponent);
+            m_document.SelectedComponent = null;
+            m_document.InvalidateVisual();
         }
 
         private void CommandFlipComponent_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -621,6 +598,80 @@ namespace CircuitDiagram
         private void CommandRedo_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             UndoManager.StepForwards();
+        }
+        #endregion
+
+        #region RecentFiles
+        private void AddRecentFile(string path)
+        {
+            if (RecentFiles.Count == 1 && RecentFiles[0] == "(empty)")
+                RecentFiles.Clear();
+            if (RecentFiles.Contains(path))
+                RecentFiles.Remove(path);
+            RecentFiles.Insert(0, path);
+            if (RecentFiles.Count > 10)
+                RecentFiles.RemoveAt(10);
+        }
+
+        private void LoadRecentFiles()
+        {
+            string[] files = Properties.Settings.Default.RecentFiles.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string file in files)
+                RecentFiles.Add(file);
+            if (RecentFiles.Count == 0)
+                RecentFiles.Add("(empty)");
+        }
+
+        private void SaveRecentFiles()
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach (string file in RecentFiles)
+            {
+                if (file != "(empty)")
+                    builder.AppendFormat("{0},", file);
+            }
+            Properties.Settings.Default.RecentFiles = builder.ToString();
+            Properties.Settings.Default.Save();
+        }
+        #endregion
+
+        #region Toolbox and Editor
+        private void ToolboxComponentButton_Click(object sender, RoutedEventArgs e)
+        {
+            newComponentType = (string)((Control)sender).Tag;
+            m_moveComponent = false;
+        }
+
+        private void btnMoveComponent_Click(object sender, RoutedEventArgs e)
+        {
+            m_moveComponent = true;
+            newComponentType = null;
+        }
+
+        void Editor_ComponentUpdated(object sender, ComponentUpdatedEventArgs e)
+        {
+            Dictionary<string, object> properties = new Dictionary<string, object>();
+            e.Component.Serialize(properties);
+            string newData = ComponentStringDescription.ConvertToString(properties);
+            UndoAction newAction = new UndoAction(UndoCommand.EditComponent, "Edit component", e.Component);
+            newAction.AddData("before", e.PreviousData);
+            newAction.AddData("after", newData);
+            UndoManager.AddAction(newAction);
+            circuitDisplay.InvalidateVisual();
+        }
+        #endregion
+
+        #region Other
+        void m_undoManager_ActionOccurred(object sender, EventArgs e)
+        {
+            if (UndoManager.IsSavedState())
+            {
+                this.Title = m_documentTitle + " - Circuit Diagram";
+            }
+            else
+            {
+                this.Title = m_documentTitle + "* - Circuit Diagram";
+            }
         }
 
         void UndoActionProcessor(object sender, UndoActionEventArgs e)
@@ -703,11 +754,8 @@ namespace CircuitDiagram
                     e.Cancel = true;
                 }
             }
-        }
 
-        private void mnuHelpCheckForUpdates_Click(object sender, RoutedEventArgs e)
-        {
-            CheckForUpdates(true);
+            SaveRecentFiles();
         }
 
         private void CheckForUpdates(bool notifyIfNoUpdate)
@@ -767,39 +815,19 @@ namespace CircuitDiagram
             }
         }
 
-        private void mnuToolsOptions_Click(object sender, RoutedEventArgs e)
+        private void circuitDisplay_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            winOptions optionsWindow = new winOptions();
-            optionsWindow.Owner = this;
-            optionsWindow.ShowDialog();
-            if (Properties.Settings.Default.IsToolboxScrollBarVisible)
-                toolboxScroll.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-            else
-                toolboxScroll.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+            cancelSelect = false;
         }
 
-        private void StackPanel_MouseLeave(object sender, MouseEventArgs e)
+        private void circuitDisplay_ContextMenuClosing(object sender, ContextMenuEventArgs e)
         {
-            Panel panel = ((Panel)sender);
-            for (int i = 1; i < panel.Children.Count; i++)
-                panel.Children[i].Visibility = System.Windows.Visibility.Collapsed;
-            ((Canvas)panel.Parent).ClipToBounds = true;
+            cancelSelect = true;
         }
 
-        private void tbrButton1_LongPress(object sender, MouseButtonEventArgs e)
+        private void RibbonWindow_Closed(object sender, EventArgs e)
         {
-            Panel panel = ((Panel)((Control)sender).Parent);
-            if (panel.Children.IndexOf((UIElement)sender) != 0)
-                return;
-            for (int i = 1; i < panel.Children.Count; i++)
-                panel.Children[i].Visibility = System.Windows.Visibility.Visible;
-            ((Canvas)panel.Parent).ClipToBounds = false;
-        }
-
-        private void ToolboxComponentButton_Click(object sender, RoutedEventArgs e)
-        {
-            newComponentType = (string)((Control)sender).Tag;
-            m_moveComponent = false;
+            Application.Current.Shutdown();
         }
 
         private void sliderZoom_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -812,6 +840,7 @@ namespace CircuitDiagram
         {
             sliderZoom.Value = 50;
         }
+        #endregion
     }
 
     enum ComponentResizeMode

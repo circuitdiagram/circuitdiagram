@@ -118,6 +118,9 @@
     <Compile Include="EComponents\ComponentAttributes.cs" />
     <Compile Include="EComponents\ComponentEditorBase.cs" />
     <Compile Include="EComponents\Crystal.cs" />
+    <Compile Include="EComponents\Ground.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="EComponents\Microphone.cs" />
     <Compile Include="EComponents\OutputDeviceEditor.xaml.cs">
       <DependentUpon>OutputDeviceEditor.xaml</DependentUpon>
@@ -395,6 +398,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="fileIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Ground.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
