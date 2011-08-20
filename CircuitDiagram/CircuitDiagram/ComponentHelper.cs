@@ -20,5 +20,10 @@ namespace CircuitDiagram
         {
             return new Point(Math.Round(point.X / gridSize) * gridSize, Math.Round(point.Y / gridSize) * gridSize);
         }
+
+        public static string ConvertToSentenceCase(string text)
+        {
+            return text;
+        }
     }
 }

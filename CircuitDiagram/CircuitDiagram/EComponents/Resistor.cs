@@ -29,7 +29,7 @@ namespace CircuitDiagram.EComponents
 {
     public class Resistor : EComponent
     {
-        [ComponentSerializable(ComponentSerializeOptions.Lowercase)]
+        [ComponentSerializable(ComponentSerializeOptions.StoreLowercase)]
         public double Resistance { get; set; }
 
         private string ResistanceString

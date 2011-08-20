@@ -29,14 +29,14 @@ namespace CircuitDiagram.EComponents
 {
     public class Microcontroller : EComponent
     {
-        [ComponentSerializable(ComponentSerializeOptions.Lowercase)]
-        public bool DisplayPIC { get; set; }
-        [ComponentSerializable(ComponentSerializeOptions.Lowercase)]
+        [ComponentSerializable(ComponentSerializeOptions.StoreLowercase)]
         public int Inputs { get; set; }
-        [ComponentSerializable(ComponentSerializeOptions.Lowercase)]
+        [ComponentSerializable(ComponentSerializeOptions.StoreLowercase)]
         public int Outputs { get; set; }
-        [ComponentSerializable(ComponentSerializeOptions.Lowercase)]
+        [ComponentSerializable(ComponentSerializeOptions.StoreLowercase | ComponentSerializeOptions.DisplayAlignLeft)]
         public bool ADC { get; set; }
+        [ComponentSerializable(options: ComponentSerializeOptions.StoreLowercase | ComponentSerializeOptions.DisplayAlignLeft, displayName: "Display 'PIC'")]
+        public bool DisplayPIC { get; set; }
 
         public override System.Windows.Rect BoundingBox
         {
@@ -57,7 +57,7 @@ namespace CircuitDiagram.EComponents
 
         public Microcontroller()
         {
-            this.Editor = new MicrocontrollerEditor(this);
+            this.Editor = new AutomaticEditor(this);
             CanResize = false;
             Inputs = 4;
             Outputs = 4;

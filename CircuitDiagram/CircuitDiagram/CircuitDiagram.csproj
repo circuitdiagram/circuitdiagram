@@ -108,6 +108,7 @@
     <Compile Include="ComponentHelper.cs" />
     <Compile Include="ComponentStringDescription.cs" />
     <Compile Include="CustomCommands.cs" />
+    <Compile Include="EComponents\AutomaticEditor.cs" />
     <Compile Include="EComponents\BasicComponentEditor.xaml.cs">
       <DependentUpon>BasicComponentEditor.xaml</DependentUpon>
     </Compile>
@@ -117,7 +118,9 @@
     </Compile>
     <Compile Include="EComponents\ComponentAttributes.cs" />
     <Compile Include="EComponents\ComponentEditorBase.cs" />
+    <Compile Include="EComponents\ComponentPropertyInfo.cs" />
     <Compile Include="EComponents\Crystal.cs" />
+    <Compile Include="EComponents\Fuse.cs" />
     <Compile Include="EComponents\Ground.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -155,9 +158,6 @@
     </Compile>
     <Compile Include="EComponents\Transistor.cs" />
     <Compile Include="EComponents\OpAmp.cs" />
-    <Compile Include="EComponents\OpAmpEditor.xaml.cs">
-      <DependentUpon>OpAmpEditor.xaml</DependentUpon>
-    </Compile>
     <Compile Include="EComponents\SegDecoder.cs" />
     <Compile Include="EComponents\Counter.cs" />
     <Compile Include="EComponents\LogicGate.cs" />
@@ -245,10 +245,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="EComponents\MicrocontrollerEditor.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="EComponents\OpAmpEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

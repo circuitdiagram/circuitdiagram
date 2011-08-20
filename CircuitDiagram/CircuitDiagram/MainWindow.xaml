@@ -107,6 +107,9 @@
         <Canvas x:Key="InductorIcon" Width="45" Height="45" SnapsToDevicePixels="True">
             <Path Width="38.6667" Height="10.5" Canvas.Left="3.16667" Canvas.Top="17.25" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="F1 M 3.66667,22.75L 8.25889,22.75L 8.25,22.4583C 8.25,19.858 10.358,17.75 12.9583,17.75C 15.5587,17.75 17.6667,19.858 17.6667,22.4583L 17.6578,22.75L 17.7589,22.75L 17.75,22.4583C 17.75,19.858 19.858,17.75 22.4583,17.75C 25.0587,17.75 27.1667,19.858 27.1667,22.4583L 27.1578,22.75L 27.1755,22.75L 27.1667,22.4583C 27.1667,19.858 29.2747,17.75 31.875,17.75C 34.4753,17.75 36.5833,19.858 36.5833,22.4583L 36.5744,22.75L 41.3333,22.75L 41.3333,27.25L 34.3708,27.25C 34.4149,24.6667 34.1185,20.8054 31.9583,20.75C 29.7771,20.6941 29.2615,24.6453 29.1584,27.25L 24.8677,27.25C 24.9262,24.6693 24.6625,20.6503 22.4583,20.5938C 20.233,20.5367 19.7414,24.6504 19.6526,27.25L 15.2171,27.25C 15.2434,24.6716 14.9106,20.9916 12.8021,20.9375C 10.6725,20.8829 10.1307,24.6476 10.0102,27.25L 3.66667,27.25L 3.66667,22.75 Z "/>
         </Canvas>
+        <Canvas x:Key="FuseIcon" Width="45" Height="45" SnapsToDevicePixels="True">
+            <Path Width="12" Height="39" Canvas.Left="16.5001" Canvas.Top="3.35511" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="F1 M 28.0001,8.85511L 28.0001,36.8551L 24.5001,36.8551L 24.5001,41.8551L 20.5001,41.8551L 20.5001,36.8551L 17.0001,36.8551L 17.0001,8.85511L 20.5001,8.85511L 20.5001,3.85511L 24.5001,3.85511L 24.5001,8.85511L 28.0001,8.85511 Z "/>
+        </Canvas>
         <Canvas x:Key="MicrophoneIcon" Width="45" Height="45" SnapsToDevicePixels="True">
             <Path Width="27.1667" Height="36" Canvas.Left="8.91667" Canvas.Top="4.5" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="M 23.9583,11.5417C 25.6667,11.5417 27.2889,11.9102 28.75,12.572L 28.75,5L 32.1667,5L 32.1667,14.9348C 34.2773,17.0394 35.5833,19.9505 35.5833,23.1667C 35.5833,26.3828 34.2773,29.2939 32.1667,31.3986L 32.1667,40L 28.75,40L 28.75,33.7613C 27.2889,34.4232 25.6667,34.7917 23.9583,34.7917C 20.4919,34.7917 17.3799,33.2745 15.25,30.8679L 15.25,35.1667L 9.41667,35.1667L 9.41667,11.1667L 15.25,11.1667L 15.25,15.4655C 17.3799,13.0589 20.4919,11.5417 23.9583,11.5417 Z "/>
         </Canvas>
@@ -255,6 +258,7 @@
                 </tb:ToolboxCategory>
                 <tb:ToolboxCategory>
                     <tb:ToolboxItem Content="{StaticResource InductorIcon}" ToolTip="Inductor" Click="ToolboxComponentButton_Click" Tag="type:Inductor" />
+                    <tb:ToolboxItem Content="{StaticResource FuseIcon}" ToolTip="Fuse" Click="ToolboxComponentButton_Click" Tag="type:Fuse" />
                 </tb:ToolboxCategory>
                 <tb:ToolboxCategory>
                     <tb:ToolboxItem Content="{StaticResource MicrophoneIcon}" ToolTip="Microphone" Click="ToolboxComponentButton_Click" Tag="type:Microphone" />

@@ -420,7 +420,10 @@ namespace CircuitDiagram
                 circuitDisplay.Height = double.Parse(nDocWin.TbxHeight);
                 this.Title = "Untitled - Circuit Diagram";
                 m_document.InvalidateVisual();
-                //m_document.UpdateLayout(null);
+                m_documentTitle = "Untitled";
+                m_undoManager = new UndoManager();
+                m_undoManager.ActionDelegate = UndoActionProcessor;
+                m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
             }
         }
 

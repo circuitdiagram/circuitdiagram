@@ -45,13 +45,13 @@ namespace CircuitDiagram.EComponents
             get { return new Size(EndLocation.X - StartLocation.X, EndLocation.Y - StartLocation.Y); }
         }
 
-        [ComponentSerializable(ComponentSerializeOptions.Lowercase)]
+        [ComponentSerializable("flipinputs", "Flip Inputs")]
         public bool FlipInputs { get; set; }
 
         public OpAmp()
         {
             FlipInputs = false;
-            this.Editor = new OpAmpEditor(this);
+            this.Editor = new AutomaticEditor(this);
         }
 
         public override void UpdateLayout()

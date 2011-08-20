@@ -27,6 +27,7 @@ using System.Windows.Media;
 using System.Xml;
 using System.Reflection;
 using CircuitDiagram.EComponents;
+using System.Globalization;
 
 namespace CircuitDiagram
 {
@@ -115,6 +116,41 @@ namespace CircuitDiagram
 
         public abstract void Render(IRenderer dc, Color color);
 
+        /// <summary>
+        /// Gets a list of all of the component's properties that can be serialized.
+        /// </summary>
+        /// <returns>List of ComponentPropertyInfo</returns>
+        public List<ComponentPropertyInfo> SerializableProperties()
+        {
+            List<ComponentPropertyInfo> returnList = new List<ComponentPropertyInfo>();
+
+            PropertyInfo[] classProperties = this.GetType().GetProperties();
+            foreach (PropertyInfo propertyInfo in classProperties)
+            {
+                ComponentSerializableAttribute attribute = Attribute.GetCustomAttribute(propertyInfo, typeof(ComponentSerializableAttribute)) as ComponentSerializableAttribute;
+                if (attribute != null)
+                {
+                    string serializeAs = attribute.SerializedName;
+                    if (serializeAs == null && (attribute.Options & ComponentSerializeOptions.StoreLowercase) == ComponentSerializeOptions.StoreLowercase)
+                        serializeAs = propertyInfo.Name.ToLower();
+                    else if (serializeAs == null)
+                        serializeAs = propertyInfo.Name;
+
+                    string displayName = attribute.DisplayName;
+                    if (displayName == null && (attribute.Options & ComponentSerializeOptions.DisplaySentenceCase) == ComponentSerializeOptions.DisplaySentenceCase)
+                        displayName = ComponentHelper.ConvertToSentenceCase(propertyInfo.Name);
+                    else if (displayName == null)
+                        displayName = propertyInfo.Name;
+
+                    bool alignLeft = (attribute.Options & ComponentSerializeOptions.DisplayAlignLeft) == ComponentSerializeOptions.DisplayAlignLeft;
+
+                    returnList.Add(new ComponentPropertyInfo(serializeAs, displayName, alignLeft, propertyInfo));
+                }
+            }
+
+            return returnList;
+        }
+
         public void Serialize(Dictionary<string, object> properties)
         {
             // add common properties
@@ -140,7 +176,7 @@ namespace CircuitDiagram
                 if (attribute != null)
                 {
                     string serializeAs = attribute.SerializedName;
-                    if (serializeAs == null && (attribute.Options & ComponentSerializeOptions.Lowercase) == ComponentSerializeOptions.Lowercase)
+                    if (serializeAs == null && (attribute.Options & ComponentSerializeOptions.StoreLowercase) == ComponentSerializeOptions.StoreLowercase)
                         serializeAs = propertyInfo.Name.ToLower();
                     else if (serializeAs == null)
                         serializeAs = propertyInfo.Name;
@@ -161,6 +197,8 @@ namespace CircuitDiagram
             {
                 return double.Parse(value.ToString());
             }
+            if (type == typeof(int))
+                return int.Parse(value.ToString());
             if (type.IsEnum)
             {
                 return int.Parse(value.ToString());
@@ -231,7 +269,7 @@ namespace CircuitDiagram
                 // check whether serialized name is explicitly defined
                 if (attribute.SerializedName != null)
                     return attribute.SerializedName == filterCriteria as string; // check serialized name
-                else if ((attribute.Options & ComponentSerializeOptions.Lowercase) == ComponentSerializeOptions.Lowercase)
+                else if ((attribute.Options & ComponentSerializeOptions.StoreLowercase) == ComponentSerializeOptions.StoreLowercase)
                     return info.Name.ToLower() == filterCriteria as string; // check if lowercase match
                 else
                     return info.Name == filterCriteria as string; // check property name

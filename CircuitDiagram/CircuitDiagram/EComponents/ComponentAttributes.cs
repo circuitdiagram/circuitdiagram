@@ -12,7 +12,16 @@ namespace CircuitDiagram.EComponents
     public class ComponentSerializableAttribute : Attribute
     {
         public ComponentSerializeOptions Options { get; private set; }
+
+        /// <summary>
+        /// The name of the property as it should be stored.
+        /// </summary>
         public string SerializedName { get; private set; }
+
+        /// <summary>
+        /// The name of the property as it should be presented to the user.
+        /// </summary>
+        public string DisplayName { get; private set; }
 
         public ComponentSerializableAttribute(ComponentSerializeOptions options = ComponentSerializeOptions.None)
         {
@@ -23,12 +32,26 @@ namespace CircuitDiagram.EComponents
         {
             SerializedName = serializedName;
         }
+
+        public ComponentSerializableAttribute(string serializedName, string displayName)
+        {
+            SerializedName = serializedName;
+            DisplayName = displayName;
+        }
+
+        public ComponentSerializableAttribute(ComponentSerializeOptions options, string displayName)
+        {
+            Options = options;
+            DisplayName = displayName;
+        }
     }
 
     [Flags]
     public enum ComponentSerializeOptions
     {
         None = 0,
-        Lowercase = 1
+        StoreLowercase = 1,
+        DisplaySentenceCase = 2,
+        DisplayAlignLeft = 4
     }
 }

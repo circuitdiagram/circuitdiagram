@@ -58,7 +58,7 @@ namespace CircuitDiagram.EComponents
         [ComponentSerializable("t")]
         public CapacitorType Type { get; set; }
 
-        [ComponentSerializable(ComponentSerializeOptions.Lowercase)]
+        [ComponentSerializable(ComponentSerializeOptions.StoreLowercase)]
         public double Capacitance { get; set; }
 
         private string CapacitanceString
