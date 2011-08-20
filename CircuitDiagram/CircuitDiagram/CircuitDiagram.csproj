@@ -133,6 +133,7 @@
     <Compile Include="EComponents\SwitchEditor.xaml.cs">
       <DependentUpon>SwitchEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EComponents\Transformer.cs" />
     <Compile Include="EComponents\TransistorEditor.xaml.cs">
       <DependentUpon>TransistorEditor.xaml</DependentUpon>
     </Compile>

@@ -84,27 +84,7 @@ namespace CircuitDiagram
             if (App.AppArgs.Length > 0)
             {
                 if (System.IO.File.Exists(App.AppArgs[0]))
-                {
-                    if (System.IO.Path.GetExtension(App.AppArgs[0]) == ".cddx")
-                    {
-                        m_document = CDDXIO.Read(App.AppArgs[0]);
-                        circuitDisplay.Width = m_document.Size.Width;
-                        circuitDisplay.Height = m_document.Size.Height;
-                    }
-                    else
-                    {
-                        double displayWidth;
-                        double displayHeight;
-                        m_document.Load(App.AppArgs[0], out displayWidth, out displayHeight);
-                        circuitDisplay.Width = displayWidth;
-                        circuitDisplay.Height = displayHeight;
-                    }
-                    m_docPath = App.AppArgs[0];
-                    this.Title = System.IO.Path.GetFileNameWithoutExtension(App.AppArgs[0]) + " - Circuit Diagram";
-                    m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(App.AppArgs[0]);
-                    m_document.InvalidateVisual();
-                    circuitDisplay.InvalidateVisual();
-                }
+                    OpenDocument(App.AppArgs[0]);
             }
 
             m_undoManager = new UndoManager();
