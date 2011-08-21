@@ -31,7 +31,7 @@ namespace CircuitDiagram.EComponents
     {
         private LogicType m_logicType;
 
-        [ComponentSerializable("logictype")]
+        [ComponentSerializable("t")]
         public LogicType LogicType
         {
             get { return m_logicType; }
