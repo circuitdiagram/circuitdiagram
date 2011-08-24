@@ -121,5 +121,17 @@ namespace CircuitDiagram
             pathElement.StrokeThickness = thickness;
             m_canvas.Children.Add(pathElement);
         }
+
+        public void DrawImage(Point location, ImageSource image)
+        {
+            Image imageControl = new Image();
+            imageControl.Source = image;
+            imageControl.SetValue(Canvas.LeftProperty, location.X);
+            imageControl.SetValue(Canvas.TopProperty, location.Y);
+            imageControl.Stretch = Stretch.None;
+            imageControl.Width = image.Width;
+            imageControl.Height = image.Height;
+            m_canvas.Children.Add(imageControl);
+        }
     }
 }

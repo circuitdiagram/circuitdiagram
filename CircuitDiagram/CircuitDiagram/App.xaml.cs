@@ -24,6 +24,7 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace CircuitDiagram
 {
@@ -40,6 +41,12 @@ namespace CircuitDiagram
                 AppArgs = e.Args;
             else
                 AppArgs = new string[0];
+        }
+
+        void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Circuit_Diagram\\ErrorLog.txt");
+            System.IO.File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Circuit_Diagram\\ErrorLog.txt", e.Exception.ToString());
         }
     }
 }

@@ -60,5 +60,9 @@ namespace CircuitDiagram
         {
             SVGDocument.DrawPath((fillColor.HasValue ? fillColor.Value : Colors.Transparent), strokeColor, thickness, path, translateOffsetX, translateOffsetY);
         }
+
+        public void DrawImage(Point location, ImageSource image)
+        {
+        }
     }
 }

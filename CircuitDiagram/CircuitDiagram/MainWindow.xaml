@@ -288,6 +288,7 @@
                 </tb:ToolboxCategory>
                 <tb:ToolboxCategory>
                     <tb:ToolboxItem Content="{StaticResource ExternalConnectionIcon}" ToolTip="External Connection" Click="ToolboxComponentButton_Click" Tag="type:ExternalConnection" />
+                    <tb:ToolboxItem Content="Custom component" ToolTip="Custom component" Click="ToolboxComponentButton_Click" Tag="type:CustomComponent" />
                 </tb:ToolboxCategory>
             </tb:Toolbox>
         </ScrollViewer>

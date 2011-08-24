@@ -380,6 +380,7 @@ namespace CircuitDiagram
                     m_document.Save(sfd.FileName, circuitDisplay.Width, circuitDisplay.Height);
                 }
                 m_docPath = sfd.FileName;
+                AddRecentFile(m_docPath);
                 this.Title = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName) + " - Circuit Diagram";
                 m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName);
                 UndoManager.SetSaveIndex();
@@ -621,6 +622,8 @@ namespace CircuitDiagram
         #region Toolbox and Editor
         private void ToolboxComponentButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!this.IsLoaded)
+                return;
             newComponentType = (string)((Control)sender).Tag;
             m_moveComponent = false;
         }

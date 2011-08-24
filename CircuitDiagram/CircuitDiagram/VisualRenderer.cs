@@ -66,5 +66,10 @@ namespace CircuitDiagram
             if (translateOffsetX != 0.0 || translateOffsetY != 0.0)
                 DrawingContext.Pop();
         }
+
+        public void DrawImage(Point location, ImageSource image)
+        {
+            DrawingContext.DrawImage(image, new Rect(location, new Size(image.Width, image.Height)));
+        }
     }
 }

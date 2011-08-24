@@ -113,6 +113,10 @@ namespace CircuitDiagram
             m_graphics.DrawPath(new Pen(ConvertColor(strokeColor), (float)thickness), gPath);//new System.Drawing.Drawing2D.GraphicsPath(points.ToArray(), pointTypes.ToArray()));
         }
 
+        public void DrawImage(System.Windows.Point location, System.Windows.Media.ImageSource image)
+        {
+        }
+
         static System.Drawing.Color ConvertColor(System.Windows.Media.Color color)
         {
             return Color.FromArgb(color.A, color.R, color.G, color.B);

@@ -119,7 +119,11 @@
     <Compile Include="EComponents\ComponentAttributes.cs" />
     <Compile Include="EComponents\ComponentEditorBase.cs" />
     <Compile Include="EComponents\ComponentPropertyInfo.cs" />
+    <Compile Include="EComponents\CustomComponentEditor.xaml.cs">
+      <DependentUpon>CustomComponentEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EComponents\Crystal.cs" />
+    <Compile Include="EComponents\CustomComponent.cs" />
     <Compile Include="EComponents\Fuse.cs" />
     <Compile Include="EComponents\Ground.cs">
       <SubType>Code</SubType>
@@ -216,6 +220,10 @@
     <Page Include="EComponents\CapacitorEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EComponents\CustomComponentEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="EComponents\OutputDeviceEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
