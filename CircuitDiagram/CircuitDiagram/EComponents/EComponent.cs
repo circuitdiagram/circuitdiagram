@@ -258,6 +258,9 @@ namespace CircuitDiagram
                 if (memerInfo.Length > 0)
                     (memerInfo[0] as PropertyInfo).SetValue(this, GetAsCorrectType((memerInfo[0] as PropertyInfo).PropertyType, property.Value), null);
             }
+
+            if (!this.CanResize)
+                EndLocation = StartLocation;
         }
 
         private bool IsPropertySerializedMatch(MemberInfo info, object filterCriteria)

@@ -34,6 +34,9 @@
         <Canvas x:Key="AnalogueSwitchIcon" Width="45" Height="45" SnapsToDevicePixels="True">
             <Path Width="37.5625" Height="37.4167" Canvas.Left="3.71876" Canvas.Top="3.79167" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="M 4.21876,24.0208L 7.75,24.0208L 7.75,11.2083L 20.7917,11.2083L 20.7917,4.29167L 24.2083,4.29167L 24.2083,11.2083L 37.25,11.2083L 37.25,24.0208L 40.7812,24.0208L 40.7812,27.8333L 37.25,27.8333L 37.25,40.7083L 7.75,40.7083L 7.75,27.8333L 4.21876,27.8333L 4.21876,24.0208 Z M 12.4285,24.0208C 13.0557,23.079 14.1273,22.4583 15.3438,22.4583C 17.2768,22.4583 18.8438,24.0253 18.8438,25.9583C 18.8438,27.8913 17.2767,29.4583 15.3438,29.4583C 14.1006,29.4583 13.0087,28.8102 12.3878,27.8333L 11.0833,27.8333L 11.0833,37.375L 33.9167,37.375L 33.9167,27.8333L 32.6122,27.8333C 31.9912,28.8102 30.8994,29.4583 29.6562,29.4583C 27.7232,29.4583 26.1562,27.8913 26.1562,25.9583C 26.1562,24.0253 27.7232,22.4583 29.6562,22.4583C 30.8727,22.4583 31.9443,23.079 32.5715,24.0208L 33.9167,24.0208L 33.9167,14.5417L 11.0833,14.5417L 11.0833,24.0208L 12.4285,24.0208 Z M 13.5417,31.625L 31.4583,31.625L 31.4583,34.875L 13.5417,34.875L 13.5417,31.625 Z "/>
         </Canvas>
+        <Canvas x:Key="PushToBreakSwitchIcon" Width="45" Height="45" SnapsToDevicePixels="True">
+            <Path Width="41.5625" Height="12.5" Canvas.Left="1.71876" Canvas.Top="16.25" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="M 2.21876,18.6941L 10.4285,18.6941C 11.0557,17.7522 12.1273,17.1316 13.3438,17.1316C 15.2768,17.1316 16.8438,18.6986 16.8438,20.6316C 16.8438,22.5646 15.2768,24.1316 13.3438,24.1316C 12.1006,24.1316 11.0088,23.4834 10.3878,22.5066L 2.21876,22.5066L 2.21876,18.6941 Z M 42.7812,18.6941L 34.5715,18.6941C 33.9443,17.7522 32.8727,17.1316 31.6562,17.1316C 29.7232,17.1316 28.1562,18.6986 28.1562,20.6316C 28.1562,22.5646 29.7232,24.1316 31.6562,24.1316C 32.8994,24.1316 33.9912,23.4834 34.6122,22.5066L 42.7812,22.5066L 42.7812,18.6941 Z M 12.0625,28.25L 12.0625,24.5625L 21.4375,24.5625L 21.4375,20.3125L 17.4375,20.3125L 17.4375,16.75L 27.5,16.75L 27.5,20.3125L 23.5625,20.3125L 23.5625,24.5625L 32.9375,24.5625L 32.9375,28.25L 12.0625,28.25 Z "/>
+        </Canvas>
         <Canvas x:Key="NANDGateIcon" Width="45" Height="45" SnapsToDevicePixels="True">
             <Path Width="36.3333" Height="23.5352" Canvas.Left="4.01042" Canvas.Top="10.7272" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="F1 M 9.90625,11.2272L 24.7522,11.2272L 24.8294,11.2272C 29.9828,11.2272 34.2492,15.3962 34.9824,20.8295C 35.3207,20.5923 35.7326,20.4531 36.1771,20.4531C 36.8587,20.4531 37.4638,20.7804 37.8439,21.2865L 39.8437,21.2865L 39.8437,23.7031L 37.9034,23.7031C 37.5288,24.2563 36.8954,24.6198 36.1771,24.6198C 35.728,24.6198 35.3121,24.4777 34.9719,24.236C 34.2087,29.6322 29.9515,33.7624 24.7522,33.7621L 9.90625,33.7624L 9.90625,30.2031L 4.51042,30.2031L 4.51042,27.7865L 9.90625,27.7865L 9.90625,18.3698L 4.51042,18.3698L 4.51042,15.9531L 9.90625,15.9531L 9.90625,11.2272 Z "/>
         </Canvas>
@@ -226,6 +229,7 @@
                     <tb:ToolboxItem Content="{StaticResource SwitchIcon}" ToolTip="Push Switch" Click="ToolboxComponentButton_Click" Tag="type:Switch,t:0" />
                     <tb:ToolboxItem Content="{StaticResource ToggleSwitchIcon}" ToolTip="Toggle Switch" Click="ToolboxComponentButton_Click" Tag="type:Switch,t:1" />
                     <tb:ToolboxItem Content="{StaticResource AnalogueSwitchIcon}" ToolTip="Analogue Switch" Click="ToolboxComponentButton_Click" Tag="type:Switch,t:2" />
+                    <tb:ToolboxItem Content="{StaticResource PushToBreakSwitchIcon}" ToolTip="Push To Break Switch" Click="ToolboxComponentButton_Click" Tag="type:Switch,t:3" />
                 </tb:ToolboxCategory>
                 <tb:ToolboxCategory>
                     <tb:ToolboxItem Content="{StaticResource NANDGateIcon}" ToolTip="NAND Gate" Click="ToolboxComponentButton_Click" Tag="type:LogicGate,t:1" />
@@ -263,10 +267,10 @@
                     <tb:ToolboxItem Content="{StaticResource InductorIcon}" ToolTip="Inductor" Click="ToolboxComponentButton_Click" Tag="type:Inductor" />
                     <tb:ToolboxItem Content="{StaticResource TransformerIcon}" ToolTip="Transformer" Click="ToolboxComponentButton_Click" Tag="type:Transformer" />
                     <tb:ToolboxItem Content="{StaticResource FuseIcon}" ToolTip="Fuse" Click="ToolboxComponentButton_Click" Tag="type:Fuse" />
+                    <tb:ToolboxItem Content="{StaticResource CrystalIcon}" ToolTip="Crystal" Click="ToolboxComponentButton_Click" Tag="type:Crystal" />
                 </tb:ToolboxCategory>
                 <tb:ToolboxCategory>
                     <tb:ToolboxItem Content="{StaticResource MicrophoneIcon}" ToolTip="Microphone" Click="ToolboxComponentButton_Click" Tag="type:Microphone" />
-                    <tb:ToolboxItem Content="{StaticResource CrystalIcon}" ToolTip="Crystal" Click="ToolboxComponentButton_Click" Tag="type:Crystal" />
                 </tb:ToolboxCategory>
                 <tb:ToolboxCategory>
                     <tb:ToolboxItem Content="{StaticResource LoudspeakerIcon}" ToolTip="Loudspeaker" Click="ToolboxComponentButton_Click" Tag="type:OutputDevice,t:0" />

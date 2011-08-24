@@ -17,6 +17,7 @@
                 <RadioButton Content="Push" Height="16" Name="radPush" Checked="RadioChecked" />
                 <RadioButton Content="Toggle" Height="16" Name="radToggle" Checked="RadioChecked" />
                 <RadioButton Content="Analogue" Height="16" Name="radAnalogue" Checked="RadioChecked" />
+                <RadioButton Content="Push to break" Height="16" Name="radPushBreak" Checked="RadioChecked" />
             </StackPanel>
         </GroupBox>
     </Grid>

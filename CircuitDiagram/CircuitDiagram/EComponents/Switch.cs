@@ -107,6 +107,10 @@ namespace CircuitDiagram.EComponents
                     dc.DrawLine(colour, 3d, new Point(gapStart.X - 2d, gapStart.Y + 10d), new Point(gapEnd.X + 2d, gapEnd.Y + 10d));
                     dc.DrawLine(colour, 2d, new Point(gapStart.X + 8d, StartLocation.Y - 40d), new Point(gapStart.X + 8d, StartLocation.Y - 14d));
                 }
+                else if (Type == SwitchType.PushToBreak)
+                {
+                    dc.DrawPath(null, colour, 2f, "M " + gapStart.ToString() + " m -2,5 l 28,0 m -14,0 l 0,-6 m -6,0 l 12,0");
+                }
             }
             if (!Horizontal)
             {
@@ -140,6 +144,10 @@ namespace CircuitDiagram.EComponents
                     dc.DrawLine(colour, 3d, new Point(gapStart.X - 10d, gapStart.Y - 2d), new Point(gapEnd.X - 10d, gapEnd.Y + 2d));
                     dc.DrawLine(colour, 2d, new Point(gapStart.X + 14d, gapStart.Y + 8d), new Point(gapStart.X + 40d, gapStart.Y + 8d));
                 }
+                else if (Type == SwitchType.PushToBreak)
+                {
+                    dc.DrawPath(null, colour, 2f, "M " + gapStart.ToString() + " m 5,-2 l 0,28 m 0,-14 l -6,0 m 0,-6 l 0,12");
+                }
             }
         }
     }
@@ -148,6 +156,7 @@ namespace CircuitDiagram.EComponents
     {
         Push = 0,
         Toggle = 1,
-        Analogue = 2
+        Analogue = 2,
+        PushToBreak = 3
     }
 }
