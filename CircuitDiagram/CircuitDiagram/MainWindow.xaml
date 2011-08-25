@@ -37,6 +37,9 @@
         <Canvas x:Key="PushToBreakSwitchIcon" Width="45" Height="45" SnapsToDevicePixels="True">
             <Path Width="41.5625" Height="12.5" Canvas.Left="1.71876" Canvas.Top="16.25" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="M 2.21876,18.6941L 10.4285,18.6941C 11.0557,17.7522 12.1273,17.1316 13.3438,17.1316C 15.2768,17.1316 16.8438,18.6986 16.8438,20.6316C 16.8438,22.5646 15.2768,24.1316 13.3438,24.1316C 12.1006,24.1316 11.0088,23.4834 10.3878,22.5066L 2.21876,22.5066L 2.21876,18.6941 Z M 42.7812,18.6941L 34.5715,18.6941C 33.9443,17.7522 32.8727,17.1316 31.6562,17.1316C 29.7232,17.1316 28.1562,18.6986 28.1562,20.6316C 28.1562,22.5646 29.7232,24.1316 31.6562,24.1316C 32.8994,24.1316 33.9912,23.4834 34.6122,22.5066L 42.7812,22.5066L 42.7812,18.6941 Z M 12.0625,28.25L 12.0625,24.5625L 21.4375,24.5625L 21.4375,20.3125L 17.4375,20.3125L 17.4375,16.75L 27.5,16.75L 27.5,20.3125L 23.5625,20.3125L 23.5625,24.5625L 32.9375,24.5625L 32.9375,28.25L 12.0625,28.25 Z "/>
         </Canvas>
+        <Canvas x:Key="ChangeoverSwitchIcon" Width="45" Height="45" SnapsToDevicePixels="True">
+            <Path Width="41.625" Height="30.1886" Canvas.Left="1.68751" Canvas.Top="7.4057" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="M 42.75,31.6568L 34.5402,31.6568C 33.913,30.7149 32.8415,30.0943 31.625,30.0943C 29.692,30.0943 28.125,31.6613 28.125,33.5943C 28.125,35.5273 29.692,37.0943 31.625,37.0943C 32.8682,37.0943 33.96,36.4461 34.5809,35.4693L 42.75,35.4693L 42.75,31.6568 Z M 42.8125,9.46819L 42.8125,13.2807L 34.6434,13.2807C 34.0225,14.2575 32.9307,14.9057 31.6875,14.9057C 30.8213,14.9057 30.0286,14.591 29.4175,14.0698L 16.8035,22.3395L 16.8125,22.5932C 16.8125,24.5262 15.2455,26.0932 13.3125,26.0932C 12.0693,26.0932 10.9775,25.445 10.3566,24.4682L 2.18751,24.4682L 2.18751,20.6557L 10.3973,20.6557C 11.0245,19.7138 12.096,19.0932 13.3125,19.0932C 13.8072,19.0932 14.278,19.1958 14.7046,19.381L 28.3178,10.4561C 28.7317,8.98454 30.0836,7.9057 31.6875,7.9057C 32.904,7.9057 33.9755,8.52631 34.6027,9.46819L 42.8125,9.46819 Z "/>
+        </Canvas>
         <Canvas x:Key="NANDGateIcon" Width="45" Height="45" SnapsToDevicePixels="True">
             <Path Width="36.3333" Height="23.5352" Canvas.Left="4.01042" Canvas.Top="10.7272" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="F1 M 9.90625,11.2272L 24.7522,11.2272L 24.8294,11.2272C 29.9828,11.2272 34.2492,15.3962 34.9824,20.8295C 35.3207,20.5923 35.7326,20.4531 36.1771,20.4531C 36.8587,20.4531 37.4638,20.7804 37.8439,21.2865L 39.8437,21.2865L 39.8437,23.7031L 37.9034,23.7031C 37.5288,24.2563 36.8954,24.6198 36.1771,24.6198C 35.728,24.6198 35.3121,24.4777 34.9719,24.236C 34.2087,29.6322 29.9515,33.7624 24.7522,33.7621L 9.90625,33.7624L 9.90625,30.2031L 4.51042,30.2031L 4.51042,27.7865L 9.90625,27.7865L 9.90625,18.3698L 4.51042,18.3698L 4.51042,15.9531L 9.90625,15.9531L 9.90625,11.2272 Z "/>
         </Canvas>
@@ -143,6 +146,9 @@
         <Canvas x:Key="MicrocontrollerIcon" Width="45" Height="45">
             <Path Width="34" Height="35.9167" Canvas.Left="5.5" Canvas.Top="4.54167" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="M 12.0833,5.04167L 32.9167,5.04167L 32.9167,8.42188L 39,8.42188L 39,10.7552L 32.9167,10.7552L 32.9167,16.9497L 39,16.9497L 39,19.283L 32.9167,19.283L 32.9167,25.4774L 39,25.4774L 39,27.8108L 32.9167,27.8108L 32.9167,34.0052L 39,34.0052L 39,36.3385L 32.9167,36.3385L 32.9167,39.9583L 12.0833,39.9583L 12.0833,35.375L 6,35.375L 6,33.0417L 12.0833,33.0417L 12.0833,27.1806L 6,27.1806L 6,24.8472L 12.0833,24.8472L 12.0833,18.9861L 6,18.9861L 6,16.6528L 12.0833,16.6528L 12.0833,10.7917L 6,10.7917L 6,8.45834L 12.0833,8.45834L 12.0833,5.04167 Z "/>
         </Canvas>
+        <Canvas x:Key="DFlipFlopIcon" Width="45" Height="45" SnapsToDevicePixels="True">
+            <Path Width="37.7363" Height="43.5242" Canvas.Left="3.63186" Canvas.Top="0.7379" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="M 21,1.2379L 24,1.2379L 24,4.54896L 35.4381,4.54896L 35.4381,8.06964L 40.8681,8.06964L 40.8681,11.0696L 35.4381,11.0696L 35.4381,31.9866L 40.8681,31.9866L 40.8681,34.9866L 35.4381,34.9866L 35.4381,40.299L 24,40.299L 24,43.7621L 21,43.7621L 21,40.299L 10.3965,40.299L 10.3965,24.9109L 12.75,23.0281L 10.3965,21.2219L 10.3965,11.0696L 4.13186,11.0696L 4.13186,8.06964L 10.3965,8.06964L 10.3965,4.54896L 21,4.54896L 21,1.2379 Z "/>
+        </Canvas>
         <Canvas x:Key="CounterIcon" Width="45" Height="45" SnapsToDevicePixels="True">
             <Path Width="35.9167" Height="34" Canvas.Left="4.54166" Canvas.Top="5.5" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="M 5.04166,32.9167L 5.04166,12.0833L 8.42187,12.0833L 8.42187,6L 10.7552,6L 10.7552,12.0833L 16.9496,12.0833L 16.9496,6L 19.283,6L 19.283,12.0833L 25.4774,12.0833L 25.4774,6L 27.8108,6L 27.8108,12.0833L 34.0052,12.0833L 34.0052,6L 36.3385,6L 36.3385,12.0833L 39.9583,12.0833L 39.9583,32.9167L 35.375,32.9167L 35.375,39L 33.0417,39L 33.0417,32.9167L 27.1806,32.9167L 27.1806,39L 24.8472,39L 24.8472,32.9167L 18.9861,32.9167L 18.9861,39L 16.6528,39L 16.6528,32.9167L 10.7917,32.9167L 10.7917,39L 8.45833,39L 8.45833,32.9167L 5.04166,32.9167 Z M 24.5525,29L 24.5525,27.5067L 21.1392,27.5067L 21.1392,13.8533L 15.9358,15.4267L 15.9358,17.0533L 19.4325,16.02L 19.4325,27.5067L 16.0192,27.5067L 16.0192,29L 24.5525,29 Z M 29.2458,26.6533L 27.5192,26.6533L 26.2592,31.7733L 27.5192,31.7733L 29.2458,26.6533 Z "/>
         </Canvas>
@@ -154,6 +160,17 @@
         </Canvas>
         <Canvas x:Key="ExternalConnectionIcon" Width="45" Height="45" SnapsToDevicePixels="True">
             <Path Width="29.3594" Height="10" Canvas.Left="7.82031" Canvas.Top="17.5" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB" Data="F1 M 28.3933,20.0673C 29.194,18.8236 30.5907,18 32.1797,18C 34.6649,18 36.6797,20.0148 36.6797,22.5C 36.6797,24.9853 34.665,27 32.1797,27C 30.7996,27 29.5646,26.3787 28.7391,25.4006L 8.32031,25.4006L 8.32031,20.0673L 28.3933,20.0673 Z "/>
+        </Canvas>
+        <Canvas x:Key="CustomComponentIcon" Width="45" Height="45" SnapsToDevicePixels="True">
+            <Rectangle Width="36.75" Height="36.75" Canvas.Left="4.125" Canvas.Top="4.125" Stretch="Fill" StrokeMiterLimit="2.75" Stroke="#FF252525" Fill="#FFABABAB"/>
+            <TextBlock TextAlignment="Left" FontFamily="Segoe UI" FontSize="30" VerticalAlignment="Top" HorizontalAlignment="Left">
+		<TextBlock.RenderTransform>
+			<TransformGroup>
+				<MatrixTransform Matrix="1.33333,0,0,1.33333,13.3,-6.5"/>
+			</TransformGroup>
+		</TextBlock.RenderTransform>
+		<Run Text="?" Foreground="#FF000000"/>
+            </TextBlock>
         </Canvas>
     </Window.Resources>
     <DockPanel>
@@ -230,6 +247,7 @@
                     <tb:ToolboxItem Content="{StaticResource ToggleSwitchIcon}" ToolTip="Toggle Switch" Click="ToolboxComponentButton_Click" Tag="type:Switch,t:1" />
                     <tb:ToolboxItem Content="{StaticResource AnalogueSwitchIcon}" ToolTip="Analogue Switch" Click="ToolboxComponentButton_Click" Tag="type:Switch,t:2" />
                     <tb:ToolboxItem Content="{StaticResource PushToBreakSwitchIcon}" ToolTip="Push To Break Switch" Click="ToolboxComponentButton_Click" Tag="type:Switch,t:3" />
+                    <tb:ToolboxItem Content="{StaticResource ChangeoverSwitchIcon}" ToolTip="Changeover Switch" Click="ToolboxComponentButton_Click" Tag="type:Switch,t:4" />
                 </tb:ToolboxCategory>
                 <tb:ToolboxCategory>
                     <tb:ToolboxItem Content="{StaticResource NANDGateIcon}" ToolTip="NAND Gate" Click="ToolboxComponentButton_Click" Tag="type:LogicGate,t:1" />
@@ -280,6 +298,7 @@
                 </tb:ToolboxCategory>
                 <tb:ToolboxCategory>
                     <tb:ToolboxItem Content="{StaticResource MicrocontrollerIcon}" ToolTip="Microcontroller" Click="ToolboxComponentButton_Click" Tag="type:Microcontroller" />
+                    <tb:ToolboxItem Content="{StaticResource DFlipFlopIcon}" ToolTip="D Flip-Flop" Click="ToolboxComponentButton_Click" Tag="type:FlipFlop" />
                 </tb:ToolboxCategory>
                 <tb:ToolboxCategory>
                     <tb:ToolboxItem Content="{StaticResource CounterIcon}" ToolTip="Counter" Click="ToolboxComponentButton_Click" Tag="type:Counter" />
@@ -288,7 +307,7 @@
                 </tb:ToolboxCategory>
                 <tb:ToolboxCategory>
                     <tb:ToolboxItem Content="{StaticResource ExternalConnectionIcon}" ToolTip="External Connection" Click="ToolboxComponentButton_Click" Tag="type:ExternalConnection" />
-                    <tb:ToolboxItem Content="Custom component" ToolTip="Custom component" Click="ToolboxComponentButton_Click" Tag="type:CustomComponent" />
+                    <tb:ToolboxItem Content="{StaticResource CustomComponentIcon}" ToolTip="Custom Component" Click="ToolboxComponentButton_Click" Tag="type:CustomComponent" />
                 </tb:ToolboxCategory>
             </tb:Toolbox>
         </ScrollViewer>

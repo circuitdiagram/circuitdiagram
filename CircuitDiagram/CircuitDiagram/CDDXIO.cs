@@ -17,9 +17,10 @@ namespace CircuitDiagram
 
             // Write header
             writer.Write(MagicNumber); // Magic number, 4 bytes
-            writer.Write(FormatVersion); // Format version
+            writer.Write(FormatVersion); // Format version, 4 bytes
             writer.Write(winAbout.AppVersion.ToString()); // Application version
             writer.Write((int)(CDDXContentEncoding.XML | CDDXContentEncoding.Deflate)); // Content encoding/compression
+            writer.Write((uint)(fileStream.Position + 4)); // Offset to content
             
             // Write content
             DeflateStream deflateStream = new DeflateStream(fileStream, CompressionMode.Compress);
@@ -38,7 +39,12 @@ namespace CircuitDiagram
                 int formatVersion = reader.ReadInt32();
                 string appVersion = reader.ReadString();
                 CDDXContentEncoding contentFlags = (CDDXContentEncoding)reader.ReadInt32();
+                uint contentOffset = 0;
+                if (formatVersion >= 2)
+                    contentOffset = reader.ReadUInt32(); // offset to content
 
+                if (formatVersion >= 2)
+                    fileStream.Seek(contentOffset, SeekOrigin.Begin);
                 CircuitDocument newDocument = new CircuitDocument();
                 DocumentLoadResult result = DocumentLoadResult.None;
                 if ((contentFlags & CDDXContentEncoding.Deflate) == CDDXContentEncoding.Deflate)
@@ -50,9 +56,11 @@ namespace CircuitDiagram
                 {
                     result = newDocument.Load(fileStream);
                 }
-
+                
                 if (result == DocumentLoadResult.FailIncorrectFormat)
                     System.Windows.MessageBox.Show("The document was not in the correct format.", "Could Not Load Document", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                else if (formatVersion > FormatVersion)
+                    System.Windows.MessageBox.Show("This document was created in a newer version of Circuit Diagram, and may not display correctly.", "Newer File Format", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                 return newDocument;
             }
             catch (Exception)
@@ -77,7 +85,7 @@ namespace CircuitDiagram
         }
 
         static readonly int MagicNumber = 6766888;
-        static readonly int FormatVersion = 1;
+        static readonly int FormatVersion = 2;
     }
 
     public enum DocumentLoadResult

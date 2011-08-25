@@ -45,6 +45,20 @@ namespace CircuitDiagram.EComponents
                     else
                         return new Rect(new Point(StartLocation.X - 15, StartLocation.Y), new Size(55, EndLocation.Y - StartLocation.Y));
                 }
+                else if (Type == SwitchType.PushToBreak)
+                {
+                    if (Horizontal)
+                        return new Rect(new Point(StartLocation.X, StartLocation.Y - 5d), new Point(EndLocation.X, EndLocation.Y + 5d));
+                    else
+                        return new Rect(new Point(StartLocation.X - 5d, StartLocation.Y), new Point(EndLocation.X + 5d, EndLocation.Y));
+                }
+                else if (Type == SwitchType.Changeover)
+                {
+                    if (Horizontal)
+                        return new Rect(new Point(StartLocation.X, StartLocation.Y - 10d), new Point(EndLocation.X, EndLocation.Y + 10d));
+                    else
+                        return new Rect(new Point(StartLocation.X - 10d, StartLocation.Y), new Point(EndLocation.X + 10d, EndLocation.Y));
+                }
                 else
                 {
                     if (Horizontal)
@@ -91,8 +105,11 @@ namespace CircuitDiagram.EComponents
                 }
                 dc.DrawLine(colour, 2d, StartLocation, gapStart);
                 dc.DrawEllipse(Colors.White, colour, 2d, gapStart, 3d, 3d);
-                dc.DrawLine(colour, 2d, gapEnd, EndLocation);
-                dc.DrawEllipse(Colors.White, colour, 2d, gapEnd, 3d, 3d);
+                if (Type != SwitchType.Changeover)
+                {
+                    dc.DrawLine(colour, 2d, gapEnd, EndLocation);
+                    dc.DrawEllipse(Colors.White, colour, 2d, gapEnd, 3d, 3d);
+                }
                 if (Type == SwitchType.Push)
                 {
                     dc.DrawPath(null, colour, 2f, "M " + gapStart.ToString() + " m -2,-8 l 28,0 m -14,0 l 0,-6 m -6,0 l 12,0");
@@ -111,6 +128,14 @@ namespace CircuitDiagram.EComponents
                 {
                     dc.DrawPath(null, colour, 2f, "M " + gapStart.ToString() + " m -2,5 l 28,0 m -14,0 l 0,-6 m -6,0 l 12,0");
                 }
+                else if (Type == SwitchType.Changeover)
+                {
+                    dc.DrawLine(colour, 2d, Point.Add(gapStart, new Vector(3d, -1d)), Point.Add(gapEnd, new Vector(0, -10d)));
+                    dc.DrawLine(colour, 2d, new Point(gapEnd.X, gapEnd.Y - 10d), new Point(EndLocation.X, EndLocation.Y - 10d));
+                    dc.DrawEllipse(Colors.White, colour, 2d, new Point(gapEnd.X, gapEnd.Y - 10d), 3d, 3d);
+                    dc.DrawLine(colour, 2d, new Point(gapEnd.X, gapEnd.Y + 10d), new Point(EndLocation.X, EndLocation.Y + 10d));
+                    dc.DrawEllipse(Colors.White, colour, 2d, new Point(gapEnd.X, gapEnd.Y + 10d), 3d, 3d);
+                }
             }
             if (!Horizontal)
             {
@@ -127,9 +152,12 @@ namespace CircuitDiagram.EComponents
                     }
                 }
                 dc.DrawLine(colour, 2d, StartLocation, gapStart);
-                dc.DrawLine(colour, 2d, gapEnd, EndLocation);
                 dc.DrawEllipse(Colors.White, colour, 2d, gapStart, 3d, 3d);
-                dc.DrawEllipse(Colors.White, colour, 2d, gapEnd, 3d, 3d);
+                if (Type != SwitchType.Changeover)
+                {
+                    dc.DrawLine(colour, 2d, gapEnd, EndLocation);
+                    dc.DrawEllipse(Colors.White, colour, 2d, gapEnd, 3d, 3d);
+                }
                 if (Type == SwitchType.Push)
                 {
                     dc.DrawPath(null, colour, 2f, "M " + gapStart.ToString() + " m -8,-2 l 0,28 m 0,-14 l -6,0 m 0,-6 l 0,12");
@@ -148,6 +176,14 @@ namespace CircuitDiagram.EComponents
                 {
                     dc.DrawPath(null, colour, 2f, "M " + gapStart.ToString() + " m 5,-2 l 0,28 m 0,-14 l -6,0 m 0,-6 l 0,12");
                 }
+                else if (Type == SwitchType.Changeover)
+                {
+                    dc.DrawLine(colour, 2d, Point.Add(gapStart, new Vector(0d, 3d)), Point.Add(gapEnd, new Vector(-10d, 0)));
+                    dc.DrawLine(colour, 2d, new Point(gapEnd.X - 10d, gapEnd.Y), new Point(EndLocation.X - 10d, EndLocation.Y));
+                    dc.DrawEllipse(Colors.White, colour, 2d, new Point(gapEnd.X - 10d, gapEnd.Y), 3d, 3d);
+                    dc.DrawLine(colour, 2d, new Point(gapEnd.X + 10d, gapEnd.Y), new Point(EndLocation.X + 10d, EndLocation.Y));
+                    dc.DrawEllipse(Colors.White, colour, 2d, new Point(gapEnd.X + 10d, gapEnd.Y), 3d, 3d);
+                }
             }
         }
     }
@@ -157,6 +193,7 @@ namespace CircuitDiagram.EComponents
         Push = 0,
         Toggle = 1,
         Analogue = 2,
-        PushToBreak = 3
+        PushToBreak = 3,
+        Changeover = 4
     }
 }

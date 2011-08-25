@@ -1,4 +1,4 @@
-﻿// LogicGateEditor.xaml.cs
+﻿// SwitchEditor.xaml.cs
 //
 // Circuit Diagram http://www.circuit-diagram.org/
 //
@@ -54,6 +54,7 @@ namespace CircuitDiagram.EComponents
             radToggle.IsChecked = false;
             radAnalogue.IsChecked = false;
             radPushBreak.IsChecked = false;
+            radChangeover.IsChecked = false;
             switch (Component.Type)
             {
                 case SwitchType.Push:
@@ -66,7 +67,10 @@ namespace CircuitDiagram.EComponents
                     radAnalogue.IsChecked = true;
                     break;
                 case SwitchType.PushToBreak:
-                    radPushBreak.IsChecked = false;
+                    radPushBreak.IsChecked = true;
+                    break;
+                case SwitchType.Changeover:
+                    radChangeover.IsChecked = true;
                     break;
             }
             IsLoadingComponent = false;
@@ -83,6 +87,8 @@ namespace CircuitDiagram.EComponents
                 Component.Type = SwitchType.Analogue;
             else if (radPushBreak.IsChecked == true)
                 Component.Type = SwitchType.PushToBreak;
+            else if (radChangeover.IsChecked == true)
+                Component.Type = SwitchType.Changeover;
             base.CallComponentUpdated(previousData);
         }
     }

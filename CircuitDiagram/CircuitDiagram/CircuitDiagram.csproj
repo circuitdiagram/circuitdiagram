@@ -124,6 +124,7 @@
     </Compile>
     <Compile Include="EComponents\Crystal.cs" />
     <Compile Include="EComponents\CustomComponent.cs" />
+    <Compile Include="EComponents\FlipFlop.cs" />
     <Compile Include="EComponents\Fuse.cs" />
     <Compile Include="EComponents\Ground.cs">
       <SubType>Code</SubType>
