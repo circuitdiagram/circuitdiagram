@@ -57,6 +57,7 @@ namespace CircuitDiagram.EComponents
             radTypePotentiometer.IsChecked = false;
             radTypeThermistor.IsChecked = false;
             radTypeLDR.IsChecked = false;
+            radTypeUS.IsChecked = false;
             switch (Component.ResistorType)
             {
                 case ResistorType.Standard:
@@ -73,6 +74,9 @@ namespace CircuitDiagram.EComponents
                     break;
                 case ResistorType.LDR:
                     radTypeLDR.IsChecked = true;
+                    break;
+                case ResistorType.US:
+                    radTypeUS.IsChecked = true;
                     break;
             }
             IsLoadingComponent = false;
@@ -106,6 +110,8 @@ namespace CircuitDiagram.EComponents
                 Component.ResistorType = ResistorType.Thermistor;
             else if (radTypeLDR.IsChecked == true)
                 Component.ResistorType = ResistorType.LDR;
+            else if (radTypeUS.IsChecked == true)
+                Component.ResistorType = ResistorType.US;
             base.CallComponentUpdated(previousData);
         }
     }

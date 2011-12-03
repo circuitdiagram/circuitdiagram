@@ -49,7 +49,7 @@ namespace CircuitDiagram.EComponents
 
         public override void Render(IRenderer dc, Color color)
         {
-            dc.DrawPath(null, color, 2f, "M " + new Point(StartLocation.X - 41f, StartLocation.Y).ToString() + " l 75,0 l 0,110 l -75,0 l 0,-111 m 0,1 " + "m 10,10 l 55,0 l 0,90 l -55,0 l 0,-91 m 1,2 " + "l 14,14 l 25,0" +
+            dc.DrawPath(null, color, 2f, "M " + new Point(StartLocation.X - 41f, StartLocation.Y).ToString(System.Globalization.CultureInfo.InvariantCulture) + " l 75,0 l 0,110 l -75,0 l 0,-111 m 0,1 " + "m 10,10 l 55,0 l 0,90 l -55,0 l 0,-91 m 1,2 " + "l 14,14 l 25,0" +
                 "l 14,-14 m -14,14 l 0,22.5 l 14,6.5 m 0,2 l -14,6.5 l 0,22.5 l 14,14 m -14,-14 l -25,0 l -14,14 m 14,-14 l 0,-22.5 l -14,-6.5 m 0,-2 l 14,-6.5 l 0,-22.5 m 0,22.5 l 25,0 m 0,15 l -25,0");
             dc.DrawLine(color, 2f, new Point(StartLocation.X, StartLocation.Y + 110), new Point(StartLocation.X, RenderEndLocation.Y));
         }

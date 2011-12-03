@@ -45,7 +45,6 @@ namespace CircuitDiagram
 
         void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            MessageBox.Show(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Circuit_Diagram\\ErrorLog.txt");
             System.IO.File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Circuit_Diagram\\ErrorLog.txt", e.Exception.ToString());
         }
     }

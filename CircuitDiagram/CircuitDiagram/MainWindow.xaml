@@ -15,6 +15,7 @@
         <Image x:Key="PotentiometerIcon" Width="45" Height="45" Source="Images/Potentiometer.png" RenderOptions.BitmapScalingMode="NearestNeighbor" />
         <Image x:Key="ThermistorIcon" Width="45" Height="45" Source="Images/Thermistor.png" RenderOptions.BitmapScalingMode="NearestNeighbor" />
         <Image x:Key="LDRIcon" Width="45" Height="45" Source="Images/LDR.png" RenderOptions.BitmapScalingMode="NearestNeighbor" />
+        <Image x:Key="USResistorIcon" Width="45" Height="45" Source="Images/USResistor.png" RenderOptions.BitmapScalingMode="NearestNeighbor" />
         <Image x:Key="CapacitorIcon" Width="45" Height="45" Source="Images/Capacitor.png" RenderOptions.BitmapScalingMode="NearestNeighbor" />
         <Image x:Key="VariableCapacitorIcon" Width="45" Height="45" Source="Images/VariableCapacitor.png" RenderOptions.BitmapScalingMode="NearestNeighbor" />
         <Image x:Key="TrimmerCapacitorIcon" Width="45" Height="45" Source="Images/TrimmerCapacitor.png" RenderOptions.BitmapScalingMode="NearestNeighbor" />
@@ -172,6 +173,7 @@
 		<Run Text="?" Foreground="#FF000000"/>
             </TextBlock>
         </Canvas>
+        <Image x:Key="LabelIcon" Width="45" Height="45" Source="Images/Label.png" RenderOptions.BitmapScalingMode="NearestNeighbor" />
     </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top" Style="{StaticResource MenuStyle}">
@@ -230,6 +232,7 @@
                     <tb:ToolboxItem Content="{StaticResource PotentiometerIcon}" ToolTip="Potentiometer" Click="ToolboxComponentButton_Click" Tag="type:Resistor,t:1" />
                     <tb:ToolboxItem Content="{StaticResource ThermistorIcon}" ToolTip="Thermistor" Click="ToolboxComponentButton_Click" Tag="type:Resistor,t:3" />
                     <tb:ToolboxItem Content="{StaticResource LDRIcon}" ToolTip="LDR" Click="ToolboxComponentButton_Click" Tag="type:Resistor,t:2" />
+                    <tb:ToolboxItem Content="{StaticResource USResistorIcon}" ToolTip="US Resistor" Click="ToolboxComponentButton_Click" Tag="type:Resistor,t:5" />
                 </tb:ToolboxCategory>
                 <tb:ToolboxCategory>
                     <tb:ToolboxItem Content="{StaticResource CapacitorIcon}" ToolTip="Capacitor" Click="ToolboxComponentButton_Click" Tag="type:Capacitor" />
@@ -307,6 +310,7 @@
                 </tb:ToolboxCategory>
                 <tb:ToolboxCategory>
                     <tb:ToolboxItem Content="{StaticResource ExternalConnectionIcon}" ToolTip="External Connection" Click="ToolboxComponentButton_Click" Tag="type:ExternalConnection" />
+                    <tb:ToolboxItem Content="{StaticResource LabelIcon}" ToolTip="Label" Click="ToolboxComponentButton_Click" Tag="type:ELabel" />
                     <tb:ToolboxItem Content="{StaticResource CustomComponentIcon}" ToolTip="Custom Component" Click="ToolboxComponentButton_Click" Tag="type:CustomComponent" />
                 </tb:ToolboxCategory>
             </tb:Toolbox>

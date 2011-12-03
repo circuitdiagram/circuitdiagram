@@ -112,7 +112,7 @@ namespace CircuitDiagram.EComponents
                 }
                 if (Type == SwitchType.Push)
                 {
-                    dc.DrawPath(null, colour, 2f, "M " + gapStart.ToString() + " m -2,-8 l 28,0 m -14,0 l 0,-6 m -6,0 l 12,0");
+                    dc.DrawPath(null, colour, 2f, "M " + gapStart.ToString(System.Globalization.CultureInfo.InvariantCulture) + " m -2,-8 l 28,0 m -14,0 l 0,-6 m -6,0 l 12,0");
                 }
                 else if (Type == SwitchType.Toggle)
                 {
@@ -126,7 +126,7 @@ namespace CircuitDiagram.EComponents
                 }
                 else if (Type == SwitchType.PushToBreak)
                 {
-                    dc.DrawPath(null, colour, 2f, "M " + gapStart.ToString() + " m -2,5 l 28,0 m -14,0 l 0,-6 m -6,0 l 12,0");
+                    dc.DrawPath(null, colour, 2f, "M " + gapStart.ToString(System.Globalization.CultureInfo.InvariantCulture) + " m -2,5 l 28,0 m -14,0 l 0,-6 m -6,0 l 12,0");
                 }
                 else if (Type == SwitchType.Changeover)
                 {
@@ -160,7 +160,7 @@ namespace CircuitDiagram.EComponents
                 }
                 if (Type == SwitchType.Push)
                 {
-                    dc.DrawPath(null, colour, 2f, "M " + gapStart.ToString() + " m -8,-2 l 0,28 m 0,-14 l -6,0 m 0,-6 l 0,12");
+                    dc.DrawPath(null, colour, 2f, "M " + gapStart.ToString(System.Globalization.CultureInfo.InvariantCulture) + " m -8,-2 l 0,28 m 0,-14 l -6,0 m 0,-6 l 0,12");
                 }
                 else if (Type == SwitchType.Toggle)
                 {
@@ -174,7 +174,7 @@ namespace CircuitDiagram.EComponents
                 }
                 else if (Type == SwitchType.PushToBreak)
                 {
-                    dc.DrawPath(null, colour, 2f, "M " + gapStart.ToString() + " m 5,-2 l 0,28 m 0,-14 l -6,0 m 0,-6 l 0,12");
+                    dc.DrawPath(null, colour, 2f, "M " + gapStart.ToString(System.Globalization.CultureInfo.InvariantCulture) + " m 5,-2 l 0,28 m 0,-14 l -6,0 m 0,-6 l 0,12");
                 }
                 else if (Type == SwitchType.Changeover)
                 {

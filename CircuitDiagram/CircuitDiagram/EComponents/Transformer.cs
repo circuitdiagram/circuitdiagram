@@ -42,8 +42,8 @@ namespace CircuitDiagram.EComponents
                 dc.DrawLine(colour, 2d, new Point(end.X, end.Y + 20d), new Point(EndLocation.X, EndLocation.Y + 20d));
                 dc.DrawLine(colour, 2d, new Point(centre.X - 5d, centre.Y - 20d), new Point(centre.X - 5d, centre.Y + 20d));
                 dc.DrawLine(colour, 2d, new Point(centre.X + 5d, centre.Y - 20d), new Point(centre.X + 5d, centre.Y + 20d));
-                dc.DrawPath(null, colour, 2d, String.Format("M {0} a 1.5,2 90 0 1 0,10 m 0,0 a 1.5,2 90 0 1 0,10 m 0,0 a 1.5,2 90 0 1 0,10 m 0,0 a 1.5,2 90 0 1 0,10 m 0,0", new Point(start.X, start.Y - 20d)));
-                dc.DrawPath(null, colour, 2d, String.Format("M {0} a 1.5,2 90 0 0 0,10 m 0,0 a 1.5,2 90 0 0 0,10 m 0,0 a 1.5,2 90 0 0 0,10 m 0,0 a 1.5,2 90 0 0 0,10 m 0,0", new Point(end.X, end.Y - 20d)));
+                dc.DrawPath(null, colour, 2d, String.Format("M {0} a 1.5,2 90 0 1 0,10 m 0,0 a 1.5,2 90 0 1 0,10 m 0,0 a 1.5,2 90 0 1 0,10 m 0,0 a 1.5,2 90 0 1 0,10 m 0,0", new Point(start.X, start.Y - 20d).ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                dc.DrawPath(null, colour, 2d, String.Format("M {0} a 1.5,2 90 0 0 0,10 m 0,0 a 1.5,2 90 0 0 0,10 m 0,0 a 1.5,2 90 0 0 0,10 m 0,0 a 1.5,2 90 0 0 0,10 m 0,0", new Point(end.X, end.Y - 20d).ToString(System.Globalization.CultureInfo.InvariantCulture)));
             }
             else
             {
@@ -56,8 +56,8 @@ namespace CircuitDiagram.EComponents
                 dc.DrawLine(colour, 2d, new Point(end.X + 20d, end.Y), new Point(EndLocation.X + 20d, EndLocation.Y));
                 dc.DrawLine(colour, 2d, new Point(centre.X - 20d, centre.Y - 5d), new Point(centre.X + 20d, centre.Y - 5d));
                 dc.DrawLine(colour, 2d, new Point(centre.X - 20d, centre.Y + 5d), new Point(centre.X + 20d, centre.Y + 5d));
-                dc.DrawPath(null, colour, 2d, String.Format("M {0} a 2,1.5 90 0 0 10,0 m 0,0 a 2,1.5 90 0 0 10,0 m 0,0 a 2,1.5 90 0 0 10,0 m 0,0 a 2,1.5 90 0 0 10,0 m 0,0", new Point(start.X - 20d, start.Y)));
-                dc.DrawPath(null, colour, 2d, String.Format("M {0} a 2,1.5 90 0 1 10,0 m 0,0 a 2,1.5 90 0 1 10,0 m 0,0 a 2,1.5 90 0 1 10,0 m 0,0 a 2,1.5 90 0 1 10,0 m 0,0", new Point(end.X - 20d, end.Y)));
+                dc.DrawPath(null, colour, 2d, String.Format("M {0} a 2,1.5 90 0 0 10,0 m 0,0 a 2,1.5 90 0 0 10,0 m 0,0 a 2,1.5 90 0 0 10,0 m 0,0 a 2,1.5 90 0 0 10,0 m 0,0", new Point(start.X - 20d, start.Y).ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                dc.DrawPath(null, colour, 2d, String.Format("M {0} a 2,1.5 90 0 1 10,0 m 0,0 a 2,1.5 90 0 1 10,0 m 0,0 a 2,1.5 90 0 1 10,0 m 0,0 a 2,1.5 90 0 1 10,0 m 0,0", new Point(end.X - 20d, end.Y).ToString(System.Globalization.CultureInfo.InvariantCulture)));
             }
         }
     }

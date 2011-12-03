@@ -76,7 +76,7 @@ namespace CircuitDiagram.EComponents
                     dc.DrawLine(color, 2d, new Point(startPos.X - 30d, startPos.Y), new Point(startPos.X - 6d, startPos.Y));
                     dc.DrawLine(color, 2d, new Point(StartLocation.X + 1d, startPos.Y - 13d), new Point(startPos.X - 6d, startPos.Y - 4d));
                     dc.DrawLine(color, 2d, new Point(StartLocation.X + 1d, startPos.Y + 13d), new Point(startPos.X - 6d, startPos.Y + 4d));
-                    dc.DrawPath(color, color, 2d, String.Format("M {0} m 2,6 l -2,4 l 7,1 l -4,-6 l -1,2 ", startPos));
+                    dc.DrawPath(color, color, 2d, String.Format("M {0} m 2,6 l -2,4 l 7,1 l -4,-6 l -1,2 ", startPos.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 }
                 else if (Type == TransistorType.PNP)
                 {
@@ -89,23 +89,23 @@ namespace CircuitDiagram.EComponents
                     dc.DrawLine(color, 2d, new Point(startPos.X - 30d, startPos.Y), new Point(startPos.X - 6d, startPos.Y));
                     dc.DrawLine(color, 2d, new Point(StartLocation.X + 1d, startPos.Y - 13d), new Point(startPos.X - 6d, startPos.Y - 4d));
                     dc.DrawLine(color, 2d, new Point(StartLocation.X + 1d, startPos.Y + 13d), new Point(startPos.X - 6d, startPos.Y + 4d));
-                    dc.DrawPath(color, color, 2d, String.Format("M {0} m 2,-10 l 2,4 l -7,1 l 4,-6 l 1,2 ", startPos));
+                    dc.DrawPath(color, color, 2d, String.Format("M {0} m 2,-10 l 2,4 l -7,1 l 4,-6 l 1,2 ", startPos.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 }
                 else if (Type == TransistorType.NChannel)
                 {
                     dc.DrawLine(color, 2f, StartLocation, startPos);
-                    dc.DrawPath(null, color, 4.0f, String.Format("M {0} m -18,12 l 0,8 m 0,4 l 0,8 m 0,4 l 0,8", startPos));
-                    dc.DrawPath(null, color, 2.0f, String.Format("M {0} l 0,16 l -16,0 m -8,0 l 0,24 l -16,0 m 24,0 l 16,0 l 0,8 l 12,0 l 0,-20 l -28,0 m 16,20 L {1}", startPos, EndLocation));
-                    dc.DrawPath(color, color, 2.0f, String.Format("M {0} m -15,28 l 4,3 l 0,-6 l -4,3 l 2,2", startPos));
+                    dc.DrawPath(null, color, 4.0f, String.Format("M {0} m -18,12 l 0,8 m 0,4 l 0,8 m 0,4 l 0,8", startPos.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                    dc.DrawPath(null, color, 2.0f, String.Format("M {0} l 0,16 l -16,0 m -8,0 l 0,24 l -16,0 m 24,0 l 16,0 l 0,8 l 12,0 l 0,-20 l -28,0 m 16,20 L {1}", startPos.ToString(System.Globalization.CultureInfo.InvariantCulture), EndLocation.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                    dc.DrawPath(color, color, 2.0f, String.Format("M {0} m -15,28 l 4,3 l 0,-6 l -4,3 l 2,2", startPos.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                     dc.DrawEllipse(color, color, 1f, Point.Add(startPos, new Vector(0d, 48d)), 3f, 3f);
                 }
                 else if (Type == TransistorType.PChannel)
                 {
                     dc.DrawLine(color, 2f, StartLocation, startPos);
-                    dc.DrawPath(null, color, 4.0f, String.Format("M {0} m -18,12 l 0,8 m 0,4 l 0,8 m 0,4 l 0,8", startPos));
-                    dc.DrawPath(null, color, 2.0f, String.Format("M {0} l 0,16 l -16,0 m -8,0 l 0,24 l -16,0 m 24,0 l 16,0 l 0,8 L {1}", startPos, EndLocation));
-                    dc.DrawPath(null, color, 2.0f, String.Format("M {0} m -20,28 l 32,0 l 0,-20 l -12,0", startPos));
-                    dc.DrawPath(color, color, 2.0f, String.Format("M {0} m -5,28 l -4,3 l 0,-6 l 4,3 l -2,2", startPos));
+                    dc.DrawPath(null, color, 4.0f, String.Format("M {0} m -18,12 l 0,8 m 0,4 l 0,8 m 0,4 l 0,8", startPos.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                    dc.DrawPath(null, color, 2.0f, String.Format("M {0} l 0,16 l -16,0 m -8,0 l 0,24 l -16,0 m 24,0 l 16,0 l 0,8 L {1}", startPos.ToString(System.Globalization.CultureInfo.InvariantCulture), EndLocation.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                    dc.DrawPath(null, color, 2.0f, String.Format("M {0} m -20,28 l 32,0 l 0,-20 l -12,0", startPos.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                    dc.DrawPath(color, color, 2.0f, String.Format("M {0} m -5,28 l -4,3 l 0,-6 l 4,3 l -2,2", startPos.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                     dc.DrawEllipse(color, color, 1f, Point.Add(startPos, new Vector(0d, 8d)), 3f, 3f);
                 }
             }

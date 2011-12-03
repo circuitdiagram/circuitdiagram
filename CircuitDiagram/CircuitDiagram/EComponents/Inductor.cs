@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Globalization;
 
 namespace CircuitDiagram.EComponents
 {
@@ -57,7 +58,7 @@ namespace CircuitDiagram.EComponents
                 Point end = new Point(StartLocation.X + Size.Width / 2 + 24d, StartLocation.Y);
                 dc.DrawLine(colour, 2d, StartLocation, start);
                 dc.DrawLine(colour, 2d, end, EndLocation);
-                dc.DrawPath(null, colour, 2d, String.Format("M {0} a 2,1.5 90 0 1 12,0 m 0,0 a 2,1.5 90 0 1 12,0 m 0,0 a 2,1.5 90 0 1 12,0 m 0,0 a 2,1.5 90 0 1 12,0", start));
+                dc.DrawPath(null, colour, 2d, String.Format("M {0} a 2,1.5 90 0 1 12,0 m 0,0 a 2,1.5 90 0 1 12,0 m 0,0 a 2,1.5 90 0 1 12,0 m 0,0 a 2,1.5 90 0 1 12,0", start.ToString(CultureInfo.InvariantCulture)));
             }
             else
             {
@@ -65,7 +66,7 @@ namespace CircuitDiagram.EComponents
                 Point end = new Point(StartLocation.X, StartLocation.Y + Size.Height / 2 + 24d);
                 dc.DrawLine(colour, 2d, StartLocation, start);
                 dc.DrawLine(colour, 2d, end, EndLocation);
-                dc.DrawPath(null, colour, 2d, String.Format("M {0} a 1.5,2 90 0 1 0,12 m 0,0 a 1.5,2 90 0 1 0,12 m 0,0 a 1.5,2 90 0 1 0,12 m 0,0 a 1.5,2 90 0 1 0,12 m 0,0", start));
+                dc.DrawPath(null, colour, 2d, String.Format("M {0} a 1.5,2 90 0 1 0,12 m 0,0 a 1.5,2 90 0 1 0,12 m 0,0 a 1.5,2 90 0 1 0,12 m 0,0 a 1.5,2 90 0 1 0,12 m 0,0", start.ToString(CultureInfo.InvariantCulture)));
             }
         }
     }

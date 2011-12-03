@@ -84,7 +84,7 @@ namespace CircuitDiagram.EComponents
                     Point end = new Point(StartLocation.X + Size.Width / 2 + 20d, StartLocation.Y);
                     dc.DrawLine(colour, 2d, StartLocation, start);
                     dc.DrawLine(colour, 2d, end, EndLocation);
-                    dc.DrawPath(null, colour, 2d, String.Format("M {0} l 0,8 l -15,15 l 70,0 l -15,-15 l -40,0 l 0,-16 l 40,0 l 0,16", start));
+                    dc.DrawPath(null, colour, 2d, String.Format("M {0} l 0,8 l -15,15 l 70,0 l -15,-15 l -40,0 l 0,-16 l 40,0 l 0,16", start.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 }
                 else if (Type == OutputDeviceType.Buzzer)
                 {
@@ -94,7 +94,7 @@ namespace CircuitDiagram.EComponents
                     dc.DrawPath(null, colour, 2d, String.Format("M {0} l 6,0 l 0,10", start));
                     dc.DrawLine(colour, 2d, end, EndLocation);
                     dc.DrawPath(null, colour, 2d, String.Format("M {0} l -6,0 l 0,10", end));
-                    dc.DrawPath(Colors.White, colour, 2d, String.Format("M {0} a 20,20 90 0 0 -20,20 l 40,0 a 20,20 90 0 0 -20,-20", new Point(start.X + 20d, start.Y)));
+                    dc.DrawPath(Colors.White, colour, 2d, String.Format("M {0} a 20,20 90 0 0 -20,20 l 40,0 a 20,20 90 0 0 -20,-20", new Point(start.X + 20d, start.Y).ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 }
                 else if (Type == OutputDeviceType.Heater)
                 {
@@ -124,17 +124,17 @@ namespace CircuitDiagram.EComponents
                     Point end = new Point(StartLocation.X, StartLocation.Y + Size.Height / 2 + 20d);
                     dc.DrawLine(colour, 2d, StartLocation, start);
                     dc.DrawLine(colour, 2d, end, EndLocation);
-                    dc.DrawPath(null, colour, 2d, String.Format("M {0} l 8,0 l 15,-15 l 0,70 l -15,-15 l 0,-40 l -16,0 l 0,40 l 16,0", start));
+                    dc.DrawPath(null, colour, 2d, String.Format("M {0} l 8,0 l 15,-15 l 0,70 l -15,-15 l 0,-40 l -16,0 l 0,40 l 16,0", start.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 }
                 else if (Type == OutputDeviceType.Buzzer)
                 {
                     Point start = new Point(StartLocation.X, StartLocation.Y + Size.Height / 2 - 20d);
                     Point end = new Point(StartLocation.X, StartLocation.Y + Size.Height / 2 + 20d);
                     dc.DrawLine(colour, 2d, StartLocation, new Point(start.X, start.Y));
-                    dc.DrawPath(null, colour, 2d, String.Format("M {0} l 0,6 l 10,0", start));
+                    dc.DrawPath(null, colour, 2d, String.Format("M {0} l 0,6 l 10,0", start.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                     dc.DrawLine(colour, 2d, end, EndLocation);
-                    dc.DrawPath(null, colour, 2d, String.Format("M {0} l 0,-6 l 10,0", end));
-                    dc.DrawPath(Colors.White, colour, 2d, String.Format("M {0} a 20,20 90 0 1 20,-20 l 0,40 a 20,20 90 0 1 -20,-20", new Point(start.X, start.Y + 20d)));
+                    dc.DrawPath(null, colour, 2d, String.Format("M {0} l 0,-6 l 10,0", end.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                    dc.DrawPath(Colors.White, colour, 2d, String.Format("M {0} a 20,20 90 0 1 20,-20 l 0,40 a 20,20 90 0 1 -20,-20", new Point(start.X, start.Y + 20d).ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 }
                 else if (Type == OutputDeviceType.Heater)
                 {

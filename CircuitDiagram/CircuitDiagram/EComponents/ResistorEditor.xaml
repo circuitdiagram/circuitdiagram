@@ -26,6 +26,7 @@
                 <RadioButton Content="Potentiometer" Height="16" Name="radTypePotentiometer" Checked="RadioChecked" />
                 <RadioButton Content="Thermistor" Height="16" Name="radTypeThermistor" Checked="RadioChecked" />
                 <RadioButton Content="LDR" Height="16" Name="radTypeLDR" Checked="RadioChecked" />
+                <RadioButton Content="US style" Height="16" Name="radTypeUS" Checked="RadioChecked" />
             </StackPanel>
         </GroupBox>
     </Grid>

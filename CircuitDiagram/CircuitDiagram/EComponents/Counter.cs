@@ -49,7 +49,7 @@ namespace CircuitDiagram.EComponents
             dc.DrawLine(color, 2.0f, new Point(RenderStartLocation.X, RenderStartLocation.Y), new Point(StartLocation.X + 9f, StartLocation.Y));
             dc.DrawRectangle(Colors.Transparent, color, 2f, new Rect(StartLocation.X + RectStart, StartLocation.Y - 25f, 120f, 50f));
             dc.DrawEllipse(Colors.Transparent, color, 2f, new Point(StartLocation.X + 11f, StartLocation.Y), 3d, 3d);
-            dc.DrawPath(Colors.Transparent, color, 1f, String.Format("M {0} l 6,6 l -6,6", new Point(StartLocation.X + RectStart, StartLocation.Y - 6f).ToString()));
+            dc.DrawPath(Colors.Transparent, color, 1f, String.Format("M {0} l 6,6 l -6,6", new Point(StartLocation.X + RectStart, StartLocation.Y - 6f).ToString(System.Globalization.CultureInfo.InvariantCulture)));
             dc.DrawLine(color, 2f, new Point(StartLocation.X + RectStart + 14f, StartLocation.Y + 25f), new Point(StartLocation.X + RectStart + 14f, StartLocation.Y + 50f));
             dc.DrawLine(color, 2f, new Point(StartLocation.X + RectStart + 14f + 30f, StartLocation.Y + 25f), new Point(StartLocation.X + RectStart + 14f + 30f, StartLocation.Y + 50f));
             dc.DrawLine(color, 2f, new Point(StartLocation.X + RectStart + 14f + 60f, StartLocation.Y + 25f), new Point(StartLocation.X + RectStart + 14f + 60f, StartLocation.Y + 50f));

@@ -101,30 +101,39 @@ namespace CircuitDiagram.EComponents
                 Point point0 = new Point(StartLocation.X + Size.Width / 2 - 20d, StartLocation.Y);
                 if (ResistorType == EComponents.ResistorType.Potentiometer && point0.X % 10 != 0)
                     point0.X = point0.X + 5d;
-                dc.DrawLine(color, 2.0f, StartLocation, point0);
-                dc.DrawRectangle(Color.FromArgb(0, 255, 255, 255), color, 2d, new Rect(point0.X, StartLocation.Y - 8d, 40d, 16d));
-                dc.DrawLine(color, 2.0f, new Point(point0.X + 40f, point0.Y), EndLocation);
+                if (ResistorType != EComponents.ResistorType.US)
+                    dc.DrawLine(color, 2.0f, StartLocation, point0);
+                else
+                    dc.DrawLine(color, 2.0f, StartLocation, Point.Add(point0, new Vector(-14d, 0)));
+                if (ResistorType != EComponents.ResistorType.US)
+                    dc.DrawRectangle(Color.FromArgb(0, 255, 255, 255), color, 2d, new Rect(point0.X, StartLocation.Y - 8d, 40d, 16d));
+                else
+                    dc.DrawPath(null, color, 2d, String.Format("M {0} l 10,0 l 4,-5 l 8,10 l 8,-10 l 8,10 l 8,-10 l 8,10 l 4,-5 l 10,0", Point.Add(point0, new Vector(-14d, 0))));
+                if (ResistorType != EComponents.ResistorType.US)
+                    dc.DrawLine(color, 2.0f, new Point(point0.X + 40f, point0.Y), EndLocation);
+                else
+                    dc.DrawLine(color, 2.0f, new Point(point0.X + 54f, point0.Y), EndLocation);
                 FormattedText text = new FormattedText(ResistanceString, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 10d, new SolidColorBrush(Colors.Black));
                 if (ResistorType != EComponents.ResistorType.Variable && ResistorType != ResistorType.Thermistor && ResistorType != EComponents.ResistorType.LDR)
                     dc.DrawText(ResistanceString, "Arial", 10d, color, new Point(point0.X + 20d - text.Width / 2, StartLocation.Y - 17d - text.Height / 2));
 
                 if (ResistorType == ResistorType.Potentiometer)
                 {
-                    dc.DrawPath(null, color, 2f, String.Format("M {0} m 14,16 l 6,-6 l 6,6 m -6,-5 l 0,18", point0));
+                    dc.DrawPath(null, color, 2f, String.Format("M {0} m 14,16 l 6,-6 l 6,6 m -6,-5 l 0,18", point0.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 }
                 else if (ResistorType == ResistorType.Variable)
                 {
-                    dc.DrawPath(null, color, 2f, String.Format("M {0} m 3,17 l 32,-35 m -6,0 l 6,0 l 0,6", point0));
+                    dc.DrawPath(null, color, 2f, String.Format("M {0} m 3,17 l 32,-35 m -6,0 l 6,0 l 0,6", point0.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 }
                 else if (ResistorType == EComponents.ResistorType.Thermistor)
                 {
-                    dc.DrawPath(null, color, 2f, String.Format("M {0} m -20,17 l 10,0 l 32,-35", new Point(point0.X + 20f, point0.Y)));
+                    dc.DrawPath(null, color, 2f, String.Format("M {0} m -20,17 l 10,0 l 32,-35", new Point(point0.X + 20f, point0.Y).ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 }
                 else if (ResistorType == EComponents.ResistorType.LDR)
                 {
                     dc.DrawEllipse(Colors.Transparent, color, 2d, Point.Add(point0, new Vector(20d, 0)), 26d, 26d);
-                    dc.DrawPath(color, color, 2.0f, String.Format("M {0} m -16,-26 l 8,8 m 1,1 l -2,-4 l -2,2 l 4,2 l -2,-4", point0));
-                    dc.DrawPath(color, color, 2.0f, String.Format("M {0} m -10,-32 l 8,8 m 1,1 l -2,-4 l -2,2 l 4,2 l -2,-4", point0));
+                    dc.DrawPath(color, color, 2.0f, String.Format("M {0} m -16,-26 l 8,8 m 1,1 l -2,-4 l -2,2 l 4,2 l -2,-4", point0.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                    dc.DrawPath(color, color, 2.0f, String.Format("M {0} m -10,-32 l 8,8 m 1,1 l -2,-4 l -2,2 l 4,2 l -2,-4", point0.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 }
             }
             if (!Horizontal)
@@ -132,30 +141,39 @@ namespace CircuitDiagram.EComponents
                 Point point0 = new Point(StartLocation.X, StartLocation.Y + Size.Height / 2 - 20d);
                 if (ResistorType == EComponents.ResistorType.Potentiometer && point0.Y % 10 != 0)
                     point0.Y = point0.Y + 5d;
-                dc.DrawLine(color, 2.0f, StartLocation, point0);
-                dc.DrawRectangle(Color.FromArgb(0, 255, 255, 255), color, 2d, new Rect(StartLocation.X - 8d, point0.Y, 16d, 40d));
-                dc.DrawLine(color, 2.0f, new Point(point0.X, point0.Y + 40f), EndLocation);
+                if (ResistorType != EComponents.ResistorType.US)
+                    dc.DrawLine(color, 2.0f, StartLocation, point0);
+                else
+                    dc.DrawLine(color, 2.0f, StartLocation, Point.Add(point0, new Vector(0, -14d)));
+                if (ResistorType != EComponents.ResistorType.US)
+                    dc.DrawRectangle(Color.FromArgb(0, 255, 255, 255), color, 2d, new Rect(StartLocation.X - 8d, point0.Y, 16d, 40d));
+                else
+                    dc.DrawPath(null, color, 2d, String.Format("M {0} l 0,10 l 5,4 l -10,8 l 10,8 l -10,8 l 10,8 l -10,8 l 5,4 l 0,10", Point.Add(point0, new Vector(0, -14d)).ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                if (ResistorType != EComponents.ResistorType.US)
+                    dc.DrawLine(color, 2.0f, new Point(point0.X, point0.Y + 40f), EndLocation);
+                else
+                    dc.DrawLine(color, 2.0f, new Point(point0.X, point0.Y + 54f), EndLocation);
                 FormattedText text = new FormattedText(ResistanceString, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 10d, new SolidColorBrush(Colors.Black));
                 if (ResistorType != EComponents.ResistorType.Variable && ResistorType != ResistorType.Thermistor && ResistorType != EComponents.ResistorType.LDR)
                     dc.DrawText(ResistanceString, "Arial", 10d, color, new Point(StartLocation.X - 15d - text.Width, point0.Y + 20d - text.Height / 2));
 
                 if (ResistorType == ResistorType.Potentiometer)
                 {
-                    dc.DrawPath(null, color, 2f, String.Format("M {0} m 16,14 l -6,6 l 6,6 m -5,-6 l 18,0", point0));
+                    dc.DrawPath(null, color, 2f, String.Format("M {0} m 16,14 l -6,6 l 6,6 m -5,-6 l 18,0", point0.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 }
                 else if (ResistorType == ResistorType.Variable)
                 {
-                    dc.DrawPath(null, color, 2f, String.Format("M {0} m -17,17 l 35,-32 m 0,6 l 0,-6 l -6,0", new Point(point0.X, point0.Y + 20f)));
+                    dc.DrawPath(null, color, 2f, String.Format("M {0} m -17,17 l 35,-32 m 0,6 l 0,-6 l -6,0", new Point(point0.X, point0.Y + 20f).ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 }
                 else if (ResistorType == EComponents.ResistorType.Thermistor)
                 {
-                    dc.DrawPath(null, color, 2f, String.Format("M {0} m -17,-20 l 0,10 l 35,32", new Point(point0.X, point0.Y + 20f)));
+                    dc.DrawPath(null, color, 2f, String.Format("M {0} m -17,-20 l 0,10 l 35,32", new Point(point0.X, point0.Y + 20f).ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 }
                 else if (ResistorType == EComponents.ResistorType.LDR)
                 {
                     dc.DrawEllipse(Colors.Transparent, color, 2d, Point.Add(point0, new Vector(0, 20d)), 26d, 26d);
-                    dc.DrawPath(color, color, 2.0f, String.Format("M {0} m -26,-16 l 8,8 m 1,1 l -2,-4 l -2,2 l 4,2 l -2,-4", point0));
-                    dc.DrawPath(color, color, 2.0f, String.Format("M {0} m -32,-10 l 8,8 m 1,1 l -2,-4 l -2,2 l 4,2 l -2,-4", point0));
+                    dc.DrawPath(color, color, 2.0f, String.Format("M {0} m -26,-16 l 8,8 m 1,1 l -2,-4 l -2,2 l 4,2 l -2,-4", point0.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                    dc.DrawPath(color, color, 2.0f, String.Format("M {0} m -32,-10 l 8,8 m 1,1 l -2,-4 l -2,2 l 4,2 l -2,-4", point0.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 }
             }
         }
@@ -167,6 +185,7 @@ namespace CircuitDiagram.EComponents
         Potentiometer = 1,
         LDR = 2,
         Thermistor = 3,
-        Variable = 4
+        Variable = 4,
+        US = 5
     }
 }

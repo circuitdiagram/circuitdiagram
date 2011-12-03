@@ -64,7 +64,7 @@ namespace CircuitDiagram.EComponents
             dc.DrawLine(colour, 2d, new Point(rectStart.X + 20d, StartLocation.Y + 30d), new Point(rectStart.X + 20d, StartLocation.Y + 40d));
 
             // Labels
-            dc.DrawPath(Colors.Transparent, colour, 1f, String.Format("M {0} l 6,6 l -6,6", new Point(rectStart.X, StartLocation.Y - 6d).ToString()));
+            dc.DrawPath(Colors.Transparent, colour, 1f, String.Format("M {0} l 6,6 l -6,6", new Point(rectStart.X, StartLocation.Y - 6d).ToString(System.Globalization.CultureInfo.InvariantCulture)));
             FormattedText text = new FormattedText("D", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 12d, new SolidColorBrush(Colors.Black));
             dc.DrawText("D", "Arial", 12d, colour, new Point(rectStart.X + 3d, StartLocation.Y - 20d - text.Height / 2));
             text = new FormattedText("Q", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 12d, new SolidColorBrush(Colors.Black));

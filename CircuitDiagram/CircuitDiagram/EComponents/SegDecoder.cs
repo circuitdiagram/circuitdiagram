@@ -84,7 +84,7 @@ namespace CircuitDiagram.EComponents
             dc.DrawLine(color, 2f, new Point(RenderStartLocation.X + RectStart + 15f + 60f + 1f, RenderStartLocation.Y + 40f), new Point(RenderStartLocation.X + RectStart + 15f + 55f, RenderStartLocation.Y + 40f));
             dc.DrawLine(color, 2f, new Point(RenderStartLocation.X + RectStart + 15f + 55f, RenderStartLocation.Y + 40f - 1f), new Point(RenderStartLocation.X + RectStart + 15f + 55f, RenderStartLocation.Y + 70f));
             //f + g
-            dc.DrawPath(null, color, 2f, "M " + new Point(RenderStartLocation.X + RectStart + 15f + 75f + 1f, RenderStartLocation.Y + 50f).ToString() + " l -11,0 m 1,0 l 0,20 m 25,-10 l -16,0 m 1,0 l 0,10");
+            dc.DrawPath(null, color, 2f, "M " + new Point(RenderStartLocation.X + RectStart + 15f + 75f + 1f, RenderStartLocation.Y + 50f).ToString(System.Globalization.CultureInfo.InvariantCulture) + " l -11,0 m 1,0 l 0,20 m 25,-10 l -16,0 m 1,0 l 0,10");
         }
     }
 }

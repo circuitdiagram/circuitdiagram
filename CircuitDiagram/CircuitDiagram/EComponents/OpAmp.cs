@@ -67,9 +67,9 @@ namespace CircuitDiagram.EComponents
                 dc.DrawLine(color, 2.0f, Point.Add(StartLocation, new Vector(0, -10f)), Point.Add(StartLocation, new Vector(ref0.X - StartLocation.X, -10f)));
                 dc.DrawLine(color, 2.0f, Point.Add(StartLocation, new Vector(0, 10f)), Point.Add(StartLocation, new Vector(ref0.X - StartLocation.X, 10f)));
                 if (FlipInputs)
-                    dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " l 0,30 l 44,-30 l -44,-30 l 0,30 m 5,-10 l 10,0 m -5,-5 l 0,10 m -5,15 l 10,0 m 28,-10 L " + EndLocation.ToString());
+                    dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " l 0,30 l 44,-30 l -44,-30 l 0,30 m 5,-10 l 10,0 m -5,-5 l 0,10 m -5,15 l 10,0 m 28,-10 L " + EndLocation.ToString(System.Globalization.CultureInfo.InvariantCulture));
                 else
-                    dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " l 0,30 l 44,-30 l -44,-30 l 0,30 m 5,-10 l 10,0 m -5,15 l 0,10 m -5,-5 l 10,0 m 28,-10 L " + EndLocation.ToString());
+                    dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " l 0,30 l 44,-30 l -44,-30 l 0,30 m 5,-10 l 10,0 m -5,15 l 0,10 m -5,-5 l 10,0 m 28,-10 L " + EndLocation.ToString(System.Globalization.CultureInfo.InvariantCulture));
             }
             else
             {
@@ -77,9 +77,9 @@ namespace CircuitDiagram.EComponents
                 dc.DrawLine(color, 2.0f, Point.Add(StartLocation, new Vector(-10, 0f)), Point.Add(StartLocation, new Vector(-10f, ref0.Y - StartLocation.Y)));
                 dc.DrawLine(color, 2.0f, Point.Add(StartLocation, new Vector(10, 0f)), Point.Add(StartLocation, new Vector(10f, ref0.Y - StartLocation.Y)));
                 if (!FlipInputs)
-                    dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " l 30,0 l -30,44 l -30,-44 l 30,0 m -10,5 l 0,10 m -5,-5 l 10,0 m 15,-5 l 0,10 m -10,28 L " + EndLocation.ToString());
+                    dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " l 30,0 l -30,44 l -30,-44 l 30,0 m -10,5 l 0,10 m -5,-5 l 10,0 m 15,-5 l 0,10 m -10,28 L " + EndLocation.ToString(System.Globalization.CultureInfo.InvariantCulture));
                 else
-                    dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " l 30,0 l -30,44 l -30,-44 l 30,0 m -10,5 l 0,10 m 15,-5 l 10,0 m -5,-5 l 0,10 m -10,28 L " + EndLocation.ToString());
+                    dc.DrawPath(null, color, 2f, "M " + ref0.ToString() + " l 30,0 l -30,44 l -30,-44 l 30,0 m -10,5 l 0,10 m 15,-5 l 10,0 m -5,-5 l 0,10 m -10,28 L " + EndLocation.ToString(System.Globalization.CultureInfo.InvariantCulture));
             }
         }
     }

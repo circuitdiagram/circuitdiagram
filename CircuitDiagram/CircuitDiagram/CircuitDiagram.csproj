@@ -129,6 +129,7 @@
     <Compile Include="EComponents\Ground.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="EComponents\ELabel.cs" />
     <Compile Include="EComponents\Microphone.cs" />
     <Compile Include="EComponents\OutputDeviceEditor.xaml.cs">
       <DependentUpon>OutputDeviceEditor.xaml</DependentUpon>
@@ -407,6 +408,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Ground.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Label.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\USResistor.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

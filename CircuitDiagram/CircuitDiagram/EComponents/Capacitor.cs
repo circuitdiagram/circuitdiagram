@@ -100,15 +100,15 @@ namespace CircuitDiagram.EComponents
                 {
                     dc.DrawRectangle(Colors.White, colour, 2d, new Rect(gapStart.X, gapStart.Y - 14, 4, 28));
                     dc.DrawRectangle(colour, colour, 2d, new Rect(gapEnd.X, gapEnd.Y - 14, 4, 28));
-                    dc.DrawPath(null, colour, 2d, String.Format("M {0} m -8,-12 l 6,0 m -3,-3 l 0,6", gapStart));
+                    dc.DrawPath(null, colour, 2d, String.Format("M {0} m -8,-12 l 6,0 m -3,-3 l 0,6", gapStart.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 }
                 FormattedText text = new FormattedText(CapacitanceString, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 10d, new SolidColorBrush(Colors.Black));
                 if (Type == CapacitorType.Standard || Type == CapacitorType.Polarised)
                     dc.DrawText(CapacitanceString, "Arial", 10d, colour, new Point(StartLocation.X + Size.Width / 2 - text.Width / 2, StartLocation.Y - 22d - text.Height / 2));
                 if (Type == CapacitorType.Trimmer)
-                    dc.DrawPath(null, colour, 2f, String.Format("M {0} m -8,13 l 24,-26 m -3,-3 l 6,6", gapStart));
+                    dc.DrawPath(null, colour, 2f, String.Format("M {0} m -8,13 l 24,-26 m -3,-3 l 6,6", gapStart.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 else if (Type == CapacitorType.Variable)
-                    dc.DrawPath(null, colour, 2f, String.Format("M {0} m -8,13 l 24,-26 m -6,0 l 6,0 l 0,6", gapStart));
+                    dc.DrawPath(null, colour, 2f, String.Format("M {0} m -8,13 l 24,-26 m -6,0 l 6,0 l 0,6", gapStart.ToString(System.Globalization.CultureInfo.InvariantCulture)));
             }
             if (!Horizontal)
             {
@@ -125,15 +125,15 @@ namespace CircuitDiagram.EComponents
                 {
                     dc.DrawRectangle(Colors.White, colour, 2d, new Rect(gapStart.X - 14, gapStart.Y, 28, 4));
                     dc.DrawRectangle(colour, colour, 2d, new Rect(gapEnd.X - 14, gapEnd.Y, 28, 4));
-                    dc.DrawPath(null, colour, 2d, String.Format("M {0} m 8,-6 l 6,0 m -3,-3 l 0,6", gapStart));
+                    dc.DrawPath(null, colour, 2d, String.Format("M {0} m 8,-6 l 6,0 m -3,-3 l 0,6", gapStart.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 }
                 FormattedText text = new FormattedText(CapacitanceString, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 10d, new SolidColorBrush(Colors.Black));
                 if (Type == CapacitorType.Standard || Type == CapacitorType.Polarised)
                     dc.DrawText(CapacitanceString, "Arial", 10d, colour, new Point(StartLocation.X - 22d - text.Width, StartLocation.Y + Size.Height / 2 - text.Height / 2));
                 if (Type == CapacitorType.Trimmer)
-                    dc.DrawPath(null, colour, 2f, String.Format("M {0} m -12,10 l 24,-26 m -3,-3 l 6,6", gapEnd));
+                    dc.DrawPath(null, colour, 2f, String.Format("M {0} m -12,10 l 24,-26 m -3,-3 l 6,6", gapEnd.ToString(System.Globalization.CultureInfo.InvariantCulture)));
                 else if (Type == CapacitorType.Variable)
-                    dc.DrawPath(null, colour, 2f, String.Format("M {0} m -11,10 l 24,-26 m -6,0 l 6,0 l 0,6", gapEnd));
+                    dc.DrawPath(null, colour, 2f, String.Format("M {0} m -11,10 l 24,-26 m -6,0 l 6,0 l 0,6", gapEnd.ToString(System.Globalization.CultureInfo.InvariantCulture)));
             }
         }
     }
