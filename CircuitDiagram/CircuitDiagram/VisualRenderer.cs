@@ -47,14 +47,12 @@ namespace CircuitDiagram
             DrawingContext.DrawRectangle(new SolidColorBrush(fillColor), new Pen(new SolidColorBrush(strokeColor), strokeThickness), rectangle);
         }
 
-        public void DrawText(string text, string fontName, double emSize, Color foreColor, Point origin)
+        public void DrawText(string text, string fontName, double emSize, Color foreColor, Point origin, bool bold = false)
         {
-            DrawingContext.DrawText(new FormattedText(text, System.Globalization.CultureInfo.CurrentCulture, System.Windows.FlowDirection.LeftToRight, new Typeface(fontName), emSize, new SolidColorBrush(foreColor)), origin);
-        }
-
-        public void DrawFormattedText(FormattedText text, Point origin)
-        {
-            DrawingContext.DrawText(text, origin);
+            FormattedText formattedText = new FormattedText(text, System.Globalization.CultureInfo.CurrentCulture, System.Windows.FlowDirection.LeftToRight, new Typeface(fontName), emSize, new SolidColorBrush(foreColor));
+            if (bold)
+                formattedText.SetFontWeight(FontWeights.Bold);
+            DrawingContext.DrawText(formattedText, origin);
         }
 
         public void DrawPath(Color? fillColor, Color strokeColor, double thickness, string path, double translateOffsetX = 0.0, double translateOffsetY = 0.0)

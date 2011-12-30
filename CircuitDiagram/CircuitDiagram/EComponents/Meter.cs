@@ -69,12 +69,12 @@ namespace CircuitDiagram.EComponents
                 if (Type == MeterType.Voltmeter)
                 {
                     FormattedText text = new FormattedText("V", System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Calibri"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 18d, new SolidColorBrush(color));
-                    dc.DrawFormattedText(text, new Point(StartLocation.X + Size.Width / 2 - text.Width / 2, StartLocation.Y - text.Height / 2));
+                    dc.DrawText(text.Text, "Calibri", 18d, color, new Point(StartLocation.X + Size.Width / 2 - text.Width / 2, StartLocation.Y - text.Height / 2), true);
                 }
                 else if (Type == MeterType.Ammeter)
                 {
                     FormattedText text = new FormattedText("A", System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Calibri"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 18d, new SolidColorBrush(color));
-                    dc.DrawFormattedText(text, new Point(StartLocation.X + Size.Width / 2 - text.Width / 2, StartLocation.Y - text.Height / 2));
+                    dc.DrawText("A", "Calibri", 18d, color, new Point(StartLocation.X + Size.Width / 2 - text.Width / 2, StartLocation.Y - text.Height / 2), true);
                 }
                 else if (Type == MeterType.Oscilloscope)
                 {
@@ -88,12 +88,12 @@ namespace CircuitDiagram.EComponents
                 if (Type == MeterType.Voltmeter)
                 {
                     FormattedText text = new FormattedText("V", System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Calibri"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 18d, new SolidColorBrush(color));
-                    dc.DrawFormattedText(text, new Point(StartLocation.X - text.Width / 2, StartLocation.Y + Size.Height / 2 - text.Height / 2));
+                    dc.DrawText(text.Text, "Calibri", 18d, color, new Point(StartLocation.X - text.Width / 2, StartLocation.Y + Size.Height / 2 - text.Height / 2), true);
                 }
                 else if (Type == MeterType.Ammeter)
                 {
                     FormattedText text = new FormattedText("A", System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Calibri"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 18d, new SolidColorBrush(color));
-                    dc.DrawFormattedText(text, new Point(StartLocation.X - text.Width / 2, StartLocation.Y + Size.Height / 2 - text.Height / 2));
+                    dc.DrawText(text.Text, "Calibri", 18d, color, new Point(StartLocation.X - text.Width / 2, StartLocation.Y + Size.Height / 2 - text.Height / 2), true);
                 }
                 else if (Type == MeterType.Oscilloscope)
                 {

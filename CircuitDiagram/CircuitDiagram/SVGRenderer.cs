@@ -46,14 +46,10 @@ namespace CircuitDiagram
             SVGDocument.DrawRectangle(fillColor, strokeColor, strokeThickness, rectangle);
         }
 
-        public void DrawText(string text, string fontName, double emSize, Color foreColor, Point origin)
+        public void DrawText(string text, string fontName, double emSize, Color foreColor, Point origin, bool bold = false)
         {
             FormattedText ft = new FormattedText(text, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(fontName), emSize, new SolidColorBrush(foreColor));
-            SVGDocument.DrawText(text, fontName, emSize, foreColor, Point.Add(origin, new Vector(0d, Math.Round(ft.Height * 0.8f))));
-        }
-
-        public void DrawFormattedText(FormattedText text, Point origin)
-        {
+            SVGDocument.DrawText(text, fontName, emSize, foreColor, Point.Add(origin, new Vector(0d, Math.Round(ft.Height * 0.8f))), bold);
         }
 
         public void DrawPath(Color? fillColor, Color strokeColor, double thickness, string path, double translateOffsetX = 0.0, double translateOffsetY = 0.0)

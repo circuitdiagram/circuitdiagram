@@ -97,16 +97,14 @@ namespace CircuitDiagram
             m_canvas.Children.Add(rect);
         }
 
-        public void DrawText(string text, string fontName, double emSize, Color forColor, Point origin)
+        public void DrawText(string text, string fontName, double emSize, Color forColor, Point origin, bool bold = false)
         {
             TextBlock textBlock = new TextBlock() { Text = text, FontFamily = new FontFamily(fontName), FontSize = emSize, Foreground = new SolidColorBrush(forColor) };
+            if (bold)
+                textBlock.FontWeight = FontWeights.Bold;
             textBlock.SetValue(Canvas.LeftProperty, origin.X);
             textBlock.SetValue(Canvas.TopProperty, origin.Y);
             m_canvas.Children.Add(textBlock);
-        }
-
-        public void DrawFormattedText(FormattedText text, Point origin)
-        {
         }
 
         public void DrawPath(Color? filColor, Color strokeColor, double thickness, string path, double translateOffsetX = 0.0, double translateOffsetY = 0.0)

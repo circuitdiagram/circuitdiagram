@@ -113,7 +113,7 @@ namespace CircuitDiagram.EComponents
                     dc.DrawEllipse(Colors.Transparent, colour, 2d, new Point(StartLocation.X + Size.Width / 2, StartLocation.Y), 12d, 12d);
                     dc.DrawLine(colour, 2.0f, new Point(StartLocation.X + Size.Width / 2 + 12d, StartLocation.Y), EndLocation);
                     FormattedText text = new FormattedText("M", System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Calibri"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 18d, new SolidColorBrush(colour));
-                    dc.DrawFormattedText(text, new Point(StartLocation.X + Size.Width / 2 - text.Width / 2, StartLocation.Y - text.Height / 2));
+                    dc.DrawText(text.Text, "Calibri" , 18d, colour, new Point(StartLocation.X + Size.Width / 2 - text.Width / 2, StartLocation.Y - text.Height / 2), true);
                 }
             }
             else
@@ -153,7 +153,7 @@ namespace CircuitDiagram.EComponents
                     dc.DrawEllipse(Colors.Transparent, colour, 2d, new Point(StartLocation.X, StartLocation.Y + Size.Height / 2), 12d, 12d);
                     dc.DrawLine(colour, 2.0f, new Point(StartLocation.X, StartLocation.Y + Size.Height / 2 + 12d), EndLocation);
                     FormattedText text = new FormattedText("M", System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Calibri"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 18d, new SolidColorBrush(colour));
-                    dc.DrawFormattedText(text, new Point(StartLocation.X - text.Width / 2, StartLocation.Y + Size.Height / 2 - text.Height / 2 - 2));
+                    dc.DrawText(text.Text, "Calibri", 18d, colour, new Point(StartLocation.X - text.Width / 2, StartLocation.Y + Size.Height / 2 - text.Height / 2 - 2), true);
                 }
             }
         }

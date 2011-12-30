@@ -81,12 +81,12 @@ namespace SVGLibrary
             m_writer.WriteEndElement();
         }
 
-        public void DrawText(string text, string font, double emSize, Color foreground, Point origin)
+        public void DrawText(string text, string font, double emSize, Color foreground, Point origin, bool bold)
         {
             m_writer.WriteStartElement("text");
             m_writer.WriteAttributeString("x", origin.X.ToString());
             m_writer.WriteAttributeString("y", origin.Y.ToString());
-            m_writer.WriteAttributeString("style", "font-family:" + font + ";font-size:" + emSize.ToString());
+            m_writer.WriteAttributeString("style", "font-family:" + font + ";font-size:" + emSize.ToString() + (bold ? ";font-weight:bold" : ""));
             m_writer.WriteString(text);
             m_writer.WriteEndElement();
         }

@@ -65,13 +65,9 @@ namespace CircuitDiagram
             m_graphics.DrawRectangle(new Pen(ConvertColor(strokeColor), (float)strokeThickness), (float)rectangle.X, (float)rectangle.Y, (float)rectangle.Width, (float)rectangle.Height);
         }
 
-        public void DrawText(string text, string fontName, double emSize, System.Windows.Media.Color foreColor, System.Windows.Point origin)
+        public void DrawText(string text, string fontName, double emSize, System.Windows.Media.Color foreColor, System.Windows.Point origin, bool bold = false)
         {
             m_graphics.DrawString(text, new Font(new FontFamily(fontName), (float)emSize), new SolidBrush(ConvertColor(foreColor)), (float)origin.X, (float)origin.Y);
-        }
-
-        public void DrawFormattedText(System.Windows.Media.FormattedText text, System.Windows.Point origin)
-        {
         }
 
         public void DrawPath(System.Windows.Media.Color? fillColor, System.Windows.Media.Color strokeColor, double thickness, string path, double translateOffsetX = 0.0, double translateOffsetY = 0.0)
