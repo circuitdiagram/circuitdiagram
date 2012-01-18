@@ -106,11 +106,12 @@ namespace CircuitDiagram
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             // check for updates
-            if (Properties.Settings.Default.CheckForUpdatesOnStartup)
-            {
-                if (DateTime.Now.Subtract(Properties.Settings.Default.LastCheckedForUpdates).TotalDays >= 1.0)
-                    CheckForUpdates(false);
-            }
+            if (!Properties.Settings.Default.CheckForUpdatesOnStartup)
+                return;
+            if (DateTime.Now.Subtract(Properties.Settings.Default.LastCheckedForUpdates).TotalDays < 1.0)
+                return;
+            System.Threading.Thread T = new System.Threading.Thread((O => CheckForUpdates(false))); /* Check for updates in new thread, program it self loads much faster */
+            T.Start();
         }
 
         #region Circuit Mouse Events
