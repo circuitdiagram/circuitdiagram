@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <StartArguments>--input="D:\Users\Sam\Documents\Projects\Circuit Diagram\Components\compile\D Flip-Flop\flipflop.xml" --output="D:\Users\Sam\Documents\Projects\Circuit Diagram\Components\compile\D Flip-Flop\previewS.png" --width=120 --height=75</StartArguments>
+  </PropertyGroup>
+</Project>

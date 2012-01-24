@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component version="1.0" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
+  <declaration>
+    <meta name="name" value="Label" />
+    <meta name="minsize" value="50" />
+    <meta name="canresize" value="false" />
+    <property name="Text" type="string" default="(empty)" serialize="text" display="Text" />
+  </declaration>
+  <render>
+    <group conditions="!$Text(empty)">
+      <text value="$Text" x="_Start" y="_Start" align="CentreCentre" />
+    </group>
+    <group conditions="$Text(empty)">
+      <text value="(empty)" x="_Start" y="_Start" align="CentreCentre" />
+    </group>
+  </render>
+</component>

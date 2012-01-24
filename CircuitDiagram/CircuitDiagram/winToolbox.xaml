@@ -1,0 +1,48 @@
+﻿<Window x:Class="CircuitDiagram.winToolbox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:my="clr-namespace:CircuitDiagram"
+        Title="Customise Toolbox" Height="412" Width="636" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
+        <my:KeyTextConverter x:Key="KeyTextConverter" />
+        <DataTemplate x:Key="CategoryItemTemplate">
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" Visibility="{Binding Converter={StaticResource BoolToVisConverter}, Path=NoConfiguration}">
+                    <Image Source="{Binding Description.Metadata.Icon}" Width="45" Height="45" />
+                    <TextBlock Text="{Binding Description.ComponentName}" VerticalAlignment="Center" Margin="5,0,0,0" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Visibility="{Binding Converter={StaticResource BoolToVisConverter}, Path=HasConfiguration}">
+                    <Image Source="{Binding Configuration.Icon}" Width="45" Height="45" />
+                    <TextBlock Text="{Binding Configuration.Name}" VerticalAlignment="Center" Margin="5,0,0,0" />
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid>
+        <ListBox HorizontalAlignment="Left" Margin="12,46,0,41" Name="lbxCategories" Width="101">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,0,12,12" Name="btnCancel" VerticalAlignment="Bottom" Width="75" Click="btnCancel_Click" />
+        <ListBox HorizontalAlignment="Left" Margin="119,46,0,41" Name="lbxItems" Width="180" ItemsSource="{Binding ElementName=lbxCategories, Path=SelectedItem.Items}" ItemTemplate="{StaticResource CategoryItemTemplate}" />
+        <Label Content="Categories" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" />
+        <Label Content="Items" Height="28" HorizontalAlignment="Left" Margin="119,12,0,0" Name="label2" VerticalAlignment="Top" />
+        <ListBox Margin="386,46,12,41" Name="lbxAvailableItems" ItemTemplate="{StaticResource CategoryItemTemplate}" />
+        <Label Content="Available Items" Height="28" HorizontalAlignment="Left" Margin="386,12,0,0" VerticalAlignment="Top" />
+        <Button Content="&lt;&lt; Add" Height="23" HorizontalAlignment="Left" Margin="305,195,0,0" Name="btnAddItem" VerticalAlignment="Top" Width="75" Click="btnAddItem_Click" />
+        <Button Content="Remove &gt;&gt;" Height="23" HorizontalAlignment="Left" Margin="305,224,0,0" Name="btnRemoveItem" VerticalAlignment="Top" Width="75" Click="btnRemoveItem_Click" />
+        <Button Content="New" Height="23" HorizontalAlignment="Left" Margin="305,80,0,0" Name="btnNewCategory" VerticalAlignment="Top" Width="75" Click="btnNewCategory_Click" />
+        <Button Content="Delete" Height="23" HorizontalAlignment="Left" Margin="305,109,0,0" Name="button5" VerticalAlignment="Top" Width="75" Click="button5_Click" />
+        <Label Content="Categories:" Height="28" HorizontalAlignment="Left" Margin="305,46,0,0" Name="label4" VerticalAlignment="Top" Width="75" />
+        <Label Content="Items:" Height="28" HorizontalAlignment="Left" Margin="305,161,0,0" VerticalAlignment="Top" Width="75" />
+        <Button Content="OK" Height="23" HorizontalAlignment="Right" Margin="0,0,93,12" Name="btnOK" VerticalAlignment="Bottom" Width="75" Click="btnOK_Click" />
+        <Button Content="Up" Height="23" HorizontalAlignment="Left" Margin="305,253,0,0" Name="btnItemMoveUp" VerticalAlignment="Top" Width="75" Click="btnItemMoveUp_Click" />
+        <Button Content="Down" Height="23" HorizontalAlignment="Left" Margin="305,282,0,0" Name="btnItemMoveDown" VerticalAlignment="Top" Width="75" Click="btnItemMoveDown_Click" />
+        <Label Content="Shortcut key" Height="28" HorizontalAlignment="Left" Margin="120,0,0,8" Name="label3" VerticalAlignment="Bottom" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="246,0,0,11" Name="tbxShortcutKey" VerticalAlignment="Bottom" Width="53" MaxLength="1" Text="{Binding ElementName=lbxItems, Path=SelectedItem.ShortcutKey, Mode=TwoWay, Converter={StaticResource KeyTextConverter}}" />
+    </Grid>
+</Window>

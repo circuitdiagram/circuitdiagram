@@ -1,7 +1,7 @@
 ﻿<Window x:Class="CircuitDiagram.winAbout"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="About Circuit Diagram" Height="300" Width="446" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner">
+        Title="About Circuit Diagram" Height="280" Width="478" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" ResizeMode="NoResize">
     <Grid>
         <Canvas SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="12,12,0,0" Width="400" Height="125">
             <Path Width="124.359" Height="124.36" Canvas.Left="20.982" Canvas.Top="0.0311661" Stretch="Fill" Fill="#FF000000" Data="M 145.341,62.2112C 145.341,96.5521 117.502,124.391 83.1613,124.391C 48.8203,124.391 20.982,96.5521 20.982,62.2112C 20.982,27.8702 48.8203,0.0311661 83.1613,0.0311661C 117.502,0.0311661 145.341,27.8702 145.341,62.2112 Z "/>
@@ -52,7 +52,7 @@
             </TextBlock>
         </Canvas>
         <Button Content="Close" Margin="0,0,12,12" Name="button1" Height="23" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="button1_Click" />
-        <StackPanel Margin="12,143,12,41" Name="stackPanel1">
+        <StackPanel Margin="12,143,12,0" Name="stackPanel1" Height="91" VerticalAlignment="Top">
             <StackPanel Orientation="Horizontal">
                 <Label Content="Version:" Height="28" Name="label2" HorizontalAlignment="Left" />
                 <Label Content="1.0" Height="28" Name="lblVersionNumber" HorizontalAlignment="Left" />

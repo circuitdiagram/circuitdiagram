@@ -1,0 +1,10 @@
+syntax: glob
+
+*/bin/*
+*/obj/*
+*.exe
+*.suo
+*.csproj.user
+*.orig
+*.vsp
+*.psess

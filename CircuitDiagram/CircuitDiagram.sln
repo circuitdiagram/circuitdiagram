@@ -1,27 +1,42 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram", "CircuitDiagram\CircuitDiagram.csproj", "{5C14800C-8D7A-434C-B091-3ED38880BCE3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cdlibrary", "cdlibrary\cdlibrary.csproj", "{D5FD5F79-6BCE-40FB-B556-209758C612EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cdimg", "cdimg\cdimg.csproj", "{A5F6FECF-DBDF-43AA-BD5A-F40A3B928415}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComponentCompiler", "ComponentCompiler\ComponentCompiler.csproj", "{8119D219-D756-4B4E-B8A0-70209190D441}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComponentCompilerUI", "ComponentCompilerUI\ComponentCompilerUI.csproj", "{5C4AE2F0-2391-47B8-B551-AA55ED90BE4F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram", "CircuitDiagram\CircuitDiagram.csproj", "{C01CD61A-6DB0-460A-AC1C-1B96A9038AF6}"
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 2
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs25
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = CircuitDiagram\\CircuitDiagram.csproj
-		SccProjectName1 = CircuitDiagram
-		SccLocalPath1 = CircuitDiagram
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5C14800C-8D7A-434C-B091-3ED38880BCE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5C14800C-8D7A-434C-B091-3ED38880BCE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5C14800C-8D7A-434C-B091-3ED38880BCE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5C14800C-8D7A-434C-B091-3ED38880BCE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5FD5F79-6BCE-40FB-B556-209758C612EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5FD5F79-6BCE-40FB-B556-209758C612EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5FD5F79-6BCE-40FB-B556-209758C612EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5FD5F79-6BCE-40FB-B556-209758C612EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5F6FECF-DBDF-43AA-BD5A-F40A3B928415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5F6FECF-DBDF-43AA-BD5A-F40A3B928415}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5F6FECF-DBDF-43AA-BD5A-F40A3B928415}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5F6FECF-DBDF-43AA-BD5A-F40A3B928415}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8119D219-D756-4B4E-B8A0-70209190D441}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8119D219-D756-4B4E-B8A0-70209190D441}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8119D219-D756-4B4E-B8A0-70209190D441}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8119D219-D756-4B4E-B8A0-70209190D441}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C4AE2F0-2391-47B8-B551-AA55ED90BE4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C4AE2F0-2391-47B8-B551-AA55ED90BE4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C4AE2F0-2391-47B8-B551-AA55ED90BE4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C4AE2F0-2391-47B8-B551-AA55ED90BE4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C01CD61A-6DB0-460A-AC1C-1B96A9038AF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C01CD61A-6DB0-460A-AC1C-1B96A9038AF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C01CD61A-6DB0-460A-AC1C-1B96A9038AF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C01CD61A-6DB0-460A-AC1C-1B96A9038AF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

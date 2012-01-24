@@ -1,0 +1,31 @@
+﻿<Window x:Class="ComponentCompiler.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Circuit Diagram Component Compiler" Height="316" Width="525" ResizeMode="NoResize">
+    <Grid>
+        <Button Content="Compile" Height="23" HorizontalAlignment="Right" Margin="0,0,12,12" Name="btnCompile" VerticalAlignment="Bottom" Width="75" Click="btnCompile_Click" />
+        <GroupBox Header="Input" Height="59" HorizontalAlignment="Left" Margin="12,12,0,0" Name="groupBox1" VerticalAlignment="Top" Width="479">
+            <Grid>
+                <Button Content="Browse" Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="button2" VerticalAlignment="Top" Width="75" Click="button2_Click" />
+                <TextBox Height="23" Margin="6,6,87,0" Name="tbxInputPath" VerticalAlignment="Top" IsReadOnly="True" />
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Metadata" Height="65" HorizontalAlignment="Left" Margin="12,77,0,0" Name="groupBox2" VerticalAlignment="Top" Width="479">
+            <Grid>
+                <Label Content="Icon" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label2" VerticalAlignment="Top" />
+                <TextBox Height="23" Margin="73,8,87,0" Name="tbxIconPath" VerticalAlignment="Top" IsReadOnly="True" />
+                <Button Content="Browse" Height="23" HorizontalAlignment="Right" Margin="0,8,6,0" Name="button3" VerticalAlignment="Top" Width="75" Click="button3_Click" />
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Output" Height="85" HorizontalAlignment="Left" Margin="12,148,0,0" Name="groupBox3" VerticalAlignment="Top" Width="479">
+            <Grid>
+                <CheckBox Content="Sign" Height="16" HorizontalAlignment="Left" Margin="6,6,0,0" Name="chbSign" VerticalAlignment="Top" Checked="chbSign_Checked" Unchecked="chbSign_Checked" />
+                <Label Content="Key" Height="28" HorizontalAlignment="Left" Margin="31,28,0,0" Name="lblKey" VerticalAlignment="Top" />
+                <TextBox Height="23" Margin="73,30,87,0" Name="tbxKeyPath" VerticalAlignment="Top" IsReadOnly="True" />
+                <Button Content="Browse" Height="23" HorizontalAlignment="Right" Margin="0,30,6,0" Name="btnKeyBrowse" VerticalAlignment="Top" Width="75" Click="btnKeyBrowse_Click" />
+            </Grid>
+        </GroupBox>
+        <Button Content="Open" Height="23" HorizontalAlignment="Left" Margin="12,0,0,12" Name="btnOpen" VerticalAlignment="Bottom" Width="75" Click="btnOpen_Click" />
+        <Button Content="Save As" Height="23" HorizontalAlignment="Left" Margin="93,0,0,12" Name="btnSaveAs" VerticalAlignment="Bottom" Width="75" Click="btnSaveAs_Click" />
+    </Grid>
+</Window>

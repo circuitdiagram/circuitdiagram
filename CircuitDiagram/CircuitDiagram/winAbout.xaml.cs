@@ -2,7 +2,7 @@
 //
 // Circuit Diagram http://www.circuit-diagram.org/
 //
-// Copyright (C) 2011  Sam Fisher
+// Copyright (C) 2012  Sam Fisher
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -30,7 +30,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using System.Deployment.Application;
 
 namespace CircuitDiagram
 {
@@ -42,7 +41,13 @@ namespace CircuitDiagram
         public winAbout()
         {
             InitializeComponent();
+
             lblVersionNumber.Content = AppVersion;
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
 
         public static string AppVersion
@@ -52,14 +57,13 @@ namespace CircuitDiagram
                 System.Reflection.Assembly _assemblyInfo = System.Reflection.Assembly.GetExecutingAssembly();
 
                 string theVersion = string.Empty;
+                if (_assemblyInfo != null)
+                    theVersion = _assemblyInfo.GetName().Version.ToString();
 
-                if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
-                    theVersion = ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
-                else
-                {
-                    if (_assemblyInfo != null)
-                        theVersion = _assemblyInfo.GetName().Version.ToString();
-                }
+#if PREVIEWVERSION
+                theVersion += " -pre";
+#endif
+
                 return theVersion;
             }
         }
@@ -67,11 +71,6 @@ namespace CircuitDiagram
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
             System.Diagnostics.Process.Start(e.Uri.ToString());
-        }
-
-        private void button1_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
         }
     }
 }

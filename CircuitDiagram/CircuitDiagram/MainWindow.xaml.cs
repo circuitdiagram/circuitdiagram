@@ -2,7 +2,7 @@
 //
 // Circuit Diagram http://www.circuit-diagram.org/
 //
-// Copyright (C) 2011  Sam Fisher
+// Copyright (C) 2012  Sam Fisher
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -20,26 +20,20 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using CircuitDiagram.EComponents;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using Point = System.Windows.Point;
-using Size = System.Windows.Size;
-using System.ComponentModel;
-using Toolbox;
 using System.Xml;
+using CircuitDiagram.Components;
+using CircuitDiagram.Render;
+using Microsoft.Win32;
 
 namespace CircuitDiagram
 {
@@ -49,375 +43,825 @@ namespace CircuitDiagram
     public partial class MainWindow : Window
     {
         #region Variables
-        CircuitDocument m_document { get { return circuitDisplay.Document; } set { circuitDisplay.Document = value; } }
+        string m_documentTitle;
         string m_docPath = "";
         UndoManager m_undoManager;
+        Dictionary<Key, string> m_toolboxShortcuts = new Dictionary<Key, string>();
 
         UndoManager UndoManager { get { return m_undoManager; } }
-
-        string m_documentTitle;
-
         public System.Collections.ObjectModel.ObservableCollection<string> RecentFiles = new System.Collections.ObjectModel.ObservableCollection<string>();
-
-        bool m_wasMouseDown = false;
-        Point mouseDownPos;
-        string newComponentType;
-        ComponentResizeMode m_resizing = ComponentResizeMode.None;
-        string previousData = "";
-        bool cancelSelect = true;
-        Point? fromStart;
-        Point? fromEnd;
-        public static bool m_moveComponent = false;
-        Point m_moveComponentStartPos;
-        Point m_moveComponentEndPos;
         #endregion
 
         public MainWindow()
         {
             InitializeComponent();
+            
+            // Initialize settings
+            CircuitDiagram.Settings.Settings.Initialize(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\settings.xml");
+            ApplySettings();
 
-            // Insert code required on object creation below this point.
-            m_documentTitle = "Untitled";
-            this.Title = "Untitled - Circuit Diagram";
-
-            // check if should open file
-            if (App.AppArgs.Length > 0)
-            {
-                if (System.IO.File.Exists(App.AppArgs[0]))
-                    OpenDocument(App.AppArgs[0]);
-            }
-
-            m_undoManager = new UndoManager();
-            m_undoManager.ActionDelegate = UndoActionProcessor;
-            m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
-
-            this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
-
-            if (Properties.Settings.Default.IsToolboxScrollBarVisible)
-                toolboxScroll.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-            else
-                toolboxScroll.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+            circuitDisplay.Document = new CircuitDocument();
+            Load();
 
             // load recent items
             LoadRecentFiles();
             mnuRecentItems.ItemsSource = RecentFiles;
+
+            // Initialize undo manager
+            m_undoManager = new UndoManager();
+            circuitDisplay.UndoManager = m_undoManager;
+            m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
+            m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
+
+            this.Title = "Untitled - Circuit Diagram";
+            m_documentTitle = "Untitled";
+
+            this.Closed += new EventHandler(MainWindow_Closed);
+            this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
+
+            ComponentHelper.ComponentUpdatedDelegate = new ComponentEditor.ComponentUpdatedDelegate(Editor_ComponentUpdated);
         }
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             // check for updates
-            if (!Properties.Settings.Default.CheckForUpdatesOnStartup)
+            if (!Settings.Settings.HasSetting("CheckForUpdatesOnStartup"))
+                Settings.Settings.Write("CheckForUpdatesOnStartup", true);
+            if (!Settings.Settings.ReadBool("CheckForUpdatesOnStartup"))
                 return;
-            if (DateTime.Now.Subtract(Properties.Settings.Default.LastCheckedForUpdates).TotalDays < 1.0)
+            if (DateTime.Now.Subtract(Settings.Settings.HasSetting("LastCheckForUpdates") ? (DateTime)Settings.Settings.Read("LastCheckForUpdates") : new DateTime(2000, 1, 1)).TotalDays < 1.0)
                 return;
-            System.Threading.Thread T = new System.Threading.Thread((O => CheckForUpdates(false))); /* Check for updates in new thread, program it self loads much faster */
+            System.Threading.Thread T = new System.Threading.Thread((O => CheckForUpdates(false)));
             T.Start();
         }
 
-        #region Circuit Mouse Events
-        private void circuitDisplay_MouseDown(object sender, MouseButtonEventArgs e)
+        void MainWindow_Closed(object sender, EventArgs e)
         {
-            m_wasMouseDown = true;
-            mouseDownPos = e.GetPosition((IInputElement)sender);
+            Settings.Settings.Save();
+        }
 
-            bool clear = true;
-            if (m_document.SelectedComponent != null && m_moveComponent)
+        /// <summary>
+        /// Apply settings including toolbox and connection points.
+        /// </summary>
+        private void ApplySettings()
+        {
+            toolboxScroll.VerticalScrollBarVisibility = (CircuitDiagram.Settings.Settings.ReadBool("showToolboxScrollBar") ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden);
+            circuitDisplay.ShowConnectionPoints = Settings.Settings.ReadBool("showConnectionPoints");
+        }
+
+        /// <summary>
+        /// Open a document and add it to the recent files menu.
+        /// </summary>
+        /// <param name="path">The path of the document to open.</param>
+        private void OpenDocument(string path)
+        {
+            if (System.IO.Path.GetExtension(path) == ".cddx" || System.IO.Path.GetExtension(path) == ".zip")
             {
-                if (propProperties.Children.Count != 0)
-                    propProperties.Children.Clear();
-                m_document.SelectedComponent.Editor.LoadComponent();
-                propProperties.Children.Add(m_document.SelectedComponent.Editor);
-                clear = false;
-            }
-
-            if (m_document.SelectedComponent != null && m_moveComponent && m_document.SelectedComponent.CanResize)
-            {
-                Dictionary<string, object> properties = new Dictionary<string,object>();
-                m_document.SelectedComponent.Serialize(properties);
-                previousData = ComponentStringDescription.ConvertToString(properties);
-
-                if (m_document.SelectedComponent.Horizontal)
+                CircuitDocument document;
+                CircuitDiagram.IO.DocumentLoadResult result = CircuitDiagram.IO.CDDXIO.Read(File.OpenRead(path), out document);
+                if (result == IO.DocumentLoadResult.Success)
+                    circuitDisplay.Document = document;
+                else if (result == IO.DocumentLoadResult.FailNewerVersion)
                 {
-                    Rect leftHandle = new Rect(m_document.SelectedComponent.BoundingBox.X - 3, m_document.SelectedComponent.BoundingBox.Y +
-                        m_document.SelectedComponent.BoundingBox.Height / 2 - 3f, 6, 6);
-                    Rect rightHandle = new Rect(m_document.SelectedComponent.BoundingBox.Right - 3, m_document.SelectedComponent.BoundingBox.Y + m_document.SelectedComponent.BoundingBox.Height / 2 - 3f, 6f, 6f);
-                    if (leftHandle.IntersectsWith(new Rect(mouseDownPos.X, mouseDownPos.Y, 1, 1)))
-                        m_resizing = ComponentResizeMode.Left;
-                    else if (rightHandle.IntersectsWith(new Rect(mouseDownPos.X, mouseDownPos.Y, 1, 1)))
-                        m_resizing = ComponentResizeMode.Right;
+                    MessageBox.Show("The document was created in a newer version of Circuit Diagram and could not be loaded correctly.", "Unable to Load Document");
+                }
+                else if (result == IO.DocumentLoadResult.FailIncorrectFormat)
+                {
+                    MessageBox.Show("The document was not in the correct format.", "Unable to Load Document");
                 }
                 else
                 {
-                    Rect topHandle = new Rect(m_document.SelectedComponent.BoundingBox.X + m_document.SelectedComponent.BoundingBox.Width / 2 - 3f, m_document.SelectedComponent.BoundingBox.Y - 3f, 6f, 6f);
-                    Rect bottomHandle = new Rect(m_document.SelectedComponent.BoundingBox.X + m_document.SelectedComponent.BoundingBox.Width / 2 - 3f, m_document.SelectedComponent.BoundingBox.Y + m_document.SelectedComponent.BoundingBox.Height - 3f, 6f, 6f);
-                    if (topHandle.IntersectsWith(new Rect(mouseDownPos.X, mouseDownPos.Y, 1, 1)))
-                        m_resizing = ComponentResizeMode.Top;
-                    else if (bottomHandle.IntersectsWith(new Rect(mouseDownPos.X, mouseDownPos.Y, 1, 1)))
-                        m_resizing = ComponentResizeMode.Bottom;
-                }
-            }
-            else if (clear)
-            {
-                m_resizing = ComponentResizeMode.None;
-                propProperties.Children.Clear();
-            }
-        }
-
-        private void circuitDisplay_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (m_resizing != ComponentResizeMode.None)
-            {
-                Dictionary<string, object> properties = new Dictionary<string, object>();
-                m_document.SelectedComponent.Serialize(properties);
-                string newData = ComponentStringDescription.ConvertToString(properties);
-
-                if (previousData != newData)
-                {
-                    UndoAction newAction = new UndoAction(UndoCommand.ResizeComponent, "Resize component", m_document.SelectedComponent);
-                    newAction.AddData("before", previousData);
-                    newAction.AddData("after", newData);
-                    UndoManager.AddAction(newAction);
+                    // Unknown
+                    MessageBox.Show("An unknown error occurred while loading the document.", "Unable to Load Document");
                 }
 
-                m_resizing = ComponentResizeMode.None;
-                return;
-            }
-            if (m_moveComponent)
-            {
-                if (m_document.SelectedComponent != null && fromStart != null)
-                {
-                    UndoAction undoAction = new UndoAction(UndoCommand.MoveComponent, "Move component", m_document.SelectedComponent);
-                    undoAction.AddData("fromStart", fromStart);
-                    undoAction.AddData("fromEnd", fromEnd);
-                    undoAction.AddData("toStart", m_document.SelectedComponent.StartLocation);
-                    undoAction.AddData("toEnd", m_document.SelectedComponent.EndLocation);
-                    UndoManager.AddAction(undoAction);
-                    fromStart = null;
-                    fromEnd = null;
-                }
-                m_document.SelectedComponent = null;
-                return;
-            }
-            if (newComponentType == null || !m_wasMouseDown)
-                return;
-            m_wasMouseDown = false;
-            m_document.TempComponents.Clear();
-            Point mouseUpPos = e.GetPosition((IInputElement)sender);
-            EComponent newComponent = EComponent.Create(newComponentType);
-            newComponent.StartLocation = mouseDownPos;
-            newComponent.EndLocation = mouseUpPos;
-            m_document.UpdateComponent(newComponent);
-            newComponent.Editor.Document = m_document;
-            newComponent.Editor.ComponentUpdated += new CircuitDiagram.ComponentEditorBase.ComponentUpdatedDelegate(Editor_ComponentUpdated);
-            m_document.Components.Add(newComponent);
-            circuitDisplay.InvalidateVisual();
+                circuitDisplay.DrawConnections();
 
-            // add undo action
-            UndoManager.AddAction(new UndoAction(UndoCommand.AddComponent, "Add component", newComponent));
-        }
-        
-        private void circuitDisplay_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed && m_resizing != ComponentResizeMode.None)
-            {
-                if (m_resizing == ComponentResizeMode.Left)
-                    m_document.SelectedComponent.StartLocation = new Point(e.GetPosition(circuitDisplay).X, m_document.SelectedComponent.StartLocation.Y);
-                else if (m_resizing == ComponentResizeMode.Right)
-                    m_document.SelectedComponent.EndLocation = new Point(e.GetPosition(circuitDisplay).X, m_document.SelectedComponent.StartLocation.Y);
-                else if (m_resizing == ComponentResizeMode.Top)
-                    m_document.SelectedComponent.StartLocation = new Point(m_document.SelectedComponent.StartLocation.X, e.GetPosition(circuitDisplay).Y);
-                else if (m_resizing == ComponentResizeMode.Bottom)
-                    m_document.SelectedComponent.EndLocation = new Point(m_document.SelectedComponent.StartLocation.X, e.GetPosition(circuitDisplay).Y);
-                m_document.UpdateComponent(m_document.SelectedComponent);
-
-                circuitDisplay.InvalidateVisual();
-            }
-            else if (m_resizing != ComponentResizeMode.None)
-            {
-            }
-            else if (e.LeftButton == MouseButtonState.Pressed && m_moveComponent && m_document.SelectedComponent != null)
-            {
-                if (!fromStart.HasValue)
-                    fromStart = m_document.SelectedComponent.StartLocation;
-                if (!fromEnd.HasValue)
-                    fromEnd = m_document.SelectedComponent.EndLocation;
-                m_document.SelectedComponent.StartLocation = Point.Add(m_moveComponentStartPos, new Vector(-mouseDownPos.X + e.GetPosition((IInputElement)sender).X, -mouseDownPos.Y + e.GetPosition((IInputElement)sender).Y));
-                m_document.SelectedComponent.EndLocation = Point.Add(m_moveComponentEndPos, new Vector(-mouseDownPos.X + e.GetPosition((IInputElement)sender).X, -mouseDownPos.Y + e.GetPosition((IInputElement)sender).Y));
-                m_document.UpdateComponent(m_document.SelectedComponent);
-                m_document.InvalidateVisual();
-                circuitDisplay.InvalidateVisual();
-            }
-            else if (e.LeftButton == MouseButtonState.Pressed && newComponentType != null && m_wasMouseDown)
-            {
-                m_document.TempComponents.Clear();
-                Point mouseUpPos = e.GetPosition((IInputElement)sender);
-                EComponent newComponent = EComponent.Create(newComponentType);
-                newComponent.StartLocation = mouseDownPos;
-                newComponent.EndLocation = mouseUpPos;
-                m_document.TempComponents.Add(newComponent);
-                m_document.UpdateComponent(newComponent);
-                newComponent.Editor.Document = m_document;
-                newComponent.Editor.ComponentUpdated += new CircuitDiagram.ComponentEditorBase.ComponentUpdatedDelegate(Editor_ComponentUpdated);
+                m_docPath = path;
+                m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
+                this.Title = m_documentTitle + " - Circuit Diagram";
+                m_undoManager = new UndoManager();
+                circuitDisplay.UndoManager = m_undoManager;
+                m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
+                m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
             }
             else
             {
-                if (!cancelSelect)
-                    return;
-                m_document.SelectedComponent = null;
-                foreach (EComponent component in m_document.Components)
+                CircuitDiagram.IO.CircuitDocumentLoader loader = new IO.CircuitDocumentLoader();
+
+                CircuitDiagram.IO.DocumentLoadResult result = loader.Load(new FileStream(path, FileMode.Open));
+
+                if (result == IO.DocumentLoadResult.Success)
                 {
-                    if (component.BoundingBox.IntersectsWith(new Rect(e.GetPosition((IInputElement)sender).X, e.GetPosition((IInputElement)sender).Y, 1, 1)))
+                    circuitDisplay.Document = loader.Document;
+
+                    m_docPath = path;
+                    m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
+                    this.Title = m_documentTitle + " - Circuit Diagram";
+                    m_undoManager = new UndoManager();
+                    circuitDisplay.UndoManager = m_undoManager;
+                    m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
+                    m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
+                }
+                else if (result == IO.DocumentLoadResult.FailNewerVersion)
+                {
+                    MessageBox.Show("The document was created in a newer version of Circuit Diagram and could not be loaded correctly.", "Unable to Load Document");
+                }
+                else if (result == IO.DocumentLoadResult.FailIncorrectFormat)
+                {
+                    MessageBox.Show("The document was not in the correct format.", "Unable to Load Document");
+                }
+                else
+                {
+                    // Unknown
+                    MessageBox.Show("An unknown error occurred while loading the document.", "Unable to Load Document");
+                }
+
+                circuitDisplay.DrawConnections();
+            }
+        }
+
+        /// <summary>
+        /// Load component descriptions from disk and populate the toolbox.
+        /// </summary>
+        private void Load()
+        {
+            #region Load component descriptions
+            List<string> componentLocations = new List<string>();
+
+            string permanentComponentsDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\ext";
+            if (Directory.Exists(permanentComponentsDirectory))
+                componentLocations.Add(permanentComponentsDirectory);
+            string userComponentsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\components";
+            if (Directory.Exists(userComponentsDirectory))
+                componentLocations.Add(userComponentsDirectory);
+
+#if DEBUG
+            string debugComponentsDirectory = Path.GetFullPath("../../Components");
+            if (Directory.Exists(debugComponentsDirectory))
+                componentLocations.Add(debugComponentsDirectory);
+#endif
+
+            CircuitDiagram.IO.XmlLoader xmlLoader = new CircuitDiagram.IO.XmlLoader();
+            CircuitDiagram.IO.BinaryLoader binLoader = new CircuitDiagram.IO.BinaryLoader();
+
+            foreach (string location in componentLocations)
+            {
+                foreach (string file in System.IO.Directory.GetFiles(location, "*.xml", SearchOption.TopDirectoryOnly))
+                {
+                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
-                        m_document.SelectedComponent = component;
-                        m_moveComponentStartPos = component.StartLocation;
-                        m_moveComponentEndPos = component.EndLocation;
+                        if (xmlLoader.Load(fs))
+                        {
+                            ComponentDescription component = xmlLoader.GetDescriptions()[0];
+                            component.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;
+                            component.Source = new ComponentDescriptionSource(file, new System.Collections.ObjectModel.ReadOnlyCollection<ComponentDescription>(new ComponentDescription[] { component }));
+                            ComponentHelper.AddDescription(component);
+                            if (StandardComponents.Wire == null && component.ComponentName.ToLowerInvariant() == "wire" && component.Metadata.GUID == new Guid("6353882b-5208-4f88-a83b-2271cc82b94f"))
+                                StandardComponents.Wire = component;
+                        }
                     }
                 }
             }
-
-            if (m_document.SelectedComponent != null && m_moveComponent && m_document.SelectedComponent.CanResize)
+            Stream keyStream = System.Reflection.Assembly.GetAssembly(typeof(CircuitDocument)).GetManifestResourceStream("CircuitDiagram.key.txt");
+            System.Security.Cryptography.RSACryptoServiceProvider tempRSA = new System.Security.Cryptography.RSACryptoServiceProvider();
+            byte[] data = new byte[keyStream.Length];
+            keyStream.Read(data, 0, (int)keyStream.Length);
+            string aaa = Encoding.UTF8.GetString(data);
+            tempRSA.FromXmlString(aaa.Trim());
+            foreach (string location in componentLocations)
             {
-                Rect mouseRect = new Rect(e.GetPosition(circuitDisplay).X, e.GetPosition(circuitDisplay).Y, 1, 1);
-                if (m_document.SelectedComponent.Horizontal)
+                foreach (string file in System.IO.Directory.GetFiles(location, "*.cdcom", SearchOption.TopDirectoryOnly))
                 {
-                    Rect leftHandle = new Rect(m_document.SelectedComponent.BoundingBox.X - 3, m_document.SelectedComponent.BoundingBox.Y +
-                        m_document.SelectedComponent.BoundingBox.Height / 2 - 3f, 6, 6);
-                    Rect rightHandle = new Rect(m_document.SelectedComponent.BoundingBox.Right - 3, m_document.SelectedComponent.BoundingBox.Y + m_document.SelectedComponent.BoundingBox.Height / 2 - 3f, 6f, 6f);
-                    if (m_resizing != ComponentResizeMode.None || leftHandle.IntersectsWith(mouseRect) || rightHandle.IntersectsWith(mouseRect))
-                        circuitDisplay.Cursor = Cursors.SizeWE;
-                    else
-                        circuitDisplay.Cursor = Cursors.Arrow;
+                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        binLoader.Load(fs, tempRSA.ExportParameters(false));
+                        ComponentDescription[] descriptions = binLoader.GetDescriptions();
+                        ComponentDescriptionSource source = new ComponentDescriptionSource(file, new System.Collections.ObjectModel.ReadOnlyCollection<ComponentDescription>(descriptions));
+                        foreach (ComponentDescription description in descriptions)
+                        {
+                            description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;
+                            description.Source = source;
+                            ComponentHelper.AddDescription(description);
+                            if (StandardComponents.Wire == null && description.ComponentName.ToLowerInvariant() == "wire" && description.Metadata.GUID == new Guid("6353882b-5208-4f88-a83b-2271cc82b94f"))
+                                StandardComponents.Wire = description;
+                        }
+                    }
                 }
-                else
+            }
+            #endregion
+
+            LoadToolbox();
+        }
+
+        /// <summary>
+        /// Populates the toolbox from the xml file.
+        /// </summary>
+        private void LoadToolbox()
+        {
+            object selectCategory = mainToolbox.Items[0];
+            mainToolbox.Items.Clear();
+            mainToolbox.Items.Add(selectCategory);
+
+            m_toolboxShortcuts.Clear();
+
+            try
+            {
+                XmlDocument toolboxSettings = new XmlDocument();
+                string toolboxSettingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml";
+                toolboxSettings.Load(toolboxSettingsPath);
+
+                XmlNodeList categoryNodes = toolboxSettings.SelectNodes("/display/category");
+                foreach (XmlNode categoryNode in categoryNodes)
                 {
-                    Rect topHandle = new Rect(m_document.SelectedComponent.BoundingBox.X + m_document.SelectedComponent.BoundingBox.Width / 2 - 3f, m_document.SelectedComponent.BoundingBox.Y - 3f, 6f, 6f);
-                    Rect bottomHandle = new Rect(m_document.SelectedComponent.BoundingBox.X + m_document.SelectedComponent.BoundingBox.Width / 2 - 3f, m_document.SelectedComponent.BoundingBox.Y + m_document.SelectedComponent.BoundingBox.Height - 3f, 6f, 6f);
-                    if (m_resizing != ComponentResizeMode.None || topHandle.IntersectsWith(mouseRect) || bottomHandle.IntersectsWith(mouseRect))
-                        circuitDisplay.Cursor = Cursors.SizeNS;
-                    else
-                        circuitDisplay.Cursor = Cursors.Arrow;
+                    var newCategory = new Toolbox.ToolboxCategory();
+                    foreach (XmlNode node in categoryNode.ChildNodes)
+                    {
+                        if (node.Name == "component")
+                        {
+                            XmlElement element = node as XmlElement;
+
+                            if (element.HasAttribute("guid") && element.HasAttribute("configuration"))
+                            {
+                                ComponentDescription description = ComponentHelper.FindDescription(new Guid(element.Attributes["guid"].InnerText));
+                                if (description != null)
+                                {
+                                    ComponentConfiguration configuration = description.Metadata.Configurations.FirstOrDefault(configItem => configItem.Name == element.Attributes["configuration"].InnerText);
+                                    if (configuration != null)
+                                    {
+                                        Toolbox.ToolboxItem newItem = new Toolbox.ToolboxItem();
+                                        newItem.Tag = "@rid:" + description.RuntimeID + ", @config: " + configuration.Name;
+                                        newItem.ToolTip = configuration.Name;
+                                        TextBlock contentBlock = new TextBlock();
+                                        contentBlock.Text = configuration.Name;
+                                        contentBlock.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+                                        contentBlock.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+                                        newItem.Content = contentBlock;
+                                        if (configuration.Icon != null)
+                                        {
+                                            Canvas contentCanvas = new Canvas();
+                                            contentCanvas.Width = 45;
+                                            contentCanvas.Height = 45;
+                                            var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = configuration.Icon };
+                                            newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
+                                            newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
+                                            contentCanvas.Children.Add(newImage);
+                                            newItem.Content = contentCanvas;
+                                        }
+                                        else if (description.Metadata.Icon != null)
+                                        {
+                                            Canvas contentCanvas = new Canvas();
+                                            contentCanvas.Width = 45;
+                                            contentCanvas.Height = 45;
+                                            var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = description.Metadata.Icon };
+                                            newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
+                                            newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
+                                            contentCanvas.Children.Add(newImage);
+                                            newItem.Content = contentCanvas;
+                                        }
+                                        newItem.Click += new RoutedEventHandler(toolboxButton_Click);
+                                        newCategory.Items.Add(newItem);
+
+                                        // Shortcut
+                                        if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
+                                        {
+                                            Key key = (Key)Enum.Parse(typeof(Key), element.Attributes["key"].InnerText);
+
+                                            if (!m_toolboxShortcuts.ContainsKey(key))
+                                                m_toolboxShortcuts.Add(key, "@rid:" + description.RuntimeID + ", @config: " + configuration.Name);
+                                        }
+                                    }
+                                }
+                            }
+                            else if (element.HasAttribute("guid"))
+                            {
+                                ComponentDescription description = ComponentHelper.FindDescription(new Guid(element.Attributes["guid"].InnerText));
+                                if (description != null)
+                                {
+                                    Toolbox.ToolboxItem newItem = new Toolbox.ToolboxItem();
+                                    newItem.Tag = "@rid:" + description.RuntimeID;
+                                    newItem.ToolTip = description.ComponentName;
+                                    TextBlock contentBlock = new TextBlock();
+                                    contentBlock.Text = description.ComponentName;
+                                    contentBlock.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+                                    contentBlock.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+                                    newItem.Content = contentBlock;
+                                    if (description.Metadata.Icon != null)
+                                    {
+                                        Canvas contentCanvas = new Canvas();
+                                        contentCanvas.Width = 45;
+                                        contentCanvas.Height = 45;
+                                        var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = description.Metadata.Icon };
+                                        newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
+                                        newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
+                                        contentCanvas.Children.Add(newImage);
+                                        newItem.Content = contentCanvas;
+                                    }
+                                    newItem.Click += new RoutedEventHandler(toolboxButton_Click);
+                                    newCategory.Items.Add(newItem);
+
+                                    // Shortcut
+                                    if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
+                                    {
+                                        Key key = (Key)Enum.Parse(typeof(Key), element.Attributes["key"].InnerText);
+
+                                        if (!m_toolboxShortcuts.ContainsKey(key))
+                                            m_toolboxShortcuts.Add(key, "@rid:" + description.RuntimeID);
+                                    }
+                                }
+                            }
+                            else if (element.HasAttribute("type") && element.HasAttribute("configuration"))
+                            {
+                                ComponentDescription description = ComponentHelper.FindDescription(element.Attributes["type"].InnerText);
+                                if (description != null)
+                                {
+                                    ComponentConfiguration configuration = description.Metadata.Configurations.FirstOrDefault(configItem => configItem.Name == element.Attributes["configuration"].InnerText);
+                                    if (configuration != null)
+                                    {
+                                        Toolbox.ToolboxItem newItem = new Toolbox.ToolboxItem();
+                                        newItem.Tag = "@rid:" + description.RuntimeID + ", @config: " + configuration.Name;
+                                        newItem.ToolTip = configuration.Name;
+                                        TextBlock contentBlock = new TextBlock();
+                                        contentBlock.Text = configuration.Name;
+                                        contentBlock.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+                                        contentBlock.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+                                        newItem.Content = contentBlock;
+                                        if (configuration.Icon != null)
+                                        {
+                                            Canvas contentCanvas = new Canvas();
+                                            contentCanvas.Width = 45;
+                                            contentCanvas.Height = 45;
+                                            var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = configuration.Icon };
+                                            newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
+                                            newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
+                                            contentCanvas.Children.Add(newImage);
+                                            newItem.Content = contentCanvas;
+                                        }
+                                        else if (description.Metadata.Icon != null)
+                                        {
+                                            Canvas contentCanvas = new Canvas();
+                                            contentCanvas.Width = 45;
+                                            contentCanvas.Height = 45;
+                                            var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = description.Metadata.Icon };
+                                            newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
+                                            newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
+                                            contentCanvas.Children.Add(newImage);
+                                            newItem.Content = contentCanvas;
+                                        }
+                                        newItem.Click += new RoutedEventHandler(toolboxButton_Click);
+                                        newCategory.Items.Add(newItem);
+
+                                        // Shortcut
+                                        if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
+                                        {
+                                            Key key = (Key)Enum.Parse(typeof(Key), element.Attributes["key"].InnerText);
+
+                                            if (!m_toolboxShortcuts.ContainsKey(key))
+                                                m_toolboxShortcuts.Add(key, "@rid:" + description.RuntimeID + ", @config: " + configuration.Name);
+                                        }
+                                    }
+                                }
+                            }
+                            else if (element.HasAttribute("type"))
+                            {
+                                ComponentDescription description = ComponentHelper.FindDescription(element.Attributes["type"].InnerText);
+                                if (description != null)
+                                {
+                                    Toolbox.ToolboxItem newItem = new Toolbox.ToolboxItem();
+                                    newItem.Tag = "@rid:" + description.RuntimeID;
+                                    newItem.ToolTip = description.ComponentName;
+                                    TextBlock contentBlock = new TextBlock();
+                                    contentBlock.Text = description.ComponentName;
+                                    contentBlock.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+                                    contentBlock.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+                                    newItem.Content = contentBlock;
+                                    if (description.Metadata.Icon != null)
+                                    {
+                                        Canvas contentCanvas = new Canvas();
+                                        contentCanvas.Width = 45;
+                                        contentCanvas.Height = 45;
+                                        var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = description.Metadata.Icon };
+                                        newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
+                                        newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
+                                        contentCanvas.Children.Add(newImage);
+                                        newItem.Content = contentCanvas;
+                                    }
+                                    newItem.Click += new RoutedEventHandler(toolboxButton_Click);
+                                    newCategory.Items.Add(newItem);
+
+                                    // Shortcut
+                                    if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
+                                    {
+                                        Key key = (Key)Enum.Parse(typeof(Key), element.Attributes["key"].InnerText);
+
+                                        if (!m_toolboxShortcuts.ContainsKey(key))
+                                            m_toolboxShortcuts.Add(key, "@rid:" + description.RuntimeID);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (newCategory.Items.Count > 0)
+                        mainToolbox.Items.Add(newCategory);
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("The toolbox is corrupt. Please go to Tools->Toolbox to add items.", "Toolbox Corrupt", MessageBoxButton.OK, MessageBoxImage.Error);
+                File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml", "<?xml version=\"1.0\" encoding=\"utf-8\"?><display></display>");
+            }
+        }
+
+        void toolboxButton_Click(object sender, RoutedEventArgs e)
+        {
+            circuitDisplay.NewComponentData = (sender as Toolbox.ToolboxItem).Tag as string;
+        }
+
+        private void circuitDisplay_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            gridEditor.Children.Clear();
+            if (e.AddedItems.Count > 0)
+                gridEditor.Children.Add((e.AddedItems[0] as Component).Editor);
+        }
+
+        private void btnSelect_Click(object sender, RoutedEventArgs e)
+        {
+            if (!this.IsInitialized)
+                return;
+            circuitDisplay.NewComponentData = null;
+        }
+
+        CircuitDiagram.IO.CDDXSaveOptions m_defaultSaveOptions;
+        CircuitDiagram.IO.CDDXSaveOptions m_lastSaveOptions;
+        private void LoadDefaultCDDXSaveOptions()
+        {
+            string settingsData = Settings.Settings.Read("DefaultCDDXSaveSettings") as string;
+            if (settingsData != null)
+            {
+                using (MemoryStream stream = new MemoryStream(System.Convert.FromBase64String(settingsData)))
+                {
+                    BinaryFormatter binaryFormatter = new BinaryFormatter();
+                    m_defaultSaveOptions = (IO.CDDXSaveOptions)binaryFormatter.Deserialize(stream);
                 }
             }
             else
+                m_defaultSaveOptions = new IO.CDDXSaveOptions();
+        }
+
+        void SetStatusText(string text)
+        {
+            lblStatus.Text = text;
+        }
+
+        private void CheckForUpdates(bool notifyIfNoUpdate)
+        {
+            // Check if using UI thread
+            if (System.Threading.Thread.CurrentThread != this.Dispatcher.Thread)
             {
-                circuitDisplay.Cursor = Cursors.Arrow;
+                this.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(delegate() { CheckForUpdates(notifyIfNoUpdate); }));
+                return;
+            }
+
+            // Check for new version
+            System.Xml.XmlTextReader reader = new System.Xml.XmlTextReader("http://www.circuit-diagram.org/app/version.xml");
+            System.Reflection.Assembly _assemblyInfo = System.Reflection.Assembly.GetExecutingAssembly();
+            Version thisVersion = _assemblyInfo.GetName().Version;
+            Version serverVersion = null;
+            Version serverPreVersion = null;
+            string downloadUrl = null;
+            string elementName = null;
+            try
+            {
+                reader.MoveToContent();
+                if (reader.NodeType == System.Xml.XmlNodeType.Element && reader.Name == "application")
+                {
+                    while (reader.Read())
+                    {
+                        if (reader.NodeType == System.Xml.XmlNodeType.Element)
+                            elementName = reader.Name;
+                        else if (reader.NodeType == System.Xml.XmlNodeType.Text)
+                        {
+                            if (elementName == "version" && reader.HasValue)
+                            {
+                                serverVersion = new Version(reader.Value);
+                            }
+                            else if (elementName == "preversion" && reader.HasValue)
+                            {
+                                serverPreVersion = new Version(reader.Value);
+                            }
+                            else if (elementName == "url" && reader.HasValue)
+                            {
+                                downloadUrl = reader.Value;
+                            }
+                        }
+                    }
+                }
+
+#if PREVIEWVERSION
+                if (serverVersion != null && thisVersion.CompareTo(serverVersion) <= 0 && downloadUrl != null)
+                {
+                    winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverVersion.ToString(), downloadUrl);
+                }
+                else if (serverPreVersion != null && thisVersion.CompareTo(serverPreVersion) < 0 && downloadUrl != null)
+                {
+                    winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverPreVersion.ToString() + " -pre", downloadUrl);
+                }
+                else if (thisVersion.CompareTo(serverVersion) >= 0)
+                {
+                    if (notifyIfNoUpdate)
+                        winNewVersion.Show(this, NewVersionWindowType.NoNewVersionAvailable, null);
+                }
+                else
+                {
+                    if (notifyIfNoUpdate)
+                        winNewVersion.Show(this, NewVersionWindowType.Error, null, "http://www.circuit-diagram.org/");
+                }
+#else
+                if (serverVersion != null && thisVersion.CompareTo(serverVersion) < 0 && downloadUrl != null)
+                {
+                    winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverVersion.ToString(), downloadUrl);
+                }
+                else if (thisVersion.CompareTo(serverVersion) >= 0)
+                {
+                    if (notifyIfNoUpdate)
+                        winNewVersion.Show(this, NewVersionWindowType.NoNewVersionAvailable, null);
+                }
+                else
+                {
+                    if (notifyIfNoUpdate)
+                        winNewVersion.Show(this, NewVersionWindowType.Error, null, "http://www.circuit-diagram.org/");
+                }
+#endif
+
+                Settings.Settings.Write("LastCheckForUpdates", DateTime.Now);
+                Settings.Settings.Save();
+            }
+            catch (Exception)
+            {
+                if (notifyIfNoUpdate)
+                    winNewVersion.Show(this, NewVersionWindowType.Error, null, "http://www.circuit-diagram.org/");
             }
         }
 
-        private void circuitDisplay_MouseLeave(object sender, MouseEventArgs e)
+        void Editor_ComponentUpdated(object sender, ComponentUpdatedEventArgs e)
         {
-            m_document.TempComponents.Clear();
-            m_resizing = ComponentResizeMode.None;
-            //m_document.SelectedComponent = null;
-            m_wasMouseDown = false;
+            UndoAction undoAction = new UndoAction(UndoCommand.ModifyComponents, "edit", new Component[] { e.Component });
+            Dictionary<Component, string> previousData = new Dictionary<Component, string>(1);
+            previousData.Add(e.Component, e.PreviousData);
+            undoAction.AddData("before", previousData);
+            Dictionary<Component, string> newData = new Dictionary<Component, string>(1);
+            newData.Add(e.Component, e.Component.SerializeToString());
+            undoAction.AddData("after", newData);
+            UndoManager.AddAction(undoAction);
         }
-        #endregion
 
-        #region Main Menu
-        private void mnuExportSVG_Click(object sender, RoutedEventArgs e)
+        #region Menu Bar
+        private void mnuFileExport_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
+            Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog();
             sfd.Title = "Export";
             sfd.Filter = "PNG (*.png)|*.png|Scalable Vector Graphics (*.svg)|*.svg"; //"PNG (*.png)|*.png|Scalable Vector Graphics (*.svg)|*.svg|Enhanced Metafile (*.emf)|*.emf";
             sfd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
-            if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (sfd.ShowDialog() == true)
             {
                 string extension = System.IO.Path.GetExtension(sfd.FileName);
                 if (extension == ".svg")
                 {
-                    SVGLibrary.SVGDocument exportDoc = new SVGLibrary.SVGDocument();
                     SVGRenderer renderer = new SVGRenderer();
-                    renderer.SVGDocument = exportDoc;
-                    m_document.Render(renderer);
-                    exportDoc.Save(sfd.FileName);
+                    renderer.Begin();
+                    circuitDisplay.Document.Render(renderer);
+                    renderer.End();
+                    System.IO.File.WriteAllBytes(sfd.FileName, renderer.SVGDocument.ToArray());
                 }
                 else if (extension == ".png")
                 {
-                    //RenderTargetBitmap bmp = new RenderTargetBitmap((int)circuitDisplay.Width, (int)circuitDisplay.Height, 96d, 96d, PixelFormats.Default);
-                    //bmp.Render(circuitDisplay);
-                    winExportPNG wEP = new winExportPNG();
-                    wEP.Owner = this;
-                    wEP.OriginalWidth = circuitDisplay.Width;
-                    wEP.OriginalHeight = circuitDisplay.Height;
-                    wEP.Update();
-                    if (wEP.ShowDialog() == true)
-                    {
-                        PrintRenderer pRenderer = new PrintRenderer(circuitDisplay.Width, circuitDisplay.Height, wEP.OutputWidth, wEP.OutputHeight);
-                        pRenderer.DrawRectangle(Colors.White, Colors.White, 0.0f, new Rect(0, 0, circuitDisplay.Width, circuitDisplay.Height));
-                        m_document.Render(pRenderer);
-                        RenderTargetBitmap bmp = pRenderer.GetImage();
-                        PngBitmapEncoder encoder = new PngBitmapEncoder();
-                        encoder.Frames.Add(BitmapFrame.Create(bmp));
-                        System.IO.FileStream stream = new System.IO.FileStream(sfd.FileName, System.IO.FileMode.Create);
-                        encoder.Save(stream);
-                        stream.Close();
-                    }
-                }
-                else if (extension == ".emf")
-                {
-                    EnhMetafileRenderer renderer = new EnhMetafileRenderer((int)circuitDisplay.Width, (int)circuitDisplay.Height);
-                    m_document.Render(renderer);
-                    renderer.SaveEnhMetafile(sfd.FileName);
+
+                    RenderTargetBitmap bmp = new RenderTargetBitmap((int)circuitDisplay.Document.Size.Width, (int)circuitDisplay.Document.Size.Height, 96d, 96d, PixelFormats.Default);
+                    bmp.Render(circuitDisplay);
+
+                    PngBitmapEncoder encoder = new PngBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(bmp));
+                    System.IO.FileStream stream = new System.IO.FileStream(sfd.FileName, System.IO.FileMode.Create);
+                    encoder.Save(stream);
+                    stream.Close();
                 }
             }
         }
 
-        private void mnuSaveAs_Click(object sender, RoutedEventArgs e)
+        private void mnuFileComponents_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
+            winComponents componentsWindow = new winComponents();
+            componentsWindow.Components = ComponentHelper.ComponentDescriptions;
+            componentsWindow.Owner = this;
+            componentsWindow.ShowDialog();
+        }
+
+        private void mnuFileSaveAs_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
             sfd.Title = "Save As";
             sfd.Filter = "Circuit Diagram Document (*.cddx)|*.cddx|XML Files (*.xml)|*.xml";
-            sfd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
-            if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (sfd.ShowDialog() == true)
             {
-                if (System.IO.Path.GetExtension(sfd.FileName) == ".cddx")
+                string extension = System.IO.Path.GetExtension(sfd.FileName);
+                if (extension == ".cddx")
                 {
-                    m_document.Size = new Size(circuitDisplay.Width, circuitDisplay.Height);
-                    CDDXIO.Write(sfd.FileName, m_document);
+                    if (m_defaultSaveOptions == null)
+                        LoadDefaultCDDXSaveOptions();
+
+                    IO.CDDXSaveOptions saveOptions = m_lastSaveOptions;
+
+                    bool doSave = true;
+                    bool alwaysUseSettings = Settings.Settings.ReadBool("AlwaysUseCDDXSaveSettings");
+                    if (!alwaysUseSettings)
+                    {
+                        winCDDXSave saveOptionsDialog = new winCDDXSave();
+                        saveOptionsDialog.Owner = this;
+                        saveOptionsDialog.SaveOptions = m_defaultSaveOptions;
+
+                        List<ComponentDescription> usedDescriptions = new List<ComponentDescription>();
+                        foreach (Component component in circuitDisplay.Document.Components)
+                            if (!usedDescriptions.Contains(component.Description))
+                                usedDescriptions.Add(component.Description);
+                        saveOptionsDialog.AvailableComponents = usedDescriptions;
+
+                        if (saveOptionsDialog.ShowDialog() == true)
+                        {
+                            doSave = true;
+                            saveOptions = saveOptionsDialog.SaveOptions;
+                            if (saveOptionsDialog.AlwaysUseSettings)
+                            {
+                                m_defaultSaveOptions = saveOptionsDialog.SaveOptions;
+                                Settings.Settings.Write("AlwaysUseCDDXSaveSettings", true);
+
+                                using (MemoryStream stream = new MemoryStream())
+                                {
+                                    BinaryFormatter binaryFormatter = new BinaryFormatter();
+                                    binaryFormatter.Serialize(stream, m_defaultSaveOptions);
+
+                                    string encodedData = System.Convert.ToBase64String(stream.ToArray());
+                                    Settings.Settings.Write("DefaultCDDXSaveSettings", encodedData);
+                                }
+                            }
+                        }
+                        else
+                            doSave = false;
+                    }
+
+                    if (doSave)
+                    {
+                        m_lastSaveOptions = saveOptions;
+                        CircuitDiagram.IO.CDDXIO.Write(new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, saveOptions);
+                        m_docPath = sfd.FileName;
+                        m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName);
+                        this.Title = m_documentTitle + " - Circuit Diagram";
+                        m_undoManager.SetSaveIndex();
+                    }
                 }
-                else
+                else if (extension == ".xml")
                 {
-                    // Save in XML format
-                    m_document.Save(sfd.FileName, circuitDisplay.Width, circuitDisplay.Height);
+                    circuitDisplay.Document.Save(new FileStream(sfd.FileName, FileMode.Create));
+                    m_docPath = sfd.FileName;
+                    m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName);
+                    this.Title = m_documentTitle + " - Circuit Diagram";
+                    m_undoManager.SetSaveIndex();
                 }
-                m_docPath = sfd.FileName;
-                AddRecentFile(m_docPath);
-                this.Title = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName) + " - Circuit Diagram";
-                m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName);
-                UndoManager.SetSaveIndex();
             }
         }
 
-        private void mnuNew_Click(object sender, RoutedEventArgs e)
+        private void mnuToolsToolbox_Click(object sender, RoutedEventArgs e)
         {
-            NewDocument nDocWin = new NewDocument();
-            nDocWin.TbxWidth = "640";
-            nDocWin.TbxHeight = "480";
-            nDocWin.Owner = this;
-            if (nDocWin.ShowDialog() == true)
+            winToolbox toolboxWindow = new winToolbox();
+            toolboxWindow.Owner = this;
+            if (toolboxWindow.ShowDialog() == true)
             {
-                m_document.Components.Clear();
-                m_docPath = "";
-                circuitDisplay.Width = double.Parse(nDocWin.TbxWidth);
-                circuitDisplay.Height = double.Parse(nDocWin.TbxHeight);
+                LoadToolbox();
+            }
+        }
+
+        private void mnuRecentItem_Click(object sender, RoutedEventArgs e)
+        {
+            // Load the clicked item
+            if ((e.OriginalSource as MenuItem).Header is string && System.IO.File.Exists((e.OriginalSource as MenuItem).Header as string))
+                OpenDocument((e.OriginalSource as MenuItem).Header as string);
+        }
+
+        private void mnuFileOptions_Click(object sender, RoutedEventArgs e)
+        {
+            winOptions options = new winOptions();
+            options.Owner = this;
+            if (options.ShowDialog() == true)
+            {
+                CircuitDiagram.Settings.Settings.Save();
+
+                ApplySettings();
+
+                circuitDisplay.DrawConnections();
+            }
+        }
+
+        private void mnuFileDocument_Click(object sender, RoutedEventArgs e)
+        {
+            winDocument documentInfoWindow = new winDocument();
+            documentInfoWindow.Owner = this;
+            documentInfoWindow.ShowDialog();
+        }
+
+        private void mnuHelpDocumentation_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://www.circuit-diagram.org/help");
+        }
+
+        private void mnuCheckForUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            CheckForUpdates(true);
+        }
+
+        private void mnuHelpAbout_Click(object sender, RoutedEventArgs e)
+        {
+            winAbout aboutWindow = new winAbout();
+            aboutWindow.Owner = this;
+            aboutWindow.ShowDialog();
+        }
+
+        private void mnuFileExit_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+        #endregion
+
+        #region RecentFiles
+        private void AddRecentFile(string path)
+        {
+            if (RecentFiles.Count == 1 && RecentFiles[0] == "(empty)")
+                RecentFiles.Clear();
+            if (RecentFiles.Contains(path))
+                RecentFiles.Remove(path);
+            RecentFiles.Insert(0, path);
+            if (RecentFiles.Count > 10)
+                RecentFiles.RemoveAt(10);
+        }
+
+        private void LoadRecentFiles()
+        {
+            string[] files = CircuitDiagram.Settings.Settings.Read("recentfiles") as string[];
+            if (files == null)
+            {
+                RecentFiles.Add("(empty)");
+                return;
+            }
+            foreach (string file in files)
+                RecentFiles.Add(file);
+        }
+
+        private void SaveRecentFiles()
+        {
+            if (RecentFiles.Count == 1 && RecentFiles[0] == "(empty)")
+                return;
+            CircuitDiagram.Settings.Settings.Write("recentfiles", RecentFiles.ToArray());
+            CircuitDiagram.Settings.Settings.Save();
+        }
+        #endregion
+
+        #region Commands
+        private void CommandNew_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void CommandNew_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            winNewDocument newDocumentWindow = new winNewDocument();
+            newDocumentWindow.Owner = this;
+            if (newDocumentWindow.ShowDialog() == true)
+            {
+                CircuitDocument newDocument = new CircuitDocument();
+                newDocument.Size = new Size(newDocumentWindow.DocumentWidth, newDocumentWindow.DocumentHeight);
+                circuitDisplay.Document = newDocument;
+                circuitDisplay.DrawConnections();
                 this.Title = "Untitled - Circuit Diagram";
-                m_document.InvalidateVisual();
                 m_documentTitle = "Untitled";
                 m_undoManager = new UndoManager();
-                m_undoManager.ActionDelegate = UndoActionProcessor;
+                circuitDisplay.UndoManager = m_undoManager;
+                m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
                 m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
             }
         }
 
-        private void mnuPrint_Click(object sender, RoutedEventArgs e)
+        private void CommandOpen_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            PrintDialog pDlg = new PrintDialog();
-            if (pDlg.ShowDialog() == true)
+            e.CanExecute = true;
+        }
+
+        private void CommandOpen_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Title = "Open";
+            ofd.Filter = "Supported Formats (*.cddx;*.xml)|*.cddx;*.xml|Circuit Diagram Document (*.cddx)|*.cddx|XML Files (*.xml)|*.xml|All Files (*.*)|*.*";
+            ofd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
+            if (ofd.ShowDialog() == true)
             {
-                PrintRenderer printRenderer = new PrintRenderer(circuitDisplay.Width, circuitDisplay.Height, circuitDisplay.Width, circuitDisplay.Height);
-                m_document.Render(printRenderer);
-                FixedDocument document = printRenderer.GetDocument(new Size(pDlg.PrintableAreaWidth, pDlg.PrintableAreaHeight));
-                pDlg.PrintDocument(document.DocumentPaginator, "Circuit Diagram");
+                OpenDocument(ofd.FileName);
             }
         }
 
@@ -433,136 +877,18 @@ namespace CircuitDiagram
                 if (System.IO.Path.GetExtension(m_docPath) == ".cddx")
                 {
                     // Save in CDDX format
-                    CDDXIO.Write(m_docPath, m_document);
+                    CircuitDiagram.IO.CDDXIO.Write(new FileStream(m_docPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, m_lastSaveOptions);
                 }
                 else
                 {
                     // Save in XML format
-                    m_document.Save(m_docPath, circuitDisplay.Width, circuitDisplay.Height);
+                    circuitDisplay.Document.Save(new FileStream(m_docPath, FileMode.Create));
                 }
                 this.Title = System.IO.Path.GetFileNameWithoutExtension(m_docPath) + " - Circuit Diagram";
                 UndoManager.SetSaveIndex();
             }
             else
-                mnuSaveAs_Click(sender, e);
-        }
-
-        private void CommandOpen_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = true;
-        }
-
-        private void CommandOpen_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
-            ofd.Title = "Open";
-            ofd.Filter = "Supported Formats|*.cddx;*.xml|All Files (*.*)|*.*";
-            ofd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
-            if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                OpenDocument(ofd.FileName);
-            }
-        }
-
-        private void OpenDocument(string path)
-        {
-            double displayWidth;
-            double displayHeight;
-            if (System.IO.Path.GetExtension(path) == ".cddx")
-            {
-                m_document = CDDXIO.Read(path);
-                circuitDisplay.Width = m_document.Size.Width;
-                circuitDisplay.Height = m_document.Size.Height;
-            }
-            else
-            {
-                m_document.Load(path, out displayWidth, out displayHeight);
-                circuitDisplay.Width = displayWidth;
-                circuitDisplay.Height = displayHeight;
-            }
-            foreach (EComponent component in m_document.Components)
-                component.Editor.ComponentUpdated += new CircuitDiagram.ComponentEditorBase.ComponentUpdatedDelegate(Editor_ComponentUpdated);
-            m_docPath = path;
-            this.Title = System.IO.Path.GetFileNameWithoutExtension(path) + " - Circuit Diagram";
-            m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
-            m_undoManager = new UndoManager();
-            m_undoManager.ActionDelegate = UndoActionProcessor;
-            m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
-            UndoManager.SetSaveIndex();
-            m_document.InvalidateVisual();
-            circuitDisplay.InvalidateVisual();
-
-            AddRecentFile(path);
-        }
-
-        private void mnuExit_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
-
-        private void mnuAbout_Click(object sender, RoutedEventArgs e)
-        {
-            winAbout aboutWindow = new winAbout();
-            aboutWindow.Owner = this;
-            aboutWindow.ShowDialog();
-        }
-
-        private void mnuHelpDocumentation_Click(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Process.Start("http://www.circuit-diagram.org/help");
-        }
-
-        private void mnuHelpCheckForUpdates_Click(object sender, RoutedEventArgs e)
-        {
-            CheckForUpdates(true);
-        }
-
-        private void mnuRecentItem_Click(object sender, RoutedEventArgs e)
-        {
-            // Load the clicked item
-            if ((e.OriginalSource as MenuItem).Header is string && System.IO.File.Exists((e.OriginalSource as MenuItem).Header as string))
-                OpenDocument((e.OriginalSource as MenuItem).Header as string);
-        }
-
-        private void mnuToolsOptions_Click(object sender, RoutedEventArgs e)
-        {
-            winOptions optionsWindow = new winOptions();
-            optionsWindow.Owner = this;
-            optionsWindow.ShowDialog();
-            if (Properties.Settings.Default.IsToolboxScrollBarVisible)
-                toolboxScroll.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-            else
-                toolboxScroll.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
-        }
-        #endregion
-
-        #region Commands
-        private void CommandDeleteComponent_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = (m_document.SelectedComponent != null);
-        }
-
-        private void CommandDeleteComponent_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            UndoAction newAction = new UndoAction(UndoCommand.DeleteComponent, "Delete component", m_document.SelectedComponent);
-            UndoManager.AddAction(newAction);
-            m_document.Components.Remove(m_document.SelectedComponent);
-            m_document.SelectedComponent = null;
-            m_document.InvalidateVisual();
-        }
-
-        private void CommandFlipComponent_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = (m_document.SelectedComponent != null && m_document.SelectedComponent.CanFlip);
-        }
-
-        private void CommandFlipComponent_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (m_document.SelectedComponent != null && m_document.SelectedComponent.CanFlip)
-            {
-                m_document.SelectedComponent.IsFlipped = !m_document.SelectedComponent.IsFlipped;
-                circuitDisplay.InvalidateVisual();
-            }
+                mnuFileSaveAs_Click(sender, e);
         }
 
         private void CommandUndo_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -584,71 +910,72 @@ namespace CircuitDiagram
         {
             UndoManager.StepForwards();
         }
-        #endregion
 
-        #region RecentFiles
-        private void AddRecentFile(string path)
+        private void DeleteComponentCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (RecentFiles.Count == 1 && RecentFiles[0] == "(empty)")
-                RecentFiles.Clear();
-            if (RecentFiles.Contains(path))
-                RecentFiles.Remove(path);
-            RecentFiles.Insert(0, path);
-            if (RecentFiles.Count > 10)
-                RecentFiles.RemoveAt(10);
+            circuitDisplay.DeleteComponentCommand_CanExecute(sender, e);
         }
 
-        private void LoadRecentFiles()
+        private void DeleteComponentCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            string[] files = Properties.Settings.Default.RecentFiles.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string file in files)
-                RecentFiles.Add(file);
-            if (RecentFiles.Count == 0)
-                RecentFiles.Add("(empty)");
+            circuitDisplay.DeleteComponentCommand(sender, e);
         }
 
-        private void SaveRecentFiles()
+        private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            StringBuilder builder = new StringBuilder();
-            foreach (string file in RecentFiles)
+            if (!e.IsRepeat && e.IsDown)
             {
-                if (file != "(empty)")
-                    builder.AppendFormat("{0},", file);
+                // Check component shortcuts
+                if (e.Key == Key.V) // Move/select
+                {
+                    circuitDisplay.NewComponentData = null;
+
+                    SetStatusText("Select tool.");
+
+                    e.Handled = true;
+                }
+                else if (e.Key == Key.W) // Wire
+                {
+                    circuitDisplay.NewComponentData = "@rid: " + StandardComponents.Wire.RuntimeID;
+
+                    SetStatusText("Placing wire.");
+
+                    e.Handled = true;
+                }
+                else
+                {
+                    // Check custom toolbox entries
+                    if (m_toolboxShortcuts.ContainsKey(e.Key))
+                    {
+                        circuitDisplay.NewComponentData = m_toolboxShortcuts[e.Key];
+                        
+                        string rid = circuitDisplay.NewComponentData.Substring(circuitDisplay.NewComponentData.IndexOf("@rid:") + 5);
+                        string configuration = null;
+                        if (rid.Contains(" "))
+                        {
+                            configuration = rid.Substring(rid.IndexOf("@config:") + 8);
+                            rid = rid.Substring(0, rid.IndexOf(" "));
+                        }
+
+                        ComponentDescription description = ComponentHelper.FindDescriptionByRuntimeID(int.Parse(rid));
+
+                        // TODO: add configuration to status text
+
+                        if (description != null)
+                            SetStatusText(String.Format("Placing component: {0}", description.ComponentName));
+
+                        e.Handled = true;
+                    }
+                    else
+                    {
+                        SetStatusText(String.Format("Unknown shortcut: {0}.", e.Key));
+                    }
+                }
             }
-            Properties.Settings.Default.RecentFiles = builder.ToString();
-            Properties.Settings.Default.Save();
         }
         #endregion
 
-        #region Toolbox and Editor
-        private void ToolboxComponentButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (!this.IsLoaded)
-                return;
-            newComponentType = (string)((Control)sender).Tag;
-            m_moveComponent = false;
-        }
-
-        private void btnMoveComponent_Click(object sender, RoutedEventArgs e)
-        {
-            m_moveComponent = true;
-            newComponentType = null;
-        }
-
-        void Editor_ComponentUpdated(object sender, ComponentUpdatedEventArgs e)
-        {
-            Dictionary<string, object> properties = new Dictionary<string, object>();
-            e.Component.Serialize(properties);
-            string newData = ComponentStringDescription.ConvertToString(properties);
-            UndoAction newAction = new UndoAction(UndoCommand.EditComponent, "Edit component", e.Component);
-            newAction.AddData("before", e.PreviousData);
-            newAction.AddData("after", newData);
-            UndoManager.AddAction(newAction);
-            circuitDisplay.InvalidateVisual();
-        }
-        #endregion
-
-        #region Other
+        #region Undo Manager
         void m_undoManager_ActionOccurred(object sender, EventArgs e)
         {
             if (UndoManager.IsSavedState())
@@ -667,28 +994,35 @@ namespace CircuitDiagram
             {
                 switch (e.Action.Command)
                 {
+                    case UndoCommand.ModifyComponents:
+                        {
+                            Component[] components = (e.Action.GetDefaultData() as Component[]);
+                            Dictionary<Component, string> beforeData = e.Action.GetData<Dictionary<Component, string>>("before");
+                            foreach (Component component in components)
+                            {
+                                component.Deserialize(ComponentDataString.ConvertToDictionary(beforeData[component]));
+                                component.UpdateVisual();
+                                component.ResetConnections();
+                                component.ApplyConnections(circuitDisplay.Document);
+                            }
+                        }
+                        break;
+                    case UndoCommand.DeleteComponents:
+                        {
+                            Component[] components = (e.Action.GetDefaultData() as Component[]);
+                            foreach (Component component in components)
+                            {
+                                circuitDisplay.Document.Elements.Add(component);
+                                component.ResetConnections();
+                                component.ApplyConnections(circuitDisplay.Document);
+                            }
+                        }
+                        break;
                     case UndoCommand.AddComponent:
-                        m_document.Components.Remove((EComponent)e.Action.GetDefaultData());
-                        break;
-                    case UndoCommand.MoveComponent:
-                        ((EComponent)e.Action.GetDefaultData()).StartLocation = e.Action.GetData<Point>("fromStart");
-                        ((EComponent)e.Action.GetDefaultData()).EndLocation = e.Action.GetData<Point>("fromEnd");
-                        break;
-                    case UndoCommand.ResizeComponent:
                         {
-                            ((EComponent)e.Action.GetDefaultData()).Deserialize(ComponentStringDescription.ConvertToDictionary(e.Action.GetData<string>("before")));
-                        }
-                        break;
-                    case UndoCommand.EditComponent:
-                        {
-                            ((EComponent)e.Action.GetDefaultData()).Deserialize(ComponentStringDescription.ConvertToDictionary(e.Action.GetData<string>("before")));
-                        }
-                        break;
-                    case UndoCommand.DeleteComponent:
-                        {
-                            EComponent component = (EComponent)e.Action.GetDefaultData();
-                            m_document.Components.Add(component);
-                            m_document.InvalidateVisual();
+                            Component component = (e.Action.GetDefaultData() as Component);
+                            component.DisconnectConnections();
+                            circuitDisplay.Document.Elements.Remove(component);
                         }
                         break;
                 }
@@ -697,145 +1031,42 @@ namespace CircuitDiagram
             {
                 switch (e.Action.Command)
                 {
+                    case UndoCommand.ModifyComponents:
+                        {
+                            Component[] components = (e.Action.GetDefaultData() as Component[]);
+                            Dictionary<Component, string> beforeData = e.Action.GetData<Dictionary<Component, string>>("after");
+                            foreach (Component component in components)
+                            {
+                                component.Deserialize(ComponentDataString.ConvertToDictionary(beforeData[component]));
+                                component.UpdateVisual();
+                                component.ResetConnections();
+                                component.ApplyConnections(circuitDisplay.Document);
+                            }
+                        }
+                        break;
+                    case UndoCommand.DeleteComponents:
+                        {
+                            Component[] components = (e.Action.GetDefaultData() as Component[]);
+                            foreach (Component component in components)
+                            {
+                                component.DisconnectConnections();
+                                circuitDisplay.Document.Elements.Remove(component);
+                            }
+                        }
+                        break;
                     case UndoCommand.AddComponent:
-                        m_document.Components.Add((EComponent)e.Action.GetDefaultData());
-                        break;
-                    case UndoCommand.MoveComponent:
-                        ((EComponent)e.Action.GetDefaultData()).StartLocation = e.Action.GetData<Point>("toStart");
-                        ((EComponent)e.Action.GetDefaultData()).EndLocation = e.Action.GetData<Point>("toEnd");
-                        break;
-                    case UndoCommand.ResizeComponent:
                         {
-                            ((EComponent)e.Action.GetDefaultData()).Deserialize(ComponentStringDescription.ConvertToDictionary(e.Action.GetData<string>("after")));
-                        }
-                        break;
-                    case UndoCommand.EditComponent:
-                        {
-                            ((EComponent)e.Action.GetDefaultData()).Deserialize(ComponentStringDescription.ConvertToDictionary(e.Action.GetData<string>("after")));
-                        }
-                        break;
-                    case UndoCommand.DeleteComponent:
-                        {
-                            EComponent component = (EComponent)e.Action.GetDefaultData();
-                            m_document.Components.Remove(component);
-                            m_document.InvalidateVisual();
+                            Component component = (e.Action.GetDefaultData() as Component);
+                            circuitDisplay.Document.Elements.Add(component);
+                            component.ResetConnections();
+                            component.ApplyConnections(circuitDisplay.Document);
                         }
                         break;
                 }
             }
-            m_document.InvalidateVisual();
-            circuitDisplay.InvalidateVisual();
-        }
 
-        private void RibbonWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (!UndoManager.IsSavedState())
-            {
-                System.Windows.Forms.DialogResult result = System.Windows.Forms.MessageBox.Show("Do you want to save changes to " + m_documentTitle + "?", "Circuit Diagram", System.Windows.Forms.MessageBoxButtons.YesNoCancel);
-                if (result == System.Windows.Forms.DialogResult.Yes)
-                {
-                    CommandSave_Executed(this, null);
-                }
-                else if (result == System.Windows.Forms.DialogResult.Cancel)
-                {
-                    e.Cancel = true;
-                }
-            }
-
-            SaveRecentFiles();
-        }
-
-        private void CheckForUpdates(bool notifyIfNoUpdate)
-        {
-            // Check for new version
-            System.Xml.XmlTextReader reader = new System.Xml.XmlTextReader("http://www.circuit-diagram.org/app/version.xml");
-            System.Reflection.Assembly _assemblyInfo = System.Reflection.Assembly.GetExecutingAssembly();
-            Version thisVersion = _assemblyInfo.GetName().Version;
-            Version serverVersion = null;
-            string downloadUrl = null;
-            string elementName = null;
-            try
-            {
-                reader.MoveToContent();
-                if (reader.NodeType == System.Xml.XmlNodeType.Element && reader.Name == "application")
-                {
-                    while (reader.Read())
-                    {
-                        if (reader.NodeType == System.Xml.XmlNodeType.Element)
-                            elementName = reader.Name;
-                        else if (reader.NodeType == System.Xml.XmlNodeType.Text)
-                        {
-                            if (elementName == "version" && reader.HasValue)
-                            {
-                                serverVersion = new Version(reader.Value);
-                            }
-                            else if (elementName == "url" && reader.HasValue)
-                            {
-                                downloadUrl = reader.Value;
-                            }
-                        }
-                    }
-                }
-
-                if (serverVersion != null && thisVersion.CompareTo(serverVersion) < 0 && downloadUrl != null)
-                {
-                    winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverVersion.ToString(), downloadUrl);
-                }
-                else if (thisVersion.CompareTo(serverVersion) >= 0)
-                {
-                    if (notifyIfNoUpdate)
-                        winNewVersion.Show(this, NewVersionWindowType.NoNewVersionAvailable, null);
-                }
-                else
-                {
-                    if (notifyIfNoUpdate)
-                        winNewVersion.Show(this, NewVersionWindowType.Error, null, "http://www.circuit-diagram.org/");
-                }
-
-                Properties.Settings.Default.LastCheckedForUpdates = DateTime.Now;
-                Properties.Settings.Default.Save();
-            }
-            catch (Exception)
-            {
-                if (notifyIfNoUpdate)
-                    winNewVersion.Show(this, NewVersionWindowType.Error, null, "http://www.circuit-diagram.org/");
-            }
-        }
-
-        private void circuitDisplay_ContextMenuOpening(object sender, ContextMenuEventArgs e)
-        {
-            cancelSelect = false;
-        }
-
-        private void circuitDisplay_ContextMenuClosing(object sender, ContextMenuEventArgs e)
-        {
-            cancelSelect = true;
-        }
-
-        private void RibbonWindow_Closed(object sender, EventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
-
-        private void sliderZoom_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (circuitDisplay != null)
-                circuitDisplay.LayoutTransform = new ScaleTransform(e.NewValue / 50, e.NewValue  / 50);
-        }
-
-        private void lblSliderZoom_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            sliderZoom.Value = 50;
+            circuitDisplay.DrawConnections();
         }
         #endregion
-    }
-
-    enum ComponentResizeMode
-    {
-        None,
-        Left,
-        Right,
-        Top,
-        Bottom
     }
 }

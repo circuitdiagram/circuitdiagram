@@ -5,57 +5,26 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5C14800C-8D7A-434C-B091-3ED38880BCE3}</ProjectGuid>
+    <ProjectGuid>{C01CD61A-6DB0-460A-AC1C-1B96A9038AF6}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CircuitDiagram</RootNamespace>
-    <AssemblyName>CircuitDiagram</AssemblyName>
+    <AssemblyName>Circuit Diagram</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
-    <IsWebBootstrapper>true</IsWebBootstrapper>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Web</InstallFrom>
-    <UpdateEnabled>true</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://circuitdiagram.codeplex.com/releases/clickonce/</InstallUrl>
-    <UpdateUrl>http://circuitdiagram.codeplex.com/releases/clickonce/</UpdateUrl>
-    <SupportUrl>http://www.circuit-diagram.org/help</SupportUrl>
-    <ProductName>Circuit Diagram</ProductName>
-    <PublisherName>Circuit Diagram</PublisherName>
-    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
-    <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.0</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <PublishWizardCompleted>true</PublishWizardCompleted>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;PREVIEWVERSION</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
-    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -64,138 +33,52 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
-  <PropertyGroup>
-    <ManifestCertificateThumbprint>F9A11E58C04057E58BFEBC9EA1A2CB7B0F7BDB52</ManifestCertificateThumbprint>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>CircuitDiagram_TemporaryKey.pfx</ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignManifests>true</SignManifests>
-  </PropertyGroup>
-  <PropertyGroup />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Toolbox">
-      <HintPath>..\..\Toolbox\Toolbox\bin\Debug\Toolbox.dll</HintPath>
+    <Reference Include="Toolbox, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Toolbox.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Microsoft.Windows.Shell" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CDDXIO.cs" />
-    <Compile Include="CircuitDocument.cs" />
-    <Compile Include="ComponentHelper.cs" />
-    <Compile Include="ComponentStringDescription.cs" />
+    <Compile Include="Converters\BoolToYesNoConverter.cs" />
+    <Compile Include="Converters\KeyTextConverter.cs" />
+    <Compile Include="Converters\SignedColourConverter.cs" />
     <Compile Include="CustomCommands.cs" />
-    <Compile Include="EComponents\AutomaticEditor.cs" />
-    <Compile Include="EComponents\BasicComponentEditor.xaml.cs">
-      <DependentUpon>BasicComponentEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EComponents\Capacitor.cs" />
-    <Compile Include="EComponents\CapacitorEditor.xaml.cs">
-      <DependentUpon>CapacitorEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EComponents\ComponentAttributes.cs" />
-    <Compile Include="EComponents\ComponentEditorBase.cs" />
-    <Compile Include="EComponents\ComponentPropertyInfo.cs" />
-    <Compile Include="EComponents\CustomComponentEditor.xaml.cs">
-      <DependentUpon>CustomComponentEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EComponents\Crystal.cs" />
-    <Compile Include="EComponents\CustomComponent.cs" />
-    <Compile Include="EComponents\FlipFlop.cs" />
-    <Compile Include="EComponents\Fuse.cs" />
-    <Compile Include="EComponents\Ground.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="EComponents\ELabel.cs" />
-    <Compile Include="EComponents\Microphone.cs" />
-    <Compile Include="EComponents\OutputDeviceEditor.xaml.cs">
-      <DependentUpon>OutputDeviceEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EComponents\Inductor.cs" />
-    <Compile Include="EComponents\OutputDevice.cs" />
-    <Compile Include="EComponents\SwitchEditor.xaml.cs">
-      <DependentUpon>SwitchEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EComponents\Transformer.cs" />
-    <Compile Include="EComponents\TransistorEditor.xaml.cs">
-      <DependentUpon>TransistorEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EComponents\MeterEditor.xaml.cs">
-      <DependentUpon>MeterEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EComponents\Diode.cs" />
-    <Compile Include="EComponents\DiodeEditor.xaml.cs">
-      <DependentUpon>DiodeEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EComponents\ExternalConnection.cs" />
-    <Compile Include="EComponents\ExternalConnectionEditor.xaml.cs">
-      <DependentUpon>ExternalConnectionEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EComponents\Lamp.cs" />
-    <Compile Include="EComponents\LogicGateEditor.xaml.cs">
-      <DependentUpon>LogicGateEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EComponents\Meter.cs" />
-    <Compile Include="EComponents\Microcontroller.cs" />
-    <Compile Include="EComponents\MicrocontrollerEditor.xaml.cs">
-      <DependentUpon>MicrocontrollerEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EComponents\Transistor.cs" />
-    <Compile Include="EComponents\OpAmp.cs" />
-    <Compile Include="EComponents\SegDecoder.cs" />
-    <Compile Include="EComponents\Counter.cs" />
-    <Compile Include="EComponents\LogicGate.cs" />
-    <Compile Include="EComponents\SegDisplay.cs" />
-    <Compile Include="EComponents\Switch.cs" />
-    <Compile Include="EComponents\RailEditor.xaml.cs">
-      <DependentUpon>RailEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EComponents\ComponentEditor.cs" />
-    <Compile Include="EComponents\Rail.cs" />
-    <Compile Include="EComponents\Resistor.cs" />
-    <Compile Include="EComponents\ResistorEditor.xaml.cs">
-      <DependentUpon>ResistorEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EComponents\Supply.cs" />
-    <Compile Include="EnhMetafileRenderer.cs" />
-    <Compile Include="IRenderer.cs" />
-    <Compile Include="NewDocument.xaml.cs">
-      <DependentUpon>NewDocument.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PrintRenderer.cs" />
-    <Compile Include="Range.cs" />
-    <Compile Include="SVGDocument.cs" />
-    <Compile Include="SVGRenderer.cs" />
+    <Compile Include="StandardComponents.cs" />
     <Compile Include="UndoManager.cs" />
-    <Compile Include="VisualRenderer.cs" />
     <Compile Include="winAbout.xaml.cs">
       <DependentUpon>winAbout.xaml</DependentUpon>
     </Compile>
-    <Compile Include="winExportPNG.xaml.cs">
-      <DependentUpon>winExportPNG.xaml</DependentUpon>
+    <Compile Include="winCDDXSave.xaml.cs">
+      <DependentUpon>winCDDXSave.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="winCDDXSaveComponents.xaml.cs">
+      <DependentUpon>winCDDXSaveComponents.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="winComponents.xaml.cs">
+      <DependentUpon>winComponents.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="winDocument.xaml.cs">
+      <DependentUpon>winDocument.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="winNewDocument.xaml.cs">
+      <DependentUpon>winNewDocument.xaml</DependentUpon>
     </Compile>
     <Compile Include="winNewVersion.xaml.cs">
       <DependentUpon>winNewVersion.xaml</DependentUpon>
@@ -203,69 +86,12 @@
     <Compile Include="winOptions.xaml.cs">
       <DependentUpon>winOptions.xaml</DependentUpon>
     </Compile>
-    <Page Include="AboutImage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="CircuitDisplay.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <Compile Include="winToolbox.xaml.cs">
+      <DependentUpon>winToolbox.xaml</DependentUpon>
+    </Compile>
     <Page Include="DefaultDictionary.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="EComponents\BasicComponentEditor.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="EComponents\CapacitorEditor.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="EComponents\CustomComponentEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="EComponents\OutputDeviceEditor.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="EComponents\SwitchEditor.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="EComponents\TransistorEditor.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="EComponents\MeterEditor.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="EComponents\DiodeEditor.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="EComponents\ExternalConnectionEditor.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="EComponents\LogicGateEditor.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="EComponents\MicrocontrollerEditor.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="EComponents\RailEditor.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="EComponents\ResistorEditor.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -275,28 +101,37 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CircuitDisplay.xaml.cs">
-      <DependentUpon>CircuitDisplay.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EComponents\EComponent.cs" />
-    <Compile Include="EComponents\Wire.cs" />
+    <Compile Include="CircuitDisplay.cs" />
+    <Compile Include="DisplayComponent.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="NewDocument.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="ToolboxDictionary.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="winAbout.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="winExportPNG.xaml">
+    <Page Include="winCDDXSave.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="winCDDXSaveComponents.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="winComponents.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="winDocument.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="winNewDocument.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -305,6 +140,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="winOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="winToolbox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -324,7 +163,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
+      <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
@@ -335,85 +174,22 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icon.ico" />
+    <ProjectReference Include="..\cdlibrary\cdlibrary.csproj">
+      <Project>{D5FD5F79-6BCE-40FB-B556-209758C612EC}</Project>
+      <Name>cdlibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
+    <Resource Include="select icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Logo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="AboutImage.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Logo32.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Capacitor.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\PushSwitch.png" />
-    <Resource Include="Images\Resistor.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\PolarisedCapacitor.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\ammeter.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\voltmeter.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\TrimmerCapacitor.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\VariableCapacitor.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Thermistor.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\VariableResistor.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\LDR.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Potentiometer.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Wire.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Switch.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="fileIcon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Ground.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Label.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\USResistor.png" />
+    <None Include="Components\diode.xml" />
+    <None Include="Components\flipflop.xml" />
+    <None Include="Components\fuse.xml" />
+    <None Include="Components\label.xml" />
+    <None Include="Components\opamp.xml" />
+    <None Include="Components\rail.xml" />
+    <None Include="Components\wire.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
