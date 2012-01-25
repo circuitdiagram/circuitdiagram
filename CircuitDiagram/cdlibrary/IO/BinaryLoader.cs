@@ -77,11 +77,24 @@ namespace CircuitDiagram.IO
             if (isSigned)
                 sha1Sig = reader.ReadBytes(128);
 
+            if (reader.BaseStream.Position != offsetToContent)
+                reader.BaseStream.Seek(offsetToContent, SeekOrigin.Begin);
+
+            bool validSignature = false;
+            if (isSigned)
+            {
+                RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+                rsa.ImportParameters(key.Value);
+                byte[] buffer = new byte[stream.Length - stream.Position];
+                stream.Read(buffer, 0, buffer.Length);
+                validSignature = rsa.VerifyData(buffer, new SHA1CryptoServiceProvider(), sha1Sig);
+
+                reader.BaseStream.Seek(offsetToContent, SeekOrigin.Begin);
+            }
+
             List<BinaryResource> resources = new List<BinaryResource>();
             List<ComponentDescription> descriptions = new List<ComponentDescription>();
 
-            if (reader.BaseStream.Position != offsetToContent)
-                reader.BaseStream.Seek(offsetToContent, SeekOrigin.Begin);
             for (uint contentCounter = 0; contentCounter < numContentItems; contentCounter++)
             {
                 ushort itemType = reader.ReadUInt16();

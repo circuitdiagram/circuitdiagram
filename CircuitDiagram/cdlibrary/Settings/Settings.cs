@@ -114,7 +114,11 @@ namespace CircuitDiagram.Settings
                                 reader.MoveToAttribute("value");
                                 string value = reader.Value;
                                 if (!m_values.ContainsKey(key))
-                                    m_values.Add(key, DateTime.Parse(value));
+                                {
+                                    DateTime outValue;
+                                    if (DateTime.TryParse(value, out outValue))
+                                        m_values.Add(key, outValue);
+                                }
                             }
                         }
                     }

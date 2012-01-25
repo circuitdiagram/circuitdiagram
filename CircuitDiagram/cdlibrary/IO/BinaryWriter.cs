@@ -332,11 +332,11 @@ namespace CircuitDiagram.IO
                             }
 
                             // Other conditions
-                            writer.Write((uint)property.OtherConditions.Count);
+                            propertiesWriter.Write((uint)property.OtherConditions.Count);
                             foreach (KeyValuePair<PropertyOtherConditionType, ComponentDescriptionConditionCollection> otherCondition in property.OtherConditions)
                             {
-                                writer.Write((uint)otherCondition.Key);
-                                writer.Write(otherCondition.Value);
+                                propertiesWriter.Write((uint)otherCondition.Key);
+                                propertiesWriter.Write(otherCondition.Value);
                             }
                         }
 
@@ -356,7 +356,7 @@ namespace CircuitDiagram.IO
                         foreach (ComponentConfiguration configuration in description.Metadata.Configurations)
                         {
                             configurationWriter.Write(configuration.Name);
-                            configurationWriter.Write(configuration.ImplementationName);
+                            configurationWriter.Write((configuration.ImplementationName != null ? configuration.ImplementationName : ""));
 
                             configurationWriter.Write(configuration.Setters.Count);
                             foreach (KeyValuePair<string, object> setter in configuration.Setters)

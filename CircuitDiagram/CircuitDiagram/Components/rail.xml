@@ -3,6 +3,9 @@
   <declaration>
     <meta name="name" value="Rail" />
     <meta name="minsize" value="50" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="8979c617-b041-4069-8769-0b76dc0e6c52" />
     <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
     <meta name="implementitem" value="rail" />
 

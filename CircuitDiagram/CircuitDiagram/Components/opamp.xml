@@ -3,6 +3,9 @@
   <declaration>
     <meta name="name" value="Op Amp" />
     <meta name="minsize" value="60" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="f13fcce0-ce24-4698-a7b7-31f4ee86e999" />
     <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
     <meta name="implementitem" value="opamp" />
     

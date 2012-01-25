@@ -558,7 +558,7 @@ namespace CircuitDiagram
                 }
 
 #if PREVIEWVERSION
-                if (serverVersion != null && thisVersion.CompareTo(serverVersion) <= 0 && downloadUrl != null)
+                if (serverVersion != null && (thisVersion.CompareTo(serverVersion) <= 0 || (thisVersion.Major <= serverVersion.Major && thisVersion.Minor <= serverVersion.Minor)) && downloadUrl != null)
                 {
                     winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverVersion.ToString(), downloadUrl);
                 }
@@ -635,7 +635,6 @@ namespace CircuitDiagram
                 }
                 else if (extension == ".png")
                 {
-
                     RenderTargetBitmap bmp = new RenderTargetBitmap((int)circuitDisplay.Document.Size.Width, (int)circuitDisplay.Document.Size.Height, 96d, 96d, PixelFormats.Default);
                     bmp.Render(circuitDisplay);
 

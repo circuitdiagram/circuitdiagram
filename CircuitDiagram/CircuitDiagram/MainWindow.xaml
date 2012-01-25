@@ -9,13 +9,13 @@
             <MenuItem Header="_File">
                 <MenuItem Command="New" Header="_New" />
                 <MenuItem Command="Open" Header="_Open" />
-                <MenuItem Header="_Recent Files" Name="mnuRecentItems" Click="mnuRecentItem_Click" />
+                <MenuItem Header="_Recent Files" Name="mnuRecentItems" Click="mnuRecentItem_Click" Visibility="Collapsed" />
                 <MenuItem Command="Save" Header="_Save" />
                 <MenuItem Header="Save _As" Click="mnuFileSaveAs_Click" />
                 <Separator />
                 <MenuItem Header="_Export" Click="mnuFileExport_Click" />
-                <Separator />
-                <MenuItem Header="_Document..." Click="mnuFileDocument_Click" />
+                <Separator Visibility="Collapsed"  />
+                <MenuItem Header="_Document..." Click="mnuFileDocument_Click" Visibility="Collapsed" />
                 <Separator />
                 <MenuItem Header="E_xit" Click="mnuFileExit_Click" />
             </MenuItem>

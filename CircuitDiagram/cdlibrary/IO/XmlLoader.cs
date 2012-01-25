@@ -55,6 +55,8 @@ namespace CircuitDiagram.IO
                 bool canFlip = false;
                 double minSize = ComponentHelper.GridSize;
                 string version = null;
+                string author = null;
+                string additionalInformation = null;
                 string implementationSet = null;
                 string implementationName = null;
                 Guid guid = Guid.Empty;
@@ -76,6 +78,10 @@ namespace CircuitDiagram.IO
                         minSize = double.Parse(metaValue);
                     else if (metaName == "version")
                         version = metaValue;
+                    else if (metaName == "author")
+                        author = metaValue;
+                    else if (metaName == "additionalinformation")
+                        additionalInformation = metaValue;
                     else if (metaName == "implementset")
                         implementationSet = metaValue;
                     else if (metaName == "implementitem")
@@ -604,6 +610,8 @@ namespace CircuitDiagram.IO
                 if (version != null)
                     metadata.Version = new Version(version);
                 metadata.Configurations.AddRange(componentConfigurations);
+                metadata.Author = author;
+                metadata.AdditionalInformation = additionalInformation;
                 metadata.ImplementSet = implementationSet;
                 metadata.ImplementItem = implementationName;
                 metadata.GUID = guid;

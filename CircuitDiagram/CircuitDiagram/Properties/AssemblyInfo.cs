@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("Circuit Diagram")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("Circuit Diagram")]
 [assembly: AssemblyProduct("Circuit Diagram")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2011")]
+[assembly: AssemblyCopyright("Copyright © Circut Diagram 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
