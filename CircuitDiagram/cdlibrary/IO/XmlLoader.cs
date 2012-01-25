@@ -172,7 +172,23 @@ namespace CircuitDiagram.IO
                         }
                     }
 
-                    ComponentProperty property = new ComponentProperty(propertyName, serializeAs, display, propertyType, propertyDefaultValue, formatRules.ToArray(), (propertyOptions == null ? null : propertyOptions.ToArray()));
+                    Dictionary<PropertyOtherConditionType, ComponentDescriptionConditionCollection> otherConditions = new Dictionary<PropertyOtherConditionType, ComponentDescriptionConditionCollection>();
+                    XmlNodeList otherConditionsNodes = propertyElement.SelectNodes("cd:other/cd:conditions", namespaceManager);
+                    foreach (XmlNode otherConditionNode in otherConditionsNodes)
+                    {
+                        XmlElement element = otherConditionNode as XmlElement;
+                        if (element != null && element.HasAttribute("for") && element.HasAttribute("value"))
+                        {
+                            string conditionsFor = element.Attributes["for"].InnerText;
+                            string conditionsString = element.Attributes["value"].InnerText;
+                            ComponentDescriptionConditionCollection conditionCollection = ComponentDescriptionConditionCollection.Parse(conditionsString);
+
+                            if (Enum.IsDefined(typeof(PropertyOtherConditionType), conditionsFor))
+                                otherConditions.Add((PropertyOtherConditionType)Enum.Parse(typeof(PropertyOtherConditionType), conditionsFor, true), conditionCollection);
+                        }
+                    }
+
+                    ComponentProperty property = new ComponentProperty(propertyName, serializeAs, display, propertyType, propertyDefaultValue, formatRules.ToArray(), otherConditions, (propertyOptions == null ? null : propertyOptions.ToArray()));
                     parsedComponentProperties.Add(property);
                 }
 

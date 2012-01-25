@@ -176,8 +176,8 @@ namespace CircuitDiagram.IO
 
                                 // Format rules
                                 List<ComponentPropertyFormat> formatRules = new List<ComponentPropertyFormat>();
-                                int numFormatRules = reader.ReadInt32();
-                                for (int k = 0; k < numFormatRules; k++)
+                                uint numFormatRules = reader.ReadUInt32();
+                                for (uint k = 0; k < numFormatRules; k++)
                                 {
                                     ComponentDescriptionConditionCollection conditions = new ComponentDescriptionConditionCollection();
                                     int numConditions = reader.ReadInt32();
@@ -195,7 +195,19 @@ namespace CircuitDiagram.IO
                                     formatRules.Add(new ComponentPropertyFormat(formatRule, conditions));
                                 }
 
-                                properties.Add(new ComponentProperty(propertyName, serializedName, displayName, BinaryIOExtentions.BinaryTypeToType(propType), defaultValue, formatRules.ToArray(), enumOptions));
+                                // Other conditions
+                                uint numOtherConditions = reader.ReadUInt32();
+                                Dictionary<PropertyOtherConditionType, ComponentDescriptionConditionCollection> otherConditions = new Dictionary<PropertyOtherConditionType, ComponentDescriptionConditionCollection>((int)numOtherConditions);
+                                for (uint k = 0; k < numOtherConditions; k++)
+                                {
+                                    uint uintConditionType = reader.ReadUInt32();
+                                    ComponentDescriptionConditionCollection conditions = reader.ReadConditionCollection();
+
+                                    PropertyOtherConditionType conditionType = (PropertyOtherConditionType)uintConditionType;
+                                    otherConditions.Add(conditionType, conditions);
+                                }
+
+                                properties.Add(new ComponentProperty(propertyName, serializedName, displayName, BinaryIOExtentions.BinaryTypeToType(propType), defaultValue, formatRules.ToArray(), otherConditions, enumOptions));
                             }
                         }
                         #endregion

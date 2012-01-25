@@ -65,6 +65,7 @@
     <Compile Include="Components\ConnectionDescription.cs" />
     <Compile Include="Components\ConnectionGroup.cs" />
     <Compile Include="Components\FlagOptions.cs" />
+    <Compile Include="Components\PropertyOtherConditionType.cs" />
     <Compile Include="Components\Render\Ellipse.cs" />
     <Compile Include="Components\Render\IRenderCommand.cs" />
     <Compile Include="Components\Render\Line.cs" />

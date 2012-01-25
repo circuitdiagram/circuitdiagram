@@ -356,7 +356,11 @@ namespace CircuitDiagram.Components
                 properties.Add("@flipped", IsFlipped);
 
             foreach (KeyValuePair<ComponentProperty, object> property in m_propertyValues)
+            {
+                if (property.Key.OtherConditions.ContainsKey(PropertyOtherConditionType.Serialize) && !property.Key.OtherConditions[PropertyOtherConditionType.Serialize].ConditionsAreMet(this))
+                    continue;
                 properties.Add(property.Key.SerializedName, property.Value);
+            }
         }
 
         private static object GetAsCorrectType(Type type, object value)

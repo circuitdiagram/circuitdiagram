@@ -390,7 +390,7 @@ namespace CircuitDiagram.IO
         static void WriteDocumentElements(XmlTextWriter writer, CircuitDocument document, Dictionary<ComponentDescription, ComponentSource> descriptionRefs, Dictionary<Component, string> componentIDs, bool includeConnections)
         {
             #region Build connections
-            // TODO: remove wires from connections
+            // Remove wires from connections
             foreach (Component component in document.Components)
             {
                 if (component.Description.ComponentName.ToLower() == "wire")

@@ -315,7 +315,8 @@ namespace CircuitDiagram.IO
                                     propertiesWriter.Write(option);
                             }
 
-                            propertiesWriter.Write(property.FormatRules.Length);
+                            // Format rules
+                            propertiesWriter.Write((uint)property.FormatRules.Length);
                             foreach (ComponentPropertyFormat formatRule in property.FormatRules)
                             {
                                 propertiesWriter.Write(formatRule.Conditions.Count);
@@ -328,6 +329,14 @@ namespace CircuitDiagram.IO
                                 }
 
                                 propertiesWriter.Write(formatRule.Value);
+                            }
+
+                            // Other conditions
+                            writer.Write((uint)property.OtherConditions.Count);
+                            foreach (KeyValuePair<PropertyOtherConditionType, ComponentDescriptionConditionCollection> otherCondition in property.OtherConditions)
+                            {
+                                writer.Write((uint)otherCondition.Key);
+                                writer.Write(otherCondition.Value);
                             }
                         }
 

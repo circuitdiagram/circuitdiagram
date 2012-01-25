@@ -48,10 +48,8 @@ namespace CircuitDiagram.Components
             Version = new System.Version(1, 0);
             Signed = false;
             Author = "Unknown";
-            //EmbedByDefault = false;
             AdditionalInformation = "";
             Type = "Binary (*.cdcom)";
-            //AdditionalIcons = new List<Conditional<ImageSource>>();
             Location = LocationType.None;
             Configurations = new List<ComponentConfiguration>();
         }

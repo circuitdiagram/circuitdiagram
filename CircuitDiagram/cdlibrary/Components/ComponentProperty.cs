@@ -34,8 +34,9 @@ namespace CircuitDiagram.Components
         public string[] EnumOptions { get; private set; }
         public Type Type { get; private set; }
         public ComponentPropertyFormat[] FormatRules { get; private set; }
+        public Dictionary<PropertyOtherConditionType, ComponentDescriptionConditionCollection> OtherConditions { get; private set; }
 
-        public ComponentProperty(string name, string serializedName, string displayName, Type type, object defaultValue, ComponentPropertyFormat[] formatRules, string[] enumOptions = null)
+        public ComponentProperty(string name, string serializedName, string displayName, Type type, object defaultValue, ComponentPropertyFormat[] formatRules, Dictionary<PropertyOtherConditionType, ComponentDescriptionConditionCollection> otherConditions, string[] enumOptions = null)
         {
             Name = name;
             SerializedName = serializedName;
@@ -44,6 +45,7 @@ namespace CircuitDiagram.Components
             Default = defaultValue;
             FormatRules = formatRules;
             EnumOptions = enumOptions;
+            OtherConditions = otherConditions;
         }
 
         public string Format(Component component, object value)
