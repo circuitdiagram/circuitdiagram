@@ -613,6 +613,11 @@ namespace CircuitDiagram
             newData.Add(e.Component, e.Component.SerializeToString());
             undoAction.AddData("after", newData);
             UndoManager.AddAction(undoAction);
+
+            // Update connections
+            e.Component.ResetConnections();
+            e.Component.ApplyConnections(circuitDisplay.Document);
+            circuitDisplay.DrawConnections();
         }
 
         #region Menu Bar

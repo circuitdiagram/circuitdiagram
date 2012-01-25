@@ -555,6 +555,7 @@ namespace CircuitDiagram
                 }
 
                 m_resizingComponent.UpdateVisual();
+                DrawConnections();
             }
             else if (m_selectedComponents.Count == 0 && NewComponentData == null)
             {
