@@ -234,8 +234,8 @@ namespace CircuitDiagram
                             }
 
                             ComponentHelper.AddDescription(description);
-                            if (StandardComponents.Wire == null && description.ComponentName.ToLowerInvariant() == "wire" && description.Metadata.GUID == new Guid("6353882b-5208-4f88-a83b-2271cc82b94f"))
-                                StandardComponents.Wire = description;
+                            if (ComponentHelper.WireDescription == null && description.ComponentName.ToLowerInvariant() == "wire" && description.Metadata.GUID == new Guid("6353882b-5208-4f88-a83b-2271cc82b94f"))
+                                ComponentHelper.WireDescription = description;
                         }
                     }
                 }
@@ -269,8 +269,8 @@ namespace CircuitDiagram
                             }
 
                             ComponentHelper.AddDescription(description);
-                            if (StandardComponents.Wire == null && description.ComponentName.ToLowerInvariant() == "wire" && description.Metadata.GUID == new Guid("6353882b-5208-4f88-a83b-2271cc82b94f"))
-                                StandardComponents.Wire = description;
+                            if (ComponentHelper.WireDescription == null && description.ComponentName.ToLowerInvariant() == "wire" && description.Metadata.GUID == new Guid("6353882b-5208-4f88-a83b-2271cc82b94f"))
+                                ComponentHelper.WireDescription = description;
                         }
                     }
                 }
@@ -981,7 +981,7 @@ namespace CircuitDiagram
                 }
                 else if (e.Key == Key.W) // Wire
                 {
-                    circuitDisplay.NewComponentData = "@rid: " + StandardComponents.Wire.RuntimeID;
+                    circuitDisplay.NewComponentData = "@rid: " + ComponentHelper.WireDescription;
 
                     SetStatusText("Placing wire.");
 

@@ -114,7 +114,7 @@ namespace CircuitDiagram.IO
                             XmlNodeList configImplementationNodes = childElement.SelectNodes("cdd:configuration", namespaceManager);
                             List<ComponentSource.ConfigurationImplementation> parsedImplementations = new List<ComponentSource.ConfigurationImplementation>();
                             foreach (XmlNode configImplementationNode in configImplementationNodes)
-                                parsedImplementations.Add(new ComponentSource.ConfigurationImplementation(configImplementationNode.Attributes["name"].InnerText, configImplementationNode.Attributes["implementation"].InnerText));
+                                parsedImplementations.Add(new ComponentSource.ConfigurationImplementation(configImplementationNode.Attributes["name"].InnerText, configImplementationNode.Attributes["implements"].InnerText));
 
                             sources.Add(new ComponentSource(newSource, internalId, externalId, name, guid) { ConfigurationImplementations = parsedImplementations });
                         }
@@ -194,7 +194,26 @@ namespace CircuitDiagram.IO
                         }
                         else if (layoutNode.Name == "wire")
                         {
+                            double x = double.Parse(layoutNode.Attributes["x"].InnerText);
+                            double y = double.Parse(layoutNode.Attributes["y"].InnerText);
+                            bool horizontal = false;
+                            if (layoutNode.HasAttribute("orientation") && layoutNode.Attributes["orientation"].InnerText.ToLowerInvariant() == "horizontal")
+                                horizontal = true;
+                            double size = ComponentHelper.GridSize;
+                            if (layoutNode.HasAttribute("size"))
+                                size = double.Parse(layoutNode.Attributes["size"].InnerText);
 
+                            Dictionary<string, object> properties = new Dictionary<string,object>(4);
+                            properties.Add("@x", x);
+                            properties.Add("@y", y);
+                            properties.Add("@horizontal", horizontal);
+                            properties.Add("@size", size);
+
+                            if (ComponentHelper.WireDescription != null)
+                            {
+                                Component wire = Component.Create(ComponentHelper.WireDescription, properties);
+                                document.Elements.Add(wire);
+                            }
                         }
                     }
 
@@ -242,7 +261,7 @@ namespace CircuitDiagram.IO
                 else
                 {
                     // Load description
-                    if (theSource.Location.RelationshipID != null)
+                    if (!String.IsNullOrEmpty(theSource.Location.RelationshipID))
                     {
                         // Embedded in document
                         PackageRelationship relationship = documentPart.GetRelationship(theSource.Location.RelationshipID);

@@ -78,6 +78,8 @@ namespace CircuitDiagram
                 chbIncludeLayout.IsChecked = true;
                 chbIncludeLayout.IsEnabled = false;
             }
+
+            SaveOptions.IncludeConnections = chbIncludeConnections.IsChecked.Value;
         }
 
         private void chbIncludeLayout_Checked(object sender, RoutedEventArgs e)
@@ -89,6 +91,8 @@ namespace CircuitDiagram
                 chbIncludeConnections.IsChecked = true;
                 chbIncludeConnections.IsEnabled = false;
             }
+
+            SaveOptions.IncludeLayout = chbIncludeLayout.IsChecked.Value;
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)

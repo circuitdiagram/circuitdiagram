@@ -41,6 +41,8 @@ namespace CircuitDiagram.Components
 
         public static double LargeTextSize { get { return 12d; } }
 
+        public static ComponentDescription WireDescription { get; set; }
+
         public static void ImplementMinimumSize(this Component component, double size)
         {
             if (component.Size < size)

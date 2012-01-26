@@ -63,7 +63,6 @@
     <Compile Include="Converters\KeyTextConverter.cs" />
     <Compile Include="Converters\SignedColourConverter.cs" />
     <Compile Include="CustomCommands.cs" />
-    <Compile Include="StandardComponents.cs" />
     <Compile Include="UndoManager.cs" />
     <Compile Include="winAbout.xaml.cs">
       <DependentUpon>winAbout.xaml</DependentUpon>

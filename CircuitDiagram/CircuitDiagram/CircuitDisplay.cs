@@ -443,6 +443,9 @@ namespace CircuitDiagram
         {
             base.OnMouseMove(e);
 
+            if (m_resizing == ComponentResizeMode.None)
+                this.Cursor = System.Windows.Input.Cursors.Arrow;
+
             if (m_selectedComponents.Count > 0 && m_movingMouse)
             {
                 // Clear resize visual
@@ -538,7 +541,6 @@ namespace CircuitDiagram
                 else if (m_resizing == ComponentResizeMode.Bottom)
                     ComponentHelper.SizeComponent(m_resizingComponent, m_resizeComponentOriginalStartEnd, new Point(m_resizingComponent.Offset.X, mousePos.Y));
 
-
                 m_resizeVisual.Offset = m_resizingComponent.Offset;
                 using (DrawingContext dc = m_resizeVisual.RenderOpen())
                 {
@@ -620,6 +622,38 @@ namespace CircuitDiagram
                             dc.DrawRectangle(Brushes.DarkBlue, null, new Rect(m_resizingComponent.ContentBounds.Left + m_resizingComponent.ContentBounds.Width / 2 - 3d, m_resizingComponent.ContentBounds.Bottom - 4d, 6d, 6d));
                         }
                     }
+
+                    // Check if cursor should be changed to resizing
+                    Rect resizingRect1 = Rect.Empty;
+                    Rect resizingRect2 = Rect.Empty;
+                    if (m_resizingComponent != null && m_resizingComponent.Horizontal && m_resizingComponent.Description.CanResize)
+                    {
+                        // Resizing a horizontal component
+                        resizingRect1 = new Rect(m_resizingComponent.Offset.X + m_resizingComponent.ContentBounds.X - 2d, m_resizingComponent.Offset.Y + m_resizingComponent.ContentBounds.Top + m_resizingComponent.ContentBounds.Height / 2 - 3d, 6d, 6d);
+                        resizingRect2 = new Rect(m_resizingComponent.Offset.X + m_resizingComponent.ContentBounds.Right - 4d, m_resizingComponent.Offset.Y + m_resizingComponent.ContentBounds.Top + m_resizingComponent.ContentBounds.Height / 2 - 3d, 6d, 6d);
+                    }
+                    else if (m_resizingComponent != null && m_resizingComponent.Description.CanResize)
+                    {
+                        // Resizing a vertical component
+                        resizingRect1 = new Rect(m_resizingComponent.Offset.X + m_resizingComponent.ContentBounds.Left + m_resizingComponent.ContentBounds.Width / 2 - 3d, m_resizingComponent.Offset.Y + m_resizingComponent.ContentBounds.Y - 2d, 6d, 6d);
+                        resizingRect2 = new Rect(m_resizingComponent.Offset.X + m_resizingComponent.ContentBounds.Left + m_resizingComponent.ContentBounds.Width / 2 - 3d, m_resizingComponent.Offset.Y + m_resizingComponent.ContentBounds.Bottom - 4d, 6d, 6d);
+                    }
+
+                    Rect mouseRect = new Rect(e.GetPosition(this), new Size(1,1));
+                    if (resizingRect1.IntersectsWith(mouseRect))
+                    {
+                        if (m_resizingComponent.Horizontal)
+                            this.Cursor = System.Windows.Input.Cursors.SizeWE;
+                        else
+                            this.Cursor = System.Windows.Input.Cursors.SizeNS;
+                    }
+                    else if (resizingRect2.IntersectsWith(mouseRect))
+                    {
+                        if (m_resizingComponent.Horizontal)
+                            this.Cursor = System.Windows.Input.Cursors.SizeWE;
+                        else
+                            this.Cursor = System.Windows.Input.Cursors.SizeNS;
+                    }
                 }
             }
         }
@@ -645,6 +679,7 @@ namespace CircuitDiagram
                 m_undoManagerBeforeData = new Dictionary<Component, string>();
             }
             m_resizing = ComponentResizeMode.None;
+            this.Cursor = System.Windows.Input.Cursors.Arrow;
             m_resizingComponent = null;
 
             if (m_placingComponent)
@@ -751,6 +786,7 @@ namespace CircuitDiagram
                 m_undoManagerBeforeData = new Dictionary<Component, string>();
 
                 m_resizing = ComponentResizeMode.None;
+                this.Cursor = System.Windows.Input.Cursors.Arrow;
             }
 
             m_selectionBox = false;

@@ -406,6 +406,8 @@ namespace CircuitDiagram.IO
                         }
                         else
                         {
+                            if (destination.Connected.Count < 0)
+                                return;
                             ConnectionCentre b = connection.Centre;
                             connection.Centre.Connected.Remove(connection);
                             JoinConnectionCentres(destination, connection.Centre);

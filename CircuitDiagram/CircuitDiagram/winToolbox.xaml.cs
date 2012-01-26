@@ -79,7 +79,7 @@ namespace CircuitDiagram
                 else
                     Icon = description.Metadata.Icon;
 
-                if (description == StandardComponents.Wire)
+                if (description == ComponentHelper.WireDescription)
                     this.ShortcutKey = Key.W;
             }
         }
