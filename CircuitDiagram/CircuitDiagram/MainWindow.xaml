@@ -62,7 +62,32 @@
                 </tb:ToolboxCategory>
             </tb:Toolbox>
         </ScrollViewer>
-        <Grid Name="gridEditor" DockPanel.Dock="Right" Width="175" Background="{DynamicResource WindowBackground}" />
+        <Grid DockPanel.Dock="Right" Width="175" Background="{DynamicResource WindowBackground}">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="40" />
+            </Grid.RowDefinitions>
+            <Grid Name="gridEditor" Grid.Row="0">
+                
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="5" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Stroke="Gray" StrokeThickness="2" Height="1" Width="160" />
+                <Label Grid.Row="1" Grid.Column="0" Content="Zoom" Height="28" Margin="5,0,0,0" Name="lblSliderZoom" MouseDoubleClick="lblSliderZoom_MouseDoubleClick" ToolTip="Double click to reset" />
+                <Slider Grid.Row="1" Grid.Column="1" Height="23" Name="sliderZoom" Width="100" Minimum="10" Maximum="90" Value="50" ValueChanged="sliderZoom_ValueChanged" TickPlacement="BottomRight" SmallChange="1" LargeChange="10">
+                    <Slider.Ticks>
+                        <DoubleCollection>50</DoubleCollection>
+                    </Slider.Ticks>
+                </Slider>
+            </Grid>
+        </Grid>
         <ScrollViewer Background="LightGray" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <cd:CircuitDisplay x:Name="circuitDisplay" SelectionChanged="circuitDisplay_SelectionChanged" SnapsToDevicePixels="True">
                 <cd:CircuitDisplay.ContextMenu>

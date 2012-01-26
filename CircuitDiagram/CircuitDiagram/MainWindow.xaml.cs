@@ -34,6 +34,7 @@ using System.Xml;
 using CircuitDiagram.Components;
 using CircuitDiagram.Render;
 using Microsoft.Win32;
+using System.Windows.Threading;
 
 namespace CircuitDiagram
 {
@@ -45,6 +46,7 @@ namespace CircuitDiagram
         #region Variables
         string m_documentTitle;
         string m_docPath = "";
+        DispatcherTimer m_statusTimer;
         UndoManager m_undoManager;
         Dictionary<Key, string> m_toolboxShortcuts = new Dictionary<Key, string>();
 
@@ -55,7 +57,12 @@ namespace CircuitDiagram
         public MainWindow()
         {
             InitializeComponent();
-            
+
+            m_statusTimer = new DispatcherTimer(new TimeSpan(0, 0, 5), DispatcherPriority.Normal, new EventHandler((sender, e) =>
+                {
+                    m_statusTimer.Stop(); lblStatus.Text = "Ready";
+                }), lblStatus.Dispatcher);
+
             // Initialize settings
             CircuitDiagram.Settings.Settings.Initialize(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\settings.xml");
             ApplySettings();
@@ -187,6 +194,7 @@ namespace CircuitDiagram
         private void Load()
         {
             #region Load component descriptions
+            bool conflictingGuid = false;
             List<string> componentLocations = new List<string>();
 
             string permanentComponentsDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\ext";
@@ -213,12 +221,21 @@ namespace CircuitDiagram
                     {
                         if (xmlLoader.Load(fs))
                         {
-                            ComponentDescription component = xmlLoader.GetDescriptions()[0];
-                            component.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;
-                            component.Source = new ComponentDescriptionSource(file, new System.Collections.ObjectModel.ReadOnlyCollection<ComponentDescription>(new ComponentDescription[] { component }));
-                            ComponentHelper.AddDescription(component);
-                            if (StandardComponents.Wire == null && component.ComponentName.ToLowerInvariant() == "wire" && component.Metadata.GUID == new Guid("6353882b-5208-4f88-a83b-2271cc82b94f"))
-                                StandardComponents.Wire = component;
+                            ComponentDescription description = xmlLoader.GetDescriptions()[0];
+                            description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;
+                            description.Source = new ComponentDescriptionSource(file, new System.Collections.ObjectModel.ReadOnlyCollection<ComponentDescription>(new ComponentDescription[] { description }));
+
+                            // Check if duplicate GUID
+                            if (!conflictingGuid && description.Metadata.GUID != Guid.Empty)
+                            {
+                                foreach (ComponentDescription compareDescription in ComponentHelper.ComponentDescriptions)
+                                    if (compareDescription.Metadata.GUID == description.Metadata.GUID)
+                                        conflictingGuid = true;
+                            }
+
+                            ComponentHelper.AddDescription(description);
+                            if (StandardComponents.Wire == null && description.ComponentName.ToLowerInvariant() == "wire" && description.Metadata.GUID == new Guid("6353882b-5208-4f88-a83b-2271cc82b94f"))
+                                StandardComponents.Wire = description;
                         }
                     }
                 }
@@ -242,6 +259,15 @@ namespace CircuitDiagram
                         {
                             description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;
                             description.Source = source;
+
+                            // Check if duplicate GUID
+                            if (!conflictingGuid && description.Metadata.GUID != Guid.Empty)
+                            {
+                                foreach (ComponentDescription compareDescription in ComponentHelper.ComponentDescriptions)
+                                    if (compareDescription.Metadata.GUID == description.Metadata.GUID)
+                                        conflictingGuid = true;
+                            }
+
                             ComponentHelper.AddDescription(description);
                             if (StandardComponents.Wire == null && description.ComponentName.ToLowerInvariant() == "wire" && description.Metadata.GUID == new Guid("6353882b-5208-4f88-a83b-2271cc82b94f"))
                                 StandardComponents.Wire = description;
@@ -249,6 +275,9 @@ namespace CircuitDiagram
                     }
                 }
             }
+
+            if (conflictingGuid)
+                SetStatusText("One or more components have the same GUID.");
             #endregion
 
             LoadToolbox();
@@ -511,6 +540,7 @@ namespace CircuitDiagram
         void SetStatusText(string text)
         {
             lblStatus.Text = text;
+            m_statusTimer.Start();
         }
 
         private void CheckForUpdates(bool notifyIfNoUpdate)
@@ -618,6 +648,17 @@ namespace CircuitDiagram
             e.Component.ResetConnections();
             e.Component.ApplyConnections(circuitDisplay.Document);
             circuitDisplay.DrawConnections();
+        }
+
+        private void lblSliderZoom_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            sliderZoom.Value = 50;
+        }
+
+        private void sliderZoom_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (circuitDisplay != null)
+                circuitDisplay.LayoutTransform = new ScaleTransform(e.NewValue / 50, e.NewValue / 50);
         }
 
         #region Menu Bar
