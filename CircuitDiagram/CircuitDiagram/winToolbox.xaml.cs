@@ -41,6 +41,8 @@ namespace CircuitDiagram
     /// </summary>
     public partial class winToolbox : Window
     {
+        private int CategoryCounter { get; set; }
+
         class Category
         {
             public string Name { get; set; }
@@ -59,13 +61,26 @@ namespace CircuitDiagram
             public ComponentConfiguration Configuration { get; set; }
             public bool NoConfiguration { get { return Configuration == null; } }
             public bool HasConfiguration { get { return Configuration != null; } }
+            public ImageSource Icon { get; private set; }
             public Key ShortcutKey { get; set; }
+            public string SortText
+            {
+                get { return (Configuration != null ? Configuration.Name : Description.ComponentName); }
+            }
 
             public CategoryItem(ComponentDescription description, ComponentConfiguration configuration, Key shortcutKey)
             {
                 Description = description;
                 Configuration = configuration;
                 ShortcutKey = shortcutKey;
+                
+                if (configuration != null && configuration.Icon != null)
+                    Icon = configuration.Icon;
+                else
+                    Icon = description.Metadata.Icon;
+
+                if (description == StandardComponents.Wire)
+                    this.ShortcutKey = Key.W;
             }
         }
 
@@ -79,7 +94,6 @@ namespace CircuitDiagram
 
             #region Populate current items
             XmlNodeList categoryNodes = toolboxSettings.SelectNodes("/display/category");
-            int categoryCounter = 0;
             foreach (XmlNode categoryNode in categoryNodes)
             {
                 ObservableCollection<CategoryItem> categoryItems = new ObservableCollection<CategoryItem>();
@@ -129,8 +143,8 @@ namespace CircuitDiagram
                 }
                 if (categoryItems.Count > 0)
                 {
-                    lbxCategories.Items.Add(new Category("Category " + categoryCounter.ToString()) { Items = categoryItems });
-                    categoryCounter++;
+                    lbxCategories.Items.Add(new Category("Category " + CategoryCounter.ToString()) { Items = categoryItems });
+                    CategoryCounter++;
                 }
             }
             #endregion
@@ -138,7 +152,7 @@ namespace CircuitDiagram
             #region Populate available items
             foreach (ComponentDescription description in ComponentHelper.ComponentDescriptions)
             {
-                if (!IsItemUsed(description, null))
+                if (!IsItemUsed(description, null) && description.Metadata.Configurations.Count == 0)
                     lbxAvailableItems.Items.Add(new CategoryItem(description, null, Key.None));
                 foreach (ComponentConfiguration configuration in description.Metadata.Configurations)
                 {
@@ -149,6 +163,26 @@ namespace CircuitDiagram
                 }
             }
             #endregion
+
+            lbxAvailableItems.Items.Filter = FilterItem;
+            lbxAvailableItems.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription("SortText", System.ComponentModel.ListSortDirection.Ascending));
+        }
+
+        private bool FilterItem(object item)
+        {
+            if (String.IsNullOrEmpty(tbxAvailableFilter.Text))
+                return true;
+
+            CategoryItem categoryItem = item as CategoryItem;
+            if (categoryItem != null)
+            {
+                if (categoryItem.Description.ComponentName.ToLowerInvariant().Contains(tbxAvailableFilter.Text.ToLowerInvariant()))
+                    return true;
+
+                if (categoryItem.HasConfiguration && categoryItem.Configuration.Name.ToLowerInvariant().Contains(tbxAvailableFilter.Text.ToLowerInvariant()))
+                    return true;
+            }
+            return false;
         }
 
         private bool IsItemUsed(ComponentDescription description, ComponentConfiguration configuration)
@@ -215,6 +249,7 @@ namespace CircuitDiagram
             foreach (CategoryItem item in (lbxCategories.SelectedItem as Category).Items)
                 lbxAvailableItems.Items.Add(item);
             lbxCategories.Items.Remove(lbxCategories.SelectedItem);
+            lbxAvailableItems.Items.Filter = FilterItem;
         }
 
         private void btnAddItem_Click(object sender, RoutedEventArgs e)
@@ -234,6 +269,7 @@ namespace CircuitDiagram
                 lbxAvailableItems.Items.Add(lbxItems.SelectedItem);
                 (lbxCategories.SelectedItem as Category).Items.Remove(lbxItems.SelectedItem as CategoryItem);
                 lbxItems.Items.Refresh();
+                lbxAvailableItems.Items.Filter = FilterItem;
             }
         }
 
@@ -252,7 +288,8 @@ namespace CircuitDiagram
 
         private void btnNewCategory_Click(object sender, RoutedEventArgs e)
         {
-            lbxCategories.Items.Add(new Category("Category"));
+            lbxCategories.Items.Add(new Category("Category " + CategoryCounter.ToString()));
+            CategoryCounter++;
         }
 
         private void btnItemMoveUp_Click(object sender, RoutedEventArgs e)
@@ -272,6 +309,35 @@ namespace CircuitDiagram
                 int oldIndex = (lbxCategories.SelectedItem as Category).Items.IndexOf(lbxItems.SelectedItem as CategoryItem);
                 if (oldIndex != (lbxCategories.SelectedItem as Category).Items.Count - 1)
                     (lbxCategories.SelectedItem as Category).Items.Move(oldIndex, oldIndex + 1);
+            }
+        }
+
+        private void tbxAvailableFilter_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            lbxAvailableItems.Items.Filter = FilterItem;
+        }
+
+        private void btnCategoryUp_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbxCategories.SelectedItem != null && lbxCategories.Items.IndexOf(lbxCategories.SelectedItem) != 0)
+            {
+                object selectedItem = lbxCategories.SelectedItem;
+                int oldIndex = lbxCategories.Items.IndexOf(selectedItem);
+                lbxCategories.Items.Remove(selectedItem);
+                lbxCategories.Items.Insert(oldIndex - 1, selectedItem);
+                lbxCategories.SelectedItem = selectedItem;
+            }
+        }
+
+        private void btnCategoryDown_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbxCategories.SelectedItem != null && lbxCategories.Items.IndexOf(lbxCategories.SelectedItem) != lbxCategories.Items.Count - 1)
+            {
+                object selectedItem = lbxCategories.SelectedItem;
+                int oldIndex = lbxCategories.Items.IndexOf(selectedItem);
+                lbxCategories.Items.Remove(selectedItem);
+                lbxCategories.Items.Insert(oldIndex + 1, selectedItem);
+                lbxCategories.SelectedItem = selectedItem;
             }
         }
     }
