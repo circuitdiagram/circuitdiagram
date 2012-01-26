@@ -191,20 +191,28 @@
     <None Include="Components\fuse.xml" />
     <None Include="Components\label.xml" />
     <None Include="Components\opamp.xml" />
-    <None Include="Components\rail.xml" />
     <None Include="Components\wire.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Components\logicgate.xml" />
+    <None Include="Components\logicgate.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Components\resistor.xml" />
+    <None Include="Components\resistor.xml" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Logo32.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Components\capacitor.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Components\switch.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Components\source.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

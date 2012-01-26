@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml" version="1.0" target="1.2">
+  <declaration>
+    <meta name="name" value="Capacitor" />
+    <meta name="minsize" value="50" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="dab6d52b-51a0-49b0-bc40-3cda966148aa" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitdiagramdocument/2012/components/common" />
+
+    <property name="Capacitance" type="double" default="0.00047" serialize="capacitance" display="Capacitance">
+      <formatting>
+        <format conditions="$Capacitance(gt_1)" value="$Capacitance  F" />
+        <format conditions="$Capacitance(gteq_0.001)" value="$Capacitance(mul_1000)(round_1)  mF" />
+        <format conditions="$Capacitance(gteq_0.000001)" value="$Capacitance(mul_1000000)(round_1)  \u00B5F" />
+        <format value="$Capacitance(mul_1000000000)(round_1)  nF" />
+      </formatting>
+    </property>
+
+    <property name="Type" type="enum" default="Standard" serialize="t" display="Type">
+      <option>Standard</option>
+      <option>Variable</option>
+      <option>Trimmer</option>
+      <option>Polarised</option>
+    </property>
+
+    <configurations>
+      <configuration name="Capacitor" value="Type:Standard" implements="capacitor" />
+      <configuration name="Variable Capacitor" value="Type:Variable" implements="variablecapacitor" />
+      <configuration name="Trimmer Capacitor" value="Type:Trimmer" implements="trimmercapacitor" />
+      <configuration name="Polarised Capacitor" value="Type:Polarised" implements="polarisedcapacitor" />
+    </configurations>
+
+  </declaration>
+  <connections>
+    <group conditions="_Horizontal">
+      <connection name="a" start="_Start" end="_Middle-21x" edge="start" />
+      <connection name="b" start="_Middle+21x" end="_End" edge="end" />
+    </group>
+    <group conditions="!_Horizontal">
+      <connection name="a" start="_Start" end="_Middle-21y" edge="start" />
+      <connection name="b" start="_Middle+21y" end="_End" edge="end" />
+    </group>
+  </connections>
+  <render>    
+    <!-- Standard, Variable, Trimmer -->
+    <group conditions="_Horizontal,!$Type(eq_Polarised)">
+      <line start="_Start" end="_Middle-4x" />
+      <line start="_Middle+4x" end="_End" />
+      <line start="_Middle-4x-14y" end="_Middle-4x+14y" />
+      <line start="_Middle+4x-14y" end="_Middle+4x+14y" />
+    </group>
+    <group conditions="!_Horizontal,!$Type(eq_Polarised)">
+      <line start="_Start" end="_Middle-4y" />
+      <line start="_Middle+4y" end="_End" />
+      <line start="_Middle-14x-4y" end="_Middle+14x-4y" />
+      <line start="_Middle-14x+4y" end="_Middle+14x+4y" />
+    </group>
+
+    <!-- Variable -->
+    <group conditions="_Horizontal,$Type(eq_Variable)">
+      <path start="_Middle-4x" data="m -8,13 l 24,-26 m -6,0 l 6,0 l 0,6" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_Variable)">
+      <path start="_Middle+4y" data="m -11,10 l 24,-26 m -6,0 l 6,0 l 0,6" />
+    </group>
+
+    <!-- Trimmer -->
+    <group conditions="_Horizontal,$Type(eq_Trimmer)">
+      <path start="_Middle-4x" data="m -8,13 l 24,-26 m -3,-3 l 6,6" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_Trimmer)">
+      <path start="_Middle+4y" data="m -12,10 l 24,-26 m -3,-3 l 6,6" />
+    </group>
+
+    <!-- Polarised -->
+    <group conditions="_Horizontal,$Type(eq_Polarised)">
+      <line start="_Start" end="_Middle-6x" />
+      <line start="_Middle+6x" end="_End" />
+      <rect x="_Middle-6x" y="_Middle-14" width="4" height="28" />
+      <rect x="_Middle+2x" y="_Middle-14" width="4" height="28" fill="true" />
+      <path start="_Middle-7x" data="m -8,-12 l 6,0 m -3,-3 l 0,7" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_Polarised)">
+      <line start="_Start" end="_Middle-6y" />
+      <line start="_Middle+6y" end="_End" />
+      <rect x="_Middle-14" y="_Middle-6" width="28" height="4" />
+      <rect x="_Middle-14" y="_Middle+2" width="28" height="4" fill="true" />
+      <path start="_Middle-6y" data="m 8,-6 l 6,0 m -3,-3 l 0,7" />
+    </group>
+
+    <!-- Capacitance -->
+    <group conditions="_Horizontal,!$Type(eq_Variable),!$Type(eq_Trimmer)">
+      <text value="$Capacitance" x="_Middle" y="_Middle-18" align="BottomCentre" />
+    </group>
+    <group conditions="!_Horizontal,!$Type(eq_Variable),!$Type(eq_Trimmer)">
+      <text value="$Capacitance" x="_Middle-20" y="_Middle" align="CentreRight" />
+    </group>
+  </render>
+</component>
