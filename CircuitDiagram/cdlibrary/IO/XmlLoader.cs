@@ -332,6 +332,8 @@ namespace CircuitDiagram.IO
                             if ((renderCommandNode as XmlElement).HasAttribute("thickness"))
                                 thickness = double.Parse(renderCommandNode.Attributes["thickness"].InnerText);
                             Color fillColour = Colors.Transparent;
+                            if ((renderCommandNode as XmlElement).HasAttribute("fill") && renderCommandNode.Attributes["fill"].InnerText.ToLowerInvariant() == "true")
+                                fillColour = Colors.Black;
                             ComponentPoint centre;
                             if ((renderCommandNode as XmlElement).HasAttribute("centre"))
                                 centre = new ComponentPoint(renderCommandNode.Attributes["centre"].InnerText);
@@ -389,6 +391,10 @@ namespace CircuitDiagram.IO
                                 string y = renderCommandNode.Attributes["y"].InnerText;
                                 location = new ComponentPoint(x, y);
                             }
+
+                            Color fillColour = Colors.Transparent;
+                            if ((renderCommandNode as XmlElement).HasAttribute("fill") && renderCommandNode.Attributes["fill"].InnerText.ToLowerInvariant() == "true")
+                                fillColour = Colors.Black;
 
                             string data = renderCommandNode.Attributes["data"].InnerText;
 
@@ -592,12 +598,7 @@ namespace CircuitDiagram.IO
                                 }
                             }
 
-
-
-
-
-                            commands.Add(new Path(location, thickness, Colors.Transparent, pathCommands));
-                            //commands.Add(new Path(location, thickness, Colors.Transparent, data));
+                            commands.Add(new Path(location, thickness, fillColour, pathCommands));
                         }
                     }
 

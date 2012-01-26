@@ -46,7 +46,7 @@ namespace CircuitDiagram.Components.Render.Path
             StreamGeometry sg = new StreamGeometry();
             using (var dc = sg.Open())
             {
-                dc.BeginFigure(resolvedStart, false, false);
+                dc.BeginFigure(resolvedStart, (FillColour != Colors.Transparent), false);
                 foreach (IPathCommand command in m_commands)
                     command.Draw(dc, new Vector(resolvedStart.X, resolvedStart.Y));
             }
