@@ -1,13 +1,15 @@
 ﻿<Window x:Class="CircuitDiagram.winNewVersion"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Check for Updates" Height="160" Width="355" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" ResizeMode="NoResize">
+        Title="Check for Updates" Height="175" Width="355" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" ResizeMode="NoResize">
     <Grid>
         <StackPanel Margin="12,12,12,41" Name="stackPanel1">
             <Label Name="lblUsingCurentVersion" Content="You are using the newest version of Circuit Diagram." HorizontalContentAlignment="Center" />
             <StackPanel Name="stpNewVersionAvailable" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Label Name="lblNewVersionAvailable" HorizontalAlignment="Center">A new version of Circuit Diagram is available:</Label>
-                <Label FontWeight="Bold" Name="lblNewVersionNumber" />
+                <StackPanel Orientation="Vertical">
+                    <Label Name="lblNewVersionAvailable" HorizontalAlignment="Center">A new version of Circuit Diagram is available:</Label>
+                    <Label FontWeight="Bold" Name="lblNewVersionNumber" HorizontalAlignment="Center" />
+                </StackPanel>
             </StackPanel>
             <Label Height="28" Name="lblDownloadLabel" HorizontalContentAlignment="Center">
                 <Hyperlink Name="hypDownloadLink" RequestNavigate="Hyperlink_RequestNavigate">

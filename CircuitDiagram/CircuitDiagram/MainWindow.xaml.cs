@@ -553,84 +553,102 @@ namespace CircuitDiagram
             }
 
             // Check for new version
-            System.Xml.XmlTextReader reader = new System.Xml.XmlTextReader("http://www.circuit-diagram.org/app/version.xml");
             System.Reflection.Assembly _assemblyInfo = System.Reflection.Assembly.GetExecutingAssembly();
             Version thisVersion = _assemblyInfo.GetName().Version;
-            Version serverVersion = null;
-            Version serverPreVersion = null;
-            string downloadUrl = null;
-            string elementName = null;
+            BuildChannelAttribute channelAttribute = _assemblyInfo.GetCustomAttributes(typeof(BuildChannelAttribute), false).FirstOrDefault(item => item is BuildChannelAttribute) as BuildChannelAttribute;
+            if (channelAttribute == null)
+                channelAttribute = new BuildChannelAttribute("", BuildChannelAttribute.ChannelType.Stable, 0);
+
             try
             {
-                reader.MoveToContent();
-                if (reader.NodeType == System.Xml.XmlNodeType.Element && reader.Name == "application")
+                System.Net.WebRequest updateDocStream = System.Net.WebRequest.Create("http://www.circuit-diagram.org/app/appversion.xml");
+                XmlDocument updateDoc = new XmlDocument();
+                updateDoc.Load(updateDocStream.GetResponse().GetResponseStream());
+
+                bool foundUpdate = false;
+                if (channelAttribute.Type == BuildChannelAttribute.ChannelType.Dev)
                 {
-                    while (reader.Read())
+                    // Check for latest dev build
+                    XmlNode devChannel = updateDoc.SelectSingleNode("/version/application[@name='CircuitDiagram']/channel[@name='Dev']");
+                    if (devChannel != null)
                     {
-                        if (reader.NodeType == System.Xml.XmlNodeType.Element)
-                            elementName = reader.Name;
-                        else if (reader.NodeType == System.Xml.XmlNodeType.Text)
+                        Version serverVersion = null;
+                        string serverVersionName = null;
+                        int serverIncrement = 0;
+                        string serverDownloadUrl = null;
+
+                        foreach (XmlNode childNode in devChannel.ChildNodes)
                         {
-                            if (elementName == "version" && reader.HasValue)
+                            switch (childNode.Name)
                             {
-                                serverVersion = new Version(reader.Value);
+                                case "version":
+                                    serverVersion = new Version(childNode.InnerText);
+                                    break;
+                                case "name":
+                                    serverVersionName = childNode.InnerText;
+                                    break;
+                                case "increment":
+                                    serverIncrement = int.Parse(childNode.InnerText);
+                                    break;
+                                case "url":
+                                    serverDownloadUrl = childNode.InnerText;
+                                    break;
                             }
-                            else if (elementName == "preversion" && reader.HasValue)
-                            {
-                                serverPreVersion = new Version(reader.Value);
-                            }
-                            else if (elementName == "url" && reader.HasValue)
-                            {
-                                downloadUrl = reader.Value;
-                            }
+                        }
+
+                        if (serverVersion != null && thisVersion.CompareTo(serverVersion) < 0 || (thisVersion.CompareTo(serverVersion) == 0 && channelAttribute.Increment < serverIncrement))
+                        {
+                            winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverVersionName, serverDownloadUrl);
+                            foundUpdate = true;
                         }
                     }
                 }
 
-#if PREVIEWVERSION
-                if (serverVersion != null && (thisVersion.CompareTo(serverVersion) <= 0 || (thisVersion.Major <= serverVersion.Major && thisVersion.Minor <= serverVersion.Minor)) && downloadUrl != null)
+                if (!foundUpdate)
                 {
-                    winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverVersion.ToString(), downloadUrl);
-                }
-                else if (serverPreVersion != null && thisVersion.CompareTo(serverPreVersion) < 0 && downloadUrl != null)
-                {
-                    winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverPreVersion.ToString() + " -pre", downloadUrl);
-                }
-                else if (thisVersion.CompareTo(serverVersion) >= 0)
-                {
-                    if (notifyIfNoUpdate)
-                        winNewVersion.Show(this, NewVersionWindowType.NoNewVersionAvailable, null);
-                }
-                else
-                {
-                    if (notifyIfNoUpdate)
-                        winNewVersion.Show(this, NewVersionWindowType.Error, null, "http://www.circuit-diagram.org/");
-                }
-#else
-                if (serverVersion != null && thisVersion.CompareTo(serverVersion) < 0 && downloadUrl != null)
-                {
-                    winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverVersion.ToString(), downloadUrl);
-                }
-                else if (thisVersion.CompareTo(serverVersion) >= 0)
-                {
-                    if (notifyIfNoUpdate)
-                        winNewVersion.Show(this, NewVersionWindowType.NoNewVersionAvailable, null);
-                }
-                else
-                {
-                    if (notifyIfNoUpdate)
-                        winNewVersion.Show(this, NewVersionWindowType.Error, null, "http://www.circuit-diagram.org/");
-                }
-#endif
+                    // Check for latest stable build
+                    XmlNode stableChannel = updateDoc.SelectSingleNode("/version/application[@name='CircuitDiagram']/channel[@name='Stable']");
+                    if (stableChannel != null)
+                    {
+                        Version serverVersion = null;
+                        string serverVersionName = null;
+                        string serverDownloadUrl = null;
 
-                Settings.Settings.Write("LastCheckForUpdates", DateTime.Now);
-                Settings.Settings.Save();
+                        foreach (XmlNode childNode in stableChannel.ChildNodes)
+                        {
+                            switch (childNode.Name)
+                            {
+                                case "version":
+                                    serverVersion = new Version(childNode.InnerText);
+                                    break;
+                                case "name":
+                                    serverVersionName = childNode.InnerText;
+                                    break;
+                                case "url":
+                                    serverDownloadUrl = childNode.InnerText;
+                                    break;
+                            }
+                        }
+
+                        if (serverVersion != null && thisVersion.CompareTo(serverVersion) < 0)
+                        {
+                            winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverVersionName, serverDownloadUrl);
+                            foundUpdate = true;
+                        }
+                    }
+                }
+
+                if (!foundUpdate && notifyIfNoUpdate)
+                    winNewVersion.Show(this, NewVersionWindowType.NoNewVersionAvailable, null, null);
             }
             catch (Exception)
             {
                 if (notifyIfNoUpdate)
                     winNewVersion.Show(this, NewVersionWindowType.Error, null, "http://www.circuit-diagram.org/");
             }
+
+            Settings.Settings.Write("LastCheckForUpdates", DateTime.Now);
+            Settings.Settings.Save();
         }
 
         void Editor_ComponentUpdated(object sender, ComponentUpdatedEventArgs e)

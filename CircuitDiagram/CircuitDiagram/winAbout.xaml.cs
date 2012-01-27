@@ -59,10 +59,9 @@ namespace CircuitDiagram
                 string theVersion = string.Empty;
                 if (_assemblyInfo != null)
                     theVersion = _assemblyInfo.GetName().Version.ToString();
-
-#if PREVIEWVERSION
-                theVersion += " -pre";
-#endif
+                BuildChannelAttribute channelAttribute = _assemblyInfo.GetCustomAttributes(typeof(BuildChannelAttribute), false).FirstOrDefault(item => item is BuildChannelAttribute) as BuildChannelAttribute;
+                if (channelAttribute != null && channelAttribute.Type == BuildChannelAttribute.ChannelType.Dev && channelAttribute.DisplayName != null)
+                    theVersion += " " + channelAttribute.DisplayName;
 
                 return theVersion;
             }
