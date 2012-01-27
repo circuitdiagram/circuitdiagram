@@ -135,6 +135,11 @@ namespace CircuitDiagram
                 CircuitDiagram.IO.DocumentLoadResult result = CircuitDiagram.IO.CDDXIO.Read(File.OpenRead(path), out document);
                 if (result == IO.DocumentLoadResult.Success)
                     circuitDisplay.Document = document;
+                else if (result == IO.DocumentLoadResult.SuccessNewerVersion)
+                {
+                    circuitDisplay.Document = document;
+                    MessageBox.Show("The document was created in a newer version of Circuit Diagram and may not have loaded correctly.", "Problem Loading Document");
+                }
                 else if (result == IO.DocumentLoadResult.FailNewerVersion)
                 {
                     MessageBox.Show("The document was created in a newer version of Circuit Diagram and could not be loaded correctly.", "Unable to Load Document");

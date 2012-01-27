@@ -49,6 +49,8 @@ namespace CircuitDiagram.IO
 
         public static DocumentLoadResult LoadCDDX(Package package, PackagePart documentPart, out CircuitDocument document)
         {
+            double version = 1.0;
+
             try
             {
                 using (Stream docStream = documentPart.GetStream(FileMode.Open))
@@ -60,6 +62,8 @@ namespace CircuitDiagram.IO
 
                     XmlNamespaceManager namespaceManager = new XmlNamespaceManager(doc.NameTable);
                     namespaceManager.AddNamespace("cdd", "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/document");
+
+                    double.TryParse(doc.SelectSingleNode("/cdd:circuit", namespaceManager).Attributes["version"].InnerText, out version);
 
                     #region Metadata
                     // Metadata
@@ -229,13 +233,19 @@ namespace CircuitDiagram.IO
 
                     document.Size = new System.Windows.Size(width, height);
 
-                    return DocumentLoadResult.Success;
+                    if (version > CircuitDocumentWriter.CDDXDocumentVersion)
+                        return DocumentLoadResult.SuccessNewerVersion;
+                    else
+                        return DocumentLoadResult.Success;
                 }
             }
             catch (Exception)
             {
                 document = null;
-                return DocumentLoadResult.FailUnknown;
+                if (version > CircuitDocumentWriter.CDDXDocumentVersion)
+                    return DocumentLoadResult.FailNewerVersion;
+                else
+                    return DocumentLoadResult.FailUnknown;
             }
         }
 

@@ -35,52 +35,6 @@ namespace CircuitDiagram.IO
             public const string IncludedComponent = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/component";
         }
 
-        public static string AppVersion { get { return "1.0.0.0"; } }
-
-        private static MemoryStream CreateInfoXML(CircuitDocument document, IEnumerable<CDDXPackagedComponent> components)
-        {
-            MemoryStream returnStream = new MemoryStream();
-            System.Xml.XmlTextWriter writer = new System.Xml.XmlTextWriter(returnStream, Encoding.UTF8);
-
-            writer.WriteStartDocument();
-
-            writer.WriteStartElement("cddx");
-            writer.WriteAttributeString("version", "1.0"); // _info.xml version
-
-            // Metadata
-            writer.WriteStartElement("metadata");
-            writer.WriteStartElement("version"); // CDDX version
-            writer.WriteValue(FormatVersion);
-            writer.WriteEndElement();
-            writer.WriteStartElement("appversion");
-            writer.WriteValue(AppVersion);
-            writer.WriteEndElement();
-
-            // Files
-            writer.WriteStartElement("files");
-            writer.WriteStartElement("file");
-            writer.WriteAttributeString("name", "_document.xml");
-            writer.WriteAttributeString("type", "document");
-            writer.WriteAttributeString("content-type", "application/xml");
-            writer.WriteEndElement();
-
-            foreach (CDDXPackagedComponent component in components)
-            {
-                writer.WriteStartElement("file");
-                writer.WriteAttributeString("name", "_components/" + component.FileName);
-                writer.WriteAttributeString("type", "component");
-                writer.WriteAttributeString("content-type", component.ContentType);
-                writer.WriteEndElement();
-            }
-
-            writer.WriteEndElement();
-            writer.WriteEndElement();
-            writer.WriteEndDocument();
-            writer.Flush();
-
-            return returnStream;
-        }
-
         public static void Write(Stream outputStream, CircuitDocument document, CDDXSaveOptions saveOptions)
         {
             using (MemoryStream tempStream = new MemoryStream())
@@ -106,81 +60,6 @@ namespace CircuitDiagram.IO
             }
         }
 
-        #region Old
-        //public static void Write(string path, CircuitDocument document)
-        //{
-
-        //    FileStream fileStream = new FileStream(path, FileMode.Create);
-        //    System.IO.BinaryWriter writer = new System.IO.BinaryWriter(fileStream);
-
-        //    // Write header
-        //    writer.Write(MagicNumber); // Magic number, 4 bytes
-        //    writer.Write(FormatVersion); // Format version
-        //    writer.Write(AppVersion); // Application version (always 1)
-        //    writer.Write((int)(CDDXContentEncoding.XML | CDDXContentEncoding.Deflate)); // Content encoding/compression
-            
-        //    // Write table of contents
-        //    int headerLength = 16; // 16 bytes
-
-
-        //    // Write content
-        //    //DeflateStream deflateStream = new DeflateStream(fileStream, CompressionMode.Compress);
-        //    //document.Save(deflateStream);
-
-        //    // Write other data
-
-        //    fileStream.Close();
-        //}
-
-        //public static CircuitDocument Read(string path)
-        //{
-        //    try
-        //    {
-        //        FileStream fileStream = new FileStream(path, FileMode.Open);
-        //        BinaryReader reader = new BinaryReader(fileStream);
-        //        int magicNumber = reader.ReadInt32();
-        //        int formatVersion = reader.ReadInt32();
-        //        string appVersion = reader.ReadString();
-        //        CDDXContentEncoding contentFlags = (CDDXContentEncoding)reader.ReadInt32();
-
-        //        CircuitDocument newDocument = new CircuitDocument();
-        //        DocumentLoadResult result = DocumentLoadResult.None;
-        //        if ((contentFlags & CDDXContentEncoding.Deflate) == CDDXContentEncoding.Deflate)
-        //        {
-        //            //DeflateStream deflateStream = new DeflateStream(fileStream, CompressionMode.Decompress);
-        //            //result = newDocument.Load(deflateStream);
-        //        }
-        //        else
-        //        {
-        //            result = newDocument.Load(fileStream);
-        //        }
-
-        //        if (result == DocumentLoadResult.FailIncorrectFormat)
-        //            System.Windows.MessageBox.Show("The document was not in the correct format.", "Could Not Load Document", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-        //        return newDocument;
-        //    }
-        //    catch (Exception)
-        //    {
-        //        System.Windows.MessageBox.Show("The document was not in the correct format.", "Could Not Load Document", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-        //        return new CircuitDocument();
-        //    }
-        //}
-
-        //[Flags]
-        //enum CDDXContentEncoding
-        //{
-        //    None = 0,
-        //    /// <summary>
-        //    /// The data is stored in XML format.
-        //    /// </summary>
-        //    XML = 1,
-        //    /// <summary>
-        //    /// The content is compressed using the DEFLATE algorithm.
-        //    /// </summary>
-        //    Deflate = 2,
-        //}
-        #endregion
-
         static readonly int MagicNumber = 6766888;
         static readonly int FormatVersion = 2;
 
@@ -205,7 +84,8 @@ namespace CircuitDiagram.IO
         Success = 1,
         FailUnknown = 2,
         FailNewerVersion = 3,
-        FailIncorrectFormat = 4
+        FailIncorrectFormat = 4,
+        SuccessNewerVersion = 5
     }
 
     [Serializable]

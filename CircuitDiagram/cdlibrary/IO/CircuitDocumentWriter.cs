@@ -31,6 +31,7 @@ namespace CircuitDiagram.IO
 {
     public static class CircuitDocumentWriter
     {
+        public const double CDDXDocumentVersion = 1.0;
         private const string RelationshipNamespace = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
 
         public static void WriteCDDX(CircuitDocument document, Package package, PackagePart documentPart, CDDXSaveOptions saveOptions)
@@ -42,7 +43,7 @@ namespace CircuitDiagram.IO
                 writer.WriteStartDocument();
                 writer.WriteStartElement("circuit", "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/document");
                 writer.WriteAttributeString("xmlns", "r", null, RelationshipNamespace);
-                writer.WriteAttributeString("version", "1.2");
+                writer.WriteAttributeString("version", String.Format("{0:0.0}", CDDXDocumentVersion));
 
                 // Metadata
                 WriteMetadata(writer, document);
@@ -156,13 +157,13 @@ namespace CircuitDiagram.IO
                         {
                             // Can group
                             foundGroupMatch = true;
-                            
-                            ComponentSource newSource = new ComponentSource(internalIdCounter.ToString(), description.ID, description.ComponentName, description.Metadata.GUID);
+
+                            ComponentSource newSource = new ComponentSource(internalIdCounter.ToString(), (relationshipID != null ? description.ID : null), description.ComponentName, description.Metadata.GUID);
 
                             // Implementations
                             newSource.ImplementationName = description.Metadata.ImplementItem;
                             foreach (ComponentConfiguration configuration in description.Metadata.Configurations)
-                                if (configuration.ImplementationName != null)
+                                if (!String.IsNullOrEmpty(configuration.ImplementationName))
                                     newSource.ConfigurationImplementations.Add(new ComponentSource.ConfigurationImplementation(configuration.ImplementationName, configuration.Name));
 
                             componentSourcesByLocation[location].Add(newSource);
@@ -177,12 +178,12 @@ namespace CircuitDiagram.IO
                         // Create a new source location
                         ComponentSourceLocation newSourceLocation = new ComponentSourceLocation(description.Source, relationshipID, description.Metadata.ImplementSet);
                         componentSourcesByLocation.Add(newSourceLocation, new List<ComponentSource>(1));
-                        ComponentSource newSource = new ComponentSource(internalIdCounter.ToString(), description.ID, description.ComponentName, description.Metadata.GUID);
+                        ComponentSource newSource = new ComponentSource(internalIdCounter.ToString(), (relationshipID != null ? description.ID : null), description.ComponentName, description.Metadata.GUID);
 
                         // Implementations
                         newSource.ImplementationName = description.Metadata.ImplementItem;
                         foreach (ComponentConfiguration configuration in description.Metadata.Configurations)
-                            if (configuration.ImplementationName != null)
+                            if (!String.IsNullOrEmpty(configuration.ImplementationName))
                                 newSource.ConfigurationImplementations.Add(new ComponentSource.ConfigurationImplementation(configuration.ImplementationName, configuration.Name));
 
                         componentSourcesByLocation[newSourceLocation].Add(newSource);
@@ -515,7 +516,7 @@ namespace CircuitDiagram.IO
                 // properties
                 writer.WriteStartElement("properties");
                 foreach(ComponentConfiguration configuration in component.Description.Metadata.Configurations)
-                    if (configuration.Matches(component))
+                    if (configuration.Matches(component) && !String.IsNullOrEmpty(configuration.ImplementationName))
                     {
                         writer.WriteAttributeString("configuration", configuration.Name);
                         break;
