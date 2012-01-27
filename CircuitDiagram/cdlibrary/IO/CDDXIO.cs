@@ -60,9 +60,6 @@ namespace CircuitDiagram.IO
             }
         }
 
-        static readonly int MagicNumber = 6766888;
-        static readonly int FormatVersion = 2;
-
         public class CDDXPackagedComponent
         {
             public string FileName { get; set; }

@@ -33,9 +33,6 @@
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Svg2Xaml">
-      <HintPath>..\..\Svg2Xaml-0.2\Svg2XamlTest\bin\Debug\Svg2Xaml.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

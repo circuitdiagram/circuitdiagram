@@ -31,7 +31,6 @@ namespace CircuitDiagram.Components
     public static class ComponentHelper
     {
         private static List<ComponentDescription> m_descriptions = new List<ComponentDescription>();
-        private static List<string> m_standardComponentGUIDs;
 
         public static IEnumerable<ComponentDescription> ComponentDescriptions { get { return m_descriptions.AsEnumerable(); } }
 
@@ -199,16 +198,12 @@ namespace CircuitDiagram.Components
         {
             if (componentDescription.Metadata.GUID == Guid.Empty)
                 return false;
-            if (m_standardComponentGUIDs == null)
-            {
 #if DEBUG
                 return (System.IO.Path.GetDirectoryName(componentDescription.Source.Path) == System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\ext"
                     || System.IO.Path.GetDirectoryName(componentDescription.Source.Path) == Path.GetFullPath("../../Components"));
 #else
                 return (System.IO.Path.GetDirectoryName(componentDescription.Source.Path) == System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\ext");
 #endif
-            }
-            return m_standardComponentGUIDs.Contains(componentDescription.Metadata.GUID.ToString());
         }
 
         public static ComponentProperty FindProperty(ComponentDescription description, string key, PropertySearchKey keyType)

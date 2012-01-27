@@ -43,6 +43,7 @@ namespace CircuitDiagram
         public winComponents()
         {
             InitializeComponent();
+            lbxComponents.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription("ComponentName", System.ComponentModel.ListSortDirection.Ascending));
         }
 
         public object Components

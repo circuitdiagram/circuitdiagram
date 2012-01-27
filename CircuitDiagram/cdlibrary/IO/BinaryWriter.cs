@@ -224,8 +224,7 @@ namespace CircuitDiagram.IO
                 {
                     BW writer = new BW(tempStream);
 
-#warning "Proper component ID"
-                    writer.Write(0u); // ID - FIX!
+                    writer.Write(NewResourceID()); // ID
                     writer.Write(6u); // 6 sections
 
                     #region Metadata

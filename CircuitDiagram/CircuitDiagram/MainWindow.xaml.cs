@@ -735,67 +735,55 @@ namespace CircuitDiagram
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Title = "Save As";
-            sfd.Filter = "Circuit Diagram Document (*.cddx)|*.cddx|XML Files (*.xml)|*.xml";
+            sfd.Filter = "Circuit Diagram Document (*.cddx)|*.cddx";
             if (sfd.ShowDialog() == true)
             {
-                string extension = System.IO.Path.GetExtension(sfd.FileName);
-                if (extension == ".cddx")
+                if (m_defaultSaveOptions == null)
+                    LoadDefaultCDDXSaveOptions();
+
+                IO.CDDXSaveOptions saveOptions = m_lastSaveOptions;
+
+                bool doSave = true;
+                bool alwaysUseSettings = Settings.Settings.ReadBool("AlwaysUseCDDXSaveSettings");
+                if (!alwaysUseSettings)
                 {
-                    if (m_defaultSaveOptions == null)
-                        LoadDefaultCDDXSaveOptions();
+                    winCDDXSave saveOptionsDialog = new winCDDXSave();
+                    saveOptionsDialog.Owner = this;
+                    saveOptionsDialog.SaveOptions = m_defaultSaveOptions;
 
-                    IO.CDDXSaveOptions saveOptions = m_lastSaveOptions;
+                    List<ComponentDescription> usedDescriptions = new List<ComponentDescription>();
+                    foreach (Component component in circuitDisplay.Document.Components)
+                        if (!usedDescriptions.Contains(component.Description))
+                            usedDescriptions.Add(component.Description);
+                    saveOptionsDialog.AvailableComponents = usedDescriptions;
 
-                    bool doSave = true;
-                    bool alwaysUseSettings = Settings.Settings.ReadBool("AlwaysUseCDDXSaveSettings");
-                    if (!alwaysUseSettings)
+                    if (saveOptionsDialog.ShowDialog() == true)
                     {
-                        winCDDXSave saveOptionsDialog = new winCDDXSave();
-                        saveOptionsDialog.Owner = this;
-                        saveOptionsDialog.SaveOptions = m_defaultSaveOptions;
-
-                        List<ComponentDescription> usedDescriptions = new List<ComponentDescription>();
-                        foreach (Component component in circuitDisplay.Document.Components)
-                            if (!usedDescriptions.Contains(component.Description))
-                                usedDescriptions.Add(component.Description);
-                        saveOptionsDialog.AvailableComponents = usedDescriptions;
-
-                        if (saveOptionsDialog.ShowDialog() == true)
+                        doSave = true;
+                        saveOptions = saveOptionsDialog.SaveOptions;
+                        if (saveOptionsDialog.AlwaysUseSettings)
                         {
-                            doSave = true;
-                            saveOptions = saveOptionsDialog.SaveOptions;
-                            if (saveOptionsDialog.AlwaysUseSettings)
+                            m_defaultSaveOptions = saveOptionsDialog.SaveOptions;
+                            Settings.Settings.Write("AlwaysUseCDDXSaveSettings", true);
+
+                            using (MemoryStream stream = new MemoryStream())
                             {
-                                m_defaultSaveOptions = saveOptionsDialog.SaveOptions;
-                                Settings.Settings.Write("AlwaysUseCDDXSaveSettings", true);
+                                BinaryFormatter binaryFormatter = new BinaryFormatter();
+                                binaryFormatter.Serialize(stream, m_defaultSaveOptions);
 
-                                using (MemoryStream stream = new MemoryStream())
-                                {
-                                    BinaryFormatter binaryFormatter = new BinaryFormatter();
-                                    binaryFormatter.Serialize(stream, m_defaultSaveOptions);
-
-                                    string encodedData = System.Convert.ToBase64String(stream.ToArray());
-                                    Settings.Settings.Write("DefaultCDDXSaveSettings", encodedData);
-                                }
+                                string encodedData = System.Convert.ToBase64String(stream.ToArray());
+                                Settings.Settings.Write("DefaultCDDXSaveSettings", encodedData);
                             }
                         }
-                        else
-                            doSave = false;
                     }
-
-                    if (doSave)
-                    {
-                        m_lastSaveOptions = saveOptions;
-                        CircuitDiagram.IO.CDDXIO.Write(new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, saveOptions);
-                        m_docPath = sfd.FileName;
-                        m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName);
-                        this.Title = m_documentTitle + " - Circuit Diagram";
-                        m_undoManager.SetSaveIndex();
-                    }
+                    else
+                        doSave = false;
                 }
-                else if (extension == ".xml")
+
+                if (doSave)
                 {
-                    circuitDisplay.Document.Save(new FileStream(sfd.FileName, FileMode.Create));
+                    m_lastSaveOptions = saveOptions;
+                    CircuitDiagram.IO.CDDXIO.Write(new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, saveOptions);
                     m_docPath = sfd.FileName;
                     m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName);
                     this.Title = m_documentTitle + " - Circuit Diagram";
@@ -932,7 +920,7 @@ namespace CircuitDiagram
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Title = "Open";
-            ofd.Filter = "Supported Formats (*.cddx;*.xml)|*.cddx;*.xml|Circuit Diagram Document (*.cddx)|*.cddx|XML Files (*.xml)|*.xml|All Files (*.*)|*.*";
+            ofd.Filter = "Circuit Diagram Document (*.cddx)|*.cddx|All Files (*.*)|*.*";
             ofd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
             if (ofd.ShowDialog() == true)
             {
@@ -949,16 +937,8 @@ namespace CircuitDiagram
         {
             if (m_docPath != "")
             {
-                if (System.IO.Path.GetExtension(m_docPath) == ".cddx")
-                {
-                    // Save in CDDX format
-                    CircuitDiagram.IO.CDDXIO.Write(new FileStream(m_docPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, m_lastSaveOptions);
-                }
-                else
-                {
-                    // Save in XML format
-                    circuitDisplay.Document.Save(new FileStream(m_docPath, FileMode.Create));
-                }
+                // Save in CDDX format
+                CircuitDiagram.IO.CDDXIO.Write(new FileStream(m_docPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, m_lastSaveOptions);
                 this.Title = System.IO.Path.GetFileNameWithoutExtension(m_docPath) + " - Circuit Diagram";
                 UndoManager.SetSaveIndex();
             }
