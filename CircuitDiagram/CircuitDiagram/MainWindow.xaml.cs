@@ -87,6 +87,13 @@ namespace CircuitDiagram
             this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
 
             ComponentHelper.ComponentUpdatedDelegate = new ComponentEditor.ComponentUpdatedDelegate(Editor_ComponentUpdated);
+
+            // check if should open file
+            if (App.AppArgs.Length > 0)
+            {
+                if (System.IO.File.Exists(App.AppArgs[0]))
+                    OpenDocument(App.AppArgs[0]);
+            }
         }
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
