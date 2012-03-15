@@ -91,6 +91,11 @@ namespace CircuitDiagram.Components
             }
             else if (regex1.IsMatch(point))
             {
+                if (point.StartsWith("_Start", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    RelativeToX = ComponentPosition.Start;
+                    RelativeToY = ComponentPosition.Start;
+                }
                 if (point.StartsWith("_Middle", StringComparison.InvariantCultureIgnoreCase))
                 {
                     RelativeToX = ComponentPosition.Middle;
@@ -135,35 +140,39 @@ namespace CircuitDiagram.Components
 
         public Point Resolve(Component component)
         {
-            double x = Offset.X;
-            double y = Offset.Y;
+            ComponentPoint tempPoint = this;
+            if (component.IsFlipped)
+                tempPoint = Flip(component.Horizontal);
 
-            if (RelativeToX != ComponentPosition.Absolute)
+            double x = tempPoint.Offset.X;
+            double y = tempPoint.Offset.Y;
+
+            if (tempPoint.RelativeToX != ComponentPosition.Absolute)
                 x += component.StartLocation.X;
-            if (RelativeToY != ComponentPosition.Absolute)
+            if (tempPoint.RelativeToY != ComponentPosition.Absolute)
                 y += component.StartLocation.Y;
 
-            if (RelativeToX == ComponentPosition.Middle && component.Horizontal)
+            if (tempPoint.RelativeToX == ComponentPosition.Middle && component.Horizontal)
                 x += component.Size / 2;
-            else if (RelativeToY == ComponentPosition.Middle && !component.Horizontal)
+            else if (tempPoint.RelativeToY == ComponentPosition.Middle && !component.Horizontal)
                 y += component.Size / 2;
 
-            if (RelativeToX == ComponentPosition.End && component.Horizontal)
+            if (tempPoint.RelativeToX == ComponentPosition.End && component.Horizontal)
                 x += component.Size;
-            else if (RelativeToY == ComponentPosition.End && !component.Horizontal)
+            else if (tempPoint.RelativeToY == ComponentPosition.End && !component.Horizontal)
                 y += component.Size;
 
             FlagOptions flags = ComponentHelper.ApplyFlags(component);
             if ((flags & FlagOptions.MiddleMustAlign) == FlagOptions.MiddleMustAlign)
             {
-                if (component.Horizontal && this.RelativeToX == ComponentPosition.Middle)
+                if (component.Horizontal && tempPoint.RelativeToX == ComponentPosition.Middle)
                 {
-                    if ((x - Offset.X) % ComponentHelper.GridSize != 0d)
+                    if ((x - tempPoint.Offset.X) % ComponentHelper.GridSize != 0d)
                         x += 5d;
                 }
-                else if (this.RelativeToY == ComponentPosition.Middle)
+                else if (tempPoint.RelativeToY == ComponentPosition.Middle)
                 {
-                    if ((y - Offset.Y) % ComponentHelper.GridSize != 0d)
+                    if ((y - tempPoint.Offset.Y) % ComponentHelper.GridSize != 0d)
                         y += 5d;
                 }
             }
@@ -194,6 +203,31 @@ namespace CircuitDiagram.Components
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+
+        public ComponentPoint Flip(bool horizontal)
+        {
+            ComponentPoint returnPoint = new ComponentPoint();
+            if (horizontal)
+                returnPoint.Offset = new Vector(-Offset.X, Offset.Y);
+            else
+                returnPoint.Offset = new Vector(Offset.X, -Offset.Y);
+
+            if (RelativeToX == ComponentPosition.Start)
+                returnPoint.RelativeToX = ComponentPosition.End;
+            else if (RelativeToX == ComponentPosition.Middle)
+                returnPoint.RelativeToX = ComponentPosition.Middle;
+            else if (RelativeToX == ComponentPosition.End)
+                returnPoint.RelativeToX = ComponentPosition.Start;
+
+            if (RelativeToY == ComponentPosition.Start)
+                returnPoint.RelativeToY = ComponentPosition.End;
+            else if (RelativeToY == ComponentPosition.Middle)
+                returnPoint.RelativeToY = ComponentPosition.Middle;
+            else if (RelativeToY == ComponentPosition.End)
+                returnPoint.RelativeToY = ComponentPosition.Start;
+
+            return returnPoint;
         }
     }
 

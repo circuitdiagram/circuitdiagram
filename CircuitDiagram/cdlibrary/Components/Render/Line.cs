@@ -52,17 +52,12 @@ namespace CircuitDiagram.Components.Render
             get { return RenderCommandType.Line; }
         }
 
-        public void Render(Component component, DrawingContext dc, Color colour)
-        {
-            Pen pen = new Pen(new SolidColorBrush(colour), Thickness);
-            pen.StartLineCap = PenLineCap.Square;
-            pen.EndLineCap = PenLineCap.Square;
-            dc.DrawLine(pen, Start.Resolve(component), End.Resolve(component));
-        }
-
         public void Render(Component component, CircuitDiagram.Render.IRenderContext dc)
         {
-            dc.DrawLine(Point.Add(Start.Resolve(component), new Vector(component.Offset.X, component.Offset.Y)), Point.Add(End.Resolve(component), new Vector(component.Offset.X, component.Offset.Y)), Thickness);
+            if (dc.Absolute)
+                dc.DrawLine(Point.Add(Start.Resolve(component), new Vector(component.Offset.X, component.Offset.Y)), Point.Add(End.Resolve(component), new Vector(component.Offset.X, component.Offset.Y)), Thickness);
+            else
+                dc.DrawLine(Start.Resolve(component), End.Resolve(component), Thickness);
         }
     }
 }

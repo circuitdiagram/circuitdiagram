@@ -31,6 +31,7 @@ namespace CircuitDiagram.IO
 {
     public static class CircuitDocumentWriter
     {
+        #region CDDX
         public const double CDDXDocumentVersion = 1.0;
         private const string RelationshipNamespace = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
 
@@ -533,7 +534,7 @@ namespace CircuitDiagram.IO
                 }
                 writer.WriteEndElement();
 
-                if (includeConnections)
+                if (includeConnections && t1.ContainsKey(component))
                 {
                     // connections
                     writer.WriteStartElement("connections");
@@ -567,7 +568,7 @@ namespace CircuitDiagram.IO
                     if (component.Description.CanResize)
                         writer.WriteAttributeString("size", component.Size.ToString());
                     if (component.Description.CanFlip)
-                        writer.WriteAttributeString("fipped", (component.IsFlipped ? "true" : "false"));
+                        writer.WriteAttributeString("flipped", (component.IsFlipped ? "true" : "false"));
                     writer.WriteEndElement();
                 }
                 else
@@ -651,5 +652,51 @@ namespace CircuitDiagram.IO
                     writer.WriteAttributeString("definitions", DefinitionSource);
             }
         }
+        #endregion
+
+        #region XML
+        public static void WriteXml(CircuitDocument document, Stream stream)
+        {
+            XmlTextWriter writer = new XmlTextWriter(stream, Encoding.UTF8);
+            writer.Formatting = Formatting.Indented;
+
+            WriteXmlVersion1(writer, document);
+
+            writer.Flush();
+        }
+
+        private static void WriteXmlVersion1(XmlTextWriter writer, CircuitDocument document)
+        {
+            writer.WriteStartDocument();
+            writer.WriteStartElement("circuit");
+            writer.WriteAttributeString("version", "1.1");
+            writer.WriteAttributeString("width", document.Size.Width.ToString());
+            writer.WriteAttributeString("height", document.Size.Height.ToString());
+
+            foreach (Component component in document.Components)
+            {
+                writer.WriteStartElement("component");
+                writer.WriteAttributeString("type", component.Description.ComponentName);
+                writer.WriteAttributeString("x", component.Offset.X.ToString());
+                writer.WriteAttributeString("y", component.Offset.Y.ToString());
+                writer.WriteAttributeString("orientation", (component.Horizontal ? "horizontal" : "vertical"));
+                if (component.Description.CanResize)
+                    writer.WriteAttributeString("size", component.Size.ToString());
+                if (component.Description.Metadata.GUID != Guid.Empty)
+                    writer.WriteAttributeString("guid", component.Description.Metadata.GUID.ToString());
+
+                Dictionary<string, object> properties = new Dictionary<string,object>();
+                component.Serialize(properties);
+                foreach (KeyValuePair<string, object> property in properties)
+                {
+                    if (!property.Key.StartsWith("@"))
+                        writer.WriteAttributeString(property.Key, property.Value.ToString());
+                }
+                writer.WriteEndElement();
+            }
+            writer.WriteEndElement();
+            writer.WriteEndDocument();
+        }
+        #endregion
     }
 }

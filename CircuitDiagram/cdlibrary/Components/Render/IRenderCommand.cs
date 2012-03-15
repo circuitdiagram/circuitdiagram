@@ -29,7 +29,6 @@ namespace CircuitDiagram.Components.Render
     public interface IRenderCommand
     {
         RenderCommandType Type { get; }
-        void Render(Component component, DrawingContext dc, Color colour);
         void Render(Component component, CircuitDiagram.Render.IRenderContext dc);
     }
 

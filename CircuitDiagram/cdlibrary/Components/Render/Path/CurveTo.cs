@@ -8,7 +8,7 @@ using CircuitDiagram.IO;
 
 namespace CircuitDiagram.Components.Render.Path
 {
-    class CurveTo : IPathCommand
+    public class CurveTo : IPathCommand
     {
         public Point ControlStart { get; set; }
         public Point ControlEnd { get; set; }
@@ -33,14 +33,6 @@ namespace CircuitDiagram.Components.Render.Path
             End = new Point(x, y);
         }
 
-        public void Draw(StreamGeometryContext dc, Vector startOffset)
-        {
-            Point controlStart = Point.Add(ControlStart, startOffset);
-            Point controlEnd = Point.Add(ControlEnd, startOffset);
-            Point end = Point.Add(End, startOffset);
-            dc.BezierTo(controlStart, controlEnd, end, true, true);
-        }
-
         public string Shorthand(Point offset, Point previous)
         {
             return String.Format("c {0},{1} {2},{3} {4},{5}", ControlStart.X - previous.X, ControlStart.Y - previous.Y, ControlEnd.X - previous.X, ControlEnd.Y - previous.Y, End.X - previous.X, End.Y - previous.Y);
@@ -58,6 +50,18 @@ namespace CircuitDiagram.Components.Render.Path
             ControlStart = reader.ReadPoint();
             ControlEnd = reader.ReadPoint();
             End = reader.ReadPoint();
+        }
+
+        public IPathCommand Flip(bool horizontal)
+        {
+            if (horizontal)
+            {
+                return new CurveTo(-ControlStart.X, ControlStart.Y, -ControlEnd.X, ControlEnd.Y, -End.X, End.Y);
+            }
+            else
+            {
+                return new CurveTo(ControlStart.X, -ControlStart.Y, ControlEnd.X, -ControlEnd.Y, End.X, -End.Y);
+            }
         }
     }
 }

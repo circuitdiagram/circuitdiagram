@@ -29,9 +29,7 @@ namespace CircuitDiagram.Elements
 {
     public interface ICircuitElement
     {
-        Visual Visual { get; }
         event EventHandler Updated;
         void Render(IRenderContext dc);
-        void UpdateVisual();
     }
 }

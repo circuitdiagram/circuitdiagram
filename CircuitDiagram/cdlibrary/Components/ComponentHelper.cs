@@ -30,6 +30,8 @@ namespace CircuitDiagram.Components
 {
     public static class ComponentHelper
     {
+        public static CreateComponentEditorDelegate CreateEditor;
+
         private static List<ComponentDescription> m_descriptions = new List<ComponentDescription>();
 
         public static IEnumerable<ComponentDescription> ComponentDescriptions { get { return m_descriptions.AsEnumerable(); } }
@@ -243,7 +245,9 @@ namespace CircuitDiagram.Components
             return ComponentDataString.ConvertToString(properties);
         }
 
-        public static ComponentEditor.ComponentUpdatedDelegate ComponentUpdatedDelegate { get; set; }
+        public static LoadIconDelegate LoadIcon;
+
+        public static ComponentUpdatedDelegate ComponentUpdatedDelegate { get; set; }
     }
 
     public enum PropertySearchKey
@@ -251,4 +255,6 @@ namespace CircuitDiagram.Components
         FullName,
         SerializedName
     }
+
+    public delegate object LoadIconDelegate(byte[] data, string mimeType);
 }

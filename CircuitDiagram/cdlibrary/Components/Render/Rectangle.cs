@@ -33,7 +33,7 @@ namespace CircuitDiagram.Components.Render
         public double Width { get; set; }
         public double Height { get; set; }
         public double StrokeThickness { get; set; }
-        public Color FillColour { get; set; }
+        public bool Fill { get; set; }
 
         public RenderCommandType Type
         {
@@ -46,7 +46,7 @@ namespace CircuitDiagram.Components.Render
             Width = 0d;
             Height = 0d;
             StrokeThickness = 2d;
-            FillColour = Colors.Transparent;
+            Fill = false;
         }
 
         public Rectangle(ComponentPoint location, double width, double height)
@@ -55,26 +55,30 @@ namespace CircuitDiagram.Components.Render
             Width = width;
             Height = height;
             StrokeThickness = 2d;
-            FillColour = Colors.Transparent;
+            Fill = false;
         }
 
-        public Rectangle(ComponentPoint location, double width, double height, double strokeThickness, Color fillColour)
+        public Rectangle(ComponentPoint location, double width, double height, double strokeThickness, bool fill)
         {
             Location = location;
             Width = width;
             Height = height;
             StrokeThickness = strokeThickness;
-            FillColour = fillColour;
-        }
-
-        public void Render(Component component, DrawingContext dc, Color colour)
-        {
-            dc.DrawRectangle(new SolidColorBrush(FillColour), new Pen(new SolidColorBrush(colour), 2d), new System.Windows.Rect(Location.Resolve(component), new Size(Width, Height)));
+            Fill = fill;
         }
 
         public void Render(Component component, CircuitDiagram.Render.IRenderContext dc)
         {
-            dc.DrawRectangle(Point.Add(Location.Resolve(component), new Vector(component.Offset.X, component.Offset.Y)), new Size(Width, Height), StrokeThickness, (FillColour != Colors.White && FillColour != Colors.Transparent));
+            Rect drawRect = new System.Windows.Rect(Location.Resolve(component), new Size(Width, Height));
+            if (component.IsFlipped && component.Horizontal)
+                drawRect = new Rect(drawRect.X - Width, drawRect.Y, Width, Height);
+            else if (component.IsFlipped && !component.Horizontal)
+                drawRect = new Rect(drawRect.X, drawRect.Y - Height, Width, Height);
+
+            if (dc.Absolute)
+                dc.DrawRectangle(Point.Add(drawRect.TopLeft, component.Offset), drawRect.Size, StrokeThickness, Fill);
+            else
+                dc.DrawRectangle(drawRect.TopLeft, drawRect.Size, StrokeThickness, Fill);
         }
     }
 }

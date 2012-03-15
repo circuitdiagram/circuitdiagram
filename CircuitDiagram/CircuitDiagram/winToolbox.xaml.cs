@@ -75,9 +75,9 @@ namespace CircuitDiagram
                 ShortcutKey = shortcutKey;
                 
                 if (configuration != null && configuration.Icon != null)
-                    Icon = configuration.Icon;
+                    Icon = configuration.Icon as ImageSource;
                 else
-                    Icon = description.Metadata.Icon;
+                    Icon = description.Metadata.Icon as ImageSource;
 
                 if (description == ComponentHelper.WireDescription)
                     this.ShortcutKey = Key.W;

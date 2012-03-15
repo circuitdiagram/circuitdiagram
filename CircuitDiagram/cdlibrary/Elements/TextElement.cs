@@ -31,15 +31,15 @@ namespace CircuitDiagram.Elements
     {
         public event EventHandler Updated;
 
-        private DrawingVisual m_drawingVisual;
+        //private DrawingVisual m_drawingVisual;
 
-        public System.Windows.Media.Visual Visual { get { return m_drawingVisual; } }
+        //public System.Windows.Media.Visual Visual { get { return m_drawingVisual; } }
 
         public TextElement()
         {
-            m_drawingVisual = new DrawingVisual();
-            using (DrawingContext dc = m_drawingVisual.RenderOpen())
-                dc.DrawLine(new Pen(Brushes.Black, 2d), new Point(0, 0), new Point(10, 10));
+            //m_drawingVisual = new DrawingVisual();
+            //using (DrawingContext dc = m_drawingVisual.RenderOpen())
+            //    dc.DrawLine(new Pen(Brushes.Black, 2d), new Point(0, 0), new Point(10, 10));
         }
 
         public void Render(Render.IRenderContext dc)
@@ -49,8 +49,8 @@ namespace CircuitDiagram.Elements
 
         public void UpdateVisual()
         {
-            if (Updated != null)
-                Updated(this, new EventArgs());
+            //if (Updated != null)
+            //    Updated(this, new EventArgs());
         }
     }
 }

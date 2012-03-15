@@ -60,10 +60,17 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BuildChannelAttribute.cs" />
+    <Compile Include="ComponentEditor.cs" />
+    <Compile Include="Render\CircuitElementDrawingVisual.cs" />
     <Compile Include="Converters\BoolToYesNoConverter.cs" />
     <Compile Include="Converters\KeyTextConverter.cs" />
     <Compile Include="Converters\SignedColourConverter.cs" />
     <Compile Include="CustomCommands.cs" />
+    <Compile Include="Render\DrawingRenderer.cs" />
+    <Compile Include="Render\RenderHelper.cs" />
+    <Compile Include="Render\WPFRenderer.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="UndoManager.cs" />
     <Compile Include="winAbout.xaml.cs">
       <DependentUpon>winAbout.xaml</DependentUpon>

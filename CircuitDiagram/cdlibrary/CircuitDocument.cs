@@ -87,8 +87,23 @@ namespace CircuitDiagram
                 {
                     if (connection.Value.IsConnected && !connectionCentres.Contains(connection.Value.Centre))
                     {
-                        connectionCentres.Add(connection.Value.Centre);
-                        connectionPoints.Add(Point.Add(connection.Key, component.Offset));
+                        bool draw = false;
+                        if (connection.Value.ConnectedTo.Length >= 3)
+                            draw = true;
+                        foreach (Connection connectedConnection in connection.Value.ConnectedTo)
+                        {
+                            if ((connectedConnection.Flags & ConnectionFlags.Horizontal) == ConnectionFlags.Horizontal && (connection.Value.Flags & ConnectionFlags.Vertical) == ConnectionFlags.Vertical && (connection.Value.Flags & ConnectionFlags.Edge) != (connectedConnection.Flags & ConnectionFlags.Edge))
+                                draw = true;
+                            else if ((connectedConnection.Flags & ConnectionFlags.Vertical) == ConnectionFlags.Vertical && (connection.Value.Flags & ConnectionFlags.Horizontal) == ConnectionFlags.Horizontal && (connection.Value.Flags & ConnectionFlags.Edge) != (connectedConnection.Flags & ConnectionFlags.Edge))
+                                draw = true;
+                            if (draw)
+                                break;
+                        }
+                        if (draw)
+                        {
+                            connectionCentres.Add(connection.Value.Centre);
+                            connectionPoints.Add(Point.Add(connection.Key, component.Offset));
+                        }
                     }
                 }
             }

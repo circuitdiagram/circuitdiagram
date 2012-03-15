@@ -309,7 +309,7 @@ namespace CircuitDiagram.IO
                         else if (renderCommandNode.Name.ToLowerInvariant() == "rect")
                         {
                             double thickness = 2d;
-                            Color fillColour = Colors.Transparent;
+                            bool fill = false;
                             ComponentPoint location;
                             if ((renderCommandNode as XmlElement).HasAttribute("location"))
                                 location = new ComponentPoint(renderCommandNode.Attributes["location"].InnerText);
@@ -320,10 +320,10 @@ namespace CircuitDiagram.IO
                                 location = new ComponentPoint(x, y);
                             }
                             if ((renderCommandNode as XmlElement).HasAttribute("fill") && renderCommandNode.Attributes["fill"].InnerText.ToLowerInvariant() == "true")
-                                fillColour = Colors.Black;
+                                fill = true;
                             double width = double.Parse(renderCommandNode.Attributes["width"].InnerText);
                             double height = double.Parse(renderCommandNode.Attributes["height"].InnerText);
-                            Rectangle rectangle = new Rectangle(location, width, height, thickness, fillColour);
+                            Rectangle rectangle = new Rectangle(location, width, height, thickness, fill);
                             commands.Add(rectangle);
                         }
                         else if (renderCommandNode.Name.ToLowerInvariant() == "ellipse")
@@ -331,9 +331,9 @@ namespace CircuitDiagram.IO
                             double thickness = 2d;
                             if ((renderCommandNode as XmlElement).HasAttribute("thickness"))
                                 thickness = double.Parse(renderCommandNode.Attributes["thickness"].InnerText);
-                            Color fillColour = Colors.Transparent;
+                            bool fill = false;
                             if ((renderCommandNode as XmlElement).HasAttribute("fill") && renderCommandNode.Attributes["fill"].InnerText.ToLowerInvariant() == "true")
-                                fillColour = Colors.Black;
+                                fill = true;
                             ComponentPoint centre;
                             if ((renderCommandNode as XmlElement).HasAttribute("centre"))
                                 centre = new ComponentPoint(renderCommandNode.Attributes["centre"].InnerText);
@@ -345,7 +345,7 @@ namespace CircuitDiagram.IO
                             }
                             double radiusX = double.Parse(renderCommandNode.Attributes["radiusx"].InnerText);
                             double radiusY = double.Parse(renderCommandNode.Attributes["radiusy"].InnerText);
-                            Ellipse ellipse = new Ellipse(centre, radiusX, radiusY, thickness, fillColour);
+                            Ellipse ellipse = new Ellipse(centre, radiusX, radiusY, thickness, fill);
                             commands.Add(ellipse);
                         }
                         else if (renderCommandNode.Name.ToLowerInvariant() == "text")
@@ -372,9 +372,28 @@ namespace CircuitDiagram.IO
                                     size = ComponentHelper.LargeTextSize;
                             }
 
-                            string value = renderCommandNode.Attributes["value"].InnerText;
+                            List<TextRun> textRuns = new List<TextRun>();                                
+                            XmlNode textValueNode = renderCommandNode.SelectSingleNode("cd:value", namespaceManager);
+                            if (textValueNode != null)
+                            {
+                                foreach (XmlNode spanNode in textValueNode.ChildNodes)
+                                {
+                                    string nodeValue = spanNode.InnerText;
 
-                            Text text = new Text(location, alignment, size, value);
+                                    if (spanNode.Name.ToLowerInvariant() == "span")
+                                        textRuns.Add(new TextRun(nodeValue, TextRunFormatting.Normal));
+                                    else if (spanNode.Name.ToLowerInvariant() == "sub")
+                                        textRuns.Add(new TextRun(nodeValue, TextRunFormatting.Subscript));
+                                    else if (spanNode.Name.ToLowerInvariant() == "sup")
+                                        textRuns.Add(new TextRun(nodeValue, TextRunFormatting.Superscript));
+                                }
+                            }
+                            else
+                            {
+                                textRuns.Add(new TextRun(renderCommandNode.Attributes["value"].InnerText, new TextRunFormatting(TextRunFormattingType.Normal, size)));
+                            }
+
+                            Text text = new Text(location, alignment, textRuns);
                             commands.Add(text);
                         }
                         else if (renderCommandNode.Name.ToLowerInvariant() == "path")
@@ -392,9 +411,9 @@ namespace CircuitDiagram.IO
                                 location = new ComponentPoint(x, y);
                             }
 
-                            Color fillColour = Colors.Transparent;
+                            bool fill = false;
                             if ((renderCommandNode as XmlElement).HasAttribute("fill") && renderCommandNode.Attributes["fill"].InnerText.ToLowerInvariant() == "true")
-                                fillColour = Colors.Black;
+                                fill = true;
 
                             string data = renderCommandNode.Attributes["data"].InnerText;
 
@@ -598,7 +617,7 @@ namespace CircuitDiagram.IO
                                 }
                             }
 
-                            commands.Add(new Path(location, thickness, fillColour, pathCommands));
+                            commands.Add(new Path(location, thickness, fill, pathCommands));
                         }
                     }
 

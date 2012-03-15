@@ -34,7 +34,7 @@ namespace CircuitDiagram.Components
         public string Author { get; set; }
         public string AdditionalInformation { get; set; }
         public string Type { get; set; }
-        public System.Windows.Media.ImageSource Icon { get; set; }
+        public object Icon { get; set; }
         public string IconMimeType { get; set; }
         public byte[] IconData { get; set; }
         public LocationType Location { get; set; }

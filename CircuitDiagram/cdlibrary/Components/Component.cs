@@ -27,13 +27,12 @@ using System.Windows.Media;
 using System.Xml;
 using System.Reflection;
 using System.Globalization;
-using System.Windows.Controls;
 using CircuitDiagram.Components.Render;
 using CircuitDiagram.Elements;
 
 namespace CircuitDiagram.Components
 {
-    public class Component : DrawingVisual, ICircuitElement
+    public class Component : ICircuitElement
     {
         public event EventHandler Updated;
 
@@ -99,16 +98,24 @@ namespace CircuitDiagram.Components
 
         public double Size { get; set; }
 
-        public Point StartLocation
+        public Point StartLocation { get { return new Point(); } }
+
+        private Vector m_offset;
+        public Vector Offset
         {
-            get { return new Point(); }
+            get { return m_offset; }
+            set
+            {
+                m_offset = value;
+                InvalidateVisual();
+            }
         }
 
         public bool Horizontal { get; set; }
 
         private Dictionary<ComponentProperty, object> m_propertyValues { get; set; }
 
-        public ComponentEditor Editor { get; private set; }
+        public IComponentEditor Editor { get; private set; }
 
         private Dictionary<Point, Connection> m_connections = new Dictionary<Point, Connection>();
         #endregion
@@ -122,28 +129,32 @@ namespace CircuitDiagram.Components
                 m_propertyValues.Add(property, property.Default);
             if (System.Threading.Thread.CurrentThread.GetApartmentState() == System.Threading.ApartmentState.STA)
             {
-                Editor = new ComponentEditor(this);
-                if (ComponentHelper.ComponentUpdatedDelegate != null)
+                if (ComponentHelper.CreateEditor != null)
+                    Editor = ComponentHelper.CreateEditor(this);
+
+                if (Editor != null && ComponentHelper.ComponentUpdatedDelegate != null)
                     Editor.ComponentUpdated += ComponentHelper.ComponentUpdatedDelegate;
             }
         }
 
         private void SetEditorEnumValues()
         {
-            if (Editor == null)
-                return;
+#warning TIDY
 
-            foreach (ComponentProperty property in this.Description.Properties)
-            {
-                if (property.Type == typeof(string) && property.EnumOptions != null)
-                {
-                    ComboBox propertyEditControl = this.Editor.EditorControls[property] as ComboBox;
-                    if (propertyEditControl != null)
-                    {
-                        propertyEditControl.SelectedItem = GetProperty(property) as string;
-                    }
-                }
-            }
+            //if (Editor == null)
+            //    return;
+
+            //foreach (ComponentProperty property in this.Description.Properties)
+            //{
+            //    if (property.Type == typeof(string) && property.EnumOptions != null)
+            //    {
+            //        ComboBox propertyEditControl = this.Editor.EditorControls[property] as ComboBox;
+            //        if (propertyEditControl != null)
+            //        {
+            //            propertyEditControl.SelectedItem = GetProperty(property) as string;
+            //        }
+            //    }
+            //}
         }
 
         public ComponentProperty FindProperty(string name)
@@ -216,16 +227,38 @@ namespace CircuitDiagram.Components
                         end.X = Math.Floor(end.X / ComponentHelper.GridSize) * ComponentHelper.GridSize;
                         end.Y = Math.Floor(end.Y / ComponentHelper.GridSize) * ComponentHelper.GridSize;
 
+                        // Reverse if in the wrong order
+                        bool reversed = false;
+                        if ((start.X == end.X && end.Y < start.Y) || (start.Y == end.Y && end.X < start.X))
+                        {
+                            Point temp = start;
+                            start = end;
+                            end = temp;
+                            reversed = true;
+                        }
+
                         if (start.X == end.X)
                         {
                             for (double i = start.Y; i <= end.Y; i += ComponentHelper.GridSize)
                             {
                                 ConnectionFlags flags = ConnectionFlags.Vertical;
-                                if (i == start.Y && (connectionDescription.Edge == ConnectionEdge.Start || connectionDescription.Edge == ConnectionEdge.Both))
-                                    flags |= ConnectionFlags.Edge;
-                                else if (i == end.Y && (connectionDescription.Edge == ConnectionEdge.End || connectionDescription.Edge == ConnectionEdge.Both))
-                                    flags |= ConnectionFlags.Edge;
-                                m_connections.Add(new Point(start.X, i), new Connection(this, flags, connectionDescription));
+                                if (!reversed)
+                                {
+                                    if (i == start.Y && (connectionDescription.Edge == ConnectionEdge.Start || connectionDescription.Edge == ConnectionEdge.Both))
+                                        flags |= ConnectionFlags.Edge;
+                                    else if (i == end.Y && (connectionDescription.Edge == ConnectionEdge.End || connectionDescription.Edge == ConnectionEdge.Both))
+                                        flags |= ConnectionFlags.Edge;
+                                }
+                                else if (!Horizontal && reversed)
+                                {
+                                    if (i == start.Y && (connectionDescription.Edge == ConnectionEdge.End || connectionDescription.Edge == ConnectionEdge.Both))
+                                        flags |= ConnectionFlags.Edge;
+                                    else if (i == end.Y && (connectionDescription.Edge == ConnectionEdge.Start || connectionDescription.Edge == ConnectionEdge.Both))
+                                        flags |= ConnectionFlags.Edge;
+                                }
+                                Point key = new Point(start.X, i);
+                                if (!m_connections.ContainsKey(key))
+                                    m_connections.Add(key, new Connection(this, flags, connectionDescription));
                             }
                         }
                         else if (start.Y == end.Y)
@@ -233,11 +266,23 @@ namespace CircuitDiagram.Components
                             for (double i = start.X; i <= end.X; i += ComponentHelper.GridSize)
                             {
                                 ConnectionFlags flags = ConnectionFlags.Horizontal;
-                                if (i == start.X && (connectionDescription.Edge == ConnectionEdge.Start || connectionDescription.Edge == ConnectionEdge.Both))
-                                    flags |= ConnectionFlags.Edge;
-                                else if (i == end.X && (connectionDescription.Edge == ConnectionEdge.End || connectionDescription.Edge == ConnectionEdge.Both))
-                                    flags |= ConnectionFlags.Edge;
-                                m_connections.Add(new Point(i, start.Y), new Connection(this, flags, connectionDescription));
+                                if (!reversed)
+                                {
+                                    if (i == start.X && (connectionDescription.Edge == ConnectionEdge.Start || connectionDescription.Edge == ConnectionEdge.Both))
+                                        flags |= ConnectionFlags.Edge;
+                                    else if (i == end.X && (connectionDescription.Edge == ConnectionEdge.End || connectionDescription.Edge == ConnectionEdge.Both))
+                                        flags |= ConnectionFlags.Edge;
+                                }
+                                else if (Horizontal && reversed)
+                                {
+                                    if (i == start.X && (connectionDescription.Edge == ConnectionEdge.End || connectionDescription.Edge == ConnectionEdge.Both))
+                                        flags |= ConnectionFlags.Edge;
+                                    else if (i == end.X && (connectionDescription.Edge == ConnectionEdge.Start || connectionDescription.Edge == ConnectionEdge.Both))
+                                        flags |= ConnectionFlags.Edge;
+                                }
+                                Point key = new Point(i, start.Y);
+                                if (!m_connections.ContainsKey(key))
+                                m_connections.Add(key, new Connection(this, flags, connectionDescription));
                             }
                         }
                     }
@@ -298,38 +343,6 @@ namespace CircuitDiagram.Components
             return m_connections.Values.Where(connection => connection.IsConnected);
         }
 
-        public void UpdateVisual()
-        {
-            using (DrawingContext dc = base.RenderOpen())
-            {
-                GuidelineSet guidelines = new GuidelineSet();
-                guidelines.GuidelinesX.Add(this.Offset.X);
-                guidelines.GuidelinesY.Add(this.Offset.Y);
-                dc.PushGuidelineSet(guidelines);
-
-                if (IsFlipped)
-                {
-                    if (Horizontal)
-                        dc.PushTransform(new ScaleTransform(-1d, 1d, 0.5d, 0.5d));
-                    else
-                        dc.PushTransform(new ScaleTransform(1d, -1d, 0.5d, 0.5d));
-                }
-                foreach (RenderDescription renderDescription in Description.RenderDescriptions)
-                {
-                    if (renderDescription.Conditions.ConditionsAreMet(this))
-                        renderDescription.Render(this, dc);
-                }
-
-                if (IsFlipped)
-                    dc.Pop();
-
-                dc.Pop();
-            }
-
-            if (Updated != null)
-                Updated(this, new EventArgs());
-        }
-
         public void Layout(double x, double y, double size, bool horizontal, bool flipped)
         {
             this.Offset = new Vector(x, y);
@@ -338,7 +351,7 @@ namespace CircuitDiagram.Components
             this.IsFlipped = flipped;
 
             this.ResetConnections();
-            this.UpdateVisual();
+            this.InvalidateVisual();
         }
 
         public void Serialize(Dictionary<string, object> properties)
@@ -405,43 +418,36 @@ namespace CircuitDiagram.Components
                 else
                 {
                     // custom property
-                    foreach(ComponentProperty dProperty in Description.Properties)
+                    foreach (ComponentProperty dProperty in Description.Properties)
+                    {
                         if (dProperty.SerializedName == property.Key)
                         {
                             SetProperty(dProperty, property.Value);
                             break;
                         }
+                    }
                 }
-
-                //// load custom properties
-                //MemberInfo[] memerInfo = this.GetType().FindMembers(MemberTypes.Property, BindingFlags.Public | BindingFlags.Instance, new MemberFilter(IsPropertySerializedMatch), property.Key);
-                //if (memerInfo.Length > 0)
-                //    (memerInfo[0] as PropertyInfo).SetValue(this, GetAsCorrectType((memerInfo[0] as PropertyInfo).PropertyType, property.Value), null);
             }
-        }
-
-        protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
-        {
-            // Hit if within bounding box
-
-            Point pt = hitTestParameters.HitPoint;
-
-            return new PointHitTestResult(this, pt);
-        }
-
-        public Visual Visual
-        {
-            get { return this; }
         }
 
         public void Render(CircuitDiagram.Render.IRenderContext dc)
         {
-            throw new NotImplementedException();
+            foreach (RenderDescription renderDescription in Description.RenderDescriptions)
+            {
+                if (renderDescription.Conditions.ConditionsAreMet(this))
+                    renderDescription.Render(this, dc);
+            }
         }
 
         public override string ToString()
         {
             return "type: " + Description.ComponentName;
+        }
+
+        public void InvalidateVisual()
+        {
+            if (Updated != null)
+                Updated(this, new EventArgs());
         }
     }
 }

@@ -164,6 +164,8 @@ namespace CircuitDiagram.IO
                     #region Layout
                     // Layout
                     XmlNode parentLayoutNode = doc.SelectSingleNode("/cdd:circuit/cdd:layout", namespaceManager);
+                    if (parentLayoutNode == null)
+                        return new DocumentLoadResult(DocumentLoadResultType.FailIncorrectFormat, "The file contains no layout information.");
                     foreach (XmlElement layoutNode in parentLayoutNode.ChildNodes)
                     {
                         if (layoutNode.Name == "component")
@@ -210,12 +212,14 @@ namespace CircuitDiagram.IO
                             Dictionary<string, object> properties = new Dictionary<string,object>(4);
                             properties.Add("@x", x);
                             properties.Add("@y", y);
-                            properties.Add("@horizontal", horizontal);
+                            properties.Add("@orientation", horizontal);
                             properties.Add("@size", size);
 
                             if (ComponentHelper.WireDescription != null)
                             {
                                 Component wire = Component.Create(ComponentHelper.WireDescription, properties);
+                                wire.Layout(x, y, size, horizontal, false);
+                                wire.ApplyConnections(document);
                                 document.Elements.Add(wire);
                             }
                         }
@@ -226,7 +230,7 @@ namespace CircuitDiagram.IO
                     {
                         if (!document.Elements.Contains(element))
                         {
-                            throw new NotImplementedException();
+                            return new DocumentLoadResult(DocumentLoadResultType.FailIncorrectFormat, "The file contains no layout information.");
                         }
                     }
                     #endregion
@@ -234,18 +238,18 @@ namespace CircuitDiagram.IO
                     document.Size = new System.Windows.Size(width, height);
 
                     if (version > CircuitDocumentWriter.CDDXDocumentVersion)
-                        return DocumentLoadResult.SuccessNewerVersion;
+                        return new DocumentLoadResult(DocumentLoadResultType.SuccessNewerVersion);
                     else
-                        return DocumentLoadResult.Success;
+                        return new DocumentLoadResult(DocumentLoadResultType.Success);
                 }
             }
             catch (Exception)
             {
                 document = null;
                 if (version > CircuitDocumentWriter.CDDXDocumentVersion)
-                    return DocumentLoadResult.FailNewerVersion;
+                    return new DocumentLoadResult(DocumentLoadResultType.FailNewerVersion);
                 else
-                    return DocumentLoadResult.FailUnknown;
+                    return new DocumentLoadResult(DocumentLoadResultType.FailUnknown);
             }
         }
 
@@ -429,7 +433,7 @@ namespace CircuitDiagram.IO
             else if (version == CircuitDocumentXmlVersion.Version1_0)
                 return LoadVersion1_0(doc);
 
-            return DocumentLoadResult.FailNewerVersion;
+            return new DocumentLoadResult(DocumentLoadResultType.FailNewerVersion);
         }
 
         private DocumentLoadResult LoadVersion1_0(XmlDocument doc)
@@ -490,7 +494,7 @@ namespace CircuitDiagram.IO
             //if (errorOccurred)
             //    return DocumentLoadResult.FailIncorrectFormat;
             //else
-            return DocumentLoadResult.Success;
+            return new DocumentLoadResult(DocumentLoadResultType.Success);
         }
 
         private DocumentLoadResult LoadVersion1_1(XmlDocument doc)
@@ -515,13 +519,20 @@ namespace CircuitDiagram.IO
                     bool horizontal = true;
                     if ((node as XmlElement).HasAttribute("orientation") && node.Attributes["orientation"].InnerText.ToLowerInvariant() == "vertical")
                         horizontal = false;
+                    Guid guid = Guid.Empty;
+                    if ((node as XmlElement).HasAttribute("guid"))
+                        guid = new Guid(node.Attributes["guid"].InnerText);
 
                     // Other properties
                     Dictionary<string, object> properties = new Dictionary<string, object>(node.Attributes.Count);
                     foreach (XmlAttribute attribute in node.Attributes)
                         properties.Add(attribute.Name, attribute.InnerText);
 
-                    ComponentDescription description = ComponentHelper.FindDescription(type);
+                    ComponentDescription description;
+                    if (guid != Guid.Empty)
+                        description = ComponentHelper.FindDescription(guid);
+                    else
+                        description = ComponentHelper.FindDescription(type);
                     if (description != null)
                     {
                         Component component = Component.Create(description, properties);
@@ -538,12 +549,12 @@ namespace CircuitDiagram.IO
                 foreach (Component component in Document.Components)
                     component.ApplyConnections(Document);
 
-                return DocumentLoadResult.Success;
+                return new DocumentLoadResult(DocumentLoadResultType.Success);
             }
             catch (Exception)
             {
                 // Wrong format
-                return DocumentLoadResult.FailIncorrectFormat;
+                return new DocumentLoadResult(DocumentLoadResultType.FailIncorrectFormat);
             }
         }
 

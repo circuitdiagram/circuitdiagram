@@ -31,8 +31,7 @@ namespace CircuitDiagram.Components.Render
     {
         public ComponentPoint Location { get; set; }
         public TextAlignment Alignment { get; set; }
-        public double Size { get; set; }
-        public string Value { get; set; }
+        public List<TextRun> TextRuns { get; private set; }
 
         public RenderCommandType Type
         {
@@ -43,58 +42,103 @@ namespace CircuitDiagram.Components.Render
         {
             Location = new ComponentPoint();
             Alignment = TextAlignment.TopLeft;
-            Size = 12d;
-            Value = "";
+            TextRuns = new List<TextRun>();
         }
 
-        public Text(ComponentPoint location, TextAlignment alignment, double size, string value)
+        public Text(ComponentPoint location, TextAlignment alignment, double size, string text)
         {
             Location = location;
             Alignment = alignment;
-            Size = size;
-            Value = value;
+            var textRun = new TextRun(text, new TextRunFormatting(TextRunFormattingType.Normal, size));
+            TextRuns = new List<TextRun>();
+            TextRuns.Add(textRun);
         }
 
-        public void Render(Component component, DrawingContext dc, Color colour)
+        public Text(ComponentPoint location, TextAlignment alignment, IEnumerable<TextRun> textRuns)
         {
-            // Resolve value
-            string renderValue;
-            if (Value.StartsWith("$"))
-            {
-                ComponentProperty property = component.FindProperty(Value);
-                renderValue = component.GetFormattedProperty(property);
-            }
-            else
-                renderValue = Value;
-
-            FormattedText formattedText = new FormattedText(renderValue, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), Size, new SolidColorBrush(colour));
-            Point renderLocation = Location.Resolve(component);
-
-            if (Alignment == TextAlignment.TopCentre || Alignment == TextAlignment.CentreCentre || Alignment == TextAlignment.BottomCentre)
-                renderLocation.X -= formattedText.Width / 2;
-            else if (Alignment == TextAlignment.TopRight || Alignment == TextAlignment.CentreRight || Alignment == TextAlignment.BottomRight)
-                renderLocation.X -= formattedText.Width;
-            if (Alignment == TextAlignment.CentreLeft || Alignment == TextAlignment.CentreCentre || Alignment == TextAlignment.CentreRight)
-                renderLocation.Y -= formattedText.Height / 2;
-            else if (Alignment == TextAlignment.BottomLeft || Alignment == TextAlignment.BottomCentre || Alignment == TextAlignment.BottomRight)
-                renderLocation.Y -= formattedText.Height;
-
-            dc.DrawText(formattedText, renderLocation);
+            Location = location;
+            Alignment = alignment;
+            TextRuns = new List<TextRun>(textRuns);
         }
 
         public void Render(Component component, CircuitDiagram.Render.IRenderContext dc)
         {
-            // Resolve value
-            string renderValue;
-            if (Value.StartsWith("$"))
-            {
-                ComponentProperty property = component.FindProperty(Value);
-                renderValue = component.GetFormattedProperty(property);
-            }
-            else
-                renderValue = Value;
+            Point renderLocation = Location.Resolve(component);
 
-            dc.DrawText(Point.Add(Location.Resolve(component), new Vector(component.Offset.X, component.Offset.Y)), Alignment, renderValue, Size);
+            TextAlignment tempAlignment = Alignment;
+            if (component.IsFlipped && component.Horizontal)
+            {
+                switch (Alignment)
+                {
+                    case TextAlignment.BottomLeft:
+                        tempAlignment = TextAlignment.BottomRight;
+                        break;
+                    case TextAlignment.BottomRight:
+                        tempAlignment = TextAlignment.BottomLeft;
+                        break;
+                    case TextAlignment.CentreLeft:
+                        tempAlignment = TextAlignment.CentreRight;
+                        break;
+                    case TextAlignment.CentreRight:
+                        tempAlignment = TextAlignment.CentreLeft;
+                        break;
+                    case TextAlignment.TopLeft:
+                        tempAlignment = TextAlignment.TopRight;
+                        break;
+                    case TextAlignment.TopRight:
+                        tempAlignment = TextAlignment.TopLeft;
+                        break;
+                }
+            }
+            else if (component.IsFlipped && !component.Horizontal)
+            {
+                switch (Alignment)
+                {
+                    case TextAlignment.BottomCentre:
+                        tempAlignment = TextAlignment.TopCentre;
+                        break;
+                    case TextAlignment.BottomLeft:
+                        tempAlignment = TextAlignment.TopLeft;
+                        break;
+                    case TextAlignment.BottomRight:
+                        tempAlignment = TextAlignment.TopRight;
+                        break;
+                    case TextAlignment.TopCentre:
+                        tempAlignment = TextAlignment.BottomCentre;
+                        break;
+                    case TextAlignment.TopLeft:
+                        tempAlignment = TextAlignment.BottomLeft;
+                        break;
+                    case TextAlignment.TopRight:
+                        tempAlignment = TextAlignment.BottomRight;
+                        break;
+                }
+            }
+
+            List<TextRun> renderTextRuns = new List<TextRun>(TextRuns.Count);
+            // Build runs
+            foreach (TextRun run in TextRuns)
+            {
+                // Resolve value
+                string renderValue;
+                if (run.Text.StartsWith("$"))
+                {
+                    ComponentProperty property = component.FindProperty(run.Text);
+                    renderValue = component.GetFormattedProperty(property);
+                }
+                else
+                    renderValue = run.Text;
+
+                System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex(@"\\[uU]([0-9A-F]{4})");
+                renderValue = regex.Replace(renderValue, match => ((char)Int32.Parse(match.Value.Substring(2), System.Globalization.NumberStyles.HexNumber)).ToString());
+
+                renderTextRuns.Add(new TextRun(renderValue, run.Formatting));
+            }
+
+            if (dc.Absolute)
+                dc.DrawText(Point.Add(renderLocation, component.Offset), tempAlignment, renderTextRuns);
+            else
+                dc.DrawText(renderLocation, tempAlignment, renderTextRuns);
         }
     }
 
@@ -109,5 +153,51 @@ namespace CircuitDiagram.Components.Render
         BottomLeft,
         BottomCentre,
         BottomRight
+    }
+
+    public enum TextRunFormattingType
+    {
+        Normal = 1,
+        Subscript = 10,
+        Superscript = 11
+    }
+
+    public class TextRunFormatting
+    {
+        public double Size { get; set; }
+        public TextRunFormattingType FormattingType { get; set; }
+
+        public TextRunFormatting(TextRunFormattingType formattingType, double size = 12d)
+        {
+            FormattingType = formattingType;
+            Size = size;
+        }
+
+        public static TextRunFormatting Normal
+        {
+            get { return new TextRunFormatting(TextRunFormattingType.Normal); }
+        }
+
+        public static TextRunFormatting Subscript
+        {
+            get { return new TextRunFormatting(TextRunFormattingType.Subscript); }
+        }
+
+        public static TextRunFormatting Superscript
+        {
+            get { return new TextRunFormatting(TextRunFormattingType.Superscript); }
+        }
+    }
+
+    public class TextRun
+    {
+        public TextRunFormatting Formatting { get; set; }
+        public string Text { get; set; }
+
+        public TextRun(string text, TextRunFormatting formatting)
+        {
+            Text = text;
+            Formatting = formatting;
+        }
     }
 }

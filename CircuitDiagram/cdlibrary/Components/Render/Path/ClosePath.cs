@@ -8,18 +8,13 @@ using System.IO;
 
 namespace CircuitDiagram.Components.Render.Path
 {
-    class ClosePath : IPathCommand
+    public class ClosePath : IPathCommand
     {
         public Point End { get { return new Point(); } }
 
         public CommandType Type
         {
             get { return CommandType.ClosePath; }
-        }
-
-        public void Draw(StreamGeometryContext dc, Vector startOffset)
-        {
-            dc.BeginFigure(new Point(startOffset.X, startOffset.Y), false, false);
         }
 
         public string Shorthand(Point offset, Point previous)
@@ -33,6 +28,11 @@ namespace CircuitDiagram.Components.Render.Path
 
         public void Read(BinaryReader reader)
         {
+        }
+
+        public IPathCommand Flip(bool horizontal)
+        {
+            throw new NotImplementedException();
         }
     }
 }

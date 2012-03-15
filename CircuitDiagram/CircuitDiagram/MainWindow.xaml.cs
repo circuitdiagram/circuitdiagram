@@ -67,6 +67,19 @@ namespace CircuitDiagram
             CircuitDiagram.Settings.Settings.Initialize(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\settings.xml");
             ApplySettings();
 
+            ComponentHelper.ComponentUpdatedDelegate = new ComponentUpdatedDelegate(Editor_ComponentUpdated);
+            ComponentHelper.CreateEditor = new CreateComponentEditorDelegate(ComponentEditorHelper.CreateEditor);
+            ComponentHelper.LoadIcon = new LoadIconDelegate(
+                (buffer, type) =>
+                {
+                    MemoryStream tempStream = new MemoryStream(buffer);
+                    var tempIcon = new System.Windows.Media.Imaging.BitmapImage();
+                    tempIcon.BeginInit();
+                    tempIcon.StreamSource = tempStream;
+                    tempIcon.EndInit();
+                    return tempIcon;
+                });
+
             circuitDisplay.Document = new CircuitDocument();
             Load();
 
@@ -85,8 +98,6 @@ namespace CircuitDiagram
 
             this.Closed += new EventHandler(MainWindow_Closed);
             this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
-
-            ComponentHelper.ComponentUpdatedDelegate = new ComponentEditor.ComponentUpdatedDelegate(Editor_ComponentUpdated);
 
             // check if should open file
             if (App.AppArgs.Length > 0)
@@ -133,20 +144,23 @@ namespace CircuitDiagram
             {
                 CircuitDocument document;
                 CircuitDiagram.IO.DocumentLoadResult result = CircuitDiagram.IO.CDDXIO.Read(File.OpenRead(path), out document);
-                if (result == IO.DocumentLoadResult.Success)
+                if (result.Type == IO.DocumentLoadResultType.Success)
                     circuitDisplay.Document = document;
-                else if (result == IO.DocumentLoadResult.SuccessNewerVersion)
+                else if (result.Type == IO.DocumentLoadResultType.SuccessNewerVersion)
                 {
                     circuitDisplay.Document = document;
                     MessageBox.Show("The document was created in a newer version of Circuit Diagram and may not have loaded correctly.", "Problem Loading Document");
                 }
-                else if (result == IO.DocumentLoadResult.FailNewerVersion)
+                else if (result.Type == IO.DocumentLoadResultType.FailNewerVersion)
                 {
                     MessageBox.Show("The document was created in a newer version of Circuit Diagram and could not be loaded correctly.", "Unable to Load Document");
                 }
-                else if (result == IO.DocumentLoadResult.FailIncorrectFormat)
+                else if (result.Type == IO.DocumentLoadResultType.FailIncorrectFormat)
                 {
-                    MessageBox.Show("The document was not in the correct format.", "Unable to Load Document");
+                    if (String.IsNullOrEmpty(result.Message))
+                        MessageBox.Show("The document was not in the correct format.", "Unable to Load Document");
+                    else
+                        MessageBox.Show(result.Message, "Unable to Load Document");
                 }
                 else
                 {
@@ -170,7 +184,7 @@ namespace CircuitDiagram
 
                 CircuitDiagram.IO.DocumentLoadResult result = loader.Load(new FileStream(path, FileMode.Open));
 
-                if (result == IO.DocumentLoadResult.Success)
+                if (result.Type == IO.DocumentLoadResultType.Success)
                 {
                     circuitDisplay.Document = loader.Document;
 
@@ -182,11 +196,11 @@ namespace CircuitDiagram
                     m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
                     m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
                 }
-                else if (result == IO.DocumentLoadResult.FailNewerVersion)
+                else if (result.Type == IO.DocumentLoadResultType.FailNewerVersion)
                 {
                     MessageBox.Show("The document was created in a newer version of Circuit Diagram and could not be loaded correctly.", "Unable to Load Document");
                 }
-                else if (result == IO.DocumentLoadResult.FailIncorrectFormat)
+                else if (result.Type == IO.DocumentLoadResultType.FailIncorrectFormat)
                 {
                     MessageBox.Show("The document was not in the correct format.", "Unable to Load Document");
                 }
@@ -205,6 +219,9 @@ namespace CircuitDiagram
         /// </summary>
         private void Load()
         {
+            if (m_defaultSaveOptions == null)
+                LoadDefaultCDDXSaveOptions();
+
             #region Load component descriptions
             bool conflictingGuid = false;
             List<string> componentLocations = new List<string>();
@@ -343,7 +360,7 @@ namespace CircuitDiagram
                                             Canvas contentCanvas = new Canvas();
                                             contentCanvas.Width = 45;
                                             contentCanvas.Height = 45;
-                                            var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = configuration.Icon };
+                                            var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = configuration.Icon as ImageSource };
                                             newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
                                             newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
                                             contentCanvas.Children.Add(newImage);
@@ -354,7 +371,7 @@ namespace CircuitDiagram
                                             Canvas contentCanvas = new Canvas();
                                             contentCanvas.Width = 45;
                                             contentCanvas.Height = 45;
-                                            var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = description.Metadata.Icon };
+                                            var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = description.Metadata.Icon as ImageSource };
                                             newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
                                             newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
                                             contentCanvas.Children.Add(newImage);
@@ -392,7 +409,7 @@ namespace CircuitDiagram
                                         Canvas contentCanvas = new Canvas();
                                         contentCanvas.Width = 45;
                                         contentCanvas.Height = 45;
-                                        var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = description.Metadata.Icon };
+                                        var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = description.Metadata.Icon as ImageSource };
                                         newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
                                         newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
                                         contentCanvas.Children.Add(newImage);
@@ -432,7 +449,7 @@ namespace CircuitDiagram
                                             Canvas contentCanvas = new Canvas();
                                             contentCanvas.Width = 45;
                                             contentCanvas.Height = 45;
-                                            var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = configuration.Icon };
+                                            var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = configuration.Icon as ImageSource };
                                             newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
                                             newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
                                             contentCanvas.Children.Add(newImage);
@@ -443,7 +460,7 @@ namespace CircuitDiagram
                                             Canvas contentCanvas = new Canvas();
                                             contentCanvas.Width = 45;
                                             contentCanvas.Height = 45;
-                                            var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = description.Metadata.Icon };
+                                            var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = description.Metadata.Icon as ImageSource };
                                             newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
                                             newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
                                             contentCanvas.Children.Add(newImage);
@@ -481,7 +498,7 @@ namespace CircuitDiagram
                                         Canvas contentCanvas = new Canvas();
                                         contentCanvas.Width = 45;
                                         contentCanvas.Height = 45;
-                                        var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = description.Metadata.Icon };
+                                        var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = description.Metadata.Icon as ImageSource };
                                         newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
                                         newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
                                         contentCanvas.Children.Add(newImage);
@@ -521,8 +538,8 @@ namespace CircuitDiagram
         private void circuitDisplay_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             gridEditor.Children.Clear();
-            if (e.AddedItems.Count > 0)
-                gridEditor.Children.Add((e.AddedItems[0] as Component).Editor);
+            if (e.AddedItems.Count > 0 && (e.AddedItems[0] as Component).Editor != null)
+                gridEditor.Children.Add((e.AddedItems[0] as Component).Editor as ComponentEditor);
         }
 
         private void btnSelect_Click(object sender, RoutedEventArgs e)
@@ -711,14 +728,26 @@ namespace CircuitDiagram
                 }
                 else if (extension == ".png")
                 {
-                    RenderTargetBitmap bmp = new RenderTargetBitmap((int)circuitDisplay.Document.Size.Width, (int)circuitDisplay.Document.Size.Height, 96d, 96d, PixelFormats.Default);
-                    bmp.Render(circuitDisplay);
+                    WPFRenderer renderer = new WPFRenderer();
+                    renderer.Begin();
+                    circuitDisplay.Document.Render(renderer);
+                    renderer.End();
+                    using (var memoryStream = renderer.GetPNGImage(1024, 768))
+                    {
+                        FileStream fileStream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.Read);
+                        memoryStream.WriteTo(fileStream);
+                        fileStream.Close();
+                    }
 
-                    PngBitmapEncoder encoder = new PngBitmapEncoder();
-                    encoder.Frames.Add(BitmapFrame.Create(bmp));
-                    System.IO.FileStream stream = new System.IO.FileStream(sfd.FileName, System.IO.FileMode.Create);
-                    encoder.Save(stream);
-                    stream.Close();
+
+                    //RenderTargetBitmap bmp = new RenderTargetBitmap((int)circuitDisplay.Document.Size.Width, (int)circuitDisplay.Document.Size.Height, 96d, 96d, PixelFormats.Default);
+                    //bmp.Render(circuitDisplay);
+
+                    //PngBitmapEncoder encoder = new PngBitmapEncoder();
+                    //encoder.Frames.Add(BitmapFrame.Create(bmp));
+                    //System.IO.FileStream stream = new System.IO.FileStream(sfd.FileName, System.IO.FileMode.Create);
+                    //encoder.Save(stream);
+                    //stream.Close();
                 }
             }
         }
@@ -735,55 +764,68 @@ namespace CircuitDiagram
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Title = "Save As";
-            sfd.Filter = "Circuit Diagram Document (*.cddx)|*.cddx";
+            sfd.Filter = "Circuit Diagram Document (*.cddx)|*.cddx|XML Files (*.xml)|*.xml";
             if (sfd.ShowDialog() == true)
             {
-                if (m_defaultSaveOptions == null)
-                    LoadDefaultCDDXSaveOptions();
+                string extension = Path.GetExtension(sfd.FileName);
 
-                IO.CDDXSaveOptions saveOptions = m_lastSaveOptions;
-
-                bool doSave = true;
-                bool alwaysUseSettings = Settings.Settings.ReadBool("AlwaysUseCDDXSaveSettings");
-                if (!alwaysUseSettings)
+                if (extension == ".cddx")
                 {
-                    winCDDXSave saveOptionsDialog = new winCDDXSave();
-                    saveOptionsDialog.Owner = this;
-                    saveOptionsDialog.SaveOptions = m_defaultSaveOptions;
+                    IO.CDDXSaveOptions saveOptions = m_lastSaveOptions;
 
-                    List<ComponentDescription> usedDescriptions = new List<ComponentDescription>();
-                    foreach (Component component in circuitDisplay.Document.Components)
-                        if (!usedDescriptions.Contains(component.Description))
-                            usedDescriptions.Add(component.Description);
-                    saveOptionsDialog.AvailableComponents = usedDescriptions;
-
-                    if (saveOptionsDialog.ShowDialog() == true)
+                    bool doSave = true;
+                    bool alwaysUseSettings = Settings.Settings.ReadBool("AlwaysUseCDDXSaveSettings");
+                    if (alwaysUseSettings && m_defaultSaveOptions != null)
+                        saveOptions = m_defaultSaveOptions;
+                    if (!alwaysUseSettings || saveOptions == null)
                     {
-                        doSave = true;
-                        saveOptions = saveOptionsDialog.SaveOptions;
-                        if (saveOptionsDialog.AlwaysUseSettings)
+                        winCDDXSave saveOptionsDialog = new winCDDXSave();
+                        saveOptionsDialog.Owner = this;
+                        saveOptionsDialog.SaveOptions = m_defaultSaveOptions;
+
+                        List<ComponentDescription> usedDescriptions = new List<ComponentDescription>();
+                        foreach (Component component in circuitDisplay.Document.Components)
+                            if (!usedDescriptions.Contains(component.Description))
+                                usedDescriptions.Add(component.Description);
+                        saveOptionsDialog.AvailableComponents = usedDescriptions;
+
+                        if (saveOptionsDialog.ShowDialog() == true)
                         {
-                            m_defaultSaveOptions = saveOptionsDialog.SaveOptions;
-                            Settings.Settings.Write("AlwaysUseCDDXSaveSettings", true);
-
-                            using (MemoryStream stream = new MemoryStream())
+                            doSave = true;
+                            saveOptions = saveOptionsDialog.SaveOptions;
+                            if (saveOptionsDialog.AlwaysUseSettings)
                             {
-                                BinaryFormatter binaryFormatter = new BinaryFormatter();
-                                binaryFormatter.Serialize(stream, m_defaultSaveOptions);
+                                m_defaultSaveOptions = saveOptionsDialog.SaveOptions;
+                                Settings.Settings.Write("AlwaysUseCDDXSaveSettings", true);
 
-                                string encodedData = System.Convert.ToBase64String(stream.ToArray());
-                                Settings.Settings.Write("DefaultCDDXSaveSettings", encodedData);
+                                using (MemoryStream stream = new MemoryStream())
+                                {
+                                    BinaryFormatter binaryFormatter = new BinaryFormatter();
+                                    binaryFormatter.Serialize(stream, m_defaultSaveOptions);
+
+                                    string encodedData = System.Convert.ToBase64String(stream.ToArray());
+                                    Settings.Settings.Write("DefaultCDDXSaveSettings", encodedData);
+                                }
                             }
                         }
+                        else
+                            doSave = false;
                     }
-                    else
-                        doSave = false;
-                }
 
-                if (doSave)
+                    if (doSave)
+                    {
+                        m_lastSaveOptions = saveOptions;
+                        CircuitDiagram.IO.CDDXIO.Write(new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, saveOptions);
+                        m_docPath = sfd.FileName;
+                        m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName);
+                        this.Title = m_documentTitle + " - Circuit Diagram";
+                        m_undoManager.SetSaveIndex();
+                    }
+                }
+                else
                 {
-                    m_lastSaveOptions = saveOptions;
-                    CircuitDiagram.IO.CDDXIO.Write(new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, saveOptions);
+                    // Save in XML format
+                    CircuitDiagram.IO.CircuitDocumentWriter.WriteXml(circuitDisplay.Document, new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite));
                     m_docPath = sfd.FileName;
                     m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName);
                     this.Title = m_documentTitle + " - Circuit Diagram";
@@ -937,8 +979,19 @@ namespace CircuitDiagram
         {
             if (m_docPath != "")
             {
-                // Save in CDDX format
-                CircuitDiagram.IO.CDDXIO.Write(new FileStream(m_docPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, m_lastSaveOptions);
+                string extension = Path.GetExtension(m_docPath);
+                if (extension == ".cddx")
+                {
+                    // Save in CDDX format
+                    if (m_lastSaveOptions == null)
+                        m_lastSaveOptions = m_defaultSaveOptions;
+                    CircuitDiagram.IO.CDDXIO.Write(new FileStream(m_docPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, m_lastSaveOptions);
+                }
+                else
+                {
+                    // Save in XML format
+                    CircuitDiagram.IO.CircuitDocumentWriter.WriteXml(circuitDisplay.Document, new FileStream(m_docPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite));
+                }
                 this.Title = System.IO.Path.GetFileNameWithoutExtension(m_docPath) + " - Circuit Diagram";
                 UndoManager.SetSaveIndex();
             }
@@ -976,9 +1029,19 @@ namespace CircuitDiagram
             circuitDisplay.DeleteComponentCommand(sender, e);
         }
 
+        private void FlipComponentCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            circuitDisplay.FlipComponentCommand_CanExecute(sender, e);
+        }
+
+        private void FlipComponentCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            circuitDisplay.FlipComponentCommand(sender, e);
+        }
+
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!e.IsRepeat && e.IsDown)
+            if ((circuitDisplay.IsMouseOver || mainToolbox.IsMouseOver) && !e.IsRepeat && e.IsDown)
             {
                 // Check component shortcuts
                 if (e.Key == Key.V) // Move/select
@@ -991,7 +1054,7 @@ namespace CircuitDiagram
                 }
                 else if (e.Key == Key.W) // Wire
                 {
-                    circuitDisplay.NewComponentData = "@rid: " + ComponentHelper.WireDescription;
+                    circuitDisplay.NewComponentData = "@rid: " + ComponentHelper.WireDescription.RuntimeID;
 
                     SetStatusText("Placing wire.");
 
@@ -1003,7 +1066,7 @@ namespace CircuitDiagram
                     if (m_toolboxShortcuts.ContainsKey(e.Key))
                     {
                         circuitDisplay.NewComponentData = m_toolboxShortcuts[e.Key];
-                        
+
                         string rid = circuitDisplay.NewComponentData.Substring(circuitDisplay.NewComponentData.IndexOf("@rid:") + 5);
                         string configuration = null;
                         if (rid.Contains(" "))
@@ -1056,7 +1119,7 @@ namespace CircuitDiagram
                             foreach (Component component in components)
                             {
                                 component.Deserialize(ComponentDataString.ConvertToDictionary(beforeData[component]));
-                                component.UpdateVisual();
+                                component.InvalidateVisual();
                                 component.ResetConnections();
                                 component.ApplyConnections(circuitDisplay.Document);
                             }
@@ -1093,7 +1156,7 @@ namespace CircuitDiagram
                             foreach (Component component in components)
                             {
                                 component.Deserialize(ComponentDataString.ConvertToDictionary(beforeData[component]));
-                                component.UpdateVisual();
+                                component.InvalidateVisual();
                                 component.ResetConnections();
                                 component.ApplyConnections(circuitDisplay.Document);
                             }

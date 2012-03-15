@@ -33,7 +33,7 @@ namespace CircuitDiagram.Components
         /// A dictionary of setters with the serialized property name as the key.
         /// </summary>
         public Dictionary<string, object> Setters { get; set; }
-        public System.Windows.Media.ImageSource Icon { get; set; }
+        public object Icon { get; set; }
         public string IconMimeType { get; set; }
         public byte[] IconData { get; set; }
 

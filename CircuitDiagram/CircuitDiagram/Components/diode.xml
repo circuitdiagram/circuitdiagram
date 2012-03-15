@@ -3,6 +3,7 @@
   <declaration>
     <meta name="name" value="Diode" />
     <meta name="minsize" value="30" />
+    <meta name="canflip" value="true" />
     <meta name="author" value="Circuit Diagram" />
     <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
     <meta name="guid" value="50cc071a-0abc-4276-a7a0-a5bff9cc0374" />

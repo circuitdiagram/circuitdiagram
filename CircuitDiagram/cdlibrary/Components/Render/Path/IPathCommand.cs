@@ -12,9 +12,9 @@ namespace CircuitDiagram.Components.Render.Path
     {
         Point End { get; }
         CommandType Type { get; }
-        void Draw(StreamGeometryContext dc, Vector startOffset);
         string Shorthand(Point offset, Point previous);
         void Write(BinaryWriter writer);
         void Read(BinaryReader reader);
+        IPathCommand Flip(bool horizontal);
     }
 }

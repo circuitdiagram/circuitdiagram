@@ -8,7 +8,7 @@ using CircuitDiagram.IO;
 
 namespace CircuitDiagram.Components.Render.Path
 {
-    class SmoothQuadraticBeizerCurveTo : IPathCommand
+    public class SmoothQuadraticBeizerCurveTo : IPathCommand
     {
         public Point ControlStart { get; set; }
         public Point ControlEnd { get; set; }
@@ -17,11 +17,6 @@ namespace CircuitDiagram.Components.Render.Path
         public CommandType Type
         {
             get { return CommandType.SmoothQuadraticBeizerCurveTo; }
-        }
-
-        public void Draw(StreamGeometryContext dc, Vector startOffset)
-        {
-            dc.BezierTo(Point.Add(ControlStart, startOffset), Point.Add(ControlEnd, startOffset), Point.Add(End, startOffset), true, true);
         }
 
         public string Shorthand(Point offset, Point previous)
@@ -41,6 +36,11 @@ namespace CircuitDiagram.Components.Render.Path
             ControlStart = reader.ReadPoint();
             ControlEnd = reader.ReadPoint();
             End = reader.ReadPoint();
+        }
+
+        public IPathCommand Flip(bool horizontal)
+        {
+            throw new NotImplementedException();
         }
     }
 }

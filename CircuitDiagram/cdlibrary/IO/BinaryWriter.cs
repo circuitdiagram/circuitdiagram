@@ -458,7 +458,7 @@ namespace CircuitDiagram.IO
                                             renderWriter.Write(rect.Width);
                                             renderWriter.Write(rect.Height);
                                             renderWriter.Write(rect.StrokeThickness);
-                                            renderWriter.Write((rect.FillColour == System.Windows.Media.Colors.Transparent ? (uint)0 : (uint)1)); // 0 for transparent, 1 for filled
+                                            renderWriter.Write((rect.Fill ? (uint)0 : (uint)1)); // 0 for transparent, 1 for filled
                                         }
                                         break;
                                     case RenderCommandType.Ellipse:
@@ -468,7 +468,7 @@ namespace CircuitDiagram.IO
                                             renderWriter.Write(ellipse.RadiusX);
                                             renderWriter.Write(ellipse.RadiusY);
                                             renderWriter.Write(ellipse.Thickness);
-                                            renderWriter.Write((ellipse.FillColour == System.Windows.Media.Colors.Transparent ? (uint)0 : (uint)1)); // 0 for transparent, 1 for filled
+                                            renderWriter.Write((ellipse.Fill ? (uint)0 : (uint)1)); // 0 for transparent, 1 for filled
                                         }
                                         break;
                                     case RenderCommandType.Path:
@@ -476,7 +476,7 @@ namespace CircuitDiagram.IO
                                             CircuitDiagram.Components.Render.Path.Path path = command as CircuitDiagram.Components.Render.Path.Path;
                                             renderWriter.Write(path.Start);
                                             renderWriter.Write(path.Thickness);
-                                            renderWriter.Write((path.FillColour == System.Windows.Media.Colors.Transparent ? (uint)0 : (uint)1)); // 0 for transparent, 1 for filled
+                                            renderWriter.Write((path.Fill ? (uint)0 : (uint)1)); // 0 for transparent, 1 for filled
 
                                             renderWriter.Write(path.Commands.Count);
                                             foreach (IPathCommand pCommand in path.Commands)
@@ -488,11 +488,12 @@ namespace CircuitDiagram.IO
                                         break;
                                     case RenderCommandType.Text:
                                         {
-                                            Text text = command as Text;
-                                            renderWriter.Write(text.Location);
-                                            renderWriter.Write((uint)text.Alignment);
-                                            renderWriter.Write(text.Size);
-                                            renderWriter.Write(text.Value);
+#warning IMPLEMENT
+                                            //Text text = command as Text;
+                                            //renderWriter.Write(text.Location);
+                                            //renderWriter.Write((uint)text.Alignment);
+                                            //renderWriter.Write(text.Size);
+                                            //renderWriter.Write(text.Value);
                                         }
                                         break;
                                 }

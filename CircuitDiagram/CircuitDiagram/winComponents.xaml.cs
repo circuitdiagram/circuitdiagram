@@ -32,6 +32,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using CircuitDiagram.Components;
 using System.Collections;
+using System.Globalization;
 
 namespace CircuitDiagram
 {
@@ -60,6 +61,26 @@ namespace CircuitDiagram
         private void hyperlinkGetMoreComponents_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start("http://www.circuit-diagram.org/components");
+        }
+    }
+
+    class EmbedByDefaultConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType,
+            object parameter, CultureInfo culture)
+        {
+            ComponentDescription description = value as ComponentDescription;
+            if (description != null)
+            {
+                return ComponentHelper.IsStandardComponent(description) ? "Yes" : "No";
+            }
+            return "No";
+        }
+
+        public object ConvertBack(object value, Type targetType,
+            object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
         }
     }
 }

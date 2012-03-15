@@ -25,11 +25,14 @@ using System.Text;
 using System.Xml;
 using System.Windows;
 using System.IO;
+using CircuitDiagram.Components.Render;
 
 namespace CircuitDiagram.Render
 {
     public class SVGRenderer : IRenderContext
     {
+        public bool Absolute { get { return true; } }
+
         public MemoryStream SVGDocument { get; private set; }
         private XmlTextWriter Writer { get { return m_writer; } }
 
@@ -111,7 +114,7 @@ namespace CircuitDiagram.Render
             m_writer.WriteEndElement();
         }
 
-        public void DrawText(Point anchor, Components.Render.TextAlignment alignment, string text, double size)
+        public void DrawText(Point anchor, Components.Render.TextAlignment alignment, IEnumerable<TextRun> textRuns)
         {
             m_writer.WriteStartElement("text");
             m_writer.WriteAttributeString("x", anchor.X.ToString());
@@ -129,8 +132,27 @@ namespace CircuitDiagram.Render
             else if (alignment == Components.Render.TextAlignment.TopCentre || alignment == Components.Render.TextAlignment.TopLeft || alignment == Components.Render.TextAlignment.TopRight)
                 alignmentBaseline = "before-edge";
 
-            m_writer.WriteAttributeString("style", "font-family:Arial;font-size:" + size.ToString() + ";text-anchor:" + textAnchor + ";alignment-baseline:" + alignmentBaseline);
-            m_writer.WriteString(text);
+            m_writer.WriteAttributeString("style", "font-family:Arial;font-size:" + textRuns.FirstOrDefault().Formatting.Size.ToString() + ";text-anchor:" + textAnchor + ";alignment-baseline:" + alignmentBaseline);
+
+            foreach (TextRun run in textRuns)
+            {
+                if (run.Formatting.FormattingType != TextRunFormattingType.Normal)
+                    m_writer.WriteStartElement("tspan");
+                if (run.Formatting.FormattingType == TextRunFormattingType.Subscript)
+                {
+                    m_writer.WriteAttributeString("baseline-shift", "sub");
+                    m_writer.WriteAttributeString("style", "font-size:0.8em");
+                }
+                else if (run.Formatting.FormattingType == TextRunFormattingType.Superscript)
+                {
+                    m_writer.WriteAttributeString("baseline-shift", "super");
+                    m_writer.WriteAttributeString("style", "font-size:0.8em");
+                }
+                m_writer.WriteString(run.Text);
+                if (run.Formatting.FormattingType != TextRunFormattingType.Normal)
+                    m_writer.WriteEndElement();
+            }
+
             m_writer.WriteEndElement();
         }
     }

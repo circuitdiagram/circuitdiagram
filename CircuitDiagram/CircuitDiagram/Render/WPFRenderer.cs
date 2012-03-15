@@ -26,11 +26,14 @@ using System.Windows;
 using System.Windows.Media;
 using TextAlignment = CircuitDiagram.Components.Render.TextAlignment;
 using System.Windows.Media.Imaging;
+using CircuitDiagram.Components.Render;
 
 namespace CircuitDiagram.Render
 {
     public class WPFRenderer : IRenderContext
     {
+        public bool Absolute { get { return true; } }
+
         DrawingVisual m_visual;
         DrawingContext dc;
 
@@ -85,23 +88,56 @@ namespace CircuitDiagram.Render
 
         public void DrawPath(Point start, IList<Components.Render.Path.IPathCommand> commands, double thickness, bool fill = false)
         {
-            dc.DrawGeometry((fill ? Brushes.Black : Brushes.Transparent), new Pen(Brushes.Black, thickness), CircuitDiagram.Components.Render.Path.Path.GetGeometry(start, commands));
+            dc.DrawGeometry((fill ? Brushes.Black : Brushes.Transparent), new Pen(Brushes.Black, thickness), RenderHelper.GetGeometry(start, commands, fill));
         }
 
-        public void DrawText(Point anchor, Components.Render.TextAlignment alignment, string text, double size)
+        public void DrawText(Point anchor, Components.Render.TextAlignment alignment, IEnumerable<CircuitDiagram.Components.Render.TextRun> textRuns)
         {
-            FormattedText formattedText = new FormattedText(text, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), size, Brushes.Black);
+            double totalWidth = 0d;
+            double totalHeight = 0d;
 
+            foreach (TextRun run in textRuns)
+            {
+                FormattedText ft = new FormattedText(run.Text, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(RenderHelper.CircuitFont()), run.Formatting.Size, Brushes.Black);
+                if (run.Formatting.FormattingType == TextRunFormattingType.Subscript)
+                    ft = new FormattedText(run.Text, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(RenderHelper.CircuitFont()), run.Formatting.Size / 1.5, Brushes.Black);
+                totalWidth += ft.Width;
+                if (ft.Height > totalHeight)
+                    totalHeight = ft.Height;
+            }
+
+            Point renderLocation = anchor;
             if (alignment == TextAlignment.TopCentre || alignment == TextAlignment.CentreCentre || alignment == TextAlignment.BottomCentre)
-                anchor.X -= formattedText.Width / 2;
+                renderLocation.X -= totalWidth / 2;
             else if (alignment == TextAlignment.TopRight || alignment == TextAlignment.CentreRight || alignment == TextAlignment.BottomRight)
-                anchor.X -= formattedText.Width;
+                renderLocation.X -= totalWidth;
             if (alignment == TextAlignment.CentreLeft || alignment == TextAlignment.CentreCentre || alignment == TextAlignment.CentreRight)
-                anchor.Y -= formattedText.Height / 2;
+                renderLocation.Y -= totalHeight / 2;
             else if (alignment == TextAlignment.BottomLeft || alignment == TextAlignment.BottomCentre || alignment == TextAlignment.BottomRight)
-                anchor.Y -= formattedText.Height;
+                renderLocation.Y -= totalHeight;
 
-            dc.DrawText(formattedText, anchor);
+            double horizontalOffsetCounter = 0;
+            foreach (TextRun run in textRuns)
+            {
+                if (run.Formatting.FormattingType == TextRunFormattingType.Normal)
+                {
+                    FormattedText formattedText = new FormattedText(run.Text, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(RenderHelper.CircuitFont()), run.Formatting.Size, Brushes.Black);
+                    dc.DrawText(formattedText, Point.Add(renderLocation, new Vector(horizontalOffsetCounter, 0d)));
+                    horizontalOffsetCounter += formattedText.Width;
+                }
+                else if (run.Formatting.FormattingType == TextRunFormattingType.Subscript)
+                {
+                    FormattedText formattedText = new FormattedText(run.Text, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(RenderHelper.CircuitFont()), run.Formatting.Size / 1.5, Brushes.Black);
+                    dc.DrawText(formattedText, Point.Add(renderLocation, new Vector(horizontalOffsetCounter, totalHeight - formattedText.Height)));
+                    horizontalOffsetCounter += formattedText.Width;
+                }
+                else if (run.Formatting.FormattingType == TextRunFormattingType.Superscript)
+                {
+                    FormattedText formattedText = new FormattedText(run.Text, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(RenderHelper.CircuitFont()), run.Formatting.Size / 1.5, Brushes.Black);
+                    dc.DrawText(formattedText, Point.Add(renderLocation, new Vector(horizontalOffsetCounter, -3d)));
+                    horizontalOffsetCounter += formattedText.Width;
+                }
+            }
         }
     }
 }

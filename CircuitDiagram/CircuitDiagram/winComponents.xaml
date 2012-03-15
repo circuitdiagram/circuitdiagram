@@ -6,6 +6,7 @@
     <Window.Resources>
         <my:BoolToYesNoConverter x:Key="YesNoConverter" />
         <my:SignedColourConverter x:Key="SignedColourConverter" />
+        <my:EmbedByDefaultConverter x:Key="EmbedByDefaultConverter" />
     </Window.Resources>
     <Grid>
         <ListBox HorizontalAlignment="Left" Margin="12,12,0,41" Name="lbxComponents" Width="163" DisplayMemberPath="ComponentName" ItemsSource="{Binding}" IsSynchronizedWithCurrentItem="True" />
@@ -41,7 +42,7 @@
             <Label Grid.Column="1" Grid.Row="0" Content="{Binding Path=ComponentName}" />
             <Label Grid.Column="1" Grid.Row="1" Content="{Binding Path=Metadata.Signed, Converter={StaticResource YesNoConverter}}" Foreground="{Binding Path=Metadata.Signed, Converter={StaticResource SignedColourConverter}}" />
             <Label Grid.Column="1" Grid.Row="2" Content="{Binding Path=Metadata.Author}" />
-            <Label Grid.Column="1" Grid.Row="3" Content="{Binding Path=Metadata.EmbedByDefault, Converter={StaticResource YesNoConverter}}" />
+            <Label Grid.Column="1" Grid.Row="3" Content="{Binding ElementName=lbxComponents, Path=SelectedItem, Converter={StaticResource EmbedByDefaultConverter}}" />
             <Label Grid.Column="1" Grid.Row="4" Content="{Binding Path=Metadata.Type}" />
             <Image Grid.Column="1" Grid.Row="5" Source="{Binding Path=Metadata.Icon}" Stretch="Uniform" HorizontalAlignment="Left" />
             <Label Grid.Column="1" Grid.Row="6" Content="{Binding Path=Metadata.GUID}" />

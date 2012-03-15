@@ -33,7 +33,7 @@ namespace CircuitDiagram.Components.Render
         public double RadiusX { get; set; }
         public double RadiusY { get; set; }
         public double Thickness { get; set; }
-        public Color FillColour { get; set; }
+        public bool Fill { get; set; }
 
         public RenderCommandType Type
         {
@@ -46,26 +46,24 @@ namespace CircuitDiagram.Components.Render
             RadiusX = 2d;
             RadiusY = 2d;
             Thickness = 2d;
-            FillColour = Colors.Transparent;
+            Fill = false;
         }
 
-        public Ellipse(ComponentPoint centre, double radiusX, double radiusY, double thickness, Color fillColour)
+        public Ellipse(ComponentPoint centre, double radiusX, double radiusY, double thickness, bool fill)
         {
             Centre = centre;
             RadiusX = radiusX;
             RadiusY = radiusY;
             Thickness = thickness;
-            FillColour = fillColour;
-        }
-
-        public void Render(Component component, DrawingContext dc, Color colour)
-        {
-            dc.DrawEllipse(new SolidColorBrush(FillColour), new Pen(new SolidColorBrush(colour), Thickness), Centre.Resolve(component), RadiusX, RadiusY);
+            Fill = fill;
         }
 
         public void Render(Component component, CircuitDiagram.Render.IRenderContext dc)
         {
-            dc.DrawEllipse(Point.Add(Centre.Resolve(component), new Vector(component.Offset.X, component.Offset.Y)), RadiusX, RadiusY, Thickness, (FillColour != Colors.Transparent && FillColour != Colors.White));
+            if (dc.Absolute)
+                dc.DrawEllipse(Point.Add(Centre.Resolve(component), new Vector(component.Offset.X, component.Offset.Y)), RadiusX, RadiusY, Thickness, Fill);
+            else
+                dc.DrawEllipse(Centre.Resolve(component), RadiusX, RadiusY, Thickness, Fill);
         }
     }
 }

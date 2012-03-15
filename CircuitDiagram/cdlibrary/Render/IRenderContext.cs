@@ -29,6 +29,8 @@ namespace CircuitDiagram.Render
 {
     public interface IRenderContext
     {
+        bool Absolute { get; }
+
         void Begin();
         void End();
 
@@ -36,6 +38,6 @@ namespace CircuitDiagram.Render
         void DrawRectangle(Point start, Size size, double thickness, bool fill = false);
         void DrawEllipse(Point centre, double radiusX, double radiusY, double thickness, bool fill = false);
         void DrawPath(Point start, IList<IPathCommand> commands, double thickness, bool fill = false);
-        void DrawText(Point anchor, CircuitDiagram.Components.Render.TextAlignment alignment, string text, double size);
+        void DrawText(Point anchor, CircuitDiagram.Components.Render.TextAlignment alignment, IEnumerable<CircuitDiagram.Components.Render.TextRun> textRuns);
     }
 }

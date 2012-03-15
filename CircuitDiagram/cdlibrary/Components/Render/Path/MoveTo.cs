@@ -8,7 +8,7 @@ using CircuitDiagram.IO;
 
 namespace CircuitDiagram.Components.Render.Path
 {
-    class MoveTo : IPathCommand
+    public class MoveTo : IPathCommand
     {
         public CommandType Type { get { return CommandType.MoveTo; } }
         public Point End { get { return new Point(X, Y); } }
@@ -26,11 +26,6 @@ namespace CircuitDiagram.Components.Render.Path
         {
             X = x;
             Y = y;
-        }
-
-        public void Draw(StreamGeometryContext dc, Vector startOffset)
-        {
-            dc.LineTo(new System.Windows.Point(X + startOffset.X, Y + startOffset.Y), false, true);
         }
 
         public string Shorthand(Point offset, Point previous)
@@ -51,6 +46,18 @@ namespace CircuitDiagram.Components.Render.Path
         {
             X = reader.ReadDouble();
             Y = reader.ReadDouble();
+        }
+
+        public IPathCommand Flip(bool horizontal)
+        {
+            if (horizontal)
+            {
+                return new MoveTo(-X, Y);
+            }
+            else
+            {
+                return new MoveTo(X, -Y);
+            }
         }
     }
 }

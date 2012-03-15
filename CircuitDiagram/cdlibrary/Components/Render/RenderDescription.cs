@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Media;
+using CircuitDiagram.Render;
 
 namespace CircuitDiagram.Components.Render
 {
@@ -33,10 +34,10 @@ namespace CircuitDiagram.Components.Render
         {
         }
 
-        public void Render(Component component, DrawingContext dc)
+        public void Render(Component component, IRenderContext dc)
         {
             foreach (IRenderCommand command in Value)
-                command.Render(component, dc, Colors.Black);
+                command.Render(component, dc);
         }
     }
 }

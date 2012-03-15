@@ -27,7 +27,6 @@ using System.IO.Compression;
 using CircuitDiagram.Components;
 using CircuitDiagram.Components.Render;
 using System.Security.Cryptography;
-using System.Windows.Media.Imaging;
 using CircuitDiagram.Components.Render.Path;
 
 namespace CircuitDiagram.IO
@@ -318,8 +317,8 @@ namespace CircuitDiagram.IO
                                                 double width = reader.ReadDouble();
                                                 double height = reader.ReadDouble();
                                                 double thickness = reader.ReadDouble();
-                                                System.Windows.Media.Color fillColour = (reader.ReadUInt32() == 0 ? System.Windows.Media.Colors.Transparent : System.Windows.Media.Colors.Black);
-                                                renderCommands.Add(new Rectangle(location, width, height, thickness, fillColour));
+                                                bool fill = (reader.ReadUInt32() == 0 ? false : true);
+                                                renderCommands.Add(new Rectangle(location, width, height, thickness, fill));
                                             }
                                             continue;
                                         case RenderCommandType.Ellipse:
@@ -328,15 +327,15 @@ namespace CircuitDiagram.IO
                                                 double radiusX = reader.ReadDouble();
                                                 double radiusY = reader.ReadDouble();
                                                 double thickness = reader.ReadDouble();
-                                                System.Windows.Media.Color fillColour = (reader.ReadUInt32() == 0 ? System.Windows.Media.Colors.Transparent : System.Windows.Media.Colors.Black);
-                                                renderCommands.Add(new Ellipse(centre, radiusX, radiusY, thickness, fillColour));
+                                                bool fill = (reader.ReadUInt32() == 0 ? false : true);
+                                                renderCommands.Add(new Ellipse(centre, radiusX, radiusY, thickness, fill));
                                             }
                                             continue;
                                         case RenderCommandType.Path:
                                             {
                                                 ComponentPoint start = reader.ReadComponentPoint();
                                                 double thickness = reader.ReadDouble();
-                                                System.Windows.Media.Color fillColour = (reader.ReadUInt32() == 0 ? System.Windows.Media.Colors.Transparent : System.Windows.Media.Colors.Black);
+                                                bool fill = (reader.ReadUInt32() == 0 ? false : true);
 
                                                 int numCommands = reader.ReadInt32();
                                                 List<IPathCommand> pathCommands = new List<IPathCommand>(numCommands);
@@ -375,7 +374,7 @@ namespace CircuitDiagram.IO
                                                     pathCommands.Add(theCommand);
                                                 }
 
-                                                renderCommands.Add(new CircuitDiagram.Components.Render.Path.Path(start, thickness, fillColour, pathCommands));
+                                                renderCommands.Add(new CircuitDiagram.Components.Render.Path.Path(start, thickness, fill, pathCommands));
                                             }
                                             continue;
                                         case RenderCommandType.Text:
@@ -423,12 +422,9 @@ namespace CircuitDiagram.IO
                     {
                         description.Metadata.IconData = iconResource.Buffer;
                         description.Metadata.IconMimeType = iconResource.ResourceType;
-                        MemoryStream tempStream = new MemoryStream(iconResource.Buffer);
-                        var tempIcon = new System.Windows.Media.Imaging.BitmapImage();
-                        tempIcon.BeginInit();
-                        tempIcon.StreamSource = tempStream;
-                        tempIcon.EndInit();
-                        description.Metadata.Icon = tempIcon;
+
+                        if (ComponentHelper.LoadIcon != null)
+                            description.Metadata.Icon = ComponentHelper.LoadIcon(iconResource.Buffer, iconResource.ResourceType);
                     }
                 }
 
@@ -442,12 +438,13 @@ namespace CircuitDiagram.IO
                         {
                             configuration.IconData = iconResource.Buffer;
                             configuration.IconMimeType = iconResource.ResourceType;
-                            MemoryStream tempStream = new MemoryStream(iconResource.Buffer);
+                            /*MemoryStream tempStream = new MemoryStream(iconResource.Buffer);
                             var tempIcon = new System.Windows.Media.Imaging.BitmapImage();
                             tempIcon.BeginInit();
                             tempIcon.StreamSource = tempStream;
-                            tempIcon.EndInit();
-                            configuration.Icon = tempIcon;
+                            tempIcon.EndInit();*/
+                            if (ComponentHelper.LoadIcon != null)
+                                configuration.Icon = ComponentHelper.LoadIcon(iconResource.Buffer, iconResource.ResourceType);
                         }
                     }
                 }

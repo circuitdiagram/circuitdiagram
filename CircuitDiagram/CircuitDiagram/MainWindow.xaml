@@ -93,6 +93,7 @@
                 <cd:CircuitDisplay.ContextMenu>
                     <ContextMenu>
                         <MenuItem Command="cd:CustomCommands.DeleteComponent" />
+                        <MenuItem Command="cd:CustomCommands.FlipComponent" />
                     </ContextMenu>
                 </cd:CircuitDisplay.ContextMenu>
             </cd:CircuitDisplay>
@@ -105,5 +106,6 @@
         <CommandBinding Command="Undo" CanExecute="CommandUndo_CanExecute" Executed="CommandUndo_Executed" />
         <CommandBinding Command="Redo" CanExecute="CommandRedo_CanExecute" Executed="CommandRedo_Executed" />
         <CommandBinding Command="cd:CustomCommands.DeleteComponent" CanExecute="DeleteComponentCommand_CanExecute" Executed="DeleteComponentCommand_Executed" />
+        <CommandBinding Command="cd:CustomCommands.FlipComponent" CanExecute="FlipComponentCommand_CanExecute" Executed="FlipComponentCommand_Executed" />
     </Window.CommandBindings>
 </Window>

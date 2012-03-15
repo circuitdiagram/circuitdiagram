@@ -75,7 +75,7 @@ namespace CircuitDiagram.IO
         }
     }
 
-    public enum DocumentLoadResult
+    public enum DocumentLoadResultType
     {
         None = 0,
         Success = 1,
@@ -83,6 +83,18 @@ namespace CircuitDiagram.IO
         FailNewerVersion = 3,
         FailIncorrectFormat = 4,
         SuccessNewerVersion = 5
+    }
+
+    public class DocumentLoadResult
+    {
+        public DocumentLoadResultType Type { get; set; }
+        public string Message { get; set; }
+
+        public DocumentLoadResult(DocumentLoadResultType type, string message = null)
+        {
+            Type = type;
+            Message = message;
+        }
     }
 
     [Serializable]
