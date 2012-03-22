@@ -98,6 +98,7 @@ namespace CircuitDiagram
                 {
                     RemoveVisualChild(m_elementVisuals[item]);
                     RemoveLogicalChild(m_elementVisuals[item]);
+                    m_elementVisuals.Remove(item);
                     item.Updated -= new EventHandler(Component_Updated);
                 }
             }
@@ -147,6 +148,9 @@ namespace CircuitDiagram
         {
             if (Document == null)
                 return;
+
+            m_resizing = ComponentResizeMode.None;
+            m_resizingComponent = null;
 
             this.Width = Document.Size.Width;
             this.Height = Document.Size.Height;
