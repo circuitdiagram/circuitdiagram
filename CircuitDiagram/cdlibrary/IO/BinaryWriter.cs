@@ -89,6 +89,7 @@ namespace CircuitDiagram.IO
     public static class BinaryConstants
     {
         public const byte FormatVersion = 1;
+        public const byte FormattedTextVersion = 1;
 
         public enum ContentItemType : ushort
         {
@@ -230,15 +231,16 @@ namespace CircuitDiagram.IO
                     #region Metadata
                     // Write METADATA
                     /* Component name (string)
-     *                  Can resize (bool)
-     *                  Minimum size (bool)
-     *                  GUID (byte[16])
-     *                  Author (string)
-     *                  Version (major, minor) (uint, uint)
-     *                  AdditionalInformation (string)
-     *                  Implement set (string)
-     *                  Implement item (string)
-     *                  IconresourceID (int) */
+                     *  Can resize (bool)
+                     *  Minimum size (bool)
+                     *  GUID (byte[16])
+                     *  Author (string)
+                     *  Version (major, minor) (uint, uint)
+                     *  AdditionalInformation (string)
+                     *  Implement set (string)
+                     *  Implement item (string)
+                     *  IconresourceID (int)
+                     *  Timestamp (long) */
                     using (MemoryStream metadatSectionStream = new MemoryStream())
                     {
                         BW metadataWriter = new BW(metadatSectionStream);
@@ -261,6 +263,7 @@ namespace CircuitDiagram.IO
                         }
                         else
                             metadataWriter.Write(-1);
+                        metadataWriter.Write(DateTime.Now.ToBinary());
 
                         writer.Write((ushort)BinaryConstants.ComponentSectionType.Metadata);
                         writer.Write((uint)metadatSectionStream.Length);
@@ -458,7 +461,7 @@ namespace CircuitDiagram.IO
                                             renderWriter.Write(rect.Width);
                                             renderWriter.Write(rect.Height);
                                             renderWriter.Write(rect.StrokeThickness);
-                                            renderWriter.Write((rect.Fill ? (uint)0 : (uint)1)); // 0 for transparent, 1 for filled
+                                            renderWriter.Write((rect.Fill ? (uint)1 : (uint)0)); // 0 for transparent, 1 for filled
                                         }
                                         break;
                                     case RenderCommandType.Ellipse:
@@ -468,7 +471,7 @@ namespace CircuitDiagram.IO
                                             renderWriter.Write(ellipse.RadiusX);
                                             renderWriter.Write(ellipse.RadiusY);
                                             renderWriter.Write(ellipse.Thickness);
-                                            renderWriter.Write((ellipse.Fill ? (uint)0 : (uint)1)); // 0 for transparent, 1 for filled
+                                            renderWriter.Write((ellipse.Fill ? (uint)1 : (uint)0)); // 0 for transparent, 1 for filled
                                         }
                                         break;
                                     case RenderCommandType.Path:
@@ -476,7 +479,7 @@ namespace CircuitDiagram.IO
                                             CircuitDiagram.Components.Render.Path.Path path = command as CircuitDiagram.Components.Render.Path.Path;
                                             renderWriter.Write(path.Start);
                                             renderWriter.Write(path.Thickness);
-                                            renderWriter.Write((path.Fill ? (uint)0 : (uint)1)); // 0 for transparent, 1 for filled
+                                            renderWriter.Write((path.Fill ? (uint)1 : (uint)0)); // 0 for transparent, 1 for filled
 
                                             renderWriter.Write(path.Commands.Count);
                                             foreach (IPathCommand pCommand in path.Commands)
@@ -488,12 +491,18 @@ namespace CircuitDiagram.IO
                                         break;
                                     case RenderCommandType.Text:
                                         {
-#warning IMPLEMENT
-                                            //Text text = command as Text;
-                                            //renderWriter.Write(text.Location);
-                                            //renderWriter.Write((uint)text.Alignment);
-                                            //renderWriter.Write(text.Size);
-                                            //renderWriter.Write(text.Value);
+                                            Text text = command as Text;
+                                            renderWriter.Write(BinaryConstants.FormattedTextVersion); // Formatted text version
+                                            renderWriter.Write(text.Location); // Text location
+                                            renderWriter.Write((uint)text.Alignment); // Text alignment
+
+                                            renderWriter.Write((uint)text.TextRuns.Count); // Number of text runs
+                                            foreach (TextRun run in text.TextRuns)
+                                            {
+                                                renderWriter.Write((uint)run.Formatting.FormattingType); // Run formatting type
+                                                renderWriter.Write(run.Formatting.Size); // Run text size
+                                                renderWriter.Write(run.Text); // Text
+                                            }
                                         }
                                         break;
                                 }

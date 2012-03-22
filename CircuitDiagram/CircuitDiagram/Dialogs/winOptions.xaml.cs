@@ -31,6 +31,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using CircuitDiagram.Settings;
+using CircuitDiagram.Components;
 
 namespace CircuitDiagram
 {
@@ -48,6 +49,12 @@ namespace CircuitDiagram
             chbShowCDDXOptions.IsChecked = !Settings.Settings.ReadBool("AlwaysUseCDDXSaveSettings");
         }
 
+        public List<ImplementationConversionCollection> ComponentRepresentations
+        {
+            get { return tabImplementations.DataContext as List<ImplementationConversionCollection>; }
+            set { tabImplementations.DataContext = value; }
+        }
+
         private void button2_Click(object sender, RoutedEventArgs e)
         {
             Settings.Settings.Write("showConnectionPoints", chbShowConnectionPoints.IsChecked.Value);
@@ -62,6 +69,35 @@ namespace CircuitDiagram
         {
             this.DialogResult = false;
             this.Close();
+        }
+
+        private void btnImplementationsNew_Click(object sender, RoutedEventArgs e)
+        {
+            winNewComponentImplementation newComImplementation = new winNewComponentImplementation();
+            newComImplementation.Owner = this;
+            newComImplementation.ImplementationSet = cbxImplementationsSet.Text;
+            if (newComImplementation.ShowDialog() == true)
+            {
+                if (cbxImplementationsSet.SelectedItem == null)
+                {
+                    ComponentRepresentations.Add(new ImplementationConversionCollection() { ImplementationSet = cbxImplementationsSet.Text });
+                    cbxImplementationsSet.SelectedItem = ComponentRepresentations.Last();
+                }
+
+                ImplementationConversion conversion = newComImplementation.GetChosenComponent();
+
+                // Don't allow duplicates
+                if ((cbxImplementationsSet.SelectedItem as ImplementationConversionCollection).Items.FirstOrDefault(item => item.ImplementationName == conversion.ImplementationName) != null)
+                    MessageBox.Show("The item is already present.", "Could Not Add Implementation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                else
+                    (cbxImplementationsSet.SelectedItem as ImplementationConversionCollection).Items.Add(newComImplementation.GetChosenComponent());
+            }
+        }
+
+        private void btnImplementationsDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbxImplementationsComponents.SelectedItem != null)
+                (cbxImplementationsSet.SelectedItem as ImplementationConversionCollection).Items.Remove(lbxImplementationsComponents.SelectedItem as ImplementationConversion);
         }
     }
 }

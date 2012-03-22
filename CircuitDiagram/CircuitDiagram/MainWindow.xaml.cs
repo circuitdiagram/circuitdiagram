@@ -35,6 +35,7 @@ using CircuitDiagram.Components;
 using CircuitDiagram.Render;
 using Microsoft.Win32;
 using System.Windows.Threading;
+using CircuitDiagram.IO;
 
 namespace CircuitDiagram
 {
@@ -52,6 +53,8 @@ namespace CircuitDiagram
 
         UndoManager UndoManager { get { return m_undoManager; } }
         public System.Collections.ObjectModel.ObservableCollection<string> RecentFiles = new System.Collections.ObjectModel.ObservableCollection<string>();
+
+        List<ImplementationConversionCollection> m_componentRepresentations = new List<ImplementationConversionCollection>();
         #endregion
 
         public MainWindow()
@@ -143,46 +146,44 @@ namespace CircuitDiagram
             if (System.IO.Path.GetExtension(path) == ".cddx" || System.IO.Path.GetExtension(path) == ".zip")
             {
                 CircuitDocument document;
-                CircuitDiagram.IO.DocumentLoadResult result = CircuitDiagram.IO.CDDXIO.Read(File.OpenRead(path), out document);
-                if (result.Type == IO.DocumentLoadResultType.Success)
-                    circuitDisplay.Document = document;
-                else if (result.Type == IO.DocumentLoadResultType.SuccessNewerVersion)
+                CircuitDiagram.IO.DocumentLoadResult result = CircuitDiagram.IO.CDDX.CDDXIO.Read(File.OpenRead(path), out document);
+
+                if (result.Type != DocumentLoadResultType.Success || result.Errors.Count > 0 || result.UnavailableComponents.Count > 0)
                 {
-                    circuitDisplay.Document = document;
-                    MessageBox.Show("The document was created in a newer version of Circuit Diagram and may not have loaded correctly.", "Problem Loading Document");
-                }
-                else if (result.Type == IO.DocumentLoadResultType.FailNewerVersion)
-                {
-                    MessageBox.Show("The document was created in a newer version of Circuit Diagram and could not be loaded correctly.", "Unable to Load Document");
-                }
-                else if (result.Type == IO.DocumentLoadResultType.FailIncorrectFormat)
-                {
-                    if (String.IsNullOrEmpty(result.Message))
-                        MessageBox.Show("The document was not in the correct format.", "Unable to Load Document");
-                    else
-                        MessageBox.Show(result.Message, "Unable to Load Document");
-                }
-                else
-                {
-                    // Unknown
-                    MessageBox.Show("An unknown error occurred while loading the document.", "Unable to Load Document");
+                    winDocumentLoadResult loadResultWindow = new winDocumentLoadResult();
+                    loadResultWindow.Owner = this;
+                    loadResultWindow.SetMessage(result.Type);
+                    loadResultWindow.SetErrors(result.Errors);
+                    loadResultWindow.SetUnavailableComponents(result.UnavailableComponents);
+                    loadResultWindow.ShowDialog();
                 }
 
-                circuitDisplay.DrawConnections();
-
-                m_docPath = path;
-                m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
-                this.Title = m_documentTitle + " - Circuit Diagram";
-                m_undoManager = new UndoManager();
-                circuitDisplay.UndoManager = m_undoManager;
-                m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
-                m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
+                if (result.Type == DocumentLoadResultType.Success)
+                {
+                    circuitDisplay.Document = document;
+                    circuitDisplay.DrawConnections();
+                    m_docPath = path;
+                    m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
+                    this.Title = m_documentTitle + " - Circuit Diagram";
+                    m_undoManager = new UndoManager();
+                    circuitDisplay.UndoManager = m_undoManager;
+                    m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
+                    m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
+                }
             }
             else
             {
                 CircuitDiagram.IO.CircuitDocumentLoader loader = new IO.CircuitDocumentLoader();
 
-                CircuitDiagram.IO.DocumentLoadResult result = loader.Load(new FileStream(path, FileMode.Open));
+                CircuitDiagram.IO.DocumentLoadResult result = loader.Load(File.OpenRead(path));
+
+                if (result.UnavailableComponents.Count > 0)
+                {
+                    winDocumentLoadResult loadResultWindow = new winDocumentLoadResult();
+                    loadResultWindow.Owner = this;
+                    loadResultWindow.SetUnavailableComponents(result.UnavailableComponents);
+                    loadResultWindow.ShowDialog();
+                }
 
                 if (result.Type == IO.DocumentLoadResultType.Success)
                 {
@@ -281,35 +282,106 @@ namespace CircuitDiagram
                 {
                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
-                        binLoader.Load(fs, tempRSA.ExportParameters(false));
-                        ComponentDescription[] descriptions = binLoader.GetDescriptions();
-                        ComponentDescriptionSource source = new ComponentDescriptionSource(file, new System.Collections.ObjectModel.ReadOnlyCollection<ComponentDescription>(descriptions));
-                        foreach (ComponentDescription description in descriptions)
+                        if (binLoader.Load(fs, tempRSA.ExportParameters(false)))
                         {
-                            description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;
-                            description.Source = source;
-
-                            // Check if duplicate GUID
-                            if (!conflictingGuid && description.Metadata.GUID != Guid.Empty)
+                            ComponentDescription[] descriptions = binLoader.GetDescriptions();
+                            ComponentDescriptionSource source = new ComponentDescriptionSource(file, new System.Collections.ObjectModel.ReadOnlyCollection<ComponentDescription>(descriptions));
+                            foreach (ComponentDescription description in descriptions)
                             {
-                                foreach (ComponentDescription compareDescription in ComponentHelper.ComponentDescriptions)
-                                    if (compareDescription.Metadata.GUID == description.Metadata.GUID)
-                                        conflictingGuid = true;
-                            }
+                                description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;
+                                description.Source = source;
 
-                            ComponentHelper.AddDescription(description);
-                            if (ComponentHelper.WireDescription == null && description.ComponentName.ToLowerInvariant() == "wire" && description.Metadata.GUID == new Guid("6353882b-5208-4f88-a83b-2271cc82b94f"))
-                                ComponentHelper.WireDescription = description;
+                                // Check if duplicate GUID
+                                if (!conflictingGuid && description.Metadata.GUID != Guid.Empty)
+                                {
+                                    foreach (ComponentDescription compareDescription in ComponentHelper.ComponentDescriptions)
+                                        if (compareDescription.Metadata.GUID == description.Metadata.GUID)
+                                            conflictingGuid = true;
+                                }
+
+                                ComponentHelper.AddDescription(description);
+                                if (ComponentHelper.WireDescription == null && description.ComponentName.ToLowerInvariant() == "wire" && description.Metadata.GUID == new Guid("6353882b-5208-4f88-a83b-2271cc82b94f"))
+                                    ComponentHelper.WireDescription = description;
+                            }
                         }
                     }
                 }
             }
 
             if (conflictingGuid)
-                SetStatusText("One or more components have the same GUID.");
+                SetStatusText("Two or more components have the same GUID.");
             #endregion
 
             LoadToolbox();
+
+            #region Load Component Implementation Conversions
+            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\implementations.xml"))
+            {
+                try
+                {
+                    XmlDocument implDoc = new XmlDocument();
+                    implDoc.Load(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\implementations.xml");
+
+                    XmlNodeList sourceNodes = implDoc.SelectNodes("/implementations/source");
+                    foreach (XmlNode sourceNode in sourceNodes)
+                    {
+                        string collection = sourceNode.Attributes["definitions"].InnerText;
+
+                        ImplementationConversionCollection newCollection = new ImplementationConversionCollection();
+                        newCollection.ImplementationSet = collection;
+
+                        foreach (XmlNode childNode in sourceNode.ChildNodes)
+                        {
+                            if (childNode.Name != "add")
+                                continue;
+
+                            string item = childNode.Attributes["item"].InnerText;
+                            Guid guid = Guid.Empty;
+                            XmlNode guidNode = childNode.SelectSingleNode("guid");
+                            if (guidNode != null)
+                                guid = new Guid(guidNode.InnerText);
+                            string configuration = null;
+                            XmlNode configurationNode = childNode.SelectSingleNode("configuration");
+                            if (configurationNode != null)
+                                configuration = configurationNode.InnerText;
+
+                            ComponentDescription description = ComponentHelper.FindDescription(guid);
+                            if (description != null)
+                            {
+                                ImplementationConversion newConversion = new ImplementationConversion();
+                                newConversion.ImplementationName = item;
+                                newConversion.ToName = description.ComponentName;
+                                newConversion.ToGUID = description.Metadata.GUID;
+
+                                ComponentConfiguration theConfiguration = null;
+                                if (configuration != null)
+                                {
+                                    theConfiguration = description.Metadata.Configurations.FirstOrDefault(check => check.Name == configuration);
+                                    if (theConfiguration != null)
+                                    {
+                                        newConversion.ToConfiguration = theConfiguration.Name;
+                                        newConversion.ToIcon = theConfiguration.Icon as ImageSource;
+                                    }
+                                    else
+                                        newConversion.ToIcon = description.Metadata.Icon as ImageSource;
+                                }
+                                else
+                                    newConversion.ToIcon = description.Metadata.Icon as ImageSource;
+
+                                newCollection.Items.Add(newConversion);
+                                ComponentHelper.SetStandardComponent(newCollection.ImplementationSet, newConversion.ImplementationName, description, theConfiguration);
+                            }
+                        }
+
+                        m_componentRepresentations.Add(newCollection);
+                    }
+                }
+                catch (Exception)
+                {
+                    // Invalid XML file
+                }
+            }
+            #endregion
         }
 
         /// <summary>
@@ -549,8 +621,8 @@ namespace CircuitDiagram
             circuitDisplay.NewComponentData = null;
         }
 
-        CircuitDiagram.IO.CDDXSaveOptions m_defaultSaveOptions;
-        CircuitDiagram.IO.CDDXSaveOptions m_lastSaveOptions;
+        CircuitDiagram.IO.CDDX.CDDXSaveOptions m_defaultSaveOptions;
+        CircuitDiagram.IO.CDDX.CDDXSaveOptions m_lastSaveOptions;
         private void LoadDefaultCDDXSaveOptions()
         {
             string settingsData = Settings.Settings.Read("DefaultCDDXSaveSettings") as string;
@@ -559,11 +631,11 @@ namespace CircuitDiagram
                 using (MemoryStream stream = new MemoryStream(System.Convert.FromBase64String(settingsData)))
                 {
                     BinaryFormatter binaryFormatter = new BinaryFormatter();
-                    m_defaultSaveOptions = (IO.CDDXSaveOptions)binaryFormatter.Deserialize(stream);
+                    m_defaultSaveOptions = (IO.CDDX.CDDXSaveOptions)binaryFormatter.Deserialize(stream);
                 }
             }
             else
-                m_defaultSaveOptions = new IO.CDDXSaveOptions();
+                m_defaultSaveOptions = new IO.CDDX.CDDXSaveOptions();
         }
 
         void SetStatusText(string text)
@@ -771,7 +843,7 @@ namespace CircuitDiagram
 
                 if (extension == ".cddx")
                 {
-                    IO.CDDXSaveOptions saveOptions = m_lastSaveOptions;
+                    IO.CDDX.CDDXSaveOptions saveOptions = m_lastSaveOptions;
 
                     bool doSave = true;
                     bool alwaysUseSettings = Settings.Settings.ReadBool("AlwaysUseCDDXSaveSettings");
@@ -815,7 +887,7 @@ namespace CircuitDiagram
                     if (doSave)
                     {
                         m_lastSaveOptions = saveOptions;
-                        CircuitDiagram.IO.CDDXIO.Write(new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, saveOptions);
+                        CircuitDiagram.IO.CDDX.CDDXIO.Write(new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, saveOptions);
                         m_docPath = sfd.FileName;
                         m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName);
                         this.Title = m_documentTitle + " - Circuit Diagram";
@@ -855,6 +927,7 @@ namespace CircuitDiagram
         {
             winOptions options = new winOptions();
             options.Owner = this;
+            options.ComponentRepresentations = m_componentRepresentations;
             if (options.ShowDialog() == true)
             {
                 CircuitDiagram.Settings.Settings.Save();
@@ -862,6 +935,40 @@ namespace CircuitDiagram
                 ApplySettings();
 
                 circuitDisplay.DrawConnections();
+
+                // Save implementation representations
+                XmlTextWriter writer = new XmlTextWriter(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\implementations.xml", Encoding.UTF8);
+                writer.Formatting = Formatting.Indented;
+                writer.WriteStartDocument();
+                writer.WriteStartElement("implementations");
+                foreach (var source in m_componentRepresentations)
+                {
+                    writer.WriteStartElement("source");
+
+                    writer.WriteAttributeString("definitions", source.ImplementationSet);
+
+                    foreach (var item in source.Items)
+                    {
+                        writer.WriteStartElement("add");
+
+                        writer.WriteAttributeString("item", item.ImplementationName);
+                        writer.WriteStartElement("guid");
+                        writer.WriteValue(item.ToGUID.ToString());
+                        writer.WriteEndElement();
+                        if (!String.IsNullOrEmpty(item.ToConfiguration))
+                        {
+                            writer.WriteStartElement("configuration");
+                            writer.WriteValue(item.ToConfiguration);
+                            writer.WriteEndElement();
+                        }
+
+                        writer.WriteEndElement();
+                    }
+
+                    writer.WriteEndElement();
+                }
+                writer.Flush();
+                writer.Close();
             }
         }
 
@@ -962,7 +1069,7 @@ namespace CircuitDiagram
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Title = "Open";
-            ofd.Filter = "Circuit Diagram Document (*.cddx)|*.cddx|All Files (*.*)|*.*";
+            ofd.Filter = "Supported Circuits (*.cddx;*.xml)|*.cddx;*.xml|Circuit Diagram Document (*.cddx)|*.cddx|XML Files (*.xml)|*.xml|All Files (*.*)|*.*";
             ofd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
             if (ofd.ShowDialog() == true)
             {
@@ -985,7 +1092,7 @@ namespace CircuitDiagram
                     // Save in CDDX format
                     if (m_lastSaveOptions == null)
                         m_lastSaveOptions = m_defaultSaveOptions;
-                    CircuitDiagram.IO.CDDXIO.Write(new FileStream(m_docPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, m_lastSaveOptions);
+                    CircuitDiagram.IO.CDDX.CDDXIO.Write(new FileStream(m_docPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, m_lastSaveOptions);
                 }
                 else
                 {

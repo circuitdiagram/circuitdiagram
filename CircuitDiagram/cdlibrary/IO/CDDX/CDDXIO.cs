@@ -25,8 +25,7 @@ using System.Text;
 using System.IO;
 using System.IO.Packaging;
 
-
-namespace CircuitDiagram.IO
+namespace CircuitDiagram.IO.CDDX
 {
     public static class CDDXIO
     {
@@ -44,7 +43,7 @@ namespace CircuitDiagram.IO
                     Uri documentUri = PackUriHelper.CreatePartUri(new Uri("circuitdiagram\\document.xml", UriKind.Relative));
                     PackagePart documentPart = package.CreatePart(documentUri, System.Net.Mime.MediaTypeNames.Text.Xml, CompressionOption.Normal);
                     package.CreateRelationship(documentPart.Uri, TargetMode.Internal, "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/circuitDiagramDocument");
-                    CircuitDocumentWriter.WriteCDDX(document, package, documentPart, saveOptions);
+                    CDDX.CDDXDocumentWriter.WriteCDDX(document, package, documentPart, saveOptions);
                 }
                 tempStream.WriteTo(outputStream);
             }
@@ -56,7 +55,7 @@ namespace CircuitDiagram.IO
             {
                 PackageRelationship documentRelationship = package.GetRelationshipsByType("http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/circuitDiagramDocument").FirstOrDefault();
                 PackagePart documentPart = package.GetPart(documentRelationship.TargetUri);
-                return CircuitDocumentLoader.LoadCDDX(package, documentPart, out document);
+                return CDDX.CDDXDocumentLoader.LoadCDDX(package, documentPart, out document);
             }
         }
 
@@ -72,28 +71,6 @@ namespace CircuitDiagram.IO
                 ContentType = contentType;
                 Data = data;
             }
-        }
-    }
-
-    public enum DocumentLoadResultType
-    {
-        None = 0,
-        Success = 1,
-        FailUnknown = 2,
-        FailNewerVersion = 3,
-        FailIncorrectFormat = 4,
-        SuccessNewerVersion = 5
-    }
-
-    public class DocumentLoadResult
-    {
-        public DocumentLoadResultType Type { get; set; }
-        public string Message { get; set; }
-
-        public DocumentLoadResult(DocumentLoadResultType type, string message = null)
-        {
-            Type = type;
-            Message = message;
         }
     }
 

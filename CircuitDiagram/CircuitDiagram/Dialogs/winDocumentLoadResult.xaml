@@ -1,0 +1,14 @@
+﻿<Window x:Class="CircuitDiagram.winDocumentLoadResult"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Problem Opening Document" Width="560" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" SizeToContent="Height">
+    <Grid>
+        <StackPanel Orientation="Vertical" Margin="12">
+            <TextBlock Text="The document could not be loaded successfully." Name="lblMessage" />
+            <ListBox Height="66" Name="lbxErrors" VerticalAlignment="Top" Margin="0,12,0,0" />
+            <TextBlock Text="A suitable representation for the following components could not be found:" Name="lblUnavailableComponents" Margin="0,12,0,8" />
+            <TreeView Height="120" Name="trvUnavailableComponents" />
+            <Button Content="OK" Height="23" HorizontalAlignment="Right" Name="btnOK" Width="75" IsDefault="True" Click="btnOK_Click" Margin="12,12,0,0" />
+        </StackPanel>
+    </Grid>
+</Window>

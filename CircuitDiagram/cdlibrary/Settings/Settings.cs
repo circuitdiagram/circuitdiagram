@@ -187,6 +187,7 @@ namespace CircuitDiagram.Settings
                 }
                 writer.WriteAttributeString("type", typeString);
                 writer.WriteAttributeString("value", valueString);
+                writer.WriteEndElement();
             }
             writer.WriteEndDocument();
             writer.Flush();

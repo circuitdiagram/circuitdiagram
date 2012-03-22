@@ -6,7 +6,7 @@
     <meta name="author" value="Circuit Diagram" />
     <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
     <meta name="guid" value="421694bf-755a-4d50-b2ca-7273216ca17d" />
-    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitdiagramdocument/2012/components/common" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
 
     <property name="Type" type="enum" default="Push" serialize="t" display="Type">
       <option>Push</option>

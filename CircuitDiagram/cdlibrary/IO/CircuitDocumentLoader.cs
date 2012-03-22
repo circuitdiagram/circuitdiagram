@@ -41,399 +41,48 @@ namespace CircuitDiagram.IO
 
     public class CircuitDocumentLoader
     {
-        public CircuitDocumentLoader()
-        {
-        }
-
         public CircuitDocument Document { get; private set; }
-
-        public static DocumentLoadResult LoadCDDX(Package package, PackagePart documentPart, out CircuitDocument document)
-        {
-            double version = 1.0;
-
-            try
-            {
-                using (Stream docStream = documentPart.GetStream(FileMode.Open))
-                {
-                    document = new CircuitDocument();
-
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load(docStream);
-
-                    XmlNamespaceManager namespaceManager = new XmlNamespaceManager(doc.NameTable);
-                    namespaceManager.AddNamespace("cdd", "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/document");
-
-                    double.TryParse(doc.SelectSingleNode("/cdd:circuit", namespaceManager).Attributes["version"].InnerText, out version);
-
-                    #region Metadata
-                    // Metadata
-                    double width = 640d;
-                    double height = 480d;
-                    XmlNodeList metadataNodes = doc.SelectNodes("/cdd:circuit/cdd:metadata/cdd:property", namespaceManager);
-                    foreach (XmlNode metadataNode in metadataNodes)
-                    {
-                        string propertyName = metadataNode.Attributes["name"].InnerText.ToLowerInvariant();
-                        string propertyValue = metadataNode.Attributes["value"].InnerText;
-
-                        if (propertyName == "width")
-                            width = double.Parse(propertyValue);
-                        else if (propertyName == "height")
-                            height = double.Parse(propertyValue);
-                    }
-                    #endregion
-
-                    #region Component sources
-                    // Component sources
-                    XmlNodeList componentSourceNodes = doc.SelectNodes("/cdd:circuit/cdd:components/cdd:source", namespaceManager);
-                    List<ComponentSourceLocation> componentSources = new List<ComponentSourceLocation>();
-
-                    foreach (XmlElement element in componentSourceNodes)
-                    {
-                        string relationshipID = element.GetAttribute("id", "http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-                        string definitions = null;
-                        if (element.HasAttribute("definitions"))
-                            definitions = element.Attributes["definitions"].InnerText;
-
-
-                        ComponentSourceLocation newSource = new ComponentSourceLocation(relationshipID, definitions);
-
-                        List<ComponentSource> sources = new List<ComponentSource>();
-                        foreach (XmlElement childElement in element.SelectNodes("cdd:add", namespaceManager))
-                        {
-
-                            string internalId = childElement.Attributes["id"].InnerText;
-                            string externalId = null;
-                            if (childElement.HasAttribute("xid"))
-                                externalId = childElement.Attributes["xid"].InnerText;
-                            string name = null;
-                            if (childElement.HasAttribute("name"))
-                                name = childElement.Attributes["name"].InnerText;
-                            Guid guid = Guid.Empty;
-                            if (childElement.HasAttribute("guid"))
-                                guid = new Guid(childElement.Attributes["guid"].InnerText);
-                            string implements = null;
-                            if (childElement.HasAttribute("implements"))
-                                implements = childElement.Attributes["implements"].InnerText;
-
-                            XmlNodeList configImplementationNodes = childElement.SelectNodes("cdd:configuration", namespaceManager);
-                            List<ComponentSource.ConfigurationImplementation> parsedImplementations = new List<ComponentSource.ConfigurationImplementation>();
-                            foreach (XmlNode configImplementationNode in configImplementationNodes)
-                                parsedImplementations.Add(new ComponentSource.ConfigurationImplementation(configImplementationNode.Attributes["name"].InnerText, configImplementationNode.Attributes["implements"].InnerText));
-
-                            sources.Add(new ComponentSource(newSource, internalId, externalId, name, guid) { ConfigurationImplementations = parsedImplementations });
-                        }
-
-                        newSource.Sources = sources;
-                        componentSources.Add(newSource);
-                    }
-                    #endregion
-
-                    #region Document elements
-                    // Document elements
-                    Dictionary<string, ICircuitElement> circuitElements = new Dictionary<string, ICircuitElement>();
-                    XmlNodeList documentElements = doc.SelectNodes("/cdd:circuit/cdd:document/cdd:component", namespaceManager);
-                    foreach (XmlElement documentElement in documentElements)
-                    {
-                        if (documentElement == null)
-                            continue;
-
-                        string componentId = null;
-                        if (documentElement.HasAttribute("id"))
-                            componentId = documentElement.Attributes["id"].InnerText;
-                        string componentType = null;
-                        if (documentElement.HasAttribute("type"))
-                            componentType = documentElement.Attributes["type"].InnerText;
-
-                        // Load properties
-                        Dictionary<string, object> properties = new Dictionary<string, object>();
-                        XmlNodeList propertyNodes = documentElement.SelectNodes("cdd:properties/cdd:property", namespaceManager);
-                        foreach (XmlElement propertyNode in propertyNodes)
-                            properties.Add(propertyNode.Attributes["key"].InnerText, propertyNode.Attributes["value"].InnerText);
-
-                        ComponentDescription description = null;
-                        description = GetDescription(documentPart, componentSources, componentType);
-                        if (description != null)
-                            circuitElements.Add(componentId, Component.Create(description, properties));
-                        else
-                        {
-                            // Description not found
-                        }
-                    }
-                    #endregion
-
-                    #region Layout
-                    // Layout
-                    XmlNode parentLayoutNode = doc.SelectSingleNode("/cdd:circuit/cdd:layout", namespaceManager);
-                    if (parentLayoutNode == null)
-                        return new DocumentLoadResult(DocumentLoadResultType.FailIncorrectFormat, "The file contains no layout information.");
-                    foreach (XmlElement layoutNode in parentLayoutNode.ChildNodes)
-                    {
-                        if (layoutNode.Name == "component")
-                        {
-                            string id = layoutNode.Attributes["id"].InnerText;
-                            double x = double.Parse(layoutNode.Attributes["x"].InnerText);
-                            double y = double.Parse(layoutNode.Attributes["y"].InnerText);
-                            bool horizontal = false;
-                            if (layoutNode.HasAttribute("orientation") && layoutNode.Attributes["orientation"].InnerText.ToLowerInvariant() == "horizontal")
-                                horizontal = true;
-                            double size = ComponentHelper.GridSize;
-                            if (layoutNode.HasAttribute("size"))
-                                size = double.Parse(layoutNode.Attributes["size"].InnerText);
-                            bool flipped = false;
-                            if (layoutNode.HasAttribute("flipped") && layoutNode.Attributes["flipped"].InnerText.ToLowerInvariant() == "true")
-                                flipped = true;
-
-                            if (circuitElements.ContainsKey(id))
-                            {
-                                Component component = circuitElements[id] as Component;
-                                if (component != null)
-                                {
-                                    component.Layout(x, y, size, horizontal, flipped);
-                                    component.ApplyConnections(document);
-                                }
-                                document.Elements.Add(component);
-                            }
-                            else
-                            {
-                                // Something's not right...
-                            }
-                        }
-                        else if (layoutNode.Name == "wire")
-                        {
-                            double x = double.Parse(layoutNode.Attributes["x"].InnerText);
-                            double y = double.Parse(layoutNode.Attributes["y"].InnerText);
-                            bool horizontal = false;
-                            if (layoutNode.HasAttribute("orientation") && layoutNode.Attributes["orientation"].InnerText.ToLowerInvariant() == "horizontal")
-                                horizontal = true;
-                            double size = ComponentHelper.GridSize;
-                            if (layoutNode.HasAttribute("size"))
-                                size = double.Parse(layoutNode.Attributes["size"].InnerText);
-
-                            Dictionary<string, object> properties = new Dictionary<string,object>(4);
-                            properties.Add("@x", x);
-                            properties.Add("@y", y);
-                            properties.Add("@orientation", horizontal);
-                            properties.Add("@size", size);
-
-                            if (ComponentHelper.WireDescription != null)
-                            {
-                                Component wire = Component.Create(ComponentHelper.WireDescription, properties);
-                                wire.Layout(x, y, size, horizontal, false);
-                                wire.ApplyConnections(document);
-                                document.Elements.Add(wire);
-                            }
-                        }
-                    }
-
-                    // Add components which did not have layout information (although they ALL either should or shouldn't...)
-                    foreach (ICircuitElement element in circuitElements.Values)
-                    {
-                        if (!document.Elements.Contains(element))
-                        {
-                            return new DocumentLoadResult(DocumentLoadResultType.FailIncorrectFormat, "The file contains no layout information.");
-                        }
-                    }
-                    #endregion
-
-                    document.Size = new System.Windows.Size(width, height);
-
-                    if (version > CircuitDocumentWriter.CDDXDocumentVersion)
-                        return new DocumentLoadResult(DocumentLoadResultType.SuccessNewerVersion);
-                    else
-                        return new DocumentLoadResult(DocumentLoadResultType.Success);
-                }
-            }
-            catch (Exception)
-            {
-                document = null;
-                if (version > CircuitDocumentWriter.CDDXDocumentVersion)
-                    return new DocumentLoadResult(DocumentLoadResultType.FailNewerVersion);
-                else
-                    return new DocumentLoadResult(DocumentLoadResultType.FailUnknown);
-            }
-        }
-
-        private static ComponentDescription GetDescription(PackagePart documentPart, List<ComponentSourceLocation> componentSources, string componentType)
-        {
-            if (componentType.StartsWith("{"))
-            {
-                // Find ComponentSourceLocation
-                string componentTypeID = componentType.Replace("{", "").Replace("}", "");
-                ComponentSource theSource = null;
-                foreach (ComponentSourceLocation searchLocation in componentSources)
-                {
-                    ComponentSource source = searchLocation.Sources.FirstOrDefault(item => item.InternalID == componentTypeID);
-                    if (source != null)
-                    {
-                        theSource = source;
-                        break;
-                    }
-                }
-
-                if (theSource.Description != null)
-                    return theSource.Description;
-                else
-                {
-                    // Load description
-                    if (!String.IsNullOrEmpty(theSource.Location.RelationshipID))
-                    {
-                        // Embedded in document
-                        PackageRelationship relationship = documentPart.GetRelationship(theSource.Location.RelationshipID);
-                        PackagePart descriptionFilePart = relationship.Package.GetPart(PackUriHelper.ResolvePartUri(documentPart.Uri, relationship.TargetUri));
-
-                        ComponentDescription[] descriptions = null;
-                        using (var stream = descriptionFilePart.GetStream())
-                        {
-                            if (descriptionFilePart.ContentType == ContentTypes.BinaryComponent)
-                            {
-                                // Binary component
-                                BinaryLoader loader = new BinaryLoader();
-                                loader.Load(stream);
-                                descriptions = loader.GetDescriptions();
-                            }
-                            else if (descriptionFilePart.ContentType == System.Net.Mime.MediaTypeNames.Text.Xml)
-                            {
-                                // XML component
-                                XmlLoader loader = new XmlLoader();
-                                loader.Load(stream);
-                                descriptions = loader.GetDescriptions();
-                            }
-                            else
-                            {
-                                // Unsupported format
-                            }
-                        }
-
-                        if (descriptions != null)
-                        {
-                            if (descriptions.Length == 1)
-                                theSource.Description = descriptions[0];
-                            else
-                            {
-                                foreach (ComponentDescription description in descriptions)
-                                {
-                                    ComponentSource matchingSource = theSource.Location.Sources.FirstOrDefault(item => item.ExternalID == description.ID);
-                                    if (matchingSource != null)
-                                        matchingSource.Description = description;
-                                }
-                            }
-
-                            // Add to ComponentHelper so can be used by UndoManager
-                            foreach (ComponentDescription description in descriptions)
-                                ComponentHelper.AddDescription(description);
-                        }
-
-                        return theSource.Description;
-                    }
-                    else
-                    {
-                        // Not embedded in document
-                        ComponentDescription description = null;
-
-                        // Find by guid
-                        if (theSource.GUID != Guid.Empty)
-                            description = ComponentHelper.FindDescription(theSource.GUID);
-                        // Find by implementation for whole component
-                        if (description == null && !String.IsNullOrEmpty(theSource.Location.DefinitionSource) && !String.IsNullOrEmpty(theSource.ImplementationName))
-                            description = ComponentHelper.FindDescription(theSource.Location.DefinitionSource, theSource.ImplementationName);
-                        // Find by implementation for configuration
-                        if (description == null)
-                        {
-                            // Create subset description for implementation only
-                            throw new NotImplementedException();
-                        }
-                        // Find by component name
-                        if (description == null)
-                            description = ComponentHelper.FindDescription(theSource.ComponentName);
-
-                        return description;
-                    }
-                }
-            }
-            else
-            {
-                // Find by component name
-                return ComponentHelper.FindDescription(componentType);
-            }
-        }
-
-        class ComponentSource
-        {
-            public ComponentSourceLocation Location { get; set; }
-            public string InternalID { get; set; }
-            public string ExternalID { get; set; }
-            public string ComponentName { get; set; }
-            public Guid GUID { get; set; }
-
-            public string ImplementationName { get; set; }
-            public List<ConfigurationImplementation> ConfigurationImplementations { get; set; }
-
-            public ComponentDescription Description { get; set; }
-
-            public ComponentSource(ComponentSourceLocation location, string internalID, string externalID, string componentName, Guid guid)
-            {
-                Location = location;
-                InternalID = internalID;
-                ExternalID = externalID;
-                ComponentName = componentName;
-                GUID = guid;
-            }
-
-            public class ConfigurationImplementation
-            {
-                public string ImplementationName { get; set; }
-                public string ConfigurationName { get; set; }
-
-                public ConfigurationImplementation(string implementationName, string configurationName)
-                {
-                    ImplementationName = implementationName;
-                    ConfigurationName = configurationName;
-                }
-            }
-        }
-
-        class ComponentSourceLocation
-        {
-            public string RelationshipID { get; private set; }
-            public string DefinitionSource { get; private set; }
-            public List<ComponentSource> Sources { get; set; }
-
-            public ComponentSourceLocation(string relationshipID, string definitionSource)
-            {
-                RelationshipID = relationshipID;
-                DefinitionSource = definitionSource;
-            }
-        }
 
         public DocumentLoadResult Load(Stream stream)
         {
-            XmlDocument doc = new XmlDocument();
-            doc.Load(stream);
-
-            CircuitDocumentXmlVersion version = CircuitDocumentXmlVersion.Unknown;
-            if ((doc.SelectSingleNode("/circuit") as XmlElement).HasAttribute("version"))
+            try
             {
-                string versionString = doc.SelectSingleNode("/circuit").Attributes["version"].InnerText;
-                double versionDouble;
-                if (double.TryParse(versionString, out versionDouble))
+                XmlDocument doc = new XmlDocument();
+                doc.Load(stream);
+
+                CircuitDocumentXmlVersion version = CircuitDocumentXmlVersion.Unknown;
+                if ((doc.SelectSingleNode("/circuit") as XmlElement).HasAttribute("version"))
                 {
-                    if (versionDouble == 1.0d)
-                        version = CircuitDocumentXmlVersion.Version1_0;
-                    else if (versionDouble == 1.1d)
-                        version = CircuitDocumentXmlVersion.Version1_1;
-                    else if (versionDouble == 1.2d)
-                        version = CircuitDocumentXmlVersion.Version1_2;
+                    string versionString = doc.SelectSingleNode("/circuit").Attributes["version"].InnerText;
+                    double versionDouble;
+                    if (double.TryParse(versionString, out versionDouble))
+                    {
+                        if (versionDouble == 1.0d)
+                            version = CircuitDocumentXmlVersion.Version1_0;
+                        else if (versionDouble == 1.1d)
+                            version = CircuitDocumentXmlVersion.Version1_1;
+                        else if (versionDouble == 1.2d)
+                            version = CircuitDocumentXmlVersion.Version1_2;
+                    }
                 }
+
+                if (version == CircuitDocumentXmlVersion.Version1_2)
+                    return LoadVersion1_2(doc);
+                else if (version == CircuitDocumentXmlVersion.Version1_1)
+                    return LoadVersion1_1(doc);
+                else if (version == CircuitDocumentXmlVersion.Version1_0)
+                    return LoadVersion1_0(doc);
+
+                DocumentLoadResult loadResult = new DocumentLoadResult();
+                loadResult.Type = DocumentLoadResultType.FailNewerVersion;
+                return loadResult;
             }
-
-            if (version == CircuitDocumentXmlVersion.Version1_2)
-                return LoadVersion1_2(doc);
-            else if (version == CircuitDocumentXmlVersion.Version1_1)
-                return LoadVersion1_1(doc);
-            else if (version == CircuitDocumentXmlVersion.Version1_0)
-                return LoadVersion1_0(doc);
-
-            return new DocumentLoadResult(DocumentLoadResultType.FailNewerVersion);
+            catch (Exception)
+            {
+                DocumentLoadResult loadResult = new DocumentLoadResult();
+                loadResult.Type = DocumentLoadResultType.FailIncorrectFormat;
+                return loadResult;
+            }
         }
 
         private DocumentLoadResult LoadVersion1_0(XmlDocument doc)
@@ -494,19 +143,21 @@ namespace CircuitDiagram.IO
             //if (errorOccurred)
             //    return DocumentLoadResult.FailIncorrectFormat;
             //else
-            return new DocumentLoadResult(DocumentLoadResultType.Success);
+            return null;// new DocumentLoadResult(DocumentLoadResultType.Success);
         }
 
         private DocumentLoadResult LoadVersion1_1(XmlDocument doc)
         {
             try
             {
+                DocumentLoadResult loadResult = new DocumentLoadResult();
+
                 Document = new CircuitDocument();
 
                 XmlElement circuitNode = doc.SelectSingleNode("/circuit") as XmlElement;
                 if (circuitNode.HasAttribute("width") && circuitNode.HasAttribute("height"))
                     Document.Size = new System.Windows.Size(double.Parse(circuitNode.Attributes["width"].InnerText), double.Parse(circuitNode.Attributes["height"].InnerText));
-    
+
                 XmlNodeList componentNodes = doc.SelectNodes("/circuit/component");
                 foreach (XmlNode node in componentNodes)
                 {
@@ -530,11 +181,9 @@ namespace CircuitDiagram.IO
 
                     ComponentDescription description;
                     if (guid != Guid.Empty)
-                        description = ComponentHelper.FindDescription(guid);
-                    else
-                        description = ComponentHelper.FindDescription(type);
-                    if (description != null)
                     {
+                        description = ComponentHelper.FindDescription(guid);
+
                         Component component = Component.Create(description, properties);
                         component.Offset = new System.Windows.Vector(x, y);
                         component.Horizontal = horizontal;
@@ -544,17 +193,97 @@ namespace CircuitDiagram.IO
 
                         Document.Elements.Add(component);
                     }
+                    else
+                    {
+                        string lType = type.ToLowerInvariant();
+                        string standardCollection = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common";
+
+                        // Read type parameter
+                        string t = null;
+                        if ((node as XmlElement).HasAttribute("t"))
+                            t = node.Attributes["t"].InnerText;
+                        if (t == null && lType == "logicgate" && (node as XmlElement).HasAttribute("logictype"))
+                            t = node.Attributes["logictype"].InnerText;
+
+                        string standardComponentName = lType;
+
+                        if (properties.ContainsKey("t"))
+                            properties.Remove("t");
+                        if (properties.ContainsKey("flipped"))
+                        {
+                            bool flipped = bool.Parse(properties["flipped"].ToString());
+                            properties.Remove("flipped");
+                            properties.Add("@flipped", flipped);
+                        }
+
+                        if (lType == "logicgate" && t == "0")
+                            standardComponentName = "and2";
+                        else if (lType == "logicgate" && t == "1")
+                            standardComponentName = "nand2";
+                        else if (lType == "logicgate" && t == "2")
+                            standardComponentName = "or2";
+                        else if (lType == "logicgate" && t == "3")
+                            standardComponentName = "nor2";
+                        else if (lType == "logicgate" && t == "4")
+                            standardComponentName = "xor2";
+                        else if (lType == "logicgate" && t == "5")
+                            standardComponentName = "not";
+                        else if (lType == "logicgate" && t == "6")
+                            standardComponentName = "schmittnot";
+                        else if (lType == "supply")
+                            standardComponentName = "cell";
+                        else if (lType == "switch" && t == "0")
+                            standardComponentName = "pushswitch";
+                        else if (lType == "switch" && t == "1")
+                            standardComponentName = "toggleswitch";
+                        else if (lType == "transistor" && t == "0")
+                            standardComponentName = "mosfetn";
+                        else if (lType == "transistor" && t == "1")
+                            standardComponentName = "mosfetp";
+                        else if (lType == "transistor" && t == "2")
+                            standardComponentName = "transnpn";
+                        else if (lType == "transistor" && t == "3")
+                            standardComponentName = "transpnp";
+                        else if (lType == "outputdevice" && t == "3")
+                            standardComponentName = "heater";
+
+                        ComponentIdentifier identifier = ComponentHelper.GetStandardComponent(standardCollection, standardComponentName);
+                        if (lType == "wire")
+                            identifier = new ComponentIdentifier(ComponentHelper.WireDescription);
+
+                        if (identifier != null)
+                        {
+                            Component component = Component.Create(identifier, properties);
+                            component.Offset = new System.Windows.Vector(x, y);
+                            component.Horizontal = horizontal;
+                            component.Size = size;
+                            component.ResetConnections();
+
+                            Document.Elements.Add(component);
+                        }
+                        else
+                        {
+                            // Unknown component
+                            if (standardComponentName == lType)
+                                loadResult.UnavailableComponents.Add(new StandardComponentRef(null, type)); // Unknown type
+                            else
+                                loadResult.UnavailableComponents.Add(new StandardComponentRef(standardCollection, standardComponentName)); // No implementation for known type
+                        }
+                    }
                 }
 
                 foreach (Component component in Document.Components)
                     component.ApplyConnections(Document);
 
-                return new DocumentLoadResult(DocumentLoadResultType.Success);
+                loadResult.Type = DocumentLoadResultType.Success;
+                return loadResult;
             }
             catch (Exception)
             {
                 // Wrong format
-                return new DocumentLoadResult(DocumentLoadResultType.FailIncorrectFormat);
+                DocumentLoadResult loadResult = new DocumentLoadResult();
+                loadResult.Type = DocumentLoadResultType.FailIncorrectFormat;
+                return loadResult;
             }
         }
 
@@ -666,131 +395,5 @@ namespace CircuitDiagram.IO
             //    return DocumentLoadResult.FailUnknown;
             //}
         }
-
-        /*class ComponentSource
-        {
-            public string Location { get; set; }
-            public string InternalID { get; set; }
-            public string ExternalID { get; set; }
-            public string Name { get; set; }
-            public Guid GUID { get; set; }
-            public bool IsResolved { get { return Value != null; } }
-            public ComponentDescription Value { get; private set; }
-
-            public ComponentSource(string location, string internalId, string externalId, string name, Guid guid)
-            {
-                Location = location;
-                InternalID = internalId;
-                ExternalID = externalId;
-                Name = name;
-                GUID = guid;
-            }
-
-            public void Resolve(PackagePart documentPart)
-            {
-                // Check if component is already available
-                //if (GUID != Guid.Empty)
-                //    Value = ComponentHelper.FindDescription(GUID);
-                //else if (description == null && !String.IsNullOrEmpty(Name))
-                //    Value = ComponentHelper.FindDescription(Name);
-                //else
-                //{
-                //    // Determine path type
-                //    if (Location.StartsWith("http://"))
-                //    {
-                //        try
-                //        {
-                //            FileWebRequest webRequest = (FileWebRequest)WebRequest.Create(Location.Replace("%", ExternalID));
-                //            WebResponse response = webRequest.GetResponse();
-                //            Stream responseStream = response.GetResponseStream();
-                //            if (response.ContentType == System.Net.Mime.MediaTypeNames.Text.Xml)
-                //            {
-                //                // XML format
-                //                throw new NotImplementedException();
-                //            }
-                //            else
-                //            {
-                //                // Assume binary format
-                //                throw new NotImplementedException();
-                //            }
-                //        }
-                //        catch (WebException)
-                //        {
-                //            throw new NotImplementedException();
-                //        }
-                //    }
-                //    else if (Location.StartsWith("r:"))
-                //    {
-                //        string relationshipId = Location.Replace("r:", "");
-                //        PackageRelationship componentRelationship = documentPart.GetRelationship(relationshipId);
-                //        PackagePart componentPart = documentPart.Package.GetPart(componentRelationship.TargetUri);
-
-                //        if (componentPart.ContentType == System.Net.Mime.MediaTypeNames.Text.Xml)
-                //        {
-                //            using (Stream stream = componentPart.GetStream(FileMode.Open))
-                //            {
-                //                XmlLoader loader = new XmlLoader();
-                //                loader.Load(stream);
-                //                Value = loader.GetDescriptions().FirstOrDefault();
-                //            }
-                //        }
-                //        else if (componentPart.ContentType == ContentTypes.BinaryComponent)
-                //        {
-                //            using (Stream stream = componentPart.GetStream(FileMode.Open))
-                //            {
-                //                BinaryLoader loader = new BinaryLoader();
-                //                loader.Load(stream);
-                //                descriptionResource.Deserialized = loader.GetDescriptions();
-                //            }
-                //        }
-                //        else
-                //        {
-                //            // Unknown content type
-                //        }
-
-                //        if (rc.IsResourceAvailable(passLocation))
-                //        {
-                //            Resource descriptionResource = rc.GetResource(passLocation);
-
-                //            if (descriptionResource.Deserialized == null)
-                //            {
-                //                if (descriptionResource.ContentType == "text/xml")
-                //                {
-                //                    using (MemoryStream stream = new MemoryStream(descriptionResource.Data))
-                //                    {
-                //                        XmlLoader loader = new XmlLoader();
-                //                        loader.Load(stream);
-                //                        descriptionResource.Deserialized = loader.GetDescriptions();
-                //                    }
-                //                }
-                //                else
-                //                {
-                //                    // Assume packaged as binary (CDCOM)
-                //                    using (MemoryStream stream = new MemoryStream(descriptionResource.Data))
-                //                    {
-                //                        BinaryLoader loader = new BinaryLoader();
-                //                        loader.Load(stream);
-                //                        descriptionResource.Deserialized = loader.GetDescriptions();
-                //                    }
-                //                }
-                //            }
-                //            else
-                //            {
-                //                foreach (CircuitDiagram.Components.ComponentDescription description2 in (descriptionResource.Deserialized as ComponentDescription[]))
-                //                    if (description.ID == InternalID)
-                //                        description = description2;
-                //            }
-
-                //            ComponentHelper.AddDescription(description);
-                //        }
-                //        else
-                //        {
-                //            throw new NotImplementedException("The component description could not be found.");
-                //        }
-                //    }
-                //}
-                //Value = description;
-            }
-        }*/
     }
 }

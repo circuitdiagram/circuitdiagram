@@ -51,6 +51,7 @@
     <Compile Include="Components\ComponentDescriptionSource.cs" />
     <Compile Include="Components\ComponentEditor.cs" />
     <Compile Include="Components\ComponentHelper.cs" />
+    <Compile Include="Components\ComponentIdentifier.cs" />
     <Compile Include="Components\ComponentPoint.cs" />
     <Compile Include="Components\ComponentProperty.cs" />
     <Compile Include="Components\ComponentPropertyFormat.cs" />
@@ -84,10 +85,13 @@
     <Compile Include="IO\BinaryLoader.cs" />
     <Compile Include="IO\BinaryResource.cs" />
     <Compile Include="IO\BinaryWriter.cs" />
-    <Compile Include="IO\CDDXIO.cs" />
+    <Compile Include="IO\CDDX\CDDXDocumentLoader.cs" />
+    <Compile Include="IO\CDDX\CDDXDocumentWriter.cs" />
+    <Compile Include="IO\CDDX\CDDXIO.cs" />
     <Compile Include="IO\CircuitDocumentLoader.cs" />
     <Compile Include="IO\CircuitDocumentWriter.cs" />
     <Compile Include="IO\ContentTypes.cs" />
+    <Compile Include="IO\DocumentLoadResult.cs" />
     <Compile Include="IO\IOHelper.cs" />
     <Compile Include="IO\IComponentDescriptionLoader.cs" />
     <Compile Include="IO\XmlLoader.cs" />

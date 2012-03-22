@@ -61,6 +61,10 @@
     </ApplicationDefinition>
     <Compile Include="BuildChannelAttribute.cs" />
     <Compile Include="ComponentEditor.cs" />
+    <Compile Include="Dialogs\winDocumentLoadResult.xaml.cs">
+      <DependentUpon>winDocumentLoadResult.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ImplementationConversion.cs" />
     <Compile Include="Render\CircuitElementDrawingVisual.cs" />
     <Compile Include="Converters\BoolToYesNoConverter.cs" />
     <Compile Include="Converters\KeyTextConverter.cs" />
@@ -72,36 +76,43 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="UndoManager.cs" />
-    <Compile Include="winAbout.xaml.cs">
+    <Compile Include="Dialogs\winAbout.xaml.cs">
       <DependentUpon>winAbout.xaml</DependentUpon>
     </Compile>
-    <Compile Include="winCDDXSave.xaml.cs">
+    <Compile Include="Dialogs\winCDDXSave.xaml.cs">
       <DependentUpon>winCDDXSave.xaml</DependentUpon>
     </Compile>
-    <Compile Include="winCDDXSaveComponents.xaml.cs">
+    <Compile Include="Dialogs\winCDDXSaveComponents.xaml.cs">
       <DependentUpon>winCDDXSaveComponents.xaml</DependentUpon>
     </Compile>
-    <Compile Include="winComponents.xaml.cs">
+    <Compile Include="Dialogs\winComponents.xaml.cs">
       <DependentUpon>winComponents.xaml</DependentUpon>
     </Compile>
-    <Compile Include="winDocument.xaml.cs">
+    <Compile Include="Dialogs\winDocument.xaml.cs">
       <DependentUpon>winDocument.xaml</DependentUpon>
     </Compile>
-    <Compile Include="winNewDocument.xaml.cs">
+    <Compile Include="Dialogs\winNewComponentImplementation.xaml.cs">
+      <DependentUpon>winNewComponentImplementation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\winNewDocument.xaml.cs">
       <DependentUpon>winNewDocument.xaml</DependentUpon>
     </Compile>
-    <Compile Include="winNewVersion.xaml.cs">
+    <Compile Include="Dialogs\winNewVersion.xaml.cs">
       <DependentUpon>winNewVersion.xaml</DependentUpon>
     </Compile>
-    <Compile Include="winOptions.xaml.cs">
+    <Compile Include="Dialogs\winOptions.xaml.cs">
       <DependentUpon>winOptions.xaml</DependentUpon>
     </Compile>
-    <Compile Include="winToolbox.xaml.cs">
+    <Compile Include="Dialogs\winToolbox.xaml.cs">
       <DependentUpon>winToolbox.xaml</DependentUpon>
     </Compile>
     <Page Include="DefaultDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dialogs\winDocumentLoadResult.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -121,39 +132,43 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="winAbout.xaml">
+    <Page Include="Dialogs\winAbout.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="winCDDXSave.xaml">
+    <Page Include="Dialogs\winCDDXSave.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="winCDDXSaveComponents.xaml">
+    <Page Include="Dialogs\winCDDXSaveComponents.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="winComponents.xaml">
+    <Page Include="Dialogs\winComponents.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="winDocument.xaml">
+    <Page Include="Dialogs\winDocument.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="winNewDocument.xaml">
+    <Page Include="Dialogs\winNewComponentImplementation.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="winNewVersion.xaml">
+    <Page Include="Dialogs\winNewDocument.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="winOptions.xaml">
+    <Page Include="Dialogs\winNewVersion.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="winToolbox.xaml">
+    <Page Include="Dialogs\winOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\winToolbox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

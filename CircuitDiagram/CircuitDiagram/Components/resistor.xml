@@ -6,7 +6,7 @@
     <meta name="author" value="Circuit Diagram" />
     <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
     <meta name="guid" value="dab6d52b-51a0-49b0-bc40-3cda966148aa" />
-    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitdiagramdocument/2012/components/common" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
     
     <property name="Resistance" type="double" default="4700" serialize="resistance" display="Resistance">
       <formatting>

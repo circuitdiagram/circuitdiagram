@@ -6,7 +6,8 @@
     <meta name="author" value="Circuit Diagram" />
     <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
     <meta name="guid" value="4eaeba15-24b6-4a28-bba5-d25e52ada278" />
-    
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+
     <property name="Type" type="enum" default="NAND" serialize="t" display="Type">
       <option>AND</option>
       <option>NAND</option>
@@ -18,13 +19,13 @@
     </property>
 
     <configurations>
-      <configuration name="AND Gate" value="Type:AND" />
-      <configuration name="NAND Gate" value="Type:NAND" />
-      <configuration name="OR Gate" value="Type:OR" />
-      <configuration name="NOR Gate" value="Type:NOR" />
-      <configuration name="XOR Gate" value="Type:XOR" />
-      <configuration name="NOT Gate" value="Type:NOT" />
-      <configuration name="Schmitt Trigger NOT Gate" value="Type:Schmitt" />
+      <configuration name="AND Gate" value="Type:AND" implements="andgate" />
+      <configuration name="NAND Gate" value="Type:NAND" implements="nandgate" />
+      <configuration name="OR Gate" value="Type:OR" implements="orgate" />
+      <configuration name="NOR Gate" value="Type:NOR" implements="norgate" />
+      <configuration name="XOR Gate" value="Type:XOR" implements="xorgate" />
+      <configuration name="NOT Gate" value="Type:NOT" implements="notgate" />
+      <configuration name="Schmitt Trigger NOT Gate" value="Type:Schmitt" implements="schmittnotgate" />
     </configurations>
   </declaration>
   <connections>
@@ -65,7 +66,7 @@
       <line start="_Start-10x" end="_Middle-10x-20y" />
       <line start="_Start+10x" end="_Middle+10x-20y" />
     </group>
-    
+
     <!-- AND -->
     <group conditions="_Horizontal,$Type(eq_AND)">
       <path start="_Middle-20x-10y" data="m 0,-10 l 0,40 l 24,0 m -24,-40 l 24,0 m 0,40 a 5,5 90 1 0 0,-40" />
@@ -75,7 +76,7 @@
       <path start="_Middle-10x-20y" data="m -10,0 l 40,0 l 0,24 m -40,-24 l 0,24 a 5,5 90 1 0 40,0" />
       <line start="_Middle+25y" end="_End" />
     </group>
-    
+
     <!-- NAND -->
     <group conditions="_Horizontal,$Type(eq_NAND)">
       <path start="_Middle-20x-10y" data="m 0,-10 l 0,40 l 24,0 m -24,-40 l 24,0 m 0,40 a 5,5 90 1 0 0,-40 m 21,20 a 2,2 -5 0,1 6,0 a 2,2 -5 0,1 -6,0" />
@@ -95,7 +96,7 @@
       <path start="_Middle-10x-26y" data="m -10,0 q 20,20 40,0 m 0,-1 q -5,35 -20,50 q -15,-15 -20,-50" />
       <line start="_Middle+25y" end="_End" />
     </group>
-    
+
     <!-- NOR -->
     <group conditions="_Horizontal,$Type(eq_NOR)">
       <path start="_Middle-26x-10y" data="m 0,-10 q 20,20 0,40 m -1,0 q 35,-5 50,-20 q -15,-15 -50,-20 m 51,20 a 2,2 -5 0,1 6,0 a 2,2 -5 0,1 -6,0" />
@@ -115,7 +116,7 @@
       <path start="_Middle-10x-26y" data="m -10,0 q 20,20 40,0 m -40,8 q 20,20 40,0 m 0,-1 q -5,35 -20,50 q -15,-15 -20,-50" />
       <line start="_Middle+30y" end="_End" />
     </group>
-    
+
     <!-- NOT -->
     <group conditions="_Horizontal,$Type(eq_NOT)">
       <line start="_Start" end="_Middle-28x" />

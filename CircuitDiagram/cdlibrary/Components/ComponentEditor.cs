@@ -10,6 +10,7 @@ namespace CircuitDiagram.Components
     public interface IComponentEditor
     {
         event ComponentUpdatedDelegate ComponentUpdated;
+        void Update();
     }
 
     public delegate void ComponentUpdatedDelegate(object sender, ComponentUpdatedEventArgs e);

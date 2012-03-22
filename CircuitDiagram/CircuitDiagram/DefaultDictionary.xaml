@@ -190,4 +190,11 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style x:Key="SelectLabel" TargetType="{x:Type TextBox}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{x:Null}"/>
+        <Setter Property="BorderThickness" Value="4"/>
+        <Setter Property="IsTabStop" Value="False"/>
+    </Style>
 </ResourceDictionary>

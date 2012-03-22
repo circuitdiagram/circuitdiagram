@@ -31,6 +31,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using CircuitDiagram.IO;
+using CircuitDiagram.IO.CDDX;
 using CircuitDiagram.Components;
 
 namespace CircuitDiagram

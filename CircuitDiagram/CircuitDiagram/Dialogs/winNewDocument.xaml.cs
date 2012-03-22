@@ -51,5 +51,10 @@ namespace CircuitDiagram
             Match match = numMatch.Match(((TextBox)sender).Text + e.Text);
             e.Handled = match.Length != (((TextBox)sender).Text + e.Text).Length;
         }
+
+        private void tbxDocWidthHeight_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            btnOK.IsEnabled = (tbxDocWidth.Text.Length > 0 && tbxDocHeight.Text.Length > 0);
+        }
     }
 }

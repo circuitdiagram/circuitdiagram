@@ -235,6 +235,20 @@ namespace CircuitDiagram.Components
             ComponentUpdated(this, new ComponentUpdatedEventArgs(Component, m_previousData));
             m_previousData = GetComponentData();
         }
+
+        public void Update()
+        {
+            // Update editor values for properties
+            foreach (var control in EditorControls)
+            {
+                if (control.Value.GetType() == typeof(CheckBox))
+                    (control.Value as CheckBox).IsChecked = (bool)Component.GetProperty(control.Key);
+                else if (control.Value.GetType() == typeof(TextBox))
+                    (control.Value as TextBox).Text = Component.GetProperty(control.Key).ToString();
+                else if (control.Value.GetType() == typeof(ComboBox))
+                    (control.Value as ComboBox).SelectedItem = Component.GetProperty(control.Key).ToString();
+            }
+        }
     }
 
     static class ComponentEditorHelper

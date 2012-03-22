@@ -36,6 +36,8 @@ namespace CircuitDiagram.Components
 
         public static IEnumerable<ComponentDescription> ComponentDescriptions { get { return m_descriptions.AsEnumerable(); } }
 
+        private static Dictionary<string, Dictionary<string, ComponentIdentifier>> m_standardComponents = new Dictionary<string, Dictionary<string, ComponentIdentifier>>();
+
         public static double GridSize { get { return 10d; } }
 
         public static double SmallTextSize { get { return 10d; } }
@@ -173,11 +175,6 @@ namespace CircuitDiagram.Components
             return m_descriptions.FirstOrDefault(description => description.Metadata.GUID == guid);
         }
 
-        public static ComponentDescription FindDescription(string implementSet, string implementItem)
-        {
-            return m_descriptions.FirstOrDefault(description => description.Metadata.ImplementSet == implementSet && description.Metadata.ImplementItem == implementItem);
-        }
-
         public static ComponentDescription FindDescriptionByRuntimeID(int runtimeID)
         {
             return m_descriptions.FirstOrDefault(description => description.RuntimeID == runtimeID);
@@ -248,6 +245,49 @@ namespace CircuitDiagram.Components
         public static LoadIconDelegate LoadIcon;
 
         public static ComponentUpdatedDelegate ComponentUpdatedDelegate { get; set; }
+
+        public static void SetStandardComponent(string collection, string item, ComponentDescription description, ComponentConfiguration configuration)
+        {
+            if (!m_standardComponents.ContainsKey(collection))
+                m_standardComponents.Add(collection, new Dictionary<string, ComponentIdentifier>());
+            if (!m_standardComponents[collection].ContainsKey(item))
+                m_standardComponents[collection].Add(item, new ComponentIdentifier(description, configuration));
+            else
+                m_standardComponents[collection][item] = new ComponentIdentifier(description, configuration);
+        }
+
+        public static ComponentIdentifier GetStandardComponent(string collection, string item)
+        {
+            if (m_standardComponents.ContainsKey(collection) && m_standardComponents[collection].ContainsKey(item))
+                return m_standardComponents[collection][item];
+            else
+            {
+                ComponentIdentifier identifier = null;
+                foreach(ComponentDescription description in m_descriptions)
+                {
+                    if (description.Metadata.ImplementSet == collection && description.Metadata.ImplementItem == item)
+                    {
+                        identifier = new ComponentIdentifier(description);
+                        break;
+                    }
+                    else if (description.Metadata.ImplementSet == collection)
+                    {
+                        foreach (ComponentConfiguration configuration in description.Metadata.Configurations)
+                        {
+                            if (configuration.ImplementationName == item)
+                            {
+                                identifier = new ComponentIdentifier(description, configuration);
+                                break;
+                            }
+                        }
+                    }
+                    if (identifier != null)
+                        break;
+                }
+
+                return identifier;
+            }
+        }
     }
 
     public enum PropertySearchKey

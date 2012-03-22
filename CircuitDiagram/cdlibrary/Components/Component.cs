@@ -45,7 +45,33 @@ namespace CircuitDiagram.Components
 
             newComponent.ResetConnections();
 
-            newComponent.SetEditorEnumValues();
+            newComponent.Editor.Update();
+
+            return newComponent;
+        }
+
+        public static Component Create(ComponentIdentifier identifier, Dictionary<string, object> data)
+        {
+            Component newComponent = new Component(identifier.Description);
+
+            // Apply configuration
+            if (identifier.Configuration != null)
+            {
+                foreach (KeyValuePair<string, object> setter in identifier.Configuration.Setters)
+                {
+                    if (!data.ContainsKey(setter.Key))
+                        data.Add(setter.Key, setter.Value);
+                    else
+                        data[setter.Key] = setter.Value;
+                }
+            }
+
+            // Load other properties
+            newComponent.Deserialize(data);
+
+            newComponent.ResetConnections();
+
+            newComponent.Editor.Update();
 
             return newComponent;
         }
@@ -87,7 +113,7 @@ namespace CircuitDiagram.Components
 
             newComponent.ResetConnections();
 
-            newComponent.SetEditorEnumValues();
+            newComponent.Editor.Update();
 
             return newComponent;
         }
@@ -135,26 +161,6 @@ namespace CircuitDiagram.Components
                 if (Editor != null && ComponentHelper.ComponentUpdatedDelegate != null)
                     Editor.ComponentUpdated += ComponentHelper.ComponentUpdatedDelegate;
             }
-        }
-
-        private void SetEditorEnumValues()
-        {
-#warning TIDY
-
-            //if (Editor == null)
-            //    return;
-
-            //foreach (ComponentProperty property in this.Description.Properties)
-            //{
-            //    if (property.Type == typeof(string) && property.EnumOptions != null)
-            //    {
-            //        ComboBox propertyEditControl = this.Editor.EditorControls[property] as ComboBox;
-            //        if (propertyEditControl != null)
-            //        {
-            //            propertyEditControl.SelectedItem = GetProperty(property) as string;
-            //        }
-            //    }
-            //}
         }
 
         public ComponentProperty FindProperty(string name)
