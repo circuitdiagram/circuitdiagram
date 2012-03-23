@@ -42,8 +42,8 @@ namespace CircuitDiagram.IO.CDDX
                 writer.Formatting = Formatting.Indented;
                 writer.WriteStartDocument();
                 writer.WriteStartElement("circuit", "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/document");
-                writer.WriteAttributeString("xmlns", "r", null, RelationshipNamespace);
                 writer.WriteAttributeString("version", String.Format("{0:0.0}", CDDXDocumentVersion));
+                writer.WriteAttributeString("xmlns", "r", null, RelationshipNamespace);
 
                 // Metadata
                 WriteMetadata(writer, document);
@@ -55,8 +55,6 @@ namespace CircuitDiagram.IO.CDDX
                         descriptionsInDocument.Add(component.Description);
 
                 int internalIdCounter = 0;
-                //ComponentSourceLocation unknownComponentSourceLocation = new ComponentSourceLocation(null, "location", "_unknown", null);
-                //ComponentSourceLocation standardComponentSourceLocation = new ComponentSourceLocation(null, "location", "_standard");
                 Dictionary<ComponentSourceLocation, List<ComponentSource>> componentSourcesByLocation = new Dictionary<ComponentSourceLocation, List<ComponentSource>>();
                 Dictionary<ComponentDescription, ComponentSource> processedDescriptions = new Dictionary<ComponentDescription, ComponentSource>();
                 foreach (ComponentDescription description in descriptionsInDocument)
@@ -167,7 +165,7 @@ namespace CircuitDiagram.IO.CDDX
                             // Implementations
                             newSource.ImplementationName = description.Metadata.ImplementItem;
                             foreach (ComponentConfiguration configuration in description.Metadata.Configurations)
-                                if (!String.IsNullOrEmpty(configuration.ImplementationName))
+                                if (!String.IsNullOrEmpty(configuration.ImplementationName) && ConfigurationIsUsed(description, configuration, document))
                                     newSource.ConfigurationImplementations.Add(new ComponentSource.ConfigurationImplementation(configuration.ImplementationName, configuration.Name));
 
                             componentSourcesByLocation[location].Add(newSource);
@@ -187,105 +185,13 @@ namespace CircuitDiagram.IO.CDDX
                         // Implementations
                         newSource.ImplementationName = description.Metadata.ImplementItem;
                         foreach (ComponentConfiguration configuration in description.Metadata.Configurations)
-                            if (!String.IsNullOrEmpty(configuration.ImplementationName))
+                            if (!String.IsNullOrEmpty(configuration.ImplementationName) && ConfigurationIsUsed(description, configuration, document))
                                 newSource.ConfigurationImplementations.Add(new ComponentSource.ConfigurationImplementation(configuration.ImplementationName, configuration.Name));
 
                         componentSourcesByLocation[newSourceLocation].Add(newSource);
                         processedDescriptions.Add(description, newSource);
                         internalIdCounter++;
                     }
-
-                    #region Old
-                    /*
-                    if (!ComponentHelper.IsStandardComponent(description))
-                    {
-                        if (ComponentHelper.ShouldEmbedDescription(description))
-                        {
-                            // Check whether original file should be embedded
-                            bool allDescriptionsAreUsed = true;
-                            foreach (ComponentDescription testDescription in description.Source.ContainedDescriptions)
-                                if (!descriptionsInDocument.Contains(testDescription))
-                                {
-                                    allDescriptionsAreUsed = false;
-                                    break;
-                                }
-
-                            if (allDescriptionsAreUsed)
-                            {
-                                // Embed original file
-                                string contentType = System.Net.Mime.MediaTypeNames.Text.Xml;
-                                if (description.Metadata.Type.ToLower().Contains("cdcom"))
-                                    contentType = ContentTypes.BinaryComponent;
-
-                                List<ComponentSource> tempSources = new List<ComponentSource>(description.Source.ContainedDescriptions.Count);
-
-                                Uri descriptionPath = new Uri("circuitdiagram/components/" + Path.GetFileName(description.Source.Path).Replace(' ', '_'), UriKind.Relative);
-                                PackagePart descriptionPart = package.CreatePart(PackUriHelper.CreatePartUri(descriptionPath), contentType, CompressionOption.Normal);
-                                using (Stream descriptionStream = descriptionPart.GetStream(FileMode.Create))
-                                {
-                                    byte[] buffer = File.ReadAllBytes(description.Source.Path);
-                                    descriptionStream.Write(buffer, 0, buffer.Length);
-                                }
-                                PackageRelationship relationship = documentPart.CreateRelationship(descriptionPath, TargetMode.Internal, CDDXIO.RelationshipTypes.IncludedComponent);
-
-                                foreach (ComponentDescription containedDescription in description.Source.ContainedDescriptions)
-                                {
-                                    ComponentSource newSource = new ComponentSource(internalIdCounter.ToString(), containedDescription.ID, containedDescription.ComponentName, containedDescription.Metadata.GUID);
-                                    processedDescriptions.Add(containedDescription, newSource);
-                                    tempSources.Add(newSource);
-                                    internalIdCounter++;
-                                }
-                                componentSourcesByLocation.Add(new ComponentSourceLocation("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id", relationship.Id), tempSources);
-                            }
-                            else
-                            {
-                                // Embed only used description - serialize as binary
-                                List<ComponentSource> tempSources = new List<ComponentSource>(1);
-
-                                Uri descriptionPath = new Uri("circuitdiagram/components/" + description.ComponentName.Replace(' ', '_') + ".cdcom", UriKind.Relative);
-                                int addedInt = 0;
-                                while (package.PartExists(descriptionPath))
-                                {
-                                    descriptionPath = new Uri("circuitdiagram/components/" + description.ComponentName.Replace(' ', '_') + addedInt.ToString() + ".cdcom", UriKind.Relative);
-                                    addedInt++;
-                                }
-
-                                PackagePart descriptionPart = package.CreatePart(PackUriHelper.CreatePartUri(descriptionPath), ContentTypes.BinaryComponent, CompressionOption.Normal);
-                                using (var descriptionStream = descriptionPart.GetStream(FileMode.Create))
-                                {
-                                    BinaryWriter descriptionWriter = new BinaryWriter(descriptionStream);
-                                    descriptionWriter.WriteDescriptions(description);
-                                    descriptionWriter.Flush();
-                                }
-                                PackageRelationship relationship = documentPart.CreateRelationship(descriptionPath, TargetMode.Internal, CDDXIO.RelationshipTypes.IncludedComponent);
-
-                                ComponentSource newSource = new ComponentSource(internalIdCounter.ToString(), "C0", description.ComponentName, description.Metadata.GUID);
-                                processedDescriptions.Add(description, newSource);
-                                tempSources.Add(newSource);
-                                componentSourcesByLocation.Add(new ComponentSourceLocation(relationshipID: relationship.Id, definitionSource: null), tempSources);
-                                internalIdCounter++;
-                            }
-                        }
-                        else
-                        {
-                            ComponentSource newSource = new ComponentSource(internalIdCounter.ToString(), null, description.ComponentName, description.Metadata.GUID);
-                            processedDescriptions.Add(description, newSource);
-                            if (!componentSourcesByLocation.ContainsKey(unknownComponentSourceLocation))
-                                componentSourcesByLocation.Add(unknownComponentSourceLocation, new List<ComponentSource>());
-                            componentSourcesByLocation[unknownComponentSourceLocation].Add(newSource);
-                            internalIdCounter++;
-                        }
-                    }
-                    else
-                    {
-                        ComponentSource newSource = new ComponentSource(internalIdCounter.ToString(), null, description.ComponentName, description.Metadata.GUID);
-                        processedDescriptions.Add(description, newSource);
-                        if (!componentSourcesByLocation.ContainsKey(standardComponentSourceLocation))
-                            componentSourcesByLocation.Add(standardComponentSourceLocation, new List<ComponentSource>());
-                        componentSourcesByLocation[standardComponentSourceLocation].Add(newSource);
-                        internalIdCounter++;
-                    }*/
-                    #endregion
                 }
 
                 // Generate component IDs
@@ -298,20 +204,27 @@ namespace CircuitDiagram.IO.CDDX
                         componentIdCounter++;
                     }
 
-                // Writer component sources
+                // Write component sources
                 WriteComponentSources(writer, componentSourcesByLocation);
 
-                // Component elements
-                WriteDocumentElements(writer, document, processedDescriptions, componentIDs, saveOptions.IncludeConnections);
-
-                // Layout elements
-                if (saveOptions.IncludeLayout)
-                    WriteLayoutElements(writer, document, componentIDs);
+                // Write elements
+                WriteDocumentElements(writer, document, processedDescriptions, componentIDs, saveOptions.IncludeLayout, saveOptions.IncludeConnections);
 
                 writer.WriteEndElement();
                 writer.WriteEndDocument();
                 writer.Flush();
             }
+        }
+
+        static bool ConfigurationIsUsed(ComponentDescription description, ComponentConfiguration configuration, CircuitDocument document)
+        {
+            foreach (Component component in document.Components)
+            {
+                if (component.Description == description && configuration.Matches(component))
+                    return true;
+            }
+
+            return false;
         }
 
         static void WriteMetadata(XmlTextWriter writer, CircuitDocument document)
@@ -392,7 +305,7 @@ namespace CircuitDiagram.IO.CDDX
             }
         }
 
-        static void WriteDocumentElements(XmlTextWriter writer, CircuitDocument document, Dictionary<ComponentDescription, ComponentSource> descriptionRefs, Dictionary<Component, string> componentIDs, bool includeConnections)
+        static void WriteDocumentElements(XmlTextWriter writer, CircuitDocument document, Dictionary<ComponentDescription, ComponentSource> descriptionRefs, Dictionary<Component, string> componentIDs, bool includeLayout, bool includeConnections)
         {
             #region Build connections
             // Remove wires from connections
@@ -504,38 +417,62 @@ namespace CircuitDiagram.IO.CDDX
             foreach (Component component in document.Components)
             {
                 if (component.Description.ComponentName.ToLower() == "wire")
+                {
+                    writer.WriteStartElement("w");
+                    writer.WriteAttributeString("x", component.Offset.X.ToString());
+                    writer.WriteAttributeString("y", component.Offset.Y.ToString());
+                    writer.WriteAttributeString("o", (component.Horizontal ? "h" : "v"));
+                    writer.WriteAttributeString("sz", component.Size.ToString());
+                    writer.WriteEndElement();
+
                     continue;
+                }
 
                 writer.WriteStartElement("c");
                 Dictionary<string, object> properties = new Dictionary<string, object>();
                 component.Serialize(properties);
 
-                writer.WriteAttributeString("id", componentIDs[component]);
+                //writer.WriteAttributeString("id", componentIDs[component]); // currently not needed
 
                 if (descriptionRefs[component.Description] == null)
                     writer.WriteAttributeIfContains(properties, "@type", "tp");
                 else
                     writer.WriteAttributeString("tp", "{" + descriptionRefs[component.Description].InternalID + "}");
 
-                // properties
-                writer.WriteStartElement("prs");
-                foreach (ComponentConfiguration configuration in component.Description.Metadata.Configurations)
-                    if (configuration.Matches(component) && !String.IsNullOrEmpty(configuration.ImplementationName))
-                    {
-                        writer.WriteAttributeString("cfg", configuration.Name);
-                        break;
-                    }
-                foreach (KeyValuePair<string, object> property in properties)
+                // Layout
+                if (includeLayout)
                 {
-                    if (property.Key.StartsWith("@"))
-                        continue;
+                    writer.WriteAttributeString("x", component.Offset.X.ToString());
+                    writer.WriteAttributeString("y", component.Offset.Y.ToString());
+                    writer.WriteAttributeString("o", (component.Horizontal ? "h" : "v"));
+                    if (component.Description.CanResize)
+                        writer.WriteAttributeString("sz", component.Size.ToString());
+                    if (component.Description.CanFlip)
+                        writer.WriteAttributeString("flp", (component.IsFlipped ? "true" : "false"));
+                }
 
-                    writer.WriteStartElement("p");
-                    writer.WriteAttributeString("k", property.Key.ToString());
-                    writer.WriteAttributeString("v", property.Value.ToString());
+                // properties
+                if (properties.Count > 0)
+                {
+                    writer.WriteStartElement("prs");
+                    foreach (ComponentConfiguration configuration in component.Description.Metadata.Configurations)
+                        if (configuration.Matches(component) && !String.IsNullOrEmpty(configuration.ImplementationName))
+                        {
+                            writer.WriteAttributeString("cfg", configuration.Name);
+                            break;
+                        }
+                    foreach (KeyValuePair<string, object> property in properties)
+                    {
+                        if (property.Key.StartsWith("@"))
+                            continue;
+
+                        writer.WriteStartElement("p");
+                        writer.WriteAttributeString("k", property.Key.ToString());
+                        writer.WriteAttributeString("v", property.Value.ToString());
+                        writer.WriteEndElement();
+                    }
                     writer.WriteEndElement();
                 }
-                writer.WriteEndElement();
 
                 if (includeConnections && t1.ContainsKey(component))
                 {
@@ -552,37 +489,6 @@ namespace CircuitDiagram.IO.CDDX
                 }
 
                 writer.WriteEndElement();
-            }
-            writer.WriteEndElement();
-        }
-
-        static void WriteLayoutElements(XmlTextWriter writer, CircuitDocument document, Dictionary<Component, string> componentIDs)
-        {
-            writer.WriteStartElement("layout");
-            foreach (Component component in document.Components)
-            {
-                if (component.Description.ComponentName.ToLower() != "wire")
-                {
-                    writer.WriteStartElement("c");
-                    writer.WriteAttributeString("id", componentIDs[component]);
-                    writer.WriteAttributeString("x", component.Offset.X.ToString());
-                    writer.WriteAttributeString("y", component.Offset.Y.ToString());
-                    writer.WriteAttributeString("o", (component.Horizontal ? "h" : "v"));
-                    if (component.Description.CanResize)
-                        writer.WriteAttributeString("sz", component.Size.ToString());
-                    if (component.Description.CanFlip)
-                        writer.WriteAttributeString("flp", (component.IsFlipped ? "true" : "false"));
-                    writer.WriteEndElement();
-                }
-                else
-                {
-                    writer.WriteStartElement("w");
-                    writer.WriteAttributeString("x", component.Offset.X.ToString());
-                    writer.WriteAttributeString("y", component.Offset.Y.ToString());
-                    writer.WriteAttributeString("o", (component.Horizontal ? "h" : "v"));
-                    writer.WriteAttributeString("sz", component.Size.ToString());
-                    writer.WriteEndElement();
-                }
             }
             writer.WriteEndElement();
         }

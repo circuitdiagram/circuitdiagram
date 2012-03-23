@@ -119,8 +119,7 @@ namespace CircuitDiagram.IO.CDDX
 
                     #region Document elements
                     // Document elements
-                    Dictionary<string, ICircuitElement> circuitElements = new Dictionary<string, ICircuitElement>();
-                    XmlNodeList documentElements = doc.SelectNodes("/cdd:circuit/cdd:elements/cdd:c", namespaceManager);
+                    XmlNodeList documentElements = doc.SelectNodes("/cdd:circuit/cdd:elements//cdd:c", namespaceManager);
                     foreach (XmlElement documentElement in documentElements)
                     {
                         if (documentElement == null)
@@ -142,7 +141,32 @@ namespace CircuitDiagram.IO.CDDX
                         ComponentIdentifier comIdentifier = null;
                         comIdentifier = GetRepresentation(documentPart, componentSources, componentType);
                         if (comIdentifier != null)
-                            circuitElements.Add(componentId, Component.Create(comIdentifier, properties));
+                        {
+                            if (!documentElement.HasAttribute("x") || !documentElement.HasAttribute("y"))
+                            {
+                                // No layout information
+                                loadResult.Type = DocumentLoadResultType.FailIncorrectFormat;
+                                loadResult.Errors.Add("The file contains no layout information.");
+                                return loadResult;
+                            }
+
+                            double x = double.Parse(documentElement.Attributes["x"].InnerText);
+                            double y = double.Parse(documentElement.Attributes["y"].InnerText);
+                            bool horizontal = false;
+                            if (documentElement.HasAttribute("o") && documentElement.Attributes["o"].InnerText.ToLowerInvariant() == "h")
+                                horizontal = true;
+                            double size = ComponentHelper.GridSize;
+                            if (documentElement.HasAttribute("sz"))
+                                size = double.Parse(documentElement.Attributes["sz"].InnerText);
+                            bool flipped = false;
+                            if (documentElement.HasAttribute("flp") && documentElement.Attributes["flp"].InnerText.ToLowerInvariant() == "true")
+                                flipped = true;
+
+                            Component component = Component.Create(comIdentifier, properties);
+                            component.Layout(x, y, size, horizontal, flipped);
+                            component.ApplyConnections(document);
+                            document.Elements.Add(component);
+                        }
                         else
                         {
                             // Description not found
@@ -162,84 +186,32 @@ namespace CircuitDiagram.IO.CDDX
                             }
                         }
                     }
-                    #endregion
 
-                    #region Layout
-                    // Layout
-                    XmlNode parentLayoutNode = doc.SelectSingleNode("/cdd:circuit/cdd:layout", namespaceManager);
-                    if (parentLayoutNode == null)
+                    // Wires
+                    XmlNodeList wires = doc.SelectNodes("/cdd:circuit/cdd:elements//cdd:w", namespaceManager);
+                    foreach (XmlElement wire in wires)
                     {
-                        loadResult.Type = DocumentLoadResultType.FailIncorrectFormat;
-                        loadResult.Errors.Add("The file contains no layout information.");
-                        return loadResult;
-                    }
-                    foreach (XmlElement layoutNode in parentLayoutNode.ChildNodes)
-                    {
-                        if (layoutNode.Name == "c")
+                        double x = double.Parse(wire.Attributes["x"].InnerText);
+                        double y = double.Parse(wire.Attributes["y"].InnerText);
+                        bool horizontal = false;
+                        if (wire.HasAttribute("o") && wire.Attributes["o"].InnerText.ToLowerInvariant() == "h")
+                            horizontal = true;
+                        double size = ComponentHelper.GridSize;
+                        if (wire.HasAttribute("sz"))
+                            size = double.Parse(wire.Attributes["sz"].InnerText);
+
+                        Dictionary<string, object> properties = new Dictionary<string, object>(4);
+                        properties.Add("@x", x);
+                        properties.Add("@y", y);
+                        properties.Add("@orientation", horizontal);
+                        properties.Add("@size", size);
+
+                        if (ComponentHelper.WireDescription != null)
                         {
-                            string id = layoutNode.Attributes["id"].InnerText;
-                            double x = double.Parse(layoutNode.Attributes["x"].InnerText);
-                            double y = double.Parse(layoutNode.Attributes["y"].InnerText);
-                            bool horizontal = false;
-                            if (layoutNode.HasAttribute("o") && layoutNode.Attributes["o"].InnerText.ToLowerInvariant() == "h")
-                                horizontal = true;
-                            double size = ComponentHelper.GridSize;
-                            if (layoutNode.HasAttribute("sz"))
-                                size = double.Parse(layoutNode.Attributes["sz"].InnerText);
-                            bool flipped = false;
-                            if (layoutNode.HasAttribute("flp") && layoutNode.Attributes["flp"].InnerText.ToLowerInvariant() == "true")
-                                flipped = true;
-
-                            if (circuitElements.ContainsKey(id))
-                            {
-                                Component component = circuitElements[id] as Component;
-                                if (component != null)
-                                {
-                                    component.Layout(x, y, size, horizontal, flipped);
-                                    component.ApplyConnections(document);
-                                }
-                                document.Elements.Add(component);
-                            }
-                            else
-                            {
-                                // Something's not right...
-                            }
-                        }
-                        else if (layoutNode.Name == "w")
-                        {
-                            double x = double.Parse(layoutNode.Attributes["x"].InnerText);
-                            double y = double.Parse(layoutNode.Attributes["y"].InnerText);
-                            bool horizontal = false;
-                            if (layoutNode.HasAttribute("o") && layoutNode.Attributes["o"].InnerText.ToLowerInvariant() == "h")
-                                horizontal = true;
-                            double size = ComponentHelper.GridSize;
-                            if (layoutNode.HasAttribute("sz"))
-                                size = double.Parse(layoutNode.Attributes["sz"].InnerText);
-
-                            Dictionary<string, object> properties = new Dictionary<string, object>(4);
-                            properties.Add("@x", x);
-                            properties.Add("@y", y);
-                            properties.Add("@orientation", horizontal);
-                            properties.Add("@size", size);
-
-                            if (ComponentHelper.WireDescription != null)
-                            {
-                                Component wire = Component.Create(ComponentHelper.WireDescription, properties);
-                                wire.Layout(x, y, size, horizontal, false);
-                                wire.ApplyConnections(document);
-                                document.Elements.Add(wire);
-                            }
-                        }
-                    }
-
-                    // Add components which did not have layout information (although they ALL either should or shouldn't...)
-                    foreach (ICircuitElement element in circuitElements.Values)
-                    {
-                        if (!document.Elements.Contains(element))
-                        {
-                            loadResult.Type = DocumentLoadResultType.FailIncorrectFormat;
-                            loadResult.Errors.Add("The file contains no layout information.");
-                            return loadResult;
+                            Component wireComponent = Component.Create(ComponentHelper.WireDescription, properties);
+                            wireComponent.Layout(x, y, size, horizontal, false);
+                            wireComponent.ApplyConnections(document);
+                            document.Elements.Add(wireComponent);
                         }
                     }
                     #endregion
