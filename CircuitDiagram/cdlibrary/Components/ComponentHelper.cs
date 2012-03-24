@@ -195,7 +195,7 @@ namespace CircuitDiagram.Components
 
         public static bool IsStandardComponent(ComponentDescription componentDescription)
         {
-            if (componentDescription.Metadata.GUID == Guid.Empty)
+            if (componentDescription.Metadata.GUID == Guid.Empty || componentDescription.Source == null)
                 return false;
 #if DEBUG
                 return (System.IO.Path.GetDirectoryName(componentDescription.Source.Path) == System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\ext"

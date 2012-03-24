@@ -253,6 +253,15 @@ namespace CircuitDiagram.IO.CDDX
                 else
                 {
                     // Load description
+
+                    // Check if have component before loading
+                    if (theSource.GUID != Guid.Empty)
+                    {
+                        ComponentDescription description = ComponentHelper.FindDescription(theSource.GUID);
+                        if (description != null)
+                            return new ComponentIdentifier(description);
+                    }
+
                     if (!String.IsNullOrEmpty(theSource.Location.RelationshipID))
                     {
                         // Embedded in document
@@ -312,7 +321,7 @@ namespace CircuitDiagram.IO.CDDX
                         if (theSource.GUID != Guid.Empty)
                             result = new ComponentIdentifier(ComponentHelper.FindDescription(theSource.GUID));
                         // Find by implementation for whole component
-                        if (result == null && !String.IsNullOrEmpty(theSource.Location.DefinitionSource) && !String.IsNullOrEmpty(theSource.ImplementationName))
+                        if ((result == null || result.Description == null) && !String.IsNullOrEmpty(theSource.Location.DefinitionSource) && !String.IsNullOrEmpty(theSource.ImplementationName))
                             result = ComponentHelper.GetStandardComponent(theSource.Location.DefinitionSource, theSource.ImplementationName);
                         // Find by implementation for configuration
                         if (result == null)
@@ -321,7 +330,7 @@ namespace CircuitDiagram.IO.CDDX
                             return null;
                         }
                         // Find by component name
-                        if (result == null)
+                        if (result == null || result.Description == null)
                             result = new ComponentIdentifier(ComponentHelper.FindDescription(theSource.ComponentName));
 
                         return result;

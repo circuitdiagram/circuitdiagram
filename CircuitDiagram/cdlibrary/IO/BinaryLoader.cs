@@ -82,7 +82,7 @@ namespace CircuitDiagram.IO
                     reader.BaseStream.Seek(offsetToContent, SeekOrigin.Begin);
 
                 bool validSignature = false;
-                if (isSigned)
+                if (isSigned && key.HasValue)
                 {
                     RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
                     rsa.ImportParameters(key.Value);
