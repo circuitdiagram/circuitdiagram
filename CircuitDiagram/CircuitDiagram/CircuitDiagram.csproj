@@ -64,6 +64,9 @@
     <Compile Include="Dialogs\winDocumentLoadResult.xaml.cs">
       <DependentUpon>winDocumentLoadResult.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\winExportPNG.xaml.cs">
+      <DependentUpon>winExportPNG.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ImplementationConversion.cs" />
     <Compile Include="Render\CircuitElementDrawingVisual.cs" />
     <Compile Include="Converters\BoolToYesNoConverter.cs" />
@@ -111,6 +114,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Dialogs\winDocumentLoadResult.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\winExportPNG.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

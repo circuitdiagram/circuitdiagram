@@ -71,9 +71,37 @@ namespace CircuitDiagram.Render
             return returnStream;
         }
 
+        public System.IO.MemoryStream GetPNGImage2(double width, double height, double actualWidth, double actualHeight, bool whiteBG = false)
+        {
+            double dpiX = (width / actualWidth) * 96d;
+            double dpiY = (height /actualHeight) * 96d;
+
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)width, (int)height, dpiX, dpiY, PixelFormats.Default);
+
+            if (whiteBG)
+            {
+                DrawingVisual backgroundVisual = new System.Windows.Media.DrawingVisual();
+                using (var dc = backgroundVisual.RenderOpen())
+                    dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, width, height));
+                bitmap.Render(backgroundVisual);
+            }
+
+            bitmap.Render(m_visual);
+            PngBitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bitmap));
+            System.IO.MemoryStream returnStream = new System.IO.MemoryStream();
+            encoder.Save(returnStream);
+            returnStream.Flush();
+            m_visual.Offset = new Vector(0, 0);
+            return returnStream;
+        }
+
         public void DrawLine(Point start, Point end, double thickness)
         {
-            dc.DrawLine(new Pen(Brushes.Black, thickness), start, end);
+            Pen newPen = new System.Windows.Media.Pen(Brushes.Black, thickness);
+            newPen.StartLineCap = PenLineCap.Square;
+            newPen.EndLineCap = PenLineCap.Square;
+            dc.DrawLine(newPen, start, end);
         }
 
         public void DrawRectangle(Point start, Size size, double thickness, bool fill = false)
@@ -88,7 +116,10 @@ namespace CircuitDiagram.Render
 
         public void DrawPath(Point start, IList<Components.Render.Path.IPathCommand> commands, double thickness, bool fill = false)
         {
-            dc.DrawGeometry((fill ? Brushes.Black : Brushes.Transparent), new Pen(Brushes.Black, thickness), RenderHelper.GetGeometry(start, commands, fill));
+            Pen newPen = new System.Windows.Media.Pen(Brushes.Black, thickness);
+            newPen.StartLineCap = PenLineCap.Square;
+            newPen.EndLineCap = PenLineCap.Square;
+            dc.DrawGeometry((fill ? Brushes.Black : Brushes.Transparent), newPen, RenderHelper.GetGeometry(start, commands, fill));
         }
 
         public void DrawText(Point anchor, Components.Render.TextAlignment alignment, IEnumerable<CircuitDiagram.Components.Render.TextRun> textRuns)

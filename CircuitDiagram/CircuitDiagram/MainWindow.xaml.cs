@@ -800,26 +800,24 @@ namespace CircuitDiagram
                 }
                 else if (extension == ".png")
                 {
-                    WPFRenderer renderer = new WPFRenderer();
-                    renderer.Begin();
-                    circuitDisplay.Document.Render(renderer);
-                    renderer.End();
-                    using (var memoryStream = renderer.GetPNGImage(1024, 768))
+                    winExportPNG exportPNGWindow = new winExportPNG();
+                    exportPNGWindow.Owner = this;
+                    exportPNGWindow.OriginalWidth = circuitDisplay.Width;
+                    exportPNGWindow.OriginalHeight = circuitDisplay.Height;
+                    exportPNGWindow.Update();
+                    if (exportPNGWindow.ShowDialog() == true)
                     {
-                        FileStream fileStream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.Read);
-                        memoryStream.WriteTo(fileStream);
-                        fileStream.Close();
+                        WPFRenderer renderer = new WPFRenderer();
+                        renderer.Begin();
+                        circuitDisplay.Document.Render(renderer);
+                        renderer.End();
+                        using (var memoryStream = renderer.GetPNGImage2(exportPNGWindow.OutputWidth, exportPNGWindow.OutputHeight, circuitDisplay.Document.Size.Width, circuitDisplay.Document.Size.Height, exportPNGWindow.OutputBackgroundColour == "White"))
+                        {
+                            FileStream fileStream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.Read);
+                            memoryStream.WriteTo(fileStream);
+                            fileStream.Close();
+                        }
                     }
-
-
-                    //RenderTargetBitmap bmp = new RenderTargetBitmap((int)circuitDisplay.Document.Size.Width, (int)circuitDisplay.Document.Size.Height, 96d, 96d, PixelFormats.Default);
-                    //bmp.Render(circuitDisplay);
-
-                    //PngBitmapEncoder encoder = new PngBitmapEncoder();
-                    //encoder.Frames.Add(BitmapFrame.Create(bmp));
-                    //System.IO.FileStream stream = new System.IO.FileStream(sfd.FileName, System.IO.FileMode.Create);
-                    //encoder.Save(stream);
-                    //stream.Close();
                 }
             }
         }
