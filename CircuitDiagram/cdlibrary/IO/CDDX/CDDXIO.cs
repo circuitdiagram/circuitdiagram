@@ -29,6 +29,9 @@ namespace CircuitDiagram.IO.CDDX
 {
     public static class CDDXIO
     {
+        public const string StandardCollection = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common";
+        public const string MiscCollection = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/misc";
+
         public static class RelationshipTypes
         {
             public const string IncludedComponent = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/component";

@@ -9,7 +9,7 @@
         <Label Content="Set" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="label1" VerticalAlignment="Top" />
         <Label Content="Item" Height="28" HorizontalAlignment="Left" Margin="12,46,0,0" Name="label2" VerticalAlignment="Top" />
         <TextBox Height="23" Margin="120,14,12,0" Name="tbxImplementSet" VerticalAlignment="Top" IsReadOnly="True" />
-        <TextBox Height="23" Margin="120,48,12,0" Name="tbxImplementItem" VerticalAlignment="Top" />
+        <TextBox Height="23" Margin="120,48,12,0" Name="tbxImplementItem" VerticalAlignment="Top" TextChanged="tbxImplementItem_TextChanged" />
         <Label Content="Representation" Height="28" HorizontalAlignment="Left" Margin="12,86,0,0" Name="label3" VerticalAlignment="Top" />
         <ComboBox Height="48" Margin="120,77,12,0" Name="cbxRepresentation" VerticalAlignment="Top" SelectedIndex="0">
             <ComboBox.ItemTemplate>

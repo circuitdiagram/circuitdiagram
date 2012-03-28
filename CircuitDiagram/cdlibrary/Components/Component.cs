@@ -243,7 +243,7 @@ namespace CircuitDiagram.Components
                             reversed = true;
                         }
 
-                        if (start.X == end.X)
+                        if (connectionDescription.Start.Resolve(this).X == connectionDescription.End.Resolve(this).X) // use original coordinates to check correctly when single point
                         {
                             for (double i = start.Y; i <= end.Y; i += ComponentHelper.GridSize)
                             {
@@ -408,6 +408,7 @@ namespace CircuitDiagram.Components
         public void Deserialize(Dictionary<string, object> properties)
         {
             this.Horizontal = true;
+            this.IsFlipped = false;
             foreach (KeyValuePair<string, object> property in properties)
             {
                 // load common properties

@@ -67,7 +67,11 @@ namespace CircuitDiagram
                 }), lblStatus.Dispatcher);
 
             // Initialize settings
+#if PORTABLE
+            CircuitDiagram.Settings.Settings.Initialize(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\settings.xml");
+#else
             CircuitDiagram.Settings.Settings.Initialize(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\settings.xml");
+#endif
             ApplySettings();
 
             ComponentHelper.ComponentUpdatedDelegate = new ComponentUpdatedDelegate(Editor_ComponentUpdated);
@@ -158,7 +162,7 @@ namespace CircuitDiagram
                     loadResultWindow.ShowDialog();
                 }
 
-                if (result.Type == DocumentLoadResultType.Success)
+                if (result.Type == DocumentLoadResultType.Success || result.Type == DocumentLoadResultType.SuccessNewerVersion)
                 {
                     circuitDisplay.Document = document;
                     circuitDisplay.DrawConnections();
@@ -177,10 +181,11 @@ namespace CircuitDiagram
 
                 CircuitDiagram.IO.DocumentLoadResult result = loader.Load(File.OpenRead(path));
 
-                if (result.UnavailableComponents.Count > 0)
+                if (result.Type != DocumentLoadResultType.Success || result.Errors.Count > 0 || result.UnavailableComponents.Count > 0)
                 {
                     winDocumentLoadResult loadResultWindow = new winDocumentLoadResult();
                     loadResultWindow.Owner = this;
+                    loadResultWindow.SetMessage(result.Type);
                     loadResultWindow.SetUnavailableComponents(result.UnavailableComponents);
                     loadResultWindow.ShowDialog();
                 }
@@ -188,6 +193,7 @@ namespace CircuitDiagram
                 if (result.Type == IO.DocumentLoadResultType.Success)
                 {
                     circuitDisplay.Document = loader.Document;
+                    circuitDisplay.DrawConnections();
 
                     m_docPath = path;
                     m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
@@ -197,21 +203,6 @@ namespace CircuitDiagram
                     m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
                     m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
                 }
-                else if (result.Type == IO.DocumentLoadResultType.FailNewerVersion)
-                {
-                    MessageBox.Show("The document was created in a newer version of Circuit Diagram and could not be loaded correctly.", "Unable to Load Document");
-                }
-                else if (result.Type == IO.DocumentLoadResultType.FailIncorrectFormat)
-                {
-                    MessageBox.Show("The document was not in the correct format.", "Unable to Load Document");
-                }
-                else
-                {
-                    // Unknown
-                    MessageBox.Show("An unknown error occurred while loading the document.", "Unable to Load Document");
-                }
-
-                circuitDisplay.DrawConnections();
             }
         }
 
@@ -238,6 +229,12 @@ namespace CircuitDiagram
             string debugComponentsDirectory = Path.GetFullPath("../../Components");
             if (Directory.Exists(debugComponentsDirectory))
                 componentLocations.Add(debugComponentsDirectory);
+#endif
+
+#if PORTABLE
+            string portableComponentsDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\components";
+            if (Directory.Exists(portableComponentsDirectory))
+                componentLocations.Add(portableComponentsDirectory);
 #endif
 
             CircuitDiagram.IO.XmlLoader xmlLoader = new CircuitDiagram.IO.XmlLoader();
@@ -315,12 +312,18 @@ namespace CircuitDiagram
             LoadToolbox();
 
             #region Load Component Implementation Conversions
-            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\implementations.xml"))
+#if PORTABLE
+            string implementationsFileLocation = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\implementations.xml";
+#else
+            string implementationsFileLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\implementations.xml";
+#endif
+
+            if (File.Exists(implementationsFileLocation))
             {
                 try
                 {
                     XmlDocument implDoc = new XmlDocument();
-                    implDoc.Load(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\implementations.xml");
+                    implDoc.Load(implementationsFileLocation);
 
                     XmlNodeList sourceNodes = implDoc.SelectNodes("/implementations/source");
                     foreach (XmlNode sourceNode in sourceNodes)
@@ -398,7 +401,11 @@ namespace CircuitDiagram
             try
             {
                 XmlDocument toolboxSettings = new XmlDocument();
+#if PORTABLE
+                string toolboxSettingsPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\toolbox.xml";
+#else
                 string toolboxSettingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml";
+#endif
                 toolboxSettings.Load(toolboxSettingsPath);
 
                 XmlNodeList categoryNodes = toolboxSettings.SelectNodes("/display/category");
@@ -598,7 +605,11 @@ namespace CircuitDiagram
             catch (Exception)
             {
                 MessageBox.Show("The toolbox is corrupt. Please go to Tools->Toolbox to add items.", "Toolbox Corrupt", MessageBoxButton.OK, MessageBoxImage.Error);
+#if PORTABLE
+                File.WriteAllText(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\toolbox.xml", "<?xml version=\"1.0\" encoding=\"utf-8\"?><display></display>");
+#else
                 File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml", "<?xml version=\"1.0\" encoding=\"utf-8\"?><display></display>");
+#endif
             }
         }
 
@@ -935,12 +946,19 @@ namespace CircuitDiagram
                 circuitDisplay.DrawConnections();
 
                 // Save implementation representations
+#if PORTABLE
+                XmlTextWriter writer = new XmlTextWriter(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\implementations.xml", Encoding.UTF8);
+#else
                 XmlTextWriter writer = new XmlTextWriter(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\implementations.xml", Encoding.UTF8);
+#endif
                 writer.Formatting = Formatting.Indented;
                 writer.WriteStartDocument();
                 writer.WriteStartElement("implementations");
                 foreach (var source in m_componentRepresentations)
                 {
+                    if (source.Items.Count == 0)
+                        continue;
+
                     writer.WriteStartElement("source");
 
                     writer.WriteAttributeString("definitions", source.ImplementationSet);
@@ -1144,6 +1162,16 @@ namespace CircuitDiagram
             circuitDisplay.FlipComponentCommand(sender, e);
         }
 
+        private void RotateComponentCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            circuitDisplay.RotateComponentCommand_CanExecute(sender, e);
+        }
+
+        private void RotateComponentCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            circuitDisplay.RotateComponentCommand_Executed(sender, e);
+        }
+
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if ((circuitDisplay.IsMouseOver || mainToolbox.IsMouseOver) && !e.IsRepeat && e.IsDown)
@@ -1225,6 +1253,7 @@ namespace CircuitDiagram
                             {
                                 component.Deserialize(ComponentDataString.ConvertToDictionary(beforeData[component]));
                                 component.InvalidateVisual();
+                                circuitDisplay.RedrawComponent(component);
                                 component.ResetConnections();
                                 component.ApplyConnections(circuitDisplay.Document);
                             }
@@ -1262,6 +1291,7 @@ namespace CircuitDiagram
                             {
                                 component.Deserialize(ComponentDataString.ConvertToDictionary(beforeData[component]));
                                 component.InvalidateVisual();
+                                circuitDisplay.RedrawComponent(component);
                                 component.ResetConnections();
                                 component.ApplyConnections(circuitDisplay.Document);
                             }

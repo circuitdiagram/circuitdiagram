@@ -69,7 +69,14 @@ namespace CircuitDiagram.Components.Render.Path
 
         public IPathCommand Flip(bool horizontal)
         {
-            throw new NotImplementedException();
+            if (horizontal)
+            {
+                return new QuadraticBeizerCurveTo(-Control.X, Control.Y, -End.X, End.Y);
+            }
+            else
+            {
+                return new QuadraticBeizerCurveTo(Control.X, -Control.Y, End.X, -End.Y);
+            }
         }
     }
 }

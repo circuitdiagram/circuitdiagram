@@ -43,6 +43,8 @@ namespace CircuitDiagram
         {
             InitializeComponent();
 
+            btnOK.IsEnabled = false;
+
             // Populate representation combobox
             foreach (ComponentDescription description in ComponentHelper.ComponentDescriptions)
             {
@@ -92,6 +94,11 @@ namespace CircuitDiagram
         {
             this.DialogResult = true;
             this.Close();
+        }
+
+        private void tbxImplementItem_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            btnOK.IsEnabled = tbxImplementItem.Text.Length > 0;
         }
     }
 }

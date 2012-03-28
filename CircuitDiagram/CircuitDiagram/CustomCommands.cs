@@ -31,6 +31,7 @@ namespace CircuitDiagram
         static CustomCommands()
         {
             FlipComponent = new RoutedUICommand("Flip", "Flip", typeof(CustomCommands));
+            RotateComponent = new RoutedUICommand("Rotate", "Rotate", typeof(CustomCommands));
             EditComponent = new RoutedUICommand("Edit", "Edit", typeof(CustomCommands));
             DeleteComponent = new RoutedUICommand("Delete", "Delete", typeof(CustomCommands));
             NewDocument = new RoutedUICommand("New", "New", typeof(CustomCommands));
@@ -55,6 +56,12 @@ namespace CircuitDiagram
         }
 
         public static RoutedUICommand NewDocument
+        {
+            get;
+            private set;
+        }
+
+        public static RoutedUICommand RotateComponent
         {
             get;
             private set;

@@ -89,7 +89,13 @@ namespace CircuitDiagram
             InitializeComponent();
 
             XmlDocument toolboxSettings = new XmlDocument();
+
+#if PORTABLE
+            string toolboxSettingsPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\toolbox.xml";
+#else
             string toolboxSettingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml";
+#endif
+
             toolboxSettings.Load(toolboxSettingsPath);
 
             #region Populate current items
@@ -200,7 +206,13 @@ namespace CircuitDiagram
 
         private void SaveConfiguration()
         {
-            using (System.IO.FileStream stream = new System.IO.FileStream(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml", System.IO.FileMode.Create, System.IO.FileAccess.Write))
+#if PORTABLE
+            string toolboxSettingsPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\toolbox.xml";
+#else
+            string toolboxSettingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml";
+#endif
+
+            using (System.IO.FileStream stream = new System.IO.FileStream(toolboxSettingsPath, System.IO.FileMode.Create, System.IO.FileAccess.Write))
             {
                 XmlTextWriter writer = new XmlTextWriter(stream, Encoding.UTF8);
                 writer.Formatting = Formatting.Indented;

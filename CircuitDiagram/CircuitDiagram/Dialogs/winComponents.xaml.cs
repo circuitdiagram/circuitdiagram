@@ -72,7 +72,7 @@ namespace CircuitDiagram
             ComponentDescription description = value as ComponentDescription;
             if (description != null)
             {
-                return ComponentHelper.IsStandardComponent(description) ? "Yes" : "No";
+                return ComponentHelper.IsStandardComponent(description) ? "No" : "Yes";
             }
             return "No";
         }

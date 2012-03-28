@@ -124,6 +124,25 @@ namespace CircuitDiagram
             }
         }
 
+        public void RedrawComponent(Component component)
+        {
+            if (m_elementVisuals.ContainsKey(component))
+                m_elementVisuals[component].UpdateVisual();
+            if (m_selectedComponents.Contains(component))
+            {
+                if (m_elementVisuals[component].ContentBounds != Rect.Empty)
+                {
+                    using (DrawingContext dc = m_selectedVisual.RenderOpen())
+                    {
+                        Pen stroke = new Pen(Brushes.Gray, 1d);
+                        Rect rect = VisualTreeHelper.GetContentBounds(m_elementVisuals[component as ICircuitElement]);
+                        dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(100, 0, 0, 100)), stroke, Rect.Inflate(rect, new Size(2, 2)));
+                    }
+                }
+                m_selectedVisual.Offset = component.Offset;
+            }
+        }
+
         public void DocumentSizeChanged()
         {
             this.Width = Document.Size.Width;
@@ -203,26 +222,43 @@ namespace CircuitDiagram
             m_elementVisuals = new Dictionary<ICircuitElement, CircuitElementDrawingVisual>();
         }
 
+        #region Commands
         public void DeleteComponentCommand(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
         {
-            UndoAction undoAction = new UndoAction(UndoCommand.DeleteComponents, "delete", m_selectedComponents.ToArray());
-            UndoManager.AddAction(undoAction);
-
-            foreach (Component component in m_selectedComponents)
+            if (m_selectedComponents.Count > 0)
             {
-                Document.Elements.Remove(component);
+                UndoAction undoAction = new UndoAction(UndoCommand.DeleteComponents, "delete", m_selectedComponents.ToArray());
+                UndoManager.AddAction(undoAction);
+
+                foreach (Component component in m_selectedComponents)
+                {
+                    Document.Elements.Remove(component);
+                }
+                m_selectedComponents.Clear();
+                foreach (Component component in Document.Components)
+                    component.DisconnectConnections();
+                foreach (Component component in Document.Components)
+                    component.ApplyConnections(Document);
+                DrawConnections();
             }
-            m_selectedComponents.Clear();
-            foreach (Component component in Document.Components)
-                component.DisconnectConnections();
-            foreach (Component component in Document.Components)
-                component.ApplyConnections(Document);
-            DrawConnections();
+            else if (m_resizingComponent != null)
+            {
+                UndoAction undoAction = new UndoAction(UndoCommand.DeleteComponents, "delete", new Component[] { m_resizingComponent });
+                UndoManager.AddAction(undoAction);
+
+                Document.Elements.Remove(m_resizingComponent);
+                m_resizingComponent = null;
+                foreach (Component component in Document.Components)
+                    component.DisconnectConnections();
+                foreach (Component component in Document.Components)
+                    component.ApplyConnections(Document);
+                DrawConnections();
+            }
         }
 
         public void DeleteComponentCommand_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = (m_selectedComponents.Count > 0);
+            e.CanExecute = (m_selectedComponents.Count > 0 || m_resizingComponent != null);
         }
 
         public void FlipComponentCommand(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
@@ -233,13 +269,126 @@ namespace CircuitDiagram
                 m_elementVisuals[m_selectedComponents[0]].UpdateVisual();
                 m_selectedComponents[0].ResetConnections();
                 m_selectedComponents[0].ApplyConnections(Document);
+
+                UndoAction undoAction = new UndoAction(UndoCommand.ModifyComponents, "Flip component", new Component[] { m_selectedComponents[0] });
+                undoAction.AddData("before", m_undoManagerBeforeData);
+                Dictionary<Component, string> afterDictionary = new Dictionary<Component, string>(1);
+                afterDictionary.Add(m_selectedComponents[0], m_selectedComponents[0].SerializeToString());
+                undoAction.AddData("after", afterDictionary);
+                UndoManager.AddAction(undoAction);
+                m_undoManagerBeforeData = new Dictionary<Component, string>();
+            }
+            else if (m_resizingComponent != null && m_resizingComponent.Description.CanFlip)
+            {
+                Dictionary<Component, string> beforeData = new Dictionary<Component, string>();
+                beforeData.Add(m_resizingComponent, m_resizingComponent.SerializeToString());
+
+                m_resizingComponent.IsFlipped = !m_resizingComponent.IsFlipped;
+                m_elementVisuals[m_resizingComponent].UpdateVisual();
+                m_resizingComponent.ResetConnections();
+                m_resizingComponent.ApplyConnections(Document);
+
+                UndoAction undoAction = new UndoAction(UndoCommand.ModifyComponents, "Flip component", new Component[] { m_resizingComponent });
+                undoAction.AddData("before", beforeData);
+                Dictionary<Component, string> afterDictionary = new Dictionary<Component, string>(1);
+                afterDictionary.Add(m_resizingComponent, m_resizingComponent.SerializeToString());
+                undoAction.AddData("after", afterDictionary);
+                UndoManager.AddAction(undoAction);
+                m_undoManagerBeforeData = new Dictionary<Component, string>();
             }
         }
 
         public void FlipComponentCommand_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = (m_selectedComponents.Count == 1 && m_selectedComponents[0].Description.CanFlip);
+            e.CanExecute = (m_selectedComponents.Count == 1 && m_selectedComponents[0].Description.CanFlip) || (m_resizingComponent != null && m_resizingComponent.Description.CanFlip);
         }
+
+        public void RotateComponentCommand_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e)
+        {
+            if (m_selectedComponents.Count != 1 && m_resizingComponent == null)
+            {
+                e.CanExecute = false;
+                return;
+            }
+
+            if (m_selectedComponents.Count == 1)
+            {
+                foreach (Conditional<FlagOptions> flags in m_selectedComponents[0].Description.Flags)
+                {
+                    if (flags.Conditions.ConditionsAreMet(m_selectedComponents[0]))
+                    {
+                        if ((flags.Value & FlagOptions.HorizontalOnly) == FlagOptions.HorizontalOnly || (flags.Value & FlagOptions.VerticalOnly) == FlagOptions.VerticalOnly)
+                        {
+                            e.CanExecute = false;
+                            return;
+                        }
+                    }
+                }
+            }
+
+            if (m_resizingComponent != null)
+            {
+                foreach (Conditional<FlagOptions> flags in m_resizingComponent.Description.Flags)
+                {
+                    if (flags.Conditions.ConditionsAreMet(m_resizingComponent))
+                    {
+                        if ((flags.Value & FlagOptions.HorizontalOnly) == FlagOptions.HorizontalOnly || (flags.Value & FlagOptions.VerticalOnly) == FlagOptions.VerticalOnly)
+                        {
+                            e.CanExecute = false;
+                            return;
+                        }
+                    }
+                }
+            }
+
+            e.CanExecute = true;
+        }
+
+        public void RotateComponentCommand_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
+        {
+            if (m_selectedComponents.Count == 1)
+            {
+                m_selectedComponents[0].Horizontal = !m_selectedComponents[0].Horizontal;
+                m_selectedComponents[0].ResetConnections();
+                RedrawComponent(m_selectedComponents[0]);
+                foreach (Component component in Document.Components)
+                    component.DisconnectConnections();
+                foreach (Component component in Document.Components)
+                    component.ApplyConnections(Document);
+                DrawConnections();
+
+                UndoAction undoAction = new UndoAction(UndoCommand.ModifyComponents, "Rotate component", new Component[] { m_selectedComponents[0] });
+                undoAction.AddData("before", m_undoManagerBeforeData);
+                Dictionary<Component, string> afterDictionary = new Dictionary<Component, string>(1);
+                afterDictionary.Add(m_selectedComponents[0], m_selectedComponents[0].SerializeToString());
+                undoAction.AddData("after", afterDictionary);
+                UndoManager.AddAction(undoAction);
+                m_undoManagerBeforeData = new Dictionary<Component, string>();
+            }
+            else if (m_resizingComponent != null)
+            {
+                Dictionary<Component, string> beforeData = new Dictionary<Component, string>();
+                beforeData.Add(m_resizingComponent, m_resizingComponent.SerializeToString());
+
+                m_resizingComponent.Horizontal = !m_resizingComponent.Horizontal;
+                m_resizingComponent.ResetConnections();
+                RedrawComponent(m_resizingComponent);
+                foreach (Component component in Document.Components)
+                    component.DisconnectConnections();
+                foreach (Component component in Document.Components)
+                    component.ApplyConnections(Document);
+                DrawConnections();
+
+                UndoAction undoAction = new UndoAction(UndoCommand.ModifyComponents, "Rotate component", new Component[] { m_resizingComponent });
+                undoAction.AddData("before", beforeData);
+                Dictionary<Component, string> afterDictionary = new Dictionary<Component, string>(1);
+                afterDictionary.Add(m_resizingComponent, m_resizingComponent.SerializeToString());
+                undoAction.AddData("after", afterDictionary);
+                UndoManager.AddAction(undoAction);
+                m_undoManagerBeforeData = new Dictionary<Component, string>();
+            }
+        }
+        #endregion
 
         bool m_selectionBox = false;
         bool m_movingMouse = false;

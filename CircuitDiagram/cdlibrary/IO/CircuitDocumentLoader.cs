@@ -61,14 +61,10 @@ namespace CircuitDiagram.IO
                             version = CircuitDocumentXmlVersion.Version1_0;
                         else if (versionDouble == 1.1d)
                             version = CircuitDocumentXmlVersion.Version1_1;
-                        else if (versionDouble == 1.2d)
-                            version = CircuitDocumentXmlVersion.Version1_2;
                     }
                 }
 
-                if (version == CircuitDocumentXmlVersion.Version1_2)
-                    return LoadVersion1_2(doc);
-                else if (version == CircuitDocumentXmlVersion.Version1_1)
+                if (version == CircuitDocumentXmlVersion.Version1_1)
                     return LoadVersion1_1(doc);
                 else if (version == CircuitDocumentXmlVersion.Version1_0)
                     return LoadVersion1_0(doc);
@@ -87,63 +83,100 @@ namespace CircuitDiagram.IO
 
         private DocumentLoadResult LoadVersion1_0(XmlDocument doc)
         {
-            
+            try
+            {
+                DocumentLoadResult loadResult = new DocumentLoadResult();
 
-            //XmlTextReader reader = new XmlTextReader(stream);
-            //this.Components.Clear();
+                Document = new CircuitDocument();
 
-            //bool errorOccurred = false;
-            //while (reader.Read())
-            //{
-            //    if (reader.NodeType == XmlNodeType.Element && reader.Depth == 0)
-            //    {
-            //        try
-            //        {
-            //            reader.MoveToAttribute("width");
-            //            Size.Width = double.Parse(reader.Value);
-            //            reader.MoveToAttribute("height");
-            //            Size.Height = double.Parse(reader.Value);
-            //            reader.MoveToElement();
-            //        }
-            //        catch (Exception)
-            //        {
-            //            errorOccurred = true;
-            //        }
-            //    }
-            //    else if (reader.NodeType == XmlNodeType.Element && reader.Depth == 1 && reader.LocalName == "component")
-            //    {
-            //        try
-            //        {
-            //            reader.MoveToAttribute("type");
-            //            string componentType = reader.Value;
-            //            reader.MoveToElement();
-            //            Dictionary<string, object> properties = new Dictionary<string, object>();
-            //            reader.MoveToNextAttribute();
-            //            for (int i = 0; i < reader.AttributeCount; i++)
-            //            {
-            //                properties.Add(reader.Name, reader.Value);
-            //                reader.MoveToNextAttribute();
-            //            }
-            //            Component component = Component.Create(ComponentDataString.ConvertToString(properties));
-            //            reader.MoveToElement();
+                XmlElement circuitNode = doc.SelectSingleNode("/circuit") as XmlElement;
+                if (circuitNode.HasAttribute("width") && circuitNode.HasAttribute("height"))
+                    Document.Size = new System.Windows.Size(double.Parse(circuitNode.Attributes["width"].InnerText), double.Parse(circuitNode.Attributes["height"].InnerText));
 
-            //            m_components.Add(component);
-            //        }
-            //        catch (Exception)
-            //        {
-            //            errorOccurred = true;
-            //        }
-            //    }
-            //}
-            //reader.Close();
+                foreach (XmlNode node in circuitNode.ChildNodes)
+                {
+                    if (node.NodeType != XmlNodeType.Element)
+                        continue;
 
-            //foreach (Component component in Components)
-            //    component.ApplyConnections(this);
+                    string type = node.Name;
+                    string location = node.Attributes["location"].InnerText;
+                    string[] locationSplit = location.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    // Snap points to grid
+                    double x = Math.Round(double.Parse(locationSplit[0]) / ComponentHelper.GridSize) * ComponentHelper.GridSize;
+                    double y = Math.Round(double.Parse(locationSplit[1]) / ComponentHelper.GridSize) * ComponentHelper.GridSize;
+                    double endX = Math.Round(double.Parse(locationSplit[2]) / ComponentHelper.GridSize) * ComponentHelper.GridSize;
+                    double endY = Math.Round(double.Parse(locationSplit[3]) / ComponentHelper.GridSize) * ComponentHelper.GridSize;
+                    double size = endX - x;
+                    bool horizontal = true;
+                    if (endX == x)
+                    {
+                        size = endY - y;
+                        horizontal = false;
+                    }
 
-            //if (errorOccurred)
-            //    return DocumentLoadResult.FailIncorrectFormat;
-            //else
-            return null;// new DocumentLoadResult(DocumentLoadResultType.Success);
+                    // Other properties
+                    Dictionary<string, object> properties = new Dictionary<string, object>(node.Attributes.Count);
+                    foreach (XmlAttribute attribute in node.Attributes)
+                        properties.Add(attribute.Name, attribute.InnerText);
+
+                    string lType = type.ToLowerInvariant();
+
+                    // Read type parameter
+                    string t = null;
+                    if ((node as XmlElement).HasAttribute("t"))
+                        t = node.Attributes["t"].InnerText;
+                    else if ((node as XmlElement).HasAttribute("type"))
+                        t = node.Attributes["type"].InnerText;
+
+                    if (properties.ContainsKey("t"))
+                        properties.Remove("t");
+
+                    // Convert component name
+                    string componentCollection;
+                    string standardComponentName;
+                    ConvertComponentName(lType, t, out componentCollection, out standardComponentName);
+                    ConvertProperties(componentCollection, standardComponentName, properties);
+
+                    ComponentIdentifier identifier = ComponentHelper.GetStandardComponent(componentCollection, standardComponentName);
+                    if (lType == "wire")
+                        identifier = new ComponentIdentifier(ComponentHelper.WireDescription);
+
+                    if (identifier != null)
+                    {
+                        Component component = Component.Create(identifier, properties);
+                        component.Offset = new System.Windows.Vector(x, y);
+                        component.Horizontal = horizontal;
+                        if (size < component.Description.MinSize)
+                            component.Size = component.Description.MinSize;
+                        else
+                            component.Size = size;
+                        component.ResetConnections();
+
+                        Document.Elements.Add(component);
+                    }
+                    else
+                    {
+                        // Unknown component
+                        if (standardComponentName == lType)
+                            loadResult.UnavailableComponents.Add(new StandardComponentRef(null, type)); // Unknown type
+                        else
+                            loadResult.UnavailableComponents.Add(new StandardComponentRef(componentCollection, standardComponentName)); // No implementation for known type
+                    }
+                }
+
+                foreach (Component component in Document.Components)
+                    component.ApplyConnections(Document);
+
+                loadResult.Type = DocumentLoadResultType.Success;
+                return loadResult;
+            }
+            catch (Exception)
+            {
+                // Wrong format
+                DocumentLoadResult loadResult = new DocumentLoadResult();
+                loadResult.Type = DocumentLoadResultType.FailIncorrectFormat;
+                return loadResult;
+            }
         }
 
         private DocumentLoadResult LoadVersion1_1(XmlDocument doc)
@@ -196,7 +229,6 @@ namespace CircuitDiagram.IO
                     else
                     {
                         string lType = type.ToLowerInvariant();
-                        string standardCollection = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common";
 
                         // Read type parameter
                         string t = null;
@@ -204,8 +236,6 @@ namespace CircuitDiagram.IO
                             t = node.Attributes["t"].InnerText;
                         if (t == null && lType == "logicgate" && (node as XmlElement).HasAttribute("logictype"))
                             t = node.Attributes["logictype"].InnerText;
-
-                        string standardComponentName = lType;
 
                         if (properties.ContainsKey("t"))
                             properties.Remove("t");
@@ -216,38 +246,12 @@ namespace CircuitDiagram.IO
                             properties.Add("@flipped", flipped);
                         }
 
-                        if (lType == "logicgate" && t == "0")
-                            standardComponentName = "and2";
-                        else if (lType == "logicgate" && t == "1")
-                            standardComponentName = "nand2";
-                        else if (lType == "logicgate" && t == "2")
-                            standardComponentName = "or2";
-                        else if (lType == "logicgate" && t == "3")
-                            standardComponentName = "nor2";
-                        else if (lType == "logicgate" && t == "4")
-                            standardComponentName = "xor2";
-                        else if (lType == "logicgate" && t == "5")
-                            standardComponentName = "not";
-                        else if (lType == "logicgate" && t == "6")
-                            standardComponentName = "schmittnot";
-                        else if (lType == "supply")
-                            standardComponentName = "cell";
-                        else if (lType == "switch" && t == "0")
-                            standardComponentName = "pushswitch";
-                        else if (lType == "switch" && t == "1")
-                            standardComponentName = "toggleswitch";
-                        else if (lType == "transistor" && t == "0")
-                            standardComponentName = "mosfetn";
-                        else if (lType == "transistor" && t == "1")
-                            standardComponentName = "mosfetp";
-                        else if (lType == "transistor" && t == "2")
-                            standardComponentName = "transnpn";
-                        else if (lType == "transistor" && t == "3")
-                            standardComponentName = "transpnp";
-                        else if (lType == "outputdevice" && t == "3")
-                            standardComponentName = "heater";
+                        // Convert component name
+                        string componentCollection;
+                        string standardComponentName;
+                        ConvertComponentName(lType, t, out componentCollection, out standardComponentName);
 
-                        ComponentIdentifier identifier = ComponentHelper.GetStandardComponent(standardCollection, standardComponentName);
+                        ComponentIdentifier identifier = ComponentHelper.GetStandardComponent(componentCollection, standardComponentName);
                         if (lType == "wire")
                             identifier = new ComponentIdentifier(ComponentHelper.WireDescription);
 
@@ -256,7 +260,10 @@ namespace CircuitDiagram.IO
                             Component component = Component.Create(identifier, properties);
                             component.Offset = new System.Windows.Vector(x, y);
                             component.Horizontal = horizontal;
-                            component.Size = size;
+                            if (size < component.Description.MinSize)
+                                component.Size = component.Description.MinSize;
+                            else
+                                component.Size = size;
                             component.ResetConnections();
 
                             Document.Elements.Add(component);
@@ -267,7 +274,7 @@ namespace CircuitDiagram.IO
                             if (standardComponentName == lType)
                                 loadResult.UnavailableComponents.Add(new StandardComponentRef(null, type)); // Unknown type
                             else
-                                loadResult.UnavailableComponents.Add(new StandardComponentRef(standardCollection, standardComponentName)); // No implementation for known type
+                                loadResult.UnavailableComponents.Add(new StandardComponentRef(componentCollection, standardComponentName)); // No implementation for known type
                         }
                     }
                 }
@@ -287,113 +294,64 @@ namespace CircuitDiagram.IO
             }
         }
 
-        private DocumentLoadResult LoadVersion1_2(XmlDocument doc)
+        private static void ConvertComponentName(string oldType, string t, out string collection, out string newType)
         {
-            throw new NotImplementedException();
+            newType = null;
+            collection = CDDX.CDDXIO.StandardCollection;
 
-            //try
-            //{
-            //    m_document = new CircuitDocument();
+            if (oldType == "logicgate" && t == "0")
+                newType = "and2";
+            else if (oldType == "logicgate" && t == "1")
+                newType = "nand2";
+            else if (oldType == "logicgate" && t == "2")
+                newType = "or2";
+            else if (oldType == "logicgate" && t == "3")
+                newType = "nor2";
+            else if (oldType == "logicgate" && t == "4")
+                newType = "xor2";
+            else if (oldType == "logicgate" && t == "5")
+                newType = "not";
+            else if (oldType == "logicgate" && t == "6")
+                newType = "schmittnot";
+            else if (oldType == "supply")
+                newType = "cell";
+            else if (oldType == "switch" && t == "0")
+                newType = "pushswitch";
+            else if (oldType == "switch" && t == "1")
+                newType = "toggleswitch";
+            else if (oldType == "transistor" && t == "0")
+                newType = "mosfetn";
+            else if (oldType == "transistor" && t == "1")
+                newType = "mosfetp";
+            else if (oldType == "transistor" && t == "2")
+                newType = "transnpn";
+            else if (oldType == "transistor" && t == "3")
+                newType = "transpnp";
+            else if (oldType == "outputdevice" && t == "3")
+                newType = "heater";
+            else if (oldType == "mosfet")
+                newType = "mosfetn";
+            else if (oldType == "externalconnection")
+            {
+                newType = "extconnection";
+                collection = CDDX.CDDXIO.MiscCollection;
+            }
+            else if (oldType == "counter")
+                newType = "counter4";
+            else if (oldType == "switch")
+                newType = "pushswitch";
+            else
+                newType = oldType;
+        }
 
-            //    // Root properties
-            //    XmlElement circuitElement = doc.SelectSingleNode("/circuit") as XmlElement;
-
-            //    string width = circuitElement.Attributes["width"].InnerText;
-            //    string height = circuitElement.Attributes["height"].InnerText;
-
-            //    // Metadata
-            //    XmlElement metadataElement = doc.SelectSingleNode("/circuit/metadata") as XmlElement;
-
-            //    Dictionary<string, string> metadata = new Dictionary<string, string>();
-            //    foreach (XmlNode metadataItem in metadataElement.ChildNodes)
-            //        if (!metadata.ContainsKey(metadataItem.Name))
-            //            metadata.Add(metadataItem.Name, metadataItem.InnerText);
-
-            //    // Component sources
-            //    XmlNodeList componentSourceNodes = doc.SelectNodes("/circuit/components/source");
-            //    Dictionary<string, ComponentSource> componentSources = new Dictionary<string, ComponentSource>();
-
-            //    foreach (XmlElement element in componentSourceNodes)
-            //    {
-            //        string location = element.Attributes["location"].InnerText;
-
-            //        foreach (XmlElement childElement in element.SelectNodes("add"))
-            //        {
-            //            string internalId = childElement.Attributes["id"].InnerText;
-            //            string externalId = null;
-            //            if (childElement.HasAttribute("xid"))
-            //                externalId = childElement.Attributes["xid"].InnerText;
-            //            string name = null;
-            //            if (childElement.HasAttribute("name"))
-            //                name = childElement.Attributes["name"].InnerText;
-            //            Guid guid = Guid.Empty;
-            //            if (childElement.HasAttribute("guid"))
-            //                guid = new Guid(childElement.Attributes["guid"].InnerText);
-            //            componentSources.Add(internalId, new ComponentSource(location, internalId, externalId, name, guid));
-            //        }
-            //    }
-
-            //    // Document elements
-            //    XmlNodeList elementNodes = doc.SelectNodes("/circuit/document/element");
-            //    foreach (XmlNode componentNode in elementNodes)
-            //    {
-            //        string type = componentNode.Attributes["type"].InnerText;
-            //        double x = double.Parse(componentNode.Attributes["x"].InnerText);
-            //        double y = double.Parse(componentNode.Attributes["y"].InnerText);
-            //        string orientation = componentNode.Attributes["orientation"].InnerText;
-
-            //        Dictionary<string, object> componentProperties = new Dictionary<string, object>();
-            //        componentProperties.Add("@x", x);
-            //        componentProperties.Add("@y", y);
-            //        componentProperties.Add("@orientation", orientation);
-
-            //        XmlNodeList componentPropertyNodes = componentNode.SelectNodes("property");
-            //        foreach (XmlNode propertyNode in componentPropertyNodes)
-            //        {
-            //            string key = propertyNode.Attributes["key"].InnerText;
-            //            string value = propertyNode.Attributes["value"].InnerText;
-            //            componentProperties.Add(key, value);
-            //        }
-
-            //        ComponentDescription componentDescription;
-            //        if (!type.StartsWith("{"))
-            //        {
-            //            componentDescription = ComponentHelper.FindDescription(type);
-            //        }
-            //        else
-            //        {
-            //            if (componentSources.ContainsKey(type.Replace("{", "").Replace("}", "")))
-            //            {
-            //                ComponentSource source = componentSources[type.Replace("{", "").Replace("}", "")];
-            //                //if (!source.IsResolved)
-            //                //    source.Resolve(rc);
-            //                componentDescription = source.Value;
-            //            }
-            //            else
-            //            {
-            //                // Invalid component reference
-            //                componentDescription = null;
-            //            }
-            //        }
-
-            //        if (componentDescription.CanResize && ((XmlElement)componentNode).HasAttribute("size"))
-            //            componentProperties.Add("@size", double.Parse(componentNode.Attributes["size"].InnerText));
-            //        else if (componentDescription.CanResize)
-            //            componentProperties.Add("@size", ComponentHelper.GridSize);
-            //        if (componentDescription.CanFlip && ((XmlElement)componentNode).HasAttribute("flipped") && componentNode.Attributes["flipped"].InnerText.ToLower() == "true")
-            //            componentProperties.Add("@flipped", true);
-            //        else if (componentDescription.CanFlip)
-            //            componentProperties.Add("@flipped", false);
-
-            //        m_document.Elements.Add(Component.Create(componentDescription, componentProperties));
-            //    }
-
-            //    return DocumentLoadResult.Success;
-            //}
-            //catch (Exception)
-            //{
-            //    return DocumentLoadResult.FailUnknown;
-            //}
+        private void ConvertProperties(string componentCollection, string standardComponentName, Dictionary<string, object> properties)
+        {
+            if (componentCollection == CDDX.CDDXIO.MiscCollection && standardComponentName == "extconnection" && properties.ContainsKey("topleft"))
+            {
+                bool textpos = !bool.Parse(properties["topleft"].ToString());
+                properties.Remove("topleft");
+                properties.Add("textpos", textpos);
+            }
         }
     }
 }

@@ -94,6 +94,7 @@
                     <ContextMenu>
                         <MenuItem Command="cd:CustomCommands.DeleteComponent" />
                         <MenuItem Command="cd:CustomCommands.FlipComponent" />
+                        <MenuItem Command="cd:CustomCommands.RotateComponent" />
                     </ContextMenu>
                 </cd:CircuitDisplay.ContextMenu>
             </cd:CircuitDisplay>
@@ -107,5 +108,6 @@
         <CommandBinding Command="Redo" CanExecute="CommandRedo_CanExecute" Executed="CommandRedo_Executed" />
         <CommandBinding Command="cd:CustomCommands.DeleteComponent" CanExecute="DeleteComponentCommand_CanExecute" Executed="DeleteComponentCommand_Executed" />
         <CommandBinding Command="cd:CustomCommands.FlipComponent" CanExecute="FlipComponentCommand_CanExecute" Executed="FlipComponentCommand_Executed" />
+        <CommandBinding Command="cd:CustomCommands.RotateComponent" CanExecute="RotateComponentCommand_CanExecute" Executed="RotateComponentCommand_Executed" />
     </Window.CommandBindings>
 </Window>
