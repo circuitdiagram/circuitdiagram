@@ -54,11 +54,22 @@ namespace CircuitDiagram.IO.CDDX
 
         public static DocumentLoadResult Read(Stream inputStream, out CircuitDocument document)
         {
-            using (Package package = ZipPackage.Open(inputStream))
+            try
             {
-                PackageRelationship documentRelationship = package.GetRelationshipsByType("http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/circuitDiagramDocument").FirstOrDefault();
-                PackagePart documentPart = package.GetPart(documentRelationship.TargetUri);
-                return CDDX.CDDXDocumentLoader.LoadCDDX(package, documentPart, out document);
+                using (Package package = ZipPackage.Open(inputStream))
+                {
+                    PackageRelationship documentRelationship = package.GetRelationshipsByType("http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/circuitDiagramDocument").FirstOrDefault();
+                    PackagePart documentPart = package.GetPart(documentRelationship.TargetUri);
+                    return CDDX.CDDXDocumentLoader.LoadCDDX(package, documentPart, out document);
+                }
+            }
+            catch (Exception)
+            {
+                document = null;
+
+                DocumentLoadResult result = new DocumentLoadResult();
+                result.Type = DocumentLoadResultType.FailIncorrectFormat;
+                return result;
             }
         }
 
