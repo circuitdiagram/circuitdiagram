@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:cd="clr-namespace:CircuitDiagram"
         xmlns:tb="clr-namespace:Toolbox;assembly=Toolbox"
-        Title="Circuit Diagram" Height="565" Width="800" KeyDown="Window_KeyDown">
+        Title="Circuit Diagram" Height="565" Width="800" KeyDown="Window_KeyDown" Icon="Logo32.png">
     <DockPanel>
         <Menu DockPanel.Dock="Top" Height="23" Style="{StaticResource MenuStyle}">
             <MenuItem Header="_File">
