@@ -55,6 +55,10 @@ namespace cdimg
 
             ComponentHelper.AddDescription(descriptions[0]);
             Component component = Component.Create(String.Format("type:{0},x:0,y:0,size:60,orientation:horizontal", descriptions[0].ComponentName));
+
+            // Implement minimum size
+            component.ImplementMinimumSize(component.Description.MinSize);
+
             CircuitDocument document = new CircuitDocument();
             document.Elements.Add(component);
 

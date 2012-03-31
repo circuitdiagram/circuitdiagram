@@ -45,7 +45,8 @@ namespace CircuitDiagram.Components
 
             newComponent.ResetConnections();
 
-            newComponent.Editor.Update();
+            if (newComponent.Editor != null)
+                newComponent.Editor.Update();
 
             return newComponent;
         }
@@ -71,7 +72,8 @@ namespace CircuitDiagram.Components
 
             newComponent.ResetConnections();
 
-            newComponent.Editor.Update();
+            if (newComponent.Editor != null)
+                newComponent.Editor.Update();
 
             return newComponent;
         }
@@ -113,7 +115,8 @@ namespace CircuitDiagram.Components
 
             newComponent.ResetConnections();
 
-            newComponent.Editor.Update();
+            if (newComponent.Editor != null)
+                newComponent.Editor.Update();
 
             return newComponent;
         }

@@ -240,6 +240,16 @@ namespace CircuitDiagram
                 foreach (Component component in Document.Components)
                     component.ApplyConnections(Document);
                 DrawConnections();
+
+                // Clear selection box
+                using (DrawingContext dc = m_selectedVisual.RenderOpen())
+                {
+                }
+                // Clear resize visual
+                using (DrawingContext dc = m_resizeVisual.RenderOpen())
+                {
+                }
+
             }
             else if (m_resizingComponent != null)
             {
@@ -253,6 +263,15 @@ namespace CircuitDiagram
                 foreach (Component component in Document.Components)
                     component.ApplyConnections(Document);
                 DrawConnections();
+
+                // Clear selection box
+                using (DrawingContext dc = m_selectedVisual.RenderOpen())
+                {
+                }
+                // Clear resize visual
+                using (DrawingContext dc = m_resizeVisual.RenderOpen())
+                {
+                }
             }
         }
 

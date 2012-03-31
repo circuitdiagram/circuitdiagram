@@ -1204,6 +1204,12 @@ namespace CircuitDiagram
 
                     e.Handled = true;
                 }
+                else if (e.Key == Key.Delete)
+                {
+                    circuitDisplay.DeleteComponentCommand(this, null);
+
+                    e.Handled = true;
+                }
                 else
                 {
                     // Check custom toolbox entries
@@ -1227,10 +1233,6 @@ namespace CircuitDiagram
                             SetStatusText(String.Format("Placing component: {0}", description.ComponentName));
 
                         e.Handled = true;
-                    }
-                    else
-                    {
-                        SetStatusText(String.Format("Unknown shortcut: {0}.", e.Key));
                     }
                 }
             }
