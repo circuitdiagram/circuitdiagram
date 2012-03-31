@@ -675,6 +675,23 @@ namespace CircuitDiagram
             else if (m_placingComponent)
             {
                 ComponentHelper.SizeComponent(m_tempComponent, m_mouseDownPos, e.GetPosition(this));
+
+                // Flip if necessary
+                if (m_tempComponent.Horizontal && m_tempComponent.Description.CanFlip)
+                {
+                    if (m_mouseDownPos.X > e.GetPosition(this).X)
+                        m_tempComponent.IsFlipped = true;
+                    else
+                        m_tempComponent.IsFlipped = false;
+                }
+                else if (m_tempComponent.Description.CanFlip)
+                {
+                    if (m_mouseDownPos.Y > e.GetPosition(this).Y)
+                        m_tempComponent.IsFlipped = true;
+                    else
+                        m_tempComponent.IsFlipped = false;
+                }
+
                 m_elementVisuals[m_tempComponent].UpdateVisual();
             }
             else if (m_selectionBox)
@@ -865,8 +882,23 @@ namespace CircuitDiagram
             {
                 Component newComponent = Component.Create(NewComponentData);
                 ComponentHelper.SizeComponent(newComponent, m_mouseDownPos, e.GetPosition(this));
-                //m_elementVisuals.Add(newComponent, new CircuitElementDrawingVisual(newComponent));
-                //m_elementVisuals[newComponent].UpdateVisual();
+
+                // Flip if necessary
+                if (newComponent.Horizontal && newComponent.Description.CanFlip)
+                {
+                    if (m_mouseDownPos.X > e.GetPosition(this).X)
+                        newComponent.IsFlipped = true;
+                    else
+                        newComponent.IsFlipped = false;
+                }
+                else if (newComponent.Description.CanFlip)
+                {
+                    if (m_mouseDownPos.Y > e.GetPosition(this).Y)
+                        newComponent.IsFlipped = true;
+                    else
+                        newComponent.IsFlipped = false;
+                }
+
                 Document.Elements.Add(newComponent);
                 newComponent.ApplyConnections(Document);
                 DrawConnections();

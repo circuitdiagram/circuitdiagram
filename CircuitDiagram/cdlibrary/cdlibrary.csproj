@@ -81,6 +81,7 @@
     <Compile Include="Components\Render\Text.cs" />
     <Compile Include="Elements\ICircuitElement.cs" />
     <Compile Include="Elements\TextElement.cs" />
+    <Compile Include="IO\ApplicationInfo.cs" />
     <Compile Include="IO\BinaryIOExtentions.cs" />
     <Compile Include="IO\BinaryLoader.cs" />
     <Compile Include="IO\BinaryResource.cs" />

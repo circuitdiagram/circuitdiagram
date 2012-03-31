@@ -47,7 +47,10 @@ namespace CircuitDiagram.Render
 
         public void Begin()
         {
+            string cdlibraryVersion = System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
+
             Writer.WriteStartDocument();
+            Writer.WriteComment(" Generator: " + (IO.ApplicationInfo.FullName != null ? IO.ApplicationInfo.FullName : "") + ", cdlibrary.dll " + cdlibraryVersion + " ");
             Writer.WriteDocType("svg", "-//W3C//DTD SVG 1.1//EN", "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd", null);
             Writer.WriteStartElement("svg", "http://www.w3.org/2000/svg");
             Writer.WriteAttributeString("version", "1.1");

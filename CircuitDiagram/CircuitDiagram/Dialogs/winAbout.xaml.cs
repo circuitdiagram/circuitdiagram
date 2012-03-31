@@ -63,6 +63,10 @@ namespace CircuitDiagram
                 if (channelAttribute != null && channelAttribute.Type == BuildChannelAttribute.ChannelType.Dev && channelAttribute.DisplayName != null)
                     theVersion += " " + channelAttribute.DisplayName;
 
+#if PORTABLE
+                theVersion += " Portable";
+#endif
+
                 return theVersion;
             }
         }

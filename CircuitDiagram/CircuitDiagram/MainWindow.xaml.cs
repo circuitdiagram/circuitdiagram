@@ -66,6 +66,9 @@ namespace CircuitDiagram
                     m_statusTimer.Stop(); lblStatus.Text = "Ready";
                 }), lblStatus.Dispatcher);
 
+            // Initialize cdlibrary
+            ConfigureCdLibrary();
+
             // Initialize settings
 #if PORTABLE
             CircuitDiagram.Settings.Settings.Initialize(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\settings.xml");
@@ -139,6 +142,21 @@ namespace CircuitDiagram
         {
             toolboxScroll.VerticalScrollBarVisibility = (CircuitDiagram.Settings.Settings.ReadBool("showToolboxScrollBar") ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden);
             circuitDisplay.ShowConnectionPoints = Settings.Settings.ReadBool("showConnectionPoints");
+        }
+
+        /// <summary>
+        /// Configures cdlibrary.dll, setting application constants.
+        /// </summary>
+        private void ConfigureCdLibrary()
+        {
+            System.Reflection.Assembly _assemblyInfo = System.Reflection.Assembly.GetExecutingAssembly();
+            string theVersion = string.Empty;
+            if (_assemblyInfo != null)
+                theVersion = _assemblyInfo.GetName().Version.ToString();
+            BuildChannelAttribute channelAttribute = _assemblyInfo.GetCustomAttributes(typeof(BuildChannelAttribute), false).FirstOrDefault(item => item is BuildChannelAttribute) as BuildChannelAttribute;
+            if (channelAttribute != null && channelAttribute.Type == BuildChannelAttribute.ChannelType.Dev && channelAttribute.DisplayName != null)
+                theVersion += " " + channelAttribute.DisplayName;
+            CircuitDiagram.IO.ApplicationInfo.FullName = "Circuit Diagram " + theVersion;
         }
 
         /// <summary>
@@ -657,13 +675,6 @@ namespace CircuitDiagram
 
         private void CheckForUpdates(bool notifyIfNoUpdate)
         {
-            // Check if using UI thread
-            if (System.Threading.Thread.CurrentThread != this.Dispatcher.Thread)
-            {
-                this.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(delegate() { CheckForUpdates(notifyIfNoUpdate); }));
-                return;
-            }
-
             // Check for new version
             System.Reflection.Assembly _assemblyInfo = System.Reflection.Assembly.GetExecutingAssembly();
             Version thisVersion = _assemblyInfo.GetName().Version;
@@ -710,7 +721,7 @@ namespace CircuitDiagram
 
                         if (serverVersion != null && thisVersion.CompareTo(serverVersion) < 0 || (thisVersion.CompareTo(serverVersion) == 0 && channelAttribute.Increment < serverIncrement))
                         {
-                            winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverVersionName, serverDownloadUrl);
+                            this.Dispatcher.Invoke(new Action(() => winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverVersionName, serverDownloadUrl)));
                             foundUpdate = true;
                         }
                     }
@@ -744,19 +755,19 @@ namespace CircuitDiagram
 
                         if (serverVersion != null && thisVersion.CompareTo(serverVersion) < 0)
                         {
-                            winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverVersionName, serverDownloadUrl);
+                            this.Dispatcher.Invoke(new Action(() => winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverVersionName, serverDownloadUrl)));
                             foundUpdate = true;
                         }
                     }
                 }
 
                 if (!foundUpdate && notifyIfNoUpdate)
-                    winNewVersion.Show(this, NewVersionWindowType.NoNewVersionAvailable, null, null);
+                    this.Dispatcher.Invoke(new Action(() => winNewVersion.Show(this, NewVersionWindowType.NoNewVersionAvailable, null, null)));
             }
             catch (Exception)
             {
                 if (notifyIfNoUpdate)
-                    winNewVersion.Show(this, NewVersionWindowType.Error, null, "http://www.circuit-diagram.org/");
+                    this.Dispatcher.Invoke(new Action(() => winNewVersion.Show(this, NewVersionWindowType.Error, null, "http://www.circuit-diagram.org/")));
             }
 
             Settings.Settings.Write("LastCheckForUpdates", DateTime.Now);
