@@ -240,7 +240,7 @@ namespace CircuitDiagram.IO.CDDX
             writer.WriteEndElement();
             writer.WriteStartElement("property");
             writer.WriteAttributeString("name", "application");
-            writer.WriteAttributeString("value", System.Reflection.Assembly.GetEntryAssembly().GetName().Name + " " + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString());
+            writer.WriteAttributeString("value", ApplicationInfo.FullName);
             writer.WriteEndElement();
             writer.WriteEndElement();
         }

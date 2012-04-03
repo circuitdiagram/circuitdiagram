@@ -58,7 +58,7 @@ namespace CircuitDiagram.Components
         {
             None,
             Installed,
-            Document
+            Embedded
         }
     }
 }

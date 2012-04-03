@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircuitDocument.cs" />
+    <Compile Include="CircuitDocumentMetadata.cs" />
     <Compile Include="Components\Component.cs" />
     <Compile Include="Components\ComponentConfiguration.cs" />
     <Compile Include="Components\ComponentDataString.cs" />

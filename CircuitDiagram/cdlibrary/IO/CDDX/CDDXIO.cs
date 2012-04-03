@@ -37,6 +37,12 @@ namespace CircuitDiagram.IO.CDDX
             public const string IncludedComponent = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/component";
         }
 
+        /// <summary>
+        /// Writes the Circuit Document in the CDDX format.
+        /// </summary>
+        /// <param name="outputStream">The stream to save the document to.</param>
+        /// <param name="document">The document to save.</param>
+        /// <param name="saveOptions">Specifies options for saving the document.</param>
         public static void Write(Stream outputStream, CircuitDocument document, CDDXSaveOptions saveOptions)
         {
             using (MemoryStream tempStream = new MemoryStream())
@@ -52,6 +58,12 @@ namespace CircuitDiagram.IO.CDDX
             }
         }
 
+        /// <summary>
+        /// Loads a CDDX format document from the specified stream.
+        /// </summary>
+        /// <param name="inputStream">The stream to load the document from.</param>
+        /// <param name="document">The loaded document.</param>
+        /// <returns>Result of the read operation.</returns>
         public static DocumentLoadResult Read(Stream inputStream, out CircuitDocument document)
         {
             try
@@ -70,20 +82,6 @@ namespace CircuitDiagram.IO.CDDX
                 DocumentLoadResult result = new DocumentLoadResult();
                 result.Type = DocumentLoadResultType.FailIncorrectFormat;
                 return result;
-            }
-        }
-
-        public class CDDXPackagedComponent
-        {
-            public string FileName { get; set; }
-            public string ContentType { get; set; }
-            public byte[] Data { get; set; }
-
-            public CDDXPackagedComponent(string fileName, string contentType, byte[] data)
-            {
-                FileName = fileName;
-                ContentType = contentType;
-                Data = data;
             }
         }
     }

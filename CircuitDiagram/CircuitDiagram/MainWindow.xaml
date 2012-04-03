@@ -14,8 +14,8 @@
                 <MenuItem Header="Save _As" Click="mnuFileSaveAs_Click" />
                 <Separator />
                 <MenuItem Header="_Export" Click="mnuFileExport_Click" />
-                <Separator Visibility="Collapsed"  />
-                <MenuItem Header="_Document..." Click="mnuFileDocument_Click" Visibility="Collapsed" />
+                <Separator />
+                <MenuItem Header="_Document..." Click="mnuFileDocument_Click" />
                 <Separator />
                 <MenuItem Header="E_xit" Click="mnuFileExit_Click" />
             </MenuItem>

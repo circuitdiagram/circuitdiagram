@@ -1001,8 +1001,9 @@ namespace CircuitDiagram
 
         private void mnuFileDocument_Click(object sender, RoutedEventArgs e)
         {
-            winDocument documentInfoWindow = new winDocument();
+            winDocumentProperties documentInfoWindow = new winDocumentProperties();
             documentInfoWindow.Owner = this;
+            documentInfoWindow.SetDocument(circuitDisplay.Document);
             documentInfoWindow.ShowDialog();
         }
 

@@ -47,6 +47,7 @@ namespace CircuitDiagram
             chbShowConnectionPoints.IsChecked = Settings.Settings.ReadBool("showConnectionPoints");
             chbShowToolboxScrollBar.IsChecked = Settings.Settings.ReadBool("showToolboxScrollBar");
             chbShowCDDXOptions.IsChecked = !Settings.Settings.ReadBool("AlwaysUseCDDXSaveSettings");
+            chbCheckForUpdatesAutomatically.IsChecked = Settings.Settings.ReadBool("CheckForUpdatesOnStartup");
         }
 
         public List<ImplementationConversionCollection> ComponentRepresentations
@@ -60,6 +61,7 @@ namespace CircuitDiagram
             Settings.Settings.Write("showConnectionPoints", chbShowConnectionPoints.IsChecked.Value);
             Settings.Settings.Write("showToolboxScrollBar", chbShowToolboxScrollBar.IsChecked.Value);
             Settings.Settings.Write("AlwaysUseCDDXSaveSettings", chbShowCDDXOptions.IsChecked.Value == false);
+            Settings.Settings.Write("CheckForUpdatesOnStartup", chbCheckForUpdatesAutomatically.IsChecked.Value);
 
             this.DialogResult = true;
             this.Close();

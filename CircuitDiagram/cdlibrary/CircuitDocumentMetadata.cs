@@ -1,4 +1,4 @@
-﻿// winDocument.xaml.cs
+﻿// CircuitDocumentMetadata.cs
 //
 // Circuit Diagram http://www.circuit-diagram.org/
 //
@@ -22,30 +22,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace CircuitDiagram
 {
-    /// <summary>
-    /// Interaction logic for winDocument.xaml
-    /// </summary>
-    public partial class winDocument : Window
+    public class CircuitDocumentMetadata
     {
-        public winDocument()
-        {
-            InitializeComponent();
-        }
+        /// <summary>
+        /// The application that created the document.
+        /// </summary>
+        public string Application { get; set; }
 
-        private void btnClose_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
+        /// <summary>
+        /// The file format of the document.
+        /// </summary>
+        public string Format { get; set; }
+
+        /// <summary>
+        /// The path to the saved document.
+        /// </summary>
+        public string Path { get; set; }
     }
 }

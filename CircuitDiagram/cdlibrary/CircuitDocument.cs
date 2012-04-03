@@ -35,7 +35,7 @@ namespace CircuitDiagram
 {
     public class CircuitDocument
     {
-        public double GridSize = 10d;
+        public CircuitDocumentMetadata Metadata { get; set; }
 
         public Size Size;
 

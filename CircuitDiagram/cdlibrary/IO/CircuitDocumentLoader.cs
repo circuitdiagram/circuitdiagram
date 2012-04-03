@@ -92,6 +92,11 @@ namespace CircuitDiagram.IO
                 XmlElement circuitNode = doc.SelectSingleNode("/circuit") as XmlElement;
                 if (circuitNode.HasAttribute("width") && circuitNode.HasAttribute("height"))
                     Document.Size = new System.Windows.Size(double.Parse(circuitNode.Attributes["width"].InnerText), double.Parse(circuitNode.Attributes["height"].InnerText));
+                string application = null;
+                if (circuitNode.HasAttribute("application"))
+                    application = circuitNode.Attributes["application"].InnerText;
+                else if (circuitNode.HasAttribute("cd-version"))
+                    application = "Circuit Diagram " + circuitNode.Attributes["cd-version"].InnerText;
 
                 foreach (XmlNode node in circuitNode.ChildNodes)
                 {
@@ -167,6 +172,11 @@ namespace CircuitDiagram.IO
                 foreach (Component component in Document.Components)
                     component.ApplyConnections(Document);
 
+                CircuitDocumentMetadata documentMetadata = new CircuitDocumentMetadata();
+                documentMetadata.Format = "XML (1.0)";
+                documentMetadata.Application = application;
+                Document.Metadata = documentMetadata;
+
                 loadResult.Type = DocumentLoadResultType.Success;
                 return loadResult;
             }
@@ -190,6 +200,11 @@ namespace CircuitDiagram.IO
                 XmlElement circuitNode = doc.SelectSingleNode("/circuit") as XmlElement;
                 if (circuitNode.HasAttribute("width") && circuitNode.HasAttribute("height"))
                     Document.Size = new System.Windows.Size(double.Parse(circuitNode.Attributes["width"].InnerText), double.Parse(circuitNode.Attributes["height"].InnerText));
+                string application = null;
+                if (circuitNode.HasAttribute("application"))
+                    application = circuitNode.Attributes["application"].InnerText;
+                else if (circuitNode.HasAttribute("cd-version"))
+                    application = "Circuit Diagram " + circuitNode.Attributes["cd-version"].InnerText;
 
                 XmlNodeList componentNodes = doc.SelectNodes("/circuit/component");
                 foreach (XmlNode node in componentNodes)
@@ -281,6 +296,11 @@ namespace CircuitDiagram.IO
 
                 foreach (Component component in Document.Components)
                     component.ApplyConnections(Document);
+
+                CircuitDocumentMetadata documentMetadata = new CircuitDocumentMetadata();
+                documentMetadata.Format = "XML (1.1)";
+                documentMetadata.Application = application;
+                Document.Metadata = documentMetadata;
 
                 loadResult.Type = DocumentLoadResultType.Success;
                 return loadResult;

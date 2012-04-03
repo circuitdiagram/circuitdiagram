@@ -70,6 +70,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BuildChannelAttribute.cs" />
+    <Compile Include="CircularProgressBar.xaml.cs">
+      <DependentUpon>CircularProgressBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ComponentEditor.cs" />
     <Compile Include="Dialogs\winDocumentLoadResult.xaml.cs">
       <DependentUpon>winDocumentLoadResult.xaml</DependentUpon>
@@ -101,8 +104,8 @@
     <Compile Include="Dialogs\winComponents.xaml.cs">
       <DependentUpon>winComponents.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\winDocument.xaml.cs">
-      <DependentUpon>winDocument.xaml</DependentUpon>
+    <Compile Include="Dialogs\winDocumentProperties.xaml.cs">
+      <DependentUpon>winDocumentProperties.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\winNewComponentImplementation.xaml.cs">
       <DependentUpon>winNewComponentImplementation.xaml</DependentUpon>
@@ -119,6 +122,10 @@
     <Compile Include="Dialogs\winToolbox.xaml.cs">
       <DependentUpon>winToolbox.xaml</DependentUpon>
     </Compile>
+    <Page Include="CircularProgressBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DefaultDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -165,7 +172,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dialogs\winDocument.xaml">
+    <Page Include="Dialogs\winDocumentProperties.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

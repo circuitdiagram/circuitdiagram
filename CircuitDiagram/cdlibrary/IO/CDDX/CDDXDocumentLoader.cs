@@ -58,6 +58,7 @@ namespace CircuitDiagram.IO.CDDX
                     // Metadata
                     double width = 640d;
                     double height = 480d;
+                    string application = null;
                     XmlNodeList metadataNodes = doc.SelectNodes("/cdd:circuit/cdd:metadata/cdd:property", namespaceManager);
                     foreach (XmlNode metadataNode in metadataNodes)
                     {
@@ -68,6 +69,8 @@ namespace CircuitDiagram.IO.CDDX
                             width = double.Parse(propertyValue);
                         else if (propertyName == "height")
                             height = double.Parse(propertyValue);
+                        else if (propertyName == "application")
+                            application = propertyValue;
                     }
                     #endregion
 
@@ -173,16 +176,21 @@ namespace CircuitDiagram.IO.CDDX
                             ComponentSource location = FindComponentSource(componentSources, componentType);
                             if (location != null)
                             {
-
-
-                                //if (!String.IsNullOrEmpty(location.ConfigurationImplementations))
-                                //    unavailableComponents.Add(new StandardComponentRef(location.ConfigurationImplementations, location.ImplementationName));
-                                //unavailableComponents.Add(new StandardComponentRef(location., location.ComponentName));
+                                if (location.Location.DefinitionSource != null && location.ImplementationName != null)
+                                {
+                                    // No representation for known type
+                                    loadResult.UnavailableComponents.Add(new StandardComponentRef(location.Location.DefinitionSource, location.ImplementationName));
+                                }
+                                else
+                                {
+                                    // Unknown component
+                                    loadResult.UnavailableComponents.Add(new StandardComponentRef("(unknown)", location.ComponentName));
+                                }
                             }
                             else
                             {
                                 // ERROR: Undefined type
-                                //unavailableComponents.Add(new UnavailableComponent(null, "Undefined type: " + componentType);
+                                loadResult.Errors.Add(String.Format("Undefined component type: {0}", componentType));
                             }
                         }
                     }
@@ -217,6 +225,12 @@ namespace CircuitDiagram.IO.CDDX
                     #endregion
 
                     document.Size = new System.Windows.Size(width, height);
+
+                    // Set metadata
+                    CircuitDocumentMetadata documentMetadata = new CircuitDocumentMetadata();
+                    documentMetadata.Application = application;
+                    documentMetadata.Format = "CDDX (1.0)";
+                    document.Metadata = documentMetadata;
 
                     if (version > CDDX.CDDXDocumentWriter.CDDXDocumentVersion)
                         loadResult.Type = DocumentLoadResultType.SuccessNewerVersion;
@@ -294,14 +308,20 @@ namespace CircuitDiagram.IO.CDDX
                         if (descriptions != null)
                         {
                             if (descriptions.Length == 1)
+                            {
                                 theSource.Description = descriptions[0];
+                                theSource.Description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Embedded;
+                            }
                             else
                             {
                                 foreach (ComponentDescription description in descriptions)
                                 {
+                                    description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Embedded;
                                     ComponentSource matchingSource = theSource.Location.Sources.FirstOrDefault(item => item.ExternalID == description.ID);
                                     if (matchingSource != null)
+                                    {
                                         matchingSource.Description = description;
+                                    }
                                 }
                             }
 
@@ -333,6 +353,8 @@ namespace CircuitDiagram.IO.CDDX
                         if (result == null || result.Description == null)
                             result = new ComponentIdentifier(ComponentHelper.FindDescription(theSource.ComponentName));
 
+                        if (result.Description == null)
+                            return null;
                         return result;
                     }
                 }
