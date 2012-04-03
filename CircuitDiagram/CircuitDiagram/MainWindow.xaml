@@ -22,6 +22,8 @@
             <MenuItem Header="_Edit">
                 <MenuItem Command="Undo" Header="_Undo" />
                 <MenuItem Command="Redo" Header="_Redo" />
+                <Separator />
+                <MenuItem Header="_Document Size" Click="mnuEditResizeDocument" />
             </MenuItem>
             <MenuItem Header="_Tools">
                 <MenuItem Header="_Toolbox" Click="mnuToolsToolbox_Click" />

@@ -1028,6 +1028,19 @@ namespace CircuitDiagram
         {
             this.Close();
         }
+
+        private void mnuEditResizeDocument(object sender, RoutedEventArgs e)
+        {
+            winDocumentSize docSizeWindow = new winDocumentSize();
+            docSizeWindow.Owner = this;
+            docSizeWindow.DocumentWidth = circuitDisplay.Document.Size.Width;
+            docSizeWindow.DocumentHeight = circuitDisplay.Document.Size.Height;
+            if (docSizeWindow.ShowDialog() == true)
+            {
+                circuitDisplay.Document.Size = new Size(docSizeWindow.DocumentWidth, docSizeWindow.DocumentHeight);
+                circuitDisplay.DocumentSizeChanged();
+            }
+        }
         #endregion
 
         #region RecentFiles
