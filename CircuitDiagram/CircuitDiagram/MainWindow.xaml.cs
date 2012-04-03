@@ -1041,6 +1041,20 @@ namespace CircuitDiagram
                 circuitDisplay.DocumentSizeChanged();
             }
         }
+
+        private void mnuFilePrint_Click(object sender, RoutedEventArgs e)
+        {
+            PrintDialog pDlg = new PrintDialog();
+            if (pDlg.ShowDialog() == true)
+            {
+                WPFRenderer renderer = new WPFRenderer();
+                renderer.Begin();
+                circuitDisplay.Document.Render(renderer);
+                renderer.End();
+                FixedDocument document = renderer.GetDocument(new Size(pDlg.PrintableAreaWidth, pDlg.PrintableAreaHeight));
+                pDlg.PrintDocument(document.DocumentPaginator, m_documentTitle + " - Circuit Diagram");
+            }
+        }
         #endregion
 
         #region RecentFiles

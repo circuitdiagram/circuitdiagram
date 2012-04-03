@@ -27,6 +27,8 @@ using System.Windows.Media;
 using TextAlignment = CircuitDiagram.Components.Render.TextAlignment;
 using System.Windows.Media.Imaging;
 using CircuitDiagram.Components.Render;
+using System.Windows.Documents;
+using System.Windows.Controls;
 
 namespace CircuitDiagram.Render
 {
@@ -94,6 +96,33 @@ namespace CircuitDiagram.Render
             returnStream.Flush();
             m_visual.Offset = new Vector(0, 0);
             return returnStream;
+        }
+
+        public FixedDocument GetDocument(Size pageSize)
+        {
+            FixedDocument returnDocument = new FixedDocument();
+            PageContent pageContent = new PageContent();
+            pageContent.Width = pageSize.Width;
+            pageContent.Height = pageSize.Height;
+            FixedPage fixedPage = new FixedPage();
+            fixedPage.Width = pageSize.Width;
+            fixedPage.Height = pageSize.Height;
+
+            Canvas containerCanvas = new Canvas();
+            containerCanvas.Width = m_visual.ContentBounds.Width;
+            containerCanvas.Height = m_visual.ContentBounds.Height;
+            DrawingBrush brush = new DrawingBrush(m_visual.Drawing);
+            containerCanvas.Background = brush;
+
+            double scale = 1.0d;
+            if (m_visual.ContentBounds.Width > fixedPage.Width)
+                scale = fixedPage.Width / m_visual.ContentBounds.Width;
+
+            containerCanvas.LayoutTransform = new ScaleTransform(scale, scale);
+            fixedPage.Children.Add(containerCanvas);
+            ((System.Windows.Markup.IAddChild)pageContent).AddChild(fixedPage);
+            returnDocument.Pages.Add(pageContent);
+            return returnDocument;
         }
 
         public void DrawLine(Point start, Point end, double thickness)
