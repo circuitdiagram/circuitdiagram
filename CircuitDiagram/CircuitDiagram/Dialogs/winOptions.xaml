@@ -7,22 +7,30 @@
         <TabControl Margin="12,12,12,41" Name="tbctlMain">
             <TabItem Header="General" Name="tabGeneral">
                 <Grid>
-                    <GroupBox Header="Appearance" Height="58" Margin="12,12,12,0" Name="groupBox1" VerticalAlignment="Top">
-                        <Grid>
-                            <CheckBox Content="Show toolbox scroll bar" Height="16" HorizontalAlignment="Left" Margin="9,6,0,0" Name="chbShowToolboxScrollBar" VerticalAlignment="Top" />
-                        </Grid>
-                    </GroupBox>
-                    <GroupBox Header="Developer" Height="64" Margin="12,76,12,0" VerticalAlignment="Top">
-                        <Grid>
-                            <CheckBox Content="Show connection points" Height="16" HorizontalAlignment="Left" Margin="6,6,0,0" Name="chbShowConnectionPoints" VerticalAlignment="Top" />
-                        </Grid>
-                    </GroupBox>
-                    <GroupBox Header="Other" Height="97" Margin="12,146,12,0" Name="groupBox2" VerticalAlignment="Top">
-                        <Grid>
-                            <CheckBox Content="Show Circuit Diagram Document options when saving" Height="16" HorizontalAlignment="Left" Margin="6,6,0,0" Name="chbShowCDDXOptions" VerticalAlignment="Top" />
-                            <CheckBox Content="Check for updates automatically" Height="16" HorizontalAlignment="Left" Margin="6,38,0,0" Name="chbCheckForUpdatesAutomatically" VerticalAlignment="Top" />
-                        </Grid>
-                    </GroupBox>
+                    <StackPanel Orientation="Vertical">
+                        <GroupBox Header="Appearance" Margin="12,10,12,0">
+                            <StackPanel>
+                                <CheckBox Content="Show toolbox scroll bar" Height="16" Margin="6,6,6,6" Name="chbShowToolboxScrollBar" />
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Header="Developer" Margin="12,4,12,0">
+                            <StackPanel>
+                                <CheckBox Content="Show connection points" Height="16" Margin="6,6,6,6" Name="chbShowConnectionPoints" />
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Header="Recent Files" Margin="12,4,12,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Button Margin="6,6,6,6" Content="Clear" Height="23" Name="btnClearRecentFiles" Width="75" Click="btnClearRecentFiles_Click" />
+                                <TextBlock Margin="6,6,6,6" Text="Clear the list of previously opened files." VerticalAlignment="Center" />
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Header="Other" Margin="12,4,12,0">
+                            <StackPanel>
+                                <CheckBox Content="Show Circuit Diagram Document options when saving" Height="16" Margin="6,6,6,6" Name="chbShowCDDXOptions" />
+                                <CheckBox Content="Check for updates automatically" Height="16" Margin="6,0,6,6" Name="chbCheckForUpdatesAutomatically" />
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
                 </Grid>
             </TabItem>
             <TabItem Header="Implementations" Name="tabImplementations">

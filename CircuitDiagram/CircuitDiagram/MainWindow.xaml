@@ -3,13 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:cd="clr-namespace:CircuitDiagram"
         xmlns:tb="clr-namespace:Toolbox;assembly=Toolbox"
-        Title="Circuit Diagram" Height="565" Width="800" KeyDown="Window_KeyDown" Icon="Logo32.png">
+        Title="Circuit Diagram" Height="565" Width="800" KeyDown="Window_KeyDown" Icon="Logo32.png" Closing="Window_Closing">
     <DockPanel>
         <Menu DockPanel.Dock="Top" Height="23" Style="{StaticResource MenuStyle}">
             <MenuItem Header="_File">
                 <MenuItem Command="New" Header="_New" />
                 <MenuItem Command="Open" Header="_Open" />
-                <MenuItem Header="_Recent Files" Name="mnuRecentItems" Click="mnuRecentItem_Click" Visibility="Collapsed" />
+                <MenuItem Header="_Recent Files" Name="mnuRecentItems" Click="mnuRecentItem_Click" />
                 <MenuItem Command="Save" Header="_Save" />
                 <MenuItem Header="Save _As" Click="mnuFileSaveAs_Click" />
                 <Separator />

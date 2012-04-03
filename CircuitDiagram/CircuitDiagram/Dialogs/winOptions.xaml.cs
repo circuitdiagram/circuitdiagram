@@ -101,5 +101,17 @@ namespace CircuitDiagram
             if (lbxImplementationsComponents.SelectedItem != null)
                 (cbxImplementationsSet.SelectedItem as ImplementationConversionCollection).Items.Remove(lbxImplementationsComponents.SelectedItem as ImplementationConversion);
         }
+
+        private void btnClearRecentFiles_Click(object sender, RoutedEventArgs e)
+        {
+            Settings.Settings.Write("recentfiles", new string[] { });
+            if (this.Owner is MainWindow)
+            {
+                (this.Owner as MainWindow).RecentFiles.Clear();
+                (this.Owner as MainWindow).RecentFiles.Add("(empty)");
+            }
+
+            btnClearRecentFiles.IsEnabled = false;
+        }
     }
 }

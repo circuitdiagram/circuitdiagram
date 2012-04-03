@@ -191,6 +191,7 @@ namespace CircuitDiagram
                     circuitDisplay.UndoManager = m_undoManager;
                     m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
                     m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
+                    AddRecentFile(path);
                 }
             }
             else
@@ -220,6 +221,7 @@ namespace CircuitDiagram
                     circuitDisplay.UndoManager = m_undoManager;
                     m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
                     m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
+                    AddRecentFile(path);
                 }
             }
         }
@@ -802,6 +804,20 @@ namespace CircuitDiagram
                 circuitDisplay.LayoutTransform = new ScaleTransform(e.NewValue / 50, e.NewValue / 50);
         }
 
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!UndoManager.IsSavedState())
+            {
+                MessageBoxResult result = MessageBox.Show("Do you want to save changes to " + m_documentTitle + "?", "Circuit Diagram", MessageBoxButton.YesNoCancel);
+                if (result == MessageBoxResult.Yes)
+                    CommandSave_Executed(this, null);
+                else if (result == MessageBoxResult.Cancel)
+                    e.Cancel = true;
+            }
+
+            SaveRecentFiles();
+        }
+
         #region Menu Bar
         private void mnuFileExport_Click(object sender, RoutedEventArgs e)
         {
@@ -1072,7 +1088,7 @@ namespace CircuitDiagram
         private void LoadRecentFiles()
         {
             string[] files = CircuitDiagram.Settings.Settings.Read("recentfiles") as string[];
-            if (files == null)
+            if (files == null || (files.Length == 1 && String.IsNullOrEmpty(files[0])))
             {
                 RecentFiles.Add("(empty)");
                 return;
@@ -1083,9 +1099,8 @@ namespace CircuitDiagram
 
         private void SaveRecentFiles()
         {
-            if (RecentFiles.Count == 1 && RecentFiles[0] == "(empty)")
-                return;
-            CircuitDiagram.Settings.Settings.Write("recentfiles", RecentFiles.ToArray());
+            if (RecentFiles.Count != 1 && RecentFiles[0] != "(empty)")
+                CircuitDiagram.Settings.Settings.Write("recentfiles", RecentFiles.ToArray());
             CircuitDiagram.Settings.Settings.Save();
         }
         #endregion

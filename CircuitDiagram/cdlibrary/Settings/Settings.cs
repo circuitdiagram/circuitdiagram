@@ -143,6 +143,9 @@ namespace CircuitDiagram.Settings
             writer.WriteStartElement("settings");
             foreach(KeyValuePair<string, object> pair in m_values)
             {
+                if (pair.Value == null)
+                    continue;
+
                 writer.WriteStartElement("setting");
                 writer.WriteAttributeString("key", pair.Key);
                 Type settingType = pair.Value.GetType();
