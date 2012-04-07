@@ -41,24 +41,51 @@ namespace CircuitDiagram
     /// </summary>
     public partial class winCDDXSave : Window
     {
-        public CDDXSaveOptions SaveOptions { get; set; }
+        public CDDXSaveOptions SaveOptions { get; private set; }
         public bool AlwaysUseSettings { get { return chbAlwaysUseSettings.IsChecked.Value; } set { chbAlwaysUseSettings.IsChecked = value; } }
         public IEnumerable<ComponentDescription> AvailableComponents { get; set; }
 
         public winCDDXSave()
         {
             InitializeComponent();
-            
+
+            SaveOptions = new CDDXSaveOptions();
+
             this.Loaded += new RoutedEventHandler(winCDDXSave_Loaded);
         }
 
         void winCDDXSave_Loaded(object sender, RoutedEventArgs e)
         {
-            if (SaveOptions == null)
-                SaveOptions = new CDDXSaveOptions();
+            LoadSaveOptions(SaveOptions);
+        }
+
+        bool m_autoApplying = false;
+        public void LoadSaveOptions(CDDXSaveOptions options)
+        {
+            SaveOptions = options;
+
+            if (!IsLoaded)
+                return;
+
+            m_autoApplying = true;
+            if (SaveOptions == CDDXSaveOptions.Default)
+                cbxSavePreset.SelectedIndex = 0;
+            else if (SaveOptions == CDDXSaveOptions.MinSize)
+                cbxSavePreset.SelectedIndex = 1;
+            else
+                cbxSavePreset.SelectedIndex = 2;
+            m_autoApplying = false;
+
+            ApplySaveOptions();
+        }
+
+        private void ApplySaveOptions()
+        {
+            m_autoApplying = true;
 
             chbIncludeConnections.IsChecked = SaveOptions.IncludeConnections;
             chbIncludeLayout.IsChecked = SaveOptions.IncludeLayout;
+            chbEmbedThumbnail.IsChecked = SaveOptions.EmbedThumbnail;
 
             if (SaveOptions.EmbedComponents == CDDXSaveOptions.ComponentsToEmbed.Automatic)
                 radEmbedComponnetsAutomatic.IsChecked = true;
@@ -68,6 +95,8 @@ namespace CircuitDiagram
                 radEmbedComponentsCustom.IsChecked = true;
             else
                 radEmbedComponentsNone.IsChecked = true;
+
+            m_autoApplying = false;
         }
 
         private void chbIncludeConnections_Checked(object sender, RoutedEventArgs e)
@@ -81,6 +110,8 @@ namespace CircuitDiagram
             }
 
             SaveOptions.IncludeConnections = chbIncludeConnections.IsChecked.Value;
+
+            OptionChanged();
         }
 
         private void chbIncludeLayout_Checked(object sender, RoutedEventArgs e)
@@ -94,6 +125,8 @@ namespace CircuitDiagram
             }
 
             SaveOptions.IncludeLayout = chbIncludeLayout.IsChecked.Value;
+
+            OptionChanged();
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
@@ -121,6 +154,8 @@ namespace CircuitDiagram
                 SaveOptions.EmbedComponents = CDDXSaveOptions.ComponentsToEmbed.Custom;
             else
                 SaveOptions.EmbedComponents = CDDXSaveOptions.ComponentsToEmbed.None;
+
+            OptionChanged();
         }
 
         private void btnChooseEmbedComponentsCustom_Click(object sender, RoutedEventArgs e)
@@ -128,6 +163,41 @@ namespace CircuitDiagram
             winCDDXSaveComponents chooseComponentsWindow = new winCDDXSaveComponents(SaveOptions.CustomEmbedComponents, AvailableComponents);
             chooseComponentsWindow.Owner = this;
             chooseComponentsWindow.ShowDialog();
+        }
+
+        private void chbEmbedThumbnail_Checked(object sender, RoutedEventArgs e)
+        {
+            SaveOptions.EmbedThumbnail = chbEmbedThumbnail.IsChecked.Value;
+
+            OptionChanged();
+        }
+
+        private void cbxSavePreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded)
+                return;
+
+            if (cbxSavePreset.SelectedIndex == 0)
+            {
+                // Default settings
+                SaveOptions = CDDXSaveOptions.Default;
+                ApplySaveOptions();
+            }
+            else if (cbxSavePreset.SelectedIndex == 1)
+            {
+                // Minimum size
+                SaveOptions = CDDXSaveOptions.MinSize;
+                ApplySaveOptions();
+            }
+        }
+
+        void OptionChanged()
+        {
+            if (m_autoApplying)
+                return;
+
+            // Set custom preset
+            cbxSavePreset.SelectedIndex = 2;
         }
     }
 

@@ -84,7 +84,7 @@ namespace CircuitDiagram.Render
             {
                 DrawingVisual backgroundVisual = new System.Windows.Media.DrawingVisual();
                 using (var dc = backgroundVisual.RenderOpen())
-                    dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, width, height));
+                    dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, actualWidth, actualHeight));
                 bitmap.Render(backgroundVisual);
             }
 

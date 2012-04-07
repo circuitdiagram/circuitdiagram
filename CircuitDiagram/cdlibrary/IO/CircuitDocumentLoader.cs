@@ -142,7 +142,11 @@ namespace CircuitDiagram.IO
                     ConvertComponentName(lType, t, out componentCollection, out standardComponentName);
                     ConvertProperties(componentCollection, standardComponentName, properties);
 
-                    ComponentIdentifier identifier = ComponentHelper.GetStandardComponent(componentCollection, standardComponentName);
+                    ComponentIdentifier identifier = null;
+                    if (componentCollection != null)
+                        identifier = ComponentHelper.GetStandardComponent(componentCollection, standardComponentName);
+                    else
+                        identifier = ComponentHelper.GetStandardComponent(CDDX.ComponentCollections.Standard, standardComponentName);
                     if (lType == "wire")
                         identifier = new ComponentIdentifier(ComponentHelper.WireDescription);
 
@@ -162,7 +166,7 @@ namespace CircuitDiagram.IO
                     else
                     {
                         // Unknown component
-                        if (standardComponentName == lType)
+                        if (componentCollection == null)
                             loadResult.UnavailableComponents.Add(new StandardComponentRef(null, type)); // Unknown type
                         else
                             loadResult.UnavailableComponents.Add(new StandardComponentRef(componentCollection, standardComponentName)); // No implementation for known type
@@ -265,8 +269,13 @@ namespace CircuitDiagram.IO
                         string componentCollection;
                         string standardComponentName;
                         ConvertComponentName(lType, t, out componentCollection, out standardComponentName);
+                        ConvertProperties(componentCollection, standardComponentName, properties);
 
-                        ComponentIdentifier identifier = ComponentHelper.GetStandardComponent(componentCollection, standardComponentName);
+                        ComponentIdentifier identifier = null;
+                        if (componentCollection != null)
+                            identifier = ComponentHelper.GetStandardComponent(componentCollection, standardComponentName);
+                        else
+                            identifier = ComponentHelper.GetStandardComponent(CDDX.ComponentCollections.Standard, standardComponentName);
                         if (lType == "wire")
                             identifier = new ComponentIdentifier(ComponentHelper.WireDescription);
 
@@ -286,7 +295,7 @@ namespace CircuitDiagram.IO
                         else
                         {
                             // Unknown component
-                            if (standardComponentName == lType)
+                            if (componentCollection == null)
                                 loadResult.UnavailableComponents.Add(new StandardComponentRef(null, type)); // Unknown type
                             else
                                 loadResult.UnavailableComponents.Add(new StandardComponentRef(componentCollection, standardComponentName)); // No implementation for known type
@@ -317,7 +326,7 @@ namespace CircuitDiagram.IO
         private static void ConvertComponentName(string oldType, string t, out string collection, out string newType)
         {
             newType = null;
-            collection = CDDX.CDDXIO.StandardCollection;
+            collection = CDDX.ComponentCollections.Standard;
 
             if (oldType == "logicgate" && t == "0")
                 newType = "and2";
@@ -354,19 +363,24 @@ namespace CircuitDiagram.IO
             else if (oldType == "externalconnection")
             {
                 newType = "extconnection";
-                collection = CDDX.CDDXIO.MiscCollection;
+                collection = CDDX.ComponentCollections.Misc;
             }
             else if (oldType == "counter")
                 newType = "counter4";
             else if (oldType == "switch")
                 newType = "pushswitch";
+            else if (oldType == "microphone")
+                newType = "microphone";
             else
+            {
                 newType = oldType;
+                collection = null;
+            }
         }
 
         private void ConvertProperties(string componentCollection, string standardComponentName, Dictionary<string, object> properties)
         {
-            if (componentCollection == CDDX.CDDXIO.MiscCollection && standardComponentName == "extconnection" && properties.ContainsKey("topleft"))
+            if (componentCollection == CDDX.ComponentCollections.Misc && standardComponentName == "extconnection" && properties.ContainsKey("topleft"))
             {
                 bool textpos = !bool.Parse(properties["topleft"].ToString());
                 properties.Remove("topleft");

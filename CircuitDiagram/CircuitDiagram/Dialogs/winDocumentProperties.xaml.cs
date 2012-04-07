@@ -32,6 +32,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using CircuitDiagram.Components;
 using System.IO;
+using TaskDialogInterop;
 
 namespace CircuitDiagram
 {
@@ -112,11 +113,11 @@ namespace CircuitDiagram
                         writer.Descriptions.Add(selectedDescription);
                         writer.Write();
                     }
-                    MessageBox.Show("The component \"" + selectedDescription.ComponentName + "\" was installed successfully.", "Install Successful", MessageBoxButton.OK, MessageBoxImage.Information);
+                    TaskDialog.ShowMessage(this, "The component \"" + selectedDescription.ComponentName + "\" was installed successfully.", "Install Successful", TaskDialogCommonButtons.Close, VistaTaskDialogIcon.Information);
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("An unknown error occurred.", "Unable to Install Component", MessageBoxButton.OK, MessageBoxImage.Error);
+                    TaskDialog.ShowMessage(this, "An unknown error occurred.", "Unable to Install Component", TaskDialogCommonButtons.Close, VistaTaskDialogIcon.Error);
                 }
             }
         }

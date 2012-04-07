@@ -24,19 +24,12 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.IO.Packaging;
+using CircuitDiagram.Render;
 
 namespace CircuitDiagram.IO.CDDX
 {
     public static class CDDXIO
     {
-        public const string StandardCollection = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common";
-        public const string MiscCollection = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/misc";
-
-        public static class RelationshipTypes
-        {
-            public const string IncludedComponent = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/component";
-        }
-
         /// <summary>
         /// Writes the Circuit Document in the CDDX format.
         /// </summary>
@@ -49,10 +42,20 @@ namespace CircuitDiagram.IO.CDDX
             {
                 using (Package package = ZipPackage.Open(tempStream, FileMode.Create))
                 {
+                    // Document
                     Uri documentUri = PackUriHelper.CreatePartUri(new Uri("circuitdiagram\\document.xml", UriKind.Relative));
                     PackagePart documentPart = package.CreatePart(documentUri, System.Net.Mime.MediaTypeNames.Text.Xml, CompressionOption.Normal);
-                    package.CreateRelationship(documentPart.Uri, TargetMode.Internal, "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/circuitDiagramDocument");
+                    package.CreateRelationship(documentPart.Uri, TargetMode.Internal, RelationshipTypes.Document);
                     CDDX.CDDXDocumentWriter.WriteCDDX(document, package, documentPart, saveOptions);
+
+                    // Thumbnail
+                    if (saveOptions.EmbedThumbnail)
+                    {
+                        Uri thumbnailUri = PackUriHelper.CreatePartUri(new Uri("docProps\\thumbnail.emf", UriKind.Relative));
+                        PackagePart thumbnailPart = package.CreatePart(thumbnailUri, "image/x-wmf", CompressionOption.Normal);
+                        package.CreateRelationship(thumbnailPart.Uri, TargetMode.Internal, RelationshipTypes.Thumbnail);
+                        WriteThumbnail(document, thumbnailPart);
+                    }
                 }
                 tempStream.WriteTo(outputStream);
             }
@@ -84,6 +87,18 @@ namespace CircuitDiagram.IO.CDDX
                 return result;
             }
         }
+
+        private static void WriteThumbnail(CircuitDocument document, PackagePart thumbnailPart)
+        {
+            EMFRenderer renderer = new EMFRenderer((int)document.Size.Width, (int)document.Size.Height);
+            renderer.Begin();
+            document.Render(renderer);
+            renderer.End();
+            using (var stream = thumbnailPart.GetStream(FileMode.Create))
+            {
+                renderer.WriteEnhMetafile(stream);
+            }
+        }
     }
 
     [Serializable]
@@ -91,6 +106,7 @@ namespace CircuitDiagram.IO.CDDX
     {
         public bool IncludeConnections { get; set; }
         public bool IncludeLayout { get; set; }
+        public bool EmbedThumbnail { get; set; }
         public ComponentsToEmbed EmbedComponents { get; set; }
         public List<CircuitDiagram.Components.ComponentDescription> CustomEmbedComponents { get; private set; }
 
@@ -100,14 +116,20 @@ namespace CircuitDiagram.IO.CDDX
             IncludeLayout = true;
             EmbedComponents = ComponentsToEmbed.Automatic;
             CustomEmbedComponents = new List<Components.ComponentDescription>();
+            EmbedThumbnail = true;
         }
 
         public CDDXSaveOptions(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
         {
-            IncludeConnections = info.GetBoolean("IncludeConnections");
-            IncludeLayout = info.GetBoolean("IncludeLayout");
-            EmbedComponents = (ComponentsToEmbed)info.GetInt32("EmbedComponents");
-            CustomEmbedComponents = new List<Components.ComponentDescription>();
+            try
+            {
+                IncludeConnections = info.GetBoolean("IncludeConnections");
+                IncludeLayout = info.GetBoolean("IncludeLayout");
+                EmbedComponents = (ComponentsToEmbed)info.GetInt32("EmbedComponents");
+                CustomEmbedComponents = new List<Components.ComponentDescription>();
+                EmbedThumbnail = info.GetBoolean("EmbedThumbnail");
+            }
+            catch { }
         }
 
         public enum ComponentsToEmbed
@@ -123,6 +145,67 @@ namespace CircuitDiagram.IO.CDDX
             info.AddValue("IncludeConnections", IncludeConnections);
             info.AddValue("IncludeLayout", IncludeLayout);
             info.AddValue("EmbedComponents", (int)EmbedComponents);
+            info.AddValue("EmbedThumbnail", EmbedThumbnail);
         }
+
+        public static bool operator ==(CDDXSaveOptions a, CDDXSaveOptions b)
+        {
+            // If both are null, or both are same instance, return true.
+            if (System.Object.ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            // If one is null, but not both, return false.
+            if (((object)a == null) || ((object)b == null))
+            {
+                return false;
+            }
+
+            return (a.IncludeConnections == b.IncludeConnections &&
+                a.IncludeLayout == b.IncludeLayout &&
+                a.EmbedThumbnail == b.EmbedThumbnail &&
+                a.EmbedComponents == b.EmbedComponents && a.EmbedComponents != ComponentsToEmbed.Custom);
+        }
+
+        public static bool operator !=(CDDXSaveOptions a, CDDXSaveOptions b)
+        {
+            return !a.Equals(b);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is CDDXSaveOptions))
+                return false;
+
+            return (this == obj as CDDXSaveOptions);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        #region Presets
+        public static CDDXSaveOptions Default
+        {
+            get
+            {
+                return new CDDXSaveOptions();
+            }
+        }
+
+        public static CDDXSaveOptions MinSize
+        {
+            get
+            {
+                CDDXSaveOptions options = new CDDXSaveOptions();
+                options.EmbedComponents = ComponentsToEmbed.None;
+                options.IncludeConnections = false;
+                options.EmbedThumbnail = false;
+                return options;
+            }
+        }
+        #endregion
     }
 }

@@ -110,7 +110,7 @@ namespace CircuitDiagram.IO.CDDX
                                 byte[] buffer = File.ReadAllBytes(description.Source.Path);
                                 descriptionStream.Write(buffer, 0, buffer.Length);
                             }
-                            PackageRelationship relationship = documentPart.CreateRelationship(descriptionPart.Uri, TargetMode.Internal, CDDXIO.RelationshipTypes.IncludedComponent);
+                            PackageRelationship relationship = documentPart.CreateRelationship(descriptionPart.Uri, TargetMode.Internal, CDDX.RelationshipTypes.IncludedComponent);
 
                             relationshipID = relationship.Id;
                         }
@@ -132,7 +132,7 @@ namespace CircuitDiagram.IO.CDDX
                                 descriptionWriter.Descriptions.Add(description);
                                 descriptionWriter.Write();
                             }
-                            PackageRelationship relationship = documentPart.CreateRelationship(descriptionPart.Uri, TargetMode.Internal, CDDXIO.RelationshipTypes.IncludedComponent);
+                            PackageRelationship relationship = documentPart.CreateRelationship(descriptionPart.Uri, TargetMode.Internal, CDDX.RelationshipTypes.IncludedComponent);
 
                             relationshipID = relationship.Id;
                         }

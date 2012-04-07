@@ -34,7 +34,7 @@ namespace CircuitDiagram.Components
         public int RuntimeID { get; set; }
 
         public string ID { get; set; }
-        public string ComponentName {get; private set;}
+        public string ComponentName { get; private set; }
         public bool CanResize { get; private set; }
         public bool CanFlip { get; private set; }
         public double MinSize { get; private set; }

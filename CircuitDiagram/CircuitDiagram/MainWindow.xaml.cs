@@ -36,6 +36,7 @@ using CircuitDiagram.Render;
 using Microsoft.Win32;
 using System.Windows.Threading;
 using CircuitDiagram.IO;
+using TaskDialogInterop;
 
 namespace CircuitDiagram
 {
@@ -55,6 +56,8 @@ namespace CircuitDiagram
         public System.Collections.ObjectModel.ObservableCollection<string> RecentFiles = new System.Collections.ObjectModel.ObservableCollection<string>();
 
         List<ImplementationConversionCollection> m_componentRepresentations = new List<ImplementationConversionCollection>();
+
+        string m_docToLoad = null;
         #endregion
 
         public MainWindow()
@@ -108,12 +111,22 @@ namespace CircuitDiagram
 
             this.Closed += new EventHandler(MainWindow_Closed);
             this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
+            this.ContentRendered += new EventHandler(MainWindow_ContentRendered);
 
             // check if should open file
             if (App.AppArgs.Length > 0)
             {
                 if (System.IO.File.Exists(App.AppArgs[0]))
-                    OpenDocument(App.AppArgs[0]);
+                    m_docToLoad = App.AppArgs[0];
+            }
+        }
+
+        void MainWindow_ContentRendered(object sender, EventArgs e)
+        {
+            if (m_docToLoad != null)
+            {
+                OpenDocument(m_docToLoad);
+                m_docToLoad = null;
             }
         }
 
@@ -149,6 +162,7 @@ namespace CircuitDiagram
         /// </summary>
         private void ConfigureCdLibrary()
         {
+            // Set application version
             System.Reflection.Assembly _assemblyInfo = System.Reflection.Assembly.GetExecutingAssembly();
             string theVersion = string.Empty;
             if (_assemblyInfo != null)
@@ -157,73 +171,6 @@ namespace CircuitDiagram
             if (channelAttribute != null && channelAttribute.Type == BuildChannelAttribute.ChannelType.Dev && channelAttribute.DisplayName != null)
                 theVersion += " " + channelAttribute.DisplayName;
             CircuitDiagram.IO.ApplicationInfo.FullName = "Circuit Diagram " + theVersion;
-        }
-
-        /// <summary>
-        /// Open a document and add it to the recent files menu.
-        /// </summary>
-        /// <param name="path">The path of the document to open.</param>
-        private void OpenDocument(string path)
-        {
-            if (System.IO.Path.GetExtension(path) == ".cddx" || System.IO.Path.GetExtension(path) == ".zip")
-            {
-                CircuitDocument document;
-                CircuitDiagram.IO.DocumentLoadResult result = CircuitDiagram.IO.CDDX.CDDXIO.Read(File.OpenRead(path), out document);
-
-                if (result.Type != DocumentLoadResultType.Success || result.Errors.Count > 0 || result.UnavailableComponents.Count > 0)
-                {
-                    winDocumentLoadResult loadResultWindow = new winDocumentLoadResult();
-                    loadResultWindow.Owner = this;
-                    loadResultWindow.SetMessage(result.Type);
-                    loadResultWindow.SetErrors(result.Errors);
-                    loadResultWindow.SetUnavailableComponents(result.UnavailableComponents);
-                    loadResultWindow.ShowDialog();
-                }
-
-                if (result.Type == DocumentLoadResultType.Success || result.Type == DocumentLoadResultType.SuccessNewerVersion)
-                {
-                    circuitDisplay.Document = document;
-                    circuitDisplay.DrawConnections();
-                    m_docPath = path;
-                    m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
-                    this.Title = m_documentTitle + " - Circuit Diagram";
-                    m_undoManager = new UndoManager();
-                    circuitDisplay.UndoManager = m_undoManager;
-                    m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
-                    m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
-                    AddRecentFile(path);
-                }
-            }
-            else
-            {
-                CircuitDiagram.IO.CircuitDocumentLoader loader = new IO.CircuitDocumentLoader();
-
-                CircuitDiagram.IO.DocumentLoadResult result = loader.Load(File.OpenRead(path));
-
-                if (result.Type != DocumentLoadResultType.Success || result.Errors.Count > 0 || result.UnavailableComponents.Count > 0)
-                {
-                    winDocumentLoadResult loadResultWindow = new winDocumentLoadResult();
-                    loadResultWindow.Owner = this;
-                    loadResultWindow.SetMessage(result.Type);
-                    loadResultWindow.SetUnavailableComponents(result.UnavailableComponents);
-                    loadResultWindow.ShowDialog();
-                }
-
-                if (result.Type == IO.DocumentLoadResultType.Success)
-                {
-                    circuitDisplay.Document = loader.Document;
-                    circuitDisplay.DrawConnections();
-
-                    m_docPath = path;
-                    m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
-                    this.Title = m_documentTitle + " - Circuit Diagram";
-                    m_undoManager = new UndoManager();
-                    circuitDisplay.UndoManager = m_undoManager;
-                    m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
-                    m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
-                    AddRecentFile(path);
-                }
-            }
         }
 
         /// <summary>
@@ -292,7 +239,7 @@ namespace CircuitDiagram
             byte[] data = new byte[keyStream.Length];
             keyStream.Read(data, 0, (int)keyStream.Length);
             string aaa = Encoding.UTF8.GetString(data);
-            tempRSA.FromXmlString(aaa.Trim());
+            //tempRSA.FromXmlString(aaa.Trim());
             foreach (string location in componentLocations)
             {
                 foreach (string file in System.IO.Directory.GetFiles(location, "*.cdcom", SearchOption.TopDirectoryOnly))
@@ -476,8 +423,6 @@ namespace CircuitDiagram
                                             contentCanvas.Children.Add(newImage);
                                             newItem.Content = contentCanvas;
                                         }
-                                        newItem.Click += new RoutedEventHandler(toolboxButton_Click);
-                                        newCategory.Items.Add(newItem);
 
                                         // Shortcut
                                         if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
@@ -485,8 +430,16 @@ namespace CircuitDiagram
                                             Key key = (Key)Enum.Parse(typeof(Key), element.Attributes["key"].InnerText);
 
                                             if (!m_toolboxShortcuts.ContainsKey(key))
+                                            {
                                                 m_toolboxShortcuts.Add(key, "@rid:" + description.RuntimeID + ", @config: " + configuration.Name);
+                                                
+                                                // Add key to tooltip
+                                                newItem.ToolTip = configuration.Name + " (" + key.ToString().ToLowerInvariant() + ")";
+                                            }
                                         }
+
+                                        newItem.Click += new RoutedEventHandler(toolboxButton_Click);
+                                        newCategory.Items.Add(newItem);
                                     }
                                 }
                             }
@@ -514,8 +467,6 @@ namespace CircuitDiagram
                                         contentCanvas.Children.Add(newImage);
                                         newItem.Content = contentCanvas;
                                     }
-                                    newItem.Click += new RoutedEventHandler(toolboxButton_Click);
-                                    newCategory.Items.Add(newItem);
 
                                     // Shortcut
                                     if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
@@ -523,8 +474,16 @@ namespace CircuitDiagram
                                         Key key = (Key)Enum.Parse(typeof(Key), element.Attributes["key"].InnerText);
 
                                         if (!m_toolboxShortcuts.ContainsKey(key))
+                                        {
                                             m_toolboxShortcuts.Add(key, "@rid:" + description.RuntimeID);
+
+                                            // Add key to tooltip
+                                            newItem.ToolTip = description.ComponentName + " (" + key.ToString().ToLowerInvariant() + ")";
+                                        }
                                     }
+
+                                    newItem.Click += new RoutedEventHandler(toolboxButton_Click);
+                                    newCategory.Items.Add(newItem);
                                 }
                             }
                             else if (element.HasAttribute("type") && element.HasAttribute("configuration"))
@@ -565,8 +524,6 @@ namespace CircuitDiagram
                                             contentCanvas.Children.Add(newImage);
                                             newItem.Content = contentCanvas;
                                         }
-                                        newItem.Click += new RoutedEventHandler(toolboxButton_Click);
-                                        newCategory.Items.Add(newItem);
 
                                         // Shortcut
                                         if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
@@ -574,8 +531,16 @@ namespace CircuitDiagram
                                             Key key = (Key)Enum.Parse(typeof(Key), element.Attributes["key"].InnerText);
 
                                             if (!m_toolboxShortcuts.ContainsKey(key))
+                                            {
                                                 m_toolboxShortcuts.Add(key, "@rid:" + description.RuntimeID + ", @config: " + configuration.Name);
+
+                                                // Add key to tooltip
+                                                newItem.ToolTip = configuration.Name + " (" + key.ToString().ToLowerInvariant() + ")";
+                                            }
                                         }
+
+                                        newItem.Click += new RoutedEventHandler(toolboxButton_Click);
+                                        newCategory.Items.Add(newItem);
                                     }
                                 }
                             }
@@ -603,8 +568,6 @@ namespace CircuitDiagram
                                         contentCanvas.Children.Add(newImage);
                                         newItem.Content = contentCanvas;
                                     }
-                                    newItem.Click += new RoutedEventHandler(toolboxButton_Click);
-                                    newCategory.Items.Add(newItem);
 
                                     // Shortcut
                                     if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
@@ -612,8 +575,16 @@ namespace CircuitDiagram
                                         Key key = (Key)Enum.Parse(typeof(Key), element.Attributes["key"].InnerText);
 
                                         if (!m_toolboxShortcuts.ContainsKey(key))
+                                        {
                                             m_toolboxShortcuts.Add(key, "@rid:" + description.RuntimeID);
+
+                                            // Add key to tooltip
+                                            newItem.ToolTip = description.ComponentName + " (" + key.ToString().ToLowerInvariant() + ")";
+                                        }
                                     }
+
+                                    newItem.Click += new RoutedEventHandler(toolboxButton_Click);
+                                    newCategory.Items.Add(newItem);
                                 }
                             }
                         }
@@ -631,6 +602,9 @@ namespace CircuitDiagram
                 File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml", "<?xml version=\"1.0\" encoding=\"utf-8\"?><display></display>");
 #endif
             }
+
+            // Set select as current tool
+            circuitDisplay.NewComponentData = null;
         }
 
         void toolboxButton_Click(object sender, RoutedEventArgs e)
@@ -659,10 +633,17 @@ namespace CircuitDiagram
             string settingsData = Settings.Settings.Read("DefaultCDDXSaveSettings") as string;
             if (settingsData != null)
             {
-                using (MemoryStream stream = new MemoryStream(System.Convert.FromBase64String(settingsData)))
+                try
                 {
-                    BinaryFormatter binaryFormatter = new BinaryFormatter();
-                    m_defaultSaveOptions = (IO.CDDX.CDDXSaveOptions)binaryFormatter.Deserialize(stream);
+                    using (MemoryStream stream = new MemoryStream(System.Convert.FromBase64String(settingsData)))
+                    {
+                        BinaryFormatter binaryFormatter = new BinaryFormatter();
+                        m_defaultSaveOptions = (IO.CDDX.CDDXSaveOptions)binaryFormatter.Deserialize(stream);
+                    }
+                }
+                catch (Exception)
+                {
+                    m_defaultSaveOptions = new IO.CDDX.CDDXSaveOptions();
                 }
             }
             else
@@ -808,67 +789,129 @@ namespace CircuitDiagram
         {
             if (!UndoManager.IsSavedState())
             {
-                MessageBoxResult result = MessageBox.Show("Do you want to save changes to " + m_documentTitle + "?", "Circuit Diagram", MessageBoxButton.YesNoCancel);
-                if (result == MessageBoxResult.Yes)
-                    CommandSave_Executed(this, null);
-                else if (result == MessageBoxResult.Cancel)
+                TaskDialogOptions tdOptions = new TaskDialogOptions();
+                tdOptions.Title = "Circuit Diagram";
+                tdOptions.MainInstruction = "Do you want to save changes to " + m_documentTitle + "?";
+                tdOptions.CustomButtons = new string[] { "&Save", "Do&n't Save", "Cancel" };
+                tdOptions.Owner = this;
+                TaskDialogResult result = TaskDialog.Show(tdOptions);
+
+                bool saved = false;
+                if (result.CustomButtonResult == 0)
+                    SaveDocument(out saved);
+
+                if (result.CustomButtonResult == 2 || result.Result == TaskDialogSimpleResult.Cancel || (result.CustomButtonResult == 0 && !saved))
                     e.Cancel = true;
             }
 
             SaveRecentFiles();
         }
 
-        #region Menu Bar
-        private void mnuFileExport_Click(object sender, RoutedEventArgs e)
+        private void circuitDisplay_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog();
-            sfd.Title = "Export";
-            sfd.Filter = "PNG (*.png)|*.png|Scalable Vector Graphics (*.svg)|*.svg"; //"PNG (*.png)|*.png|Scalable Vector Graphics (*.svg)|*.svg|Enhanced Metafile (*.emf)|*.emf";
-            sfd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
-            if (sfd.ShowDialog() == true)
+            // Zoom with the mouse wheel
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
             {
-                string extension = System.IO.Path.GetExtension(sfd.FileName);
-                if (extension == ".svg")
+                sliderZoom.Value += (e.Delta / 60);
+                e.Handled = true;
+            }
+        }
+
+        #region IO
+        /// <summary>
+        /// Open a document and add it to the recent files menu.
+        /// </summary>
+        /// <param name="path">The path of the document to open.</param>
+        private void OpenDocument(string path)
+        {
+            if (System.IO.Path.GetExtension(path).ToLowerInvariant() == ".cddx" || System.IO.Path.GetExtension(path).ToLowerInvariant() == ".zip")
+            {
+                CircuitDocument document;
+                CircuitDiagram.IO.DocumentLoadResult result = CircuitDiagram.IO.CDDX.CDDXIO.Read(File.OpenRead(path), out document);
+
+                if (result.Type != DocumentLoadResultType.Success || result.Errors.Count > 0 || result.UnavailableComponents.Count > 0)
                 {
-                    SVGRenderer renderer = new SVGRenderer();
-                    renderer.Begin();
-                    circuitDisplay.Document.Render(renderer);
-                    renderer.End();
-                    System.IO.File.WriteAllBytes(sfd.FileName, renderer.SVGDocument.ToArray());
+                    winDocumentLoadResult loadResultWindow = new winDocumentLoadResult();
+                    loadResultWindow.Owner = this;
+                    loadResultWindow.SetMessage(result.Type);
+                    loadResultWindow.SetErrors(result.Errors);
+                    loadResultWindow.SetUnavailableComponents(result.UnavailableComponents);
+                    loadResultWindow.ShowDialog();
                 }
-                else if (extension == ".png")
+
+                if (result.Type == DocumentLoadResultType.Success || result.Type == DocumentLoadResultType.SuccessNewerVersion)
                 {
-                    winExportPNG exportPNGWindow = new winExportPNG();
-                    exportPNGWindow.Owner = this;
-                    exportPNGWindow.OriginalWidth = circuitDisplay.Width;
-                    exportPNGWindow.OriginalHeight = circuitDisplay.Height;
-                    exportPNGWindow.Update();
-                    if (exportPNGWindow.ShowDialog() == true)
-                    {
-                        WPFRenderer renderer = new WPFRenderer();
-                        renderer.Begin();
-                        circuitDisplay.Document.Render(renderer);
-                        renderer.End();
-                        using (var memoryStream = renderer.GetPNGImage2(exportPNGWindow.OutputWidth, exportPNGWindow.OutputHeight, circuitDisplay.Document.Size.Width, circuitDisplay.Document.Size.Height, exportPNGWindow.OutputBackgroundColour == "White"))
-                        {
-                            FileStream fileStream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.Read);
-                            memoryStream.WriteTo(fileStream);
-                            fileStream.Close();
-                        }
-                    }
+                    circuitDisplay.Document = document;
+                    circuitDisplay.DrawConnections();
+                    m_docPath = path;
+                    m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
+                    this.Title = m_documentTitle + " - Circuit Diagram";
+                    m_undoManager = new UndoManager();
+                    circuitDisplay.UndoManager = m_undoManager;
+                    m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
+                    m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
+                    AddRecentFile(path);
+                }
+            }
+            else
+            {
+                CircuitDiagram.IO.CircuitDocumentLoader loader = new IO.CircuitDocumentLoader();
+
+                CircuitDiagram.IO.DocumentLoadResult result = loader.Load(File.OpenRead(path));
+
+                if (result.Type != DocumentLoadResultType.Success || result.Errors.Count > 0 || result.UnavailableComponents.Count > 0)
+                {
+                    winDocumentLoadResult loadResultWindow = new winDocumentLoadResult();
+                    loadResultWindow.Owner = this;
+                    loadResultWindow.SetMessage(result.Type);
+                    loadResultWindow.SetUnavailableComponents(result.UnavailableComponents);
+                    loadResultWindow.ShowDialog();
+                }
+
+                if (result.Type == IO.DocumentLoadResultType.Success)
+                {
+                    circuitDisplay.Document = loader.Document;
+                    circuitDisplay.DrawConnections();
+
+                    m_docPath = path;
+                    m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
+                    this.Title = m_documentTitle + " - Circuit Diagram";
+                    m_undoManager = new UndoManager();
+                    circuitDisplay.UndoManager = m_undoManager;
+                    m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
+                    m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
+                    AddRecentFile(path);
                 }
             }
         }
 
-        private void mnuFileComponents_Click(object sender, RoutedEventArgs e)
+        private void SaveDocument(out bool saved)
         {
-            winComponents componentsWindow = new winComponents();
-            componentsWindow.Components = ComponentHelper.ComponentDescriptions;
-            componentsWindow.Owner = this;
-            componentsWindow.ShowDialog();
+            if (m_docPath != "")
+            {
+                string extension = Path.GetExtension(m_docPath);
+                if (extension == ".cddx")
+                {
+                    // Save in CDDX format
+                    if (m_lastSaveOptions == null)
+                        m_lastSaveOptions = m_defaultSaveOptions;
+                    CircuitDiagram.IO.CDDX.CDDXIO.Write(new FileStream(m_docPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, m_lastSaveOptions);
+                }
+                else
+                {
+                    // Save in XML format
+                    CircuitDiagram.IO.CircuitDocumentWriter.WriteXml(circuitDisplay.Document, new FileStream(m_docPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite));
+                }
+                this.Title = System.IO.Path.GetFileNameWithoutExtension(m_docPath) + " - Circuit Diagram";
+                UndoManager.SetSaveIndex();
+
+                saved = true;
+            }
+            else
+                SaveDocumentAs(out saved);
         }
 
-        private void mnuFileSaveAs_Click(object sender, RoutedEventArgs e)
+        private void SaveDocumentAs(out bool saved)
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Title = "Save As";
@@ -889,7 +932,7 @@ namespace CircuitDiagram
                     {
                         winCDDXSave saveOptionsDialog = new winCDDXSave();
                         saveOptionsDialog.Owner = this;
-                        saveOptionsDialog.SaveOptions = m_defaultSaveOptions;
+                        saveOptionsDialog.LoadSaveOptions(m_defaultSaveOptions);
 
                         List<ComponentDescription> usedDescriptions = new List<ComponentDescription>();
                         foreach (Component component in circuitDisplay.Document.Components)
@@ -923,12 +966,21 @@ namespace CircuitDiagram
                     if (doSave)
                     {
                         m_lastSaveOptions = saveOptions;
-                        CircuitDiagram.IO.CDDX.CDDXIO.Write(new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, saveOptions);
+                        using (FileStream fs = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+                        {
+                            CircuitDiagram.IO.CDDX.CDDXIO.Write(fs, circuitDisplay.Document, saveOptions);
+                        }
                         m_docPath = sfd.FileName;
                         m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName);
                         this.Title = m_documentTitle + " - Circuit Diagram";
                         m_undoManager.SetSaveIndex();
+
+                        AddRecentFile(m_docPath);
+
+                        saved = true;
                     }
+                    else
+                        saved = false;
                 }
                 else
                 {
@@ -938,8 +990,82 @@ namespace CircuitDiagram
                     m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName);
                     this.Title = m_documentTitle + " - Circuit Diagram";
                     m_undoManager.SetSaveIndex();
+
+                    AddRecentFile(m_docPath);
+
+                    saved = true;
                 }
             }
+            else
+                saved = false;
+        }
+        #endregion
+
+        #region Menu Bar
+        private void mnuFileExport_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog();
+            sfd.Title = "Export";
+            sfd.Filter = "PNG (*.png)|*.png|Scalable Vector Graphics (*.svg)|*.svg|Enhanced Metafile (*.emf)|*.emf";
+            sfd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
+            if (sfd.ShowDialog() == true)
+            {
+                string extension = System.IO.Path.GetExtension(sfd.FileName);
+                if (extension == ".svg")
+                {
+                    SVGRenderer renderer = new SVGRenderer();
+                    renderer.Begin();
+                    circuitDisplay.Document.Render(renderer);
+                    renderer.End();
+                    System.IO.File.WriteAllBytes(sfd.FileName, renderer.SVGDocument.ToArray());
+                }
+                else if (extension == ".png")
+                {
+                    winExportPNG exportPNGWindow = new winExportPNG();
+                    exportPNGWindow.Owner = this;
+                    exportPNGWindow.OriginalWidth = circuitDisplay.Width;
+                    exportPNGWindow.OriginalHeight = circuitDisplay.Height;
+                    exportPNGWindow.Update();
+                    if (exportPNGWindow.ShowDialog() == true)
+                    {
+                        WPFRenderer renderer = new WPFRenderer();
+                        renderer.Begin();
+                        circuitDisplay.Document.Render(renderer);
+                        renderer.End();
+                        using (var memoryStream = renderer.GetPNGImage2(exportPNGWindow.OutputWidth, exportPNGWindow.OutputHeight, circuitDisplay.Document.Size.Width, circuitDisplay.Document.Size.Height, exportPNGWindow.OutputBackgroundColour == "White"))
+                        {
+                            FileStream fileStream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.Read);
+                            memoryStream.WriteTo(fileStream);
+                            fileStream.Close();
+                        }
+                    }
+                }
+                else if (extension == ".emf")
+                {
+                    EMFRenderer renderer = new EMFRenderer((int)circuitDisplay.Document.Size.Width, (int)circuitDisplay.Document.Size.Height);
+                    renderer.Begin();
+                    circuitDisplay.Document.Render(renderer);
+                    renderer.End();
+                    using (FileStream stream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+                    {
+                        renderer.WriteEnhMetafile(stream);
+                    }
+                }
+            }
+        }
+
+        private void mnuFileComponents_Click(object sender, RoutedEventArgs e)
+        {
+            winComponents componentsWindow = new winComponents();
+            componentsWindow.Components = ComponentHelper.ComponentDescriptions;
+            componentsWindow.Owner = this;
+            componentsWindow.ShowDialog();
+        }
+
+        private void mnuFileSaveAs_Click(object sender, RoutedEventArgs e)
+        {
+            bool saved;
+            SaveDocumentAs(out saved);
         }
 
         private void mnuToolsToolbox_Click(object sender, RoutedEventArgs e)
@@ -1099,7 +1225,7 @@ namespace CircuitDiagram
 
         private void SaveRecentFiles()
         {
-            if (RecentFiles.Count != 1 && RecentFiles[0] != "(empty)")
+            if (!(RecentFiles.Count == 1 && RecentFiles[0] == "(empty)"))
                 CircuitDiagram.Settings.Settings.Write("recentfiles", RecentFiles.ToArray());
             CircuitDiagram.Settings.Settings.Save();
         }
@@ -1117,6 +1243,23 @@ namespace CircuitDiagram
             newDocumentWindow.Owner = this;
             if (newDocumentWindow.ShowDialog() == true)
             {
+                if (!UndoManager.IsSavedState())
+                {
+                    TaskDialogOptions tdOptions = new TaskDialogOptions();
+                    tdOptions.Title = "Circuit Diagram";
+                    tdOptions.MainInstruction = "Do you want to save changes to " + m_documentTitle + "?";
+                    tdOptions.CustomButtons = new string[] { "&Save", "Do&n't Save", "Cancel" };
+                    tdOptions.Owner = this;
+                    TaskDialogResult result = TaskDialog.Show(tdOptions);
+
+                    bool saved = false;
+                    if (result.CustomButtonResult == 0)
+                        SaveDocument(out saved);
+
+                    if (result.CustomButtonResult == 2 || result.Result == TaskDialogSimpleResult.Cancel || (result.CustomButtonResult == 0 && !saved))
+                        return; // Don't create new document
+                }
+
                 CircuitDocument newDocument = new CircuitDocument();
                 newDocument.Size = new Size(newDocumentWindow.DocumentWidth, newDocumentWindow.DocumentHeight);
                 circuitDisplay.Document = newDocument;
@@ -1143,6 +1286,23 @@ namespace CircuitDiagram
             ofd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
             if (ofd.ShowDialog() == true)
             {
+                if (!UndoManager.IsSavedState())
+                {
+                    TaskDialogOptions tdOptions = new TaskDialogOptions();
+                    tdOptions.Title = "Circuit Diagram";
+                    tdOptions.MainInstruction = "Do you want to save changes to " + m_documentTitle + "?";
+                    tdOptions.CustomButtons = new string[] { "&Save", "Do&n't Save", "Cancel" };
+                    tdOptions.Owner = this;
+                    TaskDialogResult result = TaskDialog.Show(tdOptions);
+
+                    bool saved = false;
+                    if (result.CustomButtonResult == 0)
+                        SaveDocument(out saved);
+
+                    if (result.CustomButtonResult == 2 || result.Result == TaskDialogSimpleResult.Cancel || (result.CustomButtonResult == 0 && !saved))
+                        return; // Don't create new document
+                }
+
                 OpenDocument(ofd.FileName);
             }
         }
@@ -1154,26 +1314,8 @@ namespace CircuitDiagram
 
         private void CommandSave_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (m_docPath != "")
-            {
-                string extension = Path.GetExtension(m_docPath);
-                if (extension == ".cddx")
-                {
-                    // Save in CDDX format
-                    if (m_lastSaveOptions == null)
-                        m_lastSaveOptions = m_defaultSaveOptions;
-                    CircuitDiagram.IO.CDDX.CDDXIO.Write(new FileStream(m_docPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, m_lastSaveOptions);
-                }
-                else
-                {
-                    // Save in XML format
-                    CircuitDiagram.IO.CircuitDocumentWriter.WriteXml(circuitDisplay.Document, new FileStream(m_docPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite));
-                }
-                this.Title = System.IO.Path.GetFileNameWithoutExtension(m_docPath) + " - Circuit Diagram";
-                UndoManager.SetSaveIndex();
-            }
-            else
-                mnuFileSaveAs_Click(sender, e);
+            bool saved;
+            SaveDocument(out saved);
         }
 
         private void CommandUndo_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -1267,6 +1409,8 @@ namespace CircuitDiagram
                             configuration = rid.Substring(rid.IndexOf("@config:") + 8);
                             rid = rid.Substring(0, rid.IndexOf(" "));
                         }
+                        if (rid.Contains(","))
+                            rid = rid.Substring(0, rid.IndexOf(","));
 
                         ComponentDescription description = ComponentHelper.FindDescriptionByRuntimeID(int.Parse(rid));
 

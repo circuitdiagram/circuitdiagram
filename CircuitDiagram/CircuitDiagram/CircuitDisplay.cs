@@ -554,33 +554,7 @@ namespace CircuitDiagram
             }
             else
             {
-                if (m_selectedComponents.Count > 0)
-                {
-                    RaiseEvent(new SelectionChangedEventArgs(Selector.SelectionChangedEvent, m_selectedComponents, new List<Component>()));
-
-                    if (m_undoManagerBeforeData.Count > 0)
-                    {
-                        Dictionary<Component, string> afterData = new Dictionary<Component, string>();
-
-                        foreach (Component component in m_selectedComponents)
-                        {
-                            string afterDataString = component.SerializeToString();
-                            if (afterDataString == m_undoManagerBeforeData[component])
-                                break;
-
-                            afterData.Add(component, afterDataString);
-                        }
-
-                        if (afterData.Count > 0)
-                        {
-                            UndoAction undoAction = new UndoAction(UndoCommand.ModifyComponents, "move", m_selectedComponents.ToArray());
-                            undoAction.AddData("before", m_undoManagerBeforeData);
-                            undoAction.AddData("after", afterData);
-                            UndoManager.AddAction(undoAction);
-                            m_undoManagerBeforeData = new Dictionary<Component, string>();
-                        }
-                    }
-                }
+                List<Component> removedItems = new List<Component>(m_selectedComponents);
 
                 m_selectedComponents.Clear();
                 m_originalOffsets.Clear();
@@ -589,6 +563,8 @@ namespace CircuitDiagram
                 using (DrawingContext dc = m_selectedVisual.RenderOpen())
                 {
                 }
+
+                RaiseEvent(new SelectionChangedEventArgs(Selector.SelectionChangedEvent, removedItems, new List<Component>()));
             }
         }
 

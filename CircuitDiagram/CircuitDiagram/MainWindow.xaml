@@ -10,6 +10,7 @@
                 <MenuItem Command="New" Header="_New" />
                 <MenuItem Command="Open" Header="_Open" />
                 <MenuItem Header="_Recent Files" Name="mnuRecentItems" Click="mnuRecentItem_Click" />
+                <Separator />
                 <MenuItem Command="Save" Header="_Save" />
                 <MenuItem Header="Save _As" Click="mnuFileSaveAs_Click" />
                 <Separator />
@@ -56,7 +57,7 @@
                     </LinearGradientBrush>
                 </tb:Toolbox.Background>
                 <tb:ToolboxCategory>
-                    <tb:ToolboxItem ToolTip="Select" Click="btnSelect_Click">
+                    <tb:ToolboxItem ToolTip="Select (v)" Click="btnSelect_Click">
                         <Image Source="select icon.png" Width="45" Height="45" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor">
                             <Image.Effect>
                                 <DropShadowEffect />
@@ -93,7 +94,7 @@
             </Grid>
         </Grid>
         <ScrollViewer Background="LightGray" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-            <cd:CircuitDisplay x:Name="circuitDisplay" SelectionChanged="circuitDisplay_SelectionChanged" SnapsToDevicePixels="True">
+            <cd:CircuitDisplay x:Name="circuitDisplay" SelectionChanged="circuitDisplay_SelectionChanged" SnapsToDevicePixels="True" MouseWheel="circuitDisplay_MouseWheel">
                 <cd:CircuitDisplay.ContextMenu>
                     <ContextMenu>
                         <MenuItem Command="cd:CustomCommands.DeleteComponent" />

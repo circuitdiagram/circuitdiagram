@@ -27,7 +27,7 @@ using System.Windows.Media;
 
 namespace CircuitDiagram.Components.Render
 {
-    class Rectangle : IRenderCommand
+    public class Rectangle : IRenderCommand
     {
         public ComponentPoint Location { get; set; }
         public double Width { get; set; }

@@ -27,7 +27,7 @@ using System.Windows.Media;
 
 namespace CircuitDiagram.Components.Render
 {
-    class Text : IRenderCommand
+    public class Text : IRenderCommand
     {
         public ComponentPoint Location { get; set; }
         public TextAlignment Alignment { get; set; }

@@ -27,7 +27,7 @@ using System.Windows;
 
 namespace CircuitDiagram.Components.Render
 {
-    class Line : IRenderCommand
+    public class Line : IRenderCommand
     {
         public ComponentPoint Start { get; set; }
         public ComponentPoint End { get; set; }
