@@ -61,6 +61,8 @@ namespace CircuitDiagram
             SnapToGrid = true;
             SnapToHV = true;
             Size = new Size(640, 480);
+
+            Metadata = new CircuitDocumentMetadata();
         }
 
         private static bool AlmostEquals(double one, double two)

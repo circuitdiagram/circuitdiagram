@@ -45,8 +45,11 @@ namespace CircuitDiagram.IO.CDDX
                 writer.WriteAttributeString("version", String.Format("{0:0.0}", CDDXDocumentVersion));
                 writer.WriteAttributeString("xmlns", "r", null, RelationshipNamespace);
 
-                // Metadata
-                WriteMetadata(writer, document);
+                // Document size
+                writer.WriteStartElement("properties");
+                writer.WriteElementString("width", document.Size.Width.ToString());
+                writer.WriteElementString("height", document.Size.Height.ToString());
+                writer.WriteEndElement();
 
                 // Component sources
                 List<ComponentDescription> descriptionsInDocument = new List<ComponentDescription>();
@@ -225,24 +228,6 @@ namespace CircuitDiagram.IO.CDDX
             }
 
             return false;
-        }
-
-        static void WriteMetadata(XmlTextWriter writer, CircuitDocument document)
-        {
-            writer.WriteStartElement("metadata");
-            writer.WriteStartElement("property");
-            writer.WriteAttributeString("name", "width");
-            writer.WriteAttributeString("value", document.Size.Width.ToString());
-            writer.WriteEndElement();
-            writer.WriteStartElement("property");
-            writer.WriteAttributeString("name", "height");
-            writer.WriteAttributeString("value", document.Size.Height.ToString());
-            writer.WriteEndElement();
-            writer.WriteStartElement("property");
-            writer.WriteAttributeString("name", "application");
-            writer.WriteAttributeString("value", ApplicationInfo.FullName);
-            writer.WriteEndElement();
-            writer.WriteEndElement();
         }
 
         static void WriteComponentSources(XmlTextWriter writer, Dictionary<ComponentSourceLocation, List<ComponentSource>> sourcesByLocation)

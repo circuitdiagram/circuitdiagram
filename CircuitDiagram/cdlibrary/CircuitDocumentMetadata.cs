@@ -27,19 +27,37 @@ namespace CircuitDiagram
 {
     public class CircuitDocumentMetadata
     {
-        /// <summary>
-        /// The application that created the document.
-        /// </summary>
-        public string Application { get; set; }
-
-        /// <summary>
-        /// The file format of the document.
-        /// </summary>
         public string Format { get; set; }
 
         /// <summary>
         /// The path to the saved document.
         /// </summary>
         public string Path { get; set; }
+
+        public DublinCoreMetadata DublinCore { get; private set; }
+
+        public ExtendedMetadata Extended { get; private set; }
+
+        public CircuitDocumentMetadata()
+        {
+            DublinCore = new DublinCoreMetadata();
+            Extended = new ExtendedMetadata();
+        }
+    }
+
+    public class DublinCoreMetadata
+    {
+        public string Contributor { get; set; }
+        public string Creator { get; set; }
+        public DateTime? Date { get; set; }
+        public string Description { get; set; }
+        public string Format { get; set; }
+        public string Title { get; set; }
+    }
+
+    public class ExtendedMetadata
+    {
+        public string Application { get; set; }
+        public string AppVersion { get; set; }
     }
 }

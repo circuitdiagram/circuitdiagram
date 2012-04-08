@@ -94,6 +94,8 @@ namespace CircuitDiagram
                 });
 
             circuitDisplay.Document = new CircuitDocument();
+            circuitDisplay.Document.Metadata.DublinCore.Creator = Environment.UserName;
+            circuitDisplay.Document.Metadata.DublinCore.Date = DateTime.Now;
             Load();
 
             // load recent items
@@ -171,6 +173,8 @@ namespace CircuitDiagram
             if (channelAttribute != null && channelAttribute.Type == BuildChannelAttribute.ChannelType.Dev && channelAttribute.DisplayName != null)
                 theVersion += " " + channelAttribute.DisplayName;
             CircuitDiagram.IO.ApplicationInfo.FullName = "Circuit Diagram " + theVersion;
+            CircuitDiagram.IO.ApplicationInfo.Name = "Circuit Diagram";
+            CircuitDiagram.IO.ApplicationInfo.Version = theVersion;
         }
 
         /// <summary>
@@ -1262,6 +1266,8 @@ namespace CircuitDiagram
 
                 CircuitDocument newDocument = new CircuitDocument();
                 newDocument.Size = new Size(newDocumentWindow.DocumentWidth, newDocumentWindow.DocumentHeight);
+                newDocument.Metadata.DublinCore.Creator = Environment.UserName;
+                newDocument.Metadata.DublinCore.Date = DateTime.Now;
                 circuitDisplay.Document = newDocument;
                 circuitDisplay.DrawConnections();
                 this.Title = "Untitled - Circuit Diagram";

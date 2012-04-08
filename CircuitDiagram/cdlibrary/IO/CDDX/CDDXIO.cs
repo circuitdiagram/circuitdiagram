@@ -48,6 +48,9 @@ namespace CircuitDiagram.IO.CDDX
                     package.CreateRelationship(documentPart.Uri, TargetMode.Internal, RelationshipTypes.Document);
                     CDDX.CDDXDocumentWriter.WriteCDDX(document, package, documentPart, saveOptions);
 
+                    // Metadata
+                    MetadataWriter.WriteMetadata(document, package);
+
                     // Thumbnail
                     if (saveOptions.EmbedThumbnail)
                     {
@@ -75,7 +78,12 @@ namespace CircuitDiagram.IO.CDDX
                 {
                     PackageRelationship documentRelationship = package.GetRelationshipsByType("http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/circuitDiagramDocument").FirstOrDefault();
                     PackagePart documentPart = package.GetPart(documentRelationship.TargetUri);
-                    return CDDX.CDDXDocumentLoader.LoadCDDX(package, documentPart, out document);
+                    DocumentLoadResult result = CDDX.CDDXDocumentLoader.LoadCDDX(package, documentPart, out document);
+
+                    if (result.Type == DocumentLoadResultType.Success || result.Type == DocumentLoadResultType.SuccessNewerVersion)
+                        MetadataReader.ReadMetadata(package, document);
+
+                    return result;
                 }
             }
             catch (Exception)

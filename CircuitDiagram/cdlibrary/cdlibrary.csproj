@@ -92,6 +92,8 @@
     <Compile Include="IO\CDDX\CDDXDocumentWriter.cs" />
     <Compile Include="IO\CDDX\CDDXIO.cs" />
     <Compile Include="IO\CDDX\ComponentCollections.cs" />
+    <Compile Include="IO\CDDX\MetadataReader.cs" />
+    <Compile Include="IO\CDDX\MetadataWriter.cs" />
     <Compile Include="IO\CDDX\RelationshipTypes.cs" />
     <Compile Include="IO\CircuitDocumentLoader.cs" />
     <Compile Include="IO\CircuitDocumentWriter.cs" />

@@ -30,5 +30,7 @@ namespace CircuitDiagram.IO.CDDX
         public const string Document = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/circuitDiagramDocument";
         public const string IncludedComponent = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/component";
         public const string Thumbnail = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/metadata/thumbnail";
+        public const string CoreProperties = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/metadata/core-properties";
+        public const string ExtendedProperties = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/metadata/extended-properties";
     }
 }

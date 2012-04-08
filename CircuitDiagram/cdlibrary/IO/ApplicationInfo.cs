@@ -10,6 +10,17 @@ namespace CircuitDiagram.IO
     /// </summary>
     public static class ApplicationInfo
     {
+        /// <summary>
+        /// The full application name, including version.
+        /// </summary>
         public static string FullName { get; set; }
+        /// <summary>
+        /// The application name, excluding version.
+        /// </summary>
+        public static string Name { get; set; }
+        /// <summary>
+        /// The application version.
+        /// </summary>
+        public static string Version { get; set; }
     }
 }

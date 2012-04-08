@@ -54,24 +54,15 @@ namespace CircuitDiagram.IO.CDDX
 
                     double.TryParse(doc.SelectSingleNode("/cdd:circuit", namespaceManager).Attributes["version"].InnerText, out version);
 
-                    #region Metadata
-                    // Metadata
+                    #region Size
                     double width = 640d;
-                    double height = 480d;
-                    string application = null;
-                    XmlNodeList metadataNodes = doc.SelectNodes("/cdd:circuit/cdd:metadata/cdd:property", namespaceManager);
-                    foreach (XmlNode metadataNode in metadataNodes)
-                    {
-                        string propertyName = metadataNode.Attributes["name"].InnerText.ToLowerInvariant();
-                        string propertyValue = metadataNode.Attributes["value"].InnerText;
-
-                        if (propertyName == "width")
-                            width = double.Parse(propertyValue);
-                        else if (propertyName == "height")
-                            height = double.Parse(propertyValue);
-                        else if (propertyName == "application")
-                            application = propertyValue;
-                    }
+                    double height = 640d;
+                    XmlNode widthNode = doc.SelectSingleNode("/cdd:circuit/cdd:properties/cdd:width", namespaceManager);
+                    if (widthNode != null)
+                        double.TryParse(widthNode.InnerText, out width);
+                    XmlNode heightNode = doc.SelectSingleNode("/cdd:circuit/cdd:properties/cdd:height", namespaceManager);
+                    if (heightNode != null)
+                        double.TryParse(heightNode.InnerText, out height);
                     #endregion
 
                     #region Definitions
@@ -225,12 +216,7 @@ namespace CircuitDiagram.IO.CDDX
                     #endregion
 
                     document.Size = new System.Windows.Size(width, height);
-
-                    // Set metadata
-                    CircuitDocumentMetadata documentMetadata = new CircuitDocumentMetadata();
-                    documentMetadata.Application = application;
-                    documentMetadata.Format = "CDDX (1.0)";
-                    document.Metadata = documentMetadata;
+                    document.Metadata.Format = "CDDX (1.0)";
 
                     if (version > CDDX.CDDXDocumentWriter.CDDXDocumentVersion)
                         loadResult.Type = DocumentLoadResultType.SuccessNewerVersion;

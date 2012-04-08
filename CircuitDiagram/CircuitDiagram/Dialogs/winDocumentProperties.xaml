@@ -10,6 +10,9 @@
                         <RowDefinition Height="27" />
                         <RowDefinition Height="27" />
                         <RowDefinition Height="27" />
+                        <RowDefinition Height="27" />
+                        <RowDefinition Height="27" />
+                        <RowDefinition Height="27" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
@@ -20,7 +23,13 @@
                     <Label Grid.Row="2" Grid.Column="0" Content="Application" Height="28" HorizontalAlignment="Left" VerticalAlignment="Center" />
                     <TextBox Name="tbxDimensions" Grid.Column="1" Grid.Row="0" Height="28" VerticalAlignment="Center" Style="{StaticResource SelectLabel}" IsReadOnly="True" />
                     <TextBox Text="{Binding Path=Metadata.Format}" Grid.Column="1" Grid.Row="1" Height="28" VerticalAlignment="Center" Style="{StaticResource SelectLabel}" IsReadOnly="True" />
-                    <TextBox Text="{Binding Path=Metadata.Application}" Grid.Column="1" Grid.Row="2" Height="28" VerticalAlignment="Center" Style="{StaticResource SelectLabel}" IsReadOnly="True" />
+                    <TextBox Text="{Binding Path=Metadata.Extended.Application}" Grid.Column="1" Grid.Row="2" Height="28" VerticalAlignment="Center" Style="{StaticResource SelectLabel}" IsReadOnly="True" />
+                    <Label Grid.Row="3" Grid.Column="0" Content="Application Version" Height="28" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    <TextBox Text="{Binding Path=Metadata.Extended.AppVersion}" Grid.Column="1" Grid.Row="3" Height="28" VerticalAlignment="Center" Style="{StaticResource SelectLabel}" IsReadOnly="True" />
+                    <Label Grid.Row="4" Grid.Column="0" Content="Creator" Height="28" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    <TextBox Text="{Binding Path=Metadata.DublinCore.Creator}" Grid.Column="1" Grid.Row="4" Height="28" VerticalAlignment="Center" Style="{StaticResource SelectLabel}" IsReadOnly="True" />
+                    <Label Grid.Row="5" Grid.Column="0" Content="Created" Height="28" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    <TextBox Text="{Binding Path=Metadata.DublinCore.Date}" Grid.Column="1" Grid.Row="5" Height="28" VerticalAlignment="Center" Style="{StaticResource SelectLabel}" IsReadOnly="True" />
                 </Grid>
             </TabItem>
             <TabItem Header="Components">
