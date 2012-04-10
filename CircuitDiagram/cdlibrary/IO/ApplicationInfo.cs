@@ -6,7 +6,7 @@ using System.Text;
 namespace CircuitDiagram.IO
 {
     /// <summary>
-    /// Stores information about the application using cdlibrary.dll
+    /// Stores information about the application which is using cdlibrary.dll.
     /// </summary>
     public static class ApplicationInfo
     {

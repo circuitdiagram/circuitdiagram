@@ -99,7 +99,6 @@
     <Compile Include="IO\CircuitDocumentWriter.cs" />
     <Compile Include="IO\ContentTypes.cs" />
     <Compile Include="IO\DocumentLoadResult.cs" />
-    <Compile Include="IO\IOHelper.cs" />
     <Compile Include="IO\IComponentDescriptionLoader.cs" />
     <Compile Include="IO\XmlLoader.cs" />
     <Compile Include="Render\EMFRenderer.cs" />

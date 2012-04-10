@@ -29,9 +29,16 @@ using CircuitDiagram.Components;
 
 namespace CircuitDiagram.IO
 {
+    /// <summary>
+    /// Provides methods to write a circuit document in XML format.
+    /// </summary>
     public static class CircuitDocumentWriter
     {
-        #region XML
+        /// <summary>
+        /// Writes a circuit document in XML format.
+        /// </summary>
+        /// <param name="document">The document to save.</param>
+        /// <param name="stream">The stream to save to.</param>
         public static void WriteXml(CircuitDocument document, Stream stream)
         {
             XmlTextWriter writer = new XmlTextWriter(stream, Encoding.UTF8);
@@ -74,6 +81,5 @@ namespace CircuitDiagram.IO
             writer.WriteEndElement();
             writer.WriteEndDocument();
         }
-        #endregion
     }
 }

@@ -207,6 +207,10 @@ namespace CircuitDiagram.IO
             }
         }
 
+        /// <summary>
+        /// Generates a unique resource ID.
+        /// </summary>
+        /// <returns>A unique resource ID.</returns>
         public uint NewResourceID()
         {
             uint counter = 0;
@@ -215,7 +219,7 @@ namespace CircuitDiagram.IO
             return counter;
         }
 
-        public void WriteDescriptions()
+        private void WriteDescriptions()
         {
             BW mainWriter = new BW(m_contentStream);
 
@@ -522,7 +526,7 @@ namespace CircuitDiagram.IO
             }
         }
 
-        public void WriteResources()
+        private void WriteResources()
         {
             System.IO.BinaryWriter writer = new System.IO.BinaryWriter(m_resourcesStream);
             foreach (BinaryResource resource in Resources)
@@ -570,9 +574,11 @@ namespace CircuitDiagram.IO
 
         public class BinaryWriterSettings
         {
+            /// <summary>
+            /// Don't embed icons.
+            /// </summary>
             public bool IgnoreIcons { get; set; }
             public RSAParameters? Key { get; set; }
-            public bool Compress { get; private set; }
         }
     }
 }

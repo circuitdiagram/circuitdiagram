@@ -654,12 +654,20 @@ namespace CircuitDiagram
                 m_defaultSaveOptions = new IO.CDDX.CDDXSaveOptions();
         }
 
+        /// <summary>
+        /// Set the status bar text.
+        /// </summary>
+        /// <param name="text">The message.</param>
         void SetStatusText(string text)
         {
             lblStatus.Text = text;
             m_statusTimer.Start();
         }
 
+        /// <summary>
+        /// Checks for updates.
+        /// </summary>
+        /// <param name="notifyIfNoUpdate">Show a dialog even if no updates are available.</param>
         private void CheckForUpdates(bool notifyIfNoUpdate)
         {
             // Check for new version
@@ -889,6 +897,10 @@ namespace CircuitDiagram
             }
         }
 
+        /// <summary>
+        /// Attempts to save the document, prompting for a file name if it has not previously been saved.
+        /// </summary>
+        /// <param name="saved">Whether the document was saved.</param>
         private void SaveDocument(out bool saved)
         {
             if (m_docPath != "")
@@ -915,6 +927,10 @@ namespace CircuitDiagram
                 SaveDocumentAs(out saved);
         }
 
+        /// <summary>
+        /// Shows the save file dialog and then saves the document.
+        /// </summary>
+        /// <param name="saved">Whether the document was saved.</param>
         private void SaveDocumentAs(out bool saved)
         {
             SaveFileDialog sfd = new SaveFileDialog();
@@ -1221,6 +1237,10 @@ namespace CircuitDiagram
         #endregion
 
         #region RecentFiles
+        /// <summary>
+        /// Adds a file to the recent files list.
+        /// </summary>
+        /// <param name="path">Path of the file to add.</param>
         private void AddRecentFile(string path)
         {
             if (RecentFiles.Count == 1 && RecentFiles[0] == "(empty)")
@@ -1232,6 +1252,9 @@ namespace CircuitDiagram
                 RecentFiles.RemoveAt(10);
         }
 
+        /// <summary>
+        /// Populates the recent files menu.
+        /// </summary>
         private void LoadRecentFiles()
         {
             string[] files = CircuitDiagram.Settings.Settings.Read("recentfiles") as string[];
@@ -1244,6 +1267,9 @@ namespace CircuitDiagram
                 RecentFiles.Add(file);
         }
 
+        /// <summary>
+        /// Saves the recent files list.
+        /// </summary>
         private void SaveRecentFiles()
         {
             if (!(RecentFiles.Count == 1 && RecentFiles[0] == "(empty)"))
@@ -1462,6 +1488,9 @@ namespace CircuitDiagram
             }
         }
 
+        /// <summary>
+        /// Performs an undo or redo.
+        /// </summary>
         void UndoActionProcessor(object sender, UndoActionEventArgs e)
         {
             if (e.Event == UndoActionEvent.Remove)

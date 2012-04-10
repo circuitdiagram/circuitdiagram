@@ -27,6 +27,9 @@ namespace CircuitDiagram
 {
     public class CircuitDocumentMetadata
     {
+        /// <summary>
+        /// File format of the document.
+        /// </summary>
         public string Format { get; set; }
 
         /// <summary>
@@ -37,7 +40,7 @@ namespace CircuitDiagram
         public DublinCoreMetadata DublinCore { get; private set; }
 
         public ExtendedMetadata Extended { get; private set; }
-
+        
         public CircuitDocumentMetadata()
         {
             DublinCore = new DublinCoreMetadata();
@@ -49,15 +52,30 @@ namespace CircuitDiagram
     {
         public string Contributor { get; set; }
         public string Creator { get; set; }
+        /// <summary>
+        /// Date the document was created.
+        /// </summary>
         public DateTime? Date { get; set; }
+        /// <summary>
+        /// Description of the document.
+        /// </summary>
         public string Description { get; set; }
         public string Format { get; set; }
+        /// <summary>
+        /// The document title.
+        /// </summary>
         public string Title { get; set; }
     }
 
     public class ExtendedMetadata
     {
+        /// <summary>
+        /// Name of the application used to create the document.
+        /// </summary>
         public string Application { get; set; }
+        /// <summary>
+        /// Version of the application used to create the document.
+        /// </summary>
         public string AppVersion { get; set; }
     }
 }

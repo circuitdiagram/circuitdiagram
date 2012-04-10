@@ -31,6 +31,9 @@ using System.Text.RegularExpressions;
 
 namespace CircuitDiagram.IO
 {
+    /// <summary>
+    /// Loads component descriptions from an XML file.
+    /// </summary>
     public class XmlLoader : IComponentDescriptionLoader
     {
         ComponentDescription[] m_descriptions;

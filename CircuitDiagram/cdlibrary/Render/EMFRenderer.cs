@@ -157,9 +157,6 @@ namespace CircuitDiagram.Render
             {
                 if (run.Formatting.FormattingType == TextRunFormattingType.Normal)
                 {
-                    //SizeF sz = m_graphics.MeasureString(run.Text, new Font("Arial", (float)run.Formatting.Size), renderLocation, StringFormat.GenericTypographic);
-                    //m_graphics.FillRectangle(Brushes.Blue, renderLocation.X, renderLocation.Y, sz.Width, sz.Height);
-
                     m_graphics.DrawString(run.Text, new Font("Arial", (float)run.Formatting.Size), Brushes.Black, PointF.Add(renderLocation, new Size((int)horizontalOffsetCounter, 0)));
                     SizeF runSize = m_graphics.MeasureString(run.Text, new Font("Arial", (float)run.Formatting.Size), 1000, StringFormat.GenericTypographic);
                     horizontalOffsetCounter += runSize.Width;

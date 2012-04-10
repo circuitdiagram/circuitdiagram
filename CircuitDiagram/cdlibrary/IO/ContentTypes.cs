@@ -25,9 +25,18 @@ using System.Text;
 
 namespace CircuitDiagram.IO
 {
+    /// <summary>
+    /// Content types for Circuit Diagram specific formats.
+    /// </summary>
     public static class ContentTypes
     {
-        public const string CDDX = "application/circuitdiagram.circuitdiagramdocument";
-        public const string BinaryComponent = "application/circuitdiagram.component";
+        /// <summary>
+        /// Content type for a Circuit Diagram Document.
+        /// </summary>
+        public const string CDDX = "application/vnd.circuitdiagram.document";
+        /// <summary>
+        /// Content type for a compiled component.
+        /// </summary>
+        public const string BinaryComponent = "application/vnd.circuitdiagram.component";
     }
 }

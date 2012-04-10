@@ -39,10 +39,21 @@ namespace CircuitDiagram.IO
         Version1_2 = 3
     }
 
+    /// <summary>
+    /// Loads circuit documents from XML format.
+    /// </summary>
     public class CircuitDocumentLoader
     {
+        /// <summary>
+        /// The document loaded from the stream.
+        /// </summary>
         public CircuitDocument Document { get; private set; }
 
+        /// <summary>
+        /// Loads a circuit document from XML format.
+        /// </summary>
+        /// <param name="stream">The stream containing a circuit document in XML format.</param>
+        /// <returns>The load result.</returns>
         public DocumentLoadResult Load(Stream stream)
         {
             try
@@ -333,6 +344,13 @@ namespace CircuitDiagram.IO
             }
         }
 
+        /// <summary>
+        /// Converts a component name from the old syntax to its 2.0+ equivalent.
+        /// </summary>
+        /// <param name="oldType">The component name to convert.</param>
+        /// <param name="t">Optional type parameter for the component.</param>
+        /// <param name="collection">The collection the component belongs to.</param>
+        /// <param name="newType">The new component name.</param>
         private static void ConvertComponentName(string oldType, string t, out string collection, out string newType)
         {
             newType = null;
@@ -388,6 +406,12 @@ namespace CircuitDiagram.IO
             }
         }
 
+        /// <summary>
+        /// Converts properties from the old syntax to their 2.0+ equivalent.
+        /// </summary>
+        /// <param name="componentCollection">Collection which the component belongs to.</param>
+        /// <param name="standardComponentName">Component which the properties belong to.</param>
+        /// <param name="properties">The properties to convert.</param>
         private void ConvertProperties(string componentCollection, string standardComponentName, Dictionary<string, object> properties)
         {
             if (componentCollection == CDDX.ComponentCollections.Misc && standardComponentName == "extconnection" && properties.ContainsKey("topleft"))

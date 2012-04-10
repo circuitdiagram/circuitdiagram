@@ -33,24 +33,34 @@ using CircuitDiagram.Elements;
 
 namespace CircuitDiagram
 {
+    /// <summary>
+    /// A collection of components representing a circuit diagram.
+    /// </summary>
     public class CircuitDocument
     {
+        /// <summary>
+        /// The document metadata.
+        /// </summary>
         public CircuitDocumentMetadata Metadata { get; set; }
 
+        /// <summary>
+        /// Dimensions of the document.
+        /// </summary>
         public Size Size;
 
         ObservableCollection<ICircuitElement> m_elements = new ObservableCollection<ICircuitElement>();
-        ObservableCollection<Component> m_components = new ObservableCollection<Component>();
 
-        public bool SnapToGrid { get; set; }
-
-        public bool SnapToHV { get; set; }
-
+        /// <summary>
+        /// Gets the circuit elements which are components.
+        /// </summary>
         public IEnumerable<ICircuitElement> Components
         {
             get { return m_elements.Where(element => element is Component); }
         }
 
+        /// <summary>
+        /// Gets all circuit elements contained within the document.
+        /// </summary>
         public ObservableCollection<ICircuitElement> Elements
         {
             get { return m_elements; }
@@ -58,29 +68,25 @@ namespace CircuitDiagram
 
         public CircuitDocument()
         {
-            SnapToGrid = true;
-            SnapToHV = true;
             Size = new Size(640, 480);
 
             Metadata = new CircuitDocumentMetadata();
         }
 
-        private static bool AlmostEquals(double one, double two)
-        {
-            double result = one - two;
-            return (result <= 1 && result >= -1);
-        }
-
+        /// <summary>
+        /// Renders the document using the specified renderer.
+        /// </summary>
+        /// <param name="dc">The renderer to use.</param>
         public void Render(IRenderContext dc)
         {
-            // Components
+            // Render components
             foreach (Component component in Components)
                 foreach (var renderDescription in component.Description.RenderDescriptions)
                     if (renderDescription.Conditions.ConditionsAreMet(component))
                         foreach (CircuitDiagram.Components.Render.IRenderCommand renderCommand in renderDescription.Value)
                             renderCommand.Render(component, dc);
 
-            // Connections
+            // Determine connections
             List<ConnectionCentre> connectionCentres = new List<ConnectionCentre>();
             List<Point> connectionPoints = new List<Point>();
             foreach (Component component in Components)
@@ -110,6 +116,7 @@ namespace CircuitDiagram
                 }
             }
 
+            // Render connections
             foreach (Point connectionPoint in connectionPoints)
                 dc.DrawEllipse(connectionPoint, 2d, 2d, 2d, true);
         }

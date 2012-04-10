@@ -76,7 +76,7 @@ namespace CircuitDiagram.IO.CDDX
             {
                 using (Package package = ZipPackage.Open(inputStream))
                 {
-                    PackageRelationship documentRelationship = package.GetRelationshipsByType("http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/circuitDiagramDocument").FirstOrDefault();
+                    PackageRelationship documentRelationship = package.GetRelationshipsByType(RelationshipTypes.Document).FirstOrDefault();
                     PackagePart documentPart = package.GetPart(documentRelationship.TargetUri);
                     DocumentLoadResult result = CDDX.CDDXDocumentLoader.LoadCDDX(package, documentPart, out document);
 

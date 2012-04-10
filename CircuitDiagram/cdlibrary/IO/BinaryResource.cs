@@ -25,10 +25,22 @@ using System.Text;
 
 namespace CircuitDiagram.IO
 {
+    /// <summary>
+    /// Represents a resource contained in a binary component file.
+    /// </summary>
     public class BinaryResource
     {
+        /// <summary>
+        /// The unique ID of the resource.
+        /// </summary>
         public uint ID { get; set; }
+        /// <summary>
+        /// The type of resource.
+        /// </summary>
         public string ResourceType { get; set; }
+        /// <summary>
+        /// Resource data.
+        /// </summary>
         public byte[] Buffer { get; set; }
 
         public BinaryResource(uint id, string resourceType, byte[] buffer)
