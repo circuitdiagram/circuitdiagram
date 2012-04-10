@@ -64,9 +64,9 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="TaskDialog, Version=1.0.4477.13354, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="TaskDialog, Version=1.0.4480.34209, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\CircuitDiagramBinaries\TaskDialog.dll</HintPath>
+      <HintPath>..\..\CircuitDiagramBinaries\TaskDialog.dll</HintPath>
     </Reference>
     <Reference Include="Toolbox, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
