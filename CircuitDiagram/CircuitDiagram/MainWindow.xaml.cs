@@ -1084,6 +1084,23 @@ namespace CircuitDiagram
 
         private void mnuRecentItem_Click(object sender, RoutedEventArgs e)
         {
+            if (!UndoManager.IsSavedState())
+            {
+                TaskDialogOptions tdOptions = new TaskDialogOptions();
+                tdOptions.Title = "Circuit Diagram";
+                tdOptions.MainInstruction = "Do you want to save changes to " + m_documentTitle + "?";
+                tdOptions.CustomButtons = new string[] { "&Save", "Do&n't Save", "Cancel" };
+                tdOptions.Owner = this;
+                TaskDialogResult result = TaskDialog.Show(tdOptions);
+
+                bool saved = false;
+                if (result.CustomButtonResult == 0)
+                    SaveDocument(out saved);
+
+                if (result.CustomButtonResult == 2 || result.Result == TaskDialogSimpleResult.Cancel || (result.CustomButtonResult == 0 && !saved))
+                    return; // Don't create new document
+            }
+
             // Load the clicked item
             if ((e.OriginalSource as MenuItem).Header is string && System.IO.File.Exists((e.OriginalSource as MenuItem).Header as string))
                 OpenDocument((e.OriginalSource as MenuItem).Header as string);
