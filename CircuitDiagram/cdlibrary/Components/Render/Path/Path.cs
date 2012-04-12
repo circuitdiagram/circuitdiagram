@@ -78,12 +78,20 @@ namespace CircuitDiagram.Components.Render.Path
 
         public static Path Parse(string start, string data, double thickness = 2d, bool fill = false)
         {
+            List<IPathCommand> pathCommands = ParseCommands(data);
+
+            return new Path(new ComponentPoint(start), thickness, fill, pathCommands);
+        }
+
+        public static List<IPathCommand> ParseCommands(string data)
+        {
             string pathLetters = "mlhvcsqtaz";
             Regex commandsRegex = new Regex("[" + pathLetters + pathLetters.ToUpperInvariant() + "] ?\\-?[0-9e,\\-. ]+");
             Regex letterRegex = new Regex("[" + pathLetters + pathLetters.ToUpperInvariant() + "]");
             Regex numberRegex = new Regex("[0-9e,\\-. ]+");
             MatchCollection commandsMatch = commandsRegex.Matches(data);
             List<IPathCommand> pathCommands = new List<IPathCommand>();
+
             double lastX = 0;
             double lastY = 0;
             foreach (Match pathCommand in commandsMatch)
@@ -277,7 +285,7 @@ namespace CircuitDiagram.Components.Render.Path
                 }
             }
 
-            return new Path(new ComponentPoint(start), thickness, fill, pathCommands);
+            return pathCommands;
         }
     }
 }

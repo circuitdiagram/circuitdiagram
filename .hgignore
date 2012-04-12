@@ -8,5 +8,6 @@ syntax: glob
 *.orig
 *.vsp
 *.psess
+*.pfx
 
 CircuitDiagramBinaries/*

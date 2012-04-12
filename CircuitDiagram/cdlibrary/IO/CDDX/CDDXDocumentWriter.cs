@@ -29,7 +29,7 @@ using CircuitDiagram.Components;
 
 namespace CircuitDiagram.IO.CDDX
 {
-    public static class CDDXDocumentWriter
+    static class CDDXDocumentWriter
     {
         public const double CDDXDocumentVersion = 1.0;
         private const string RelationshipNamespace = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";

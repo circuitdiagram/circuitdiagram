@@ -30,7 +30,7 @@ using CircuitDiagram.Elements;
 
 namespace CircuitDiagram.IO.CDDX
 {
-    public static class CDDXDocumentLoader
+    static class CDDXDocumentLoader
     {
         private const string DocumentNamespace = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/document";
 

@@ -44,7 +44,7 @@ namespace CircuitDiagram.IO.CDDX
                 {
                     // Document
                     Uri documentUri = PackUriHelper.CreatePartUri(new Uri("circuitdiagram\\document.xml", UriKind.Relative));
-                    PackagePart documentPart = package.CreatePart(documentUri, System.Net.Mime.MediaTypeNames.Text.Xml, CompressionOption.Normal);
+                    PackagePart documentPart = package.CreatePart(documentUri, ContentTypeNames.MainDocument, CompressionOption.Normal);
                     package.CreateRelationship(documentPart.Uri, TargetMode.Internal, RelationshipTypes.Document);
                     CDDX.CDDXDocumentWriter.WriteCDDX(document, package, documentPart, saveOptions);
 
@@ -54,8 +54,8 @@ namespace CircuitDiagram.IO.CDDX
                     // Thumbnail
                     if (saveOptions.EmbedThumbnail)
                     {
-                        Uri thumbnailUri = PackUriHelper.CreatePartUri(new Uri("docProps\\thumbnail.emf", UriKind.Relative));
-                        PackagePart thumbnailPart = package.CreatePart(thumbnailUri, "image/x-wmf", CompressionOption.Normal);
+                        Uri thumbnailUri = PackUriHelper.CreatePartUri(new Uri("docProps\\thumbnail.xml", UriKind.Relative));
+                        PackagePart thumbnailPart = package.CreatePart(thumbnailUri, XmlRenderer.PreviewContentType, CompressionOption.Normal);
                         package.CreateRelationship(thumbnailPart.Uri, TargetMode.Internal, RelationshipTypes.Thumbnail);
                         WriteThumbnail(document, thumbnailPart);
                     }
@@ -98,13 +98,13 @@ namespace CircuitDiagram.IO.CDDX
 
         private static void WriteThumbnail(CircuitDocument document, PackagePart thumbnailPart)
         {
-            EMFRenderer renderer = new EMFRenderer((int)document.Size.Width, (int)document.Size.Height);
+            XmlRenderer renderer = new XmlRenderer(document.Size);
             renderer.Begin();
             document.Render(renderer);
             renderer.End();
             using (var stream = thumbnailPart.GetStream(FileMode.Create))
             {
-                renderer.WriteEnhMetafile(stream);
+                renderer.WriteXmlTo(stream);
             }
         }
     }
