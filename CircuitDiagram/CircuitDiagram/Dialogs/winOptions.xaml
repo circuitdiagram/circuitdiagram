@@ -26,8 +26,7 @@
                         </GroupBox>
                         <GroupBox Header="Other" Margin="12,4,12,0">
                             <StackPanel>
-                                <CheckBox Content="Show Circuit Diagram Document options when saving" Height="16" Margin="6,6,6,6" Name="chbShowCDDXOptions" />
-                                <CheckBox Content="Check for updates automatically" Height="16" Margin="6,0,6,6" Name="chbCheckForUpdatesAutomatically" />
+                                <CheckBox Content="Check for updates automatically" Height="16" Margin="6,6,6,6" Name="chbCheckForUpdatesAutomatically" />
                             </StackPanel>
                         </GroupBox>
                     </StackPanel>
@@ -58,6 +57,17 @@
                     <Rectangle Height="1" Margin="136,0,6,35" Name="rectangle1" Stroke="Gray" VerticalAlignment="Bottom" />
                     <Button Content="New" Height="23" HorizontalAlignment="Left" Margin="136,0,0,6" Name="btnImplementationsNew" VerticalAlignment="Bottom" Width="75" Click="btnImplementationsNew_Click" />
                     <Button Content="Delete" Height="23" HorizontalAlignment="Left" Margin="217,0,0,6" Name="btnImplementationsDelete" VerticalAlignment="Bottom" Width="75" Click="btnImplementationsDelete_Click" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Export">
+                <Grid>
+                    <CheckBox Content="Show Circuit Diagram Document options when saving" Height="16" Margin="6,55,6,0" Name="chbShowCDDXOptions" VerticalAlignment="Top" />
+                    <Label Content="Embed components" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label4" VerticalAlignment="Top" />
+                    <ComboBox Height="23" Margin="186,10,6,0" Name="cbxEmbedComponents" VerticalAlignment="Top">
+                        <ComboBoxItem>All</ComboBoxItem>
+                        <ComboBoxItem>Automatic</ComboBoxItem>
+                        <ComboBoxItem>None</ComboBoxItem>
+                    </ComboBox>
                 </Grid>
             </TabItem>
         </TabControl>

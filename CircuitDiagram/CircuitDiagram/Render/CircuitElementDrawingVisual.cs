@@ -17,10 +17,11 @@ namespace CircuitDiagram
         {
             CircuitElement = circuitElement;
 
-            this.Offset = (circuitElement as CircuitDiagram.Components.Component).Offset;
-            (circuitElement as CircuitDiagram.Components.Component).Updated += (o, e) =>
+            this.Offset = circuitElement.Location;
+            
+            circuitElement.Updated += (o, e) =>
                 {
-                    this.Offset = (circuitElement as CircuitDiagram.Components.Component).Offset;
+                    this.Offset = circuitElement.Location;
                 };
         }
 
@@ -45,7 +46,7 @@ namespace CircuitDiagram
                 Render.DrawingRenderer renderer = new Render.DrawingRenderer(dc);
                 renderer.Begin();
 
-                CircuitElement.Render(renderer);
+                CircuitElement.Render(renderer, false);
 
                 renderer.End();
             }

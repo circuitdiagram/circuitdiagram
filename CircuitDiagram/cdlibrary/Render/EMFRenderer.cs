@@ -8,7 +8,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using CircuitDiagram.Components.Render;
 using System.Drawing.Drawing2D;
-using CircuitDiagram.Components.Render.Path;
+using CircuitDiagram.Render.Path;
 
 namespace CircuitDiagram.Render
 {
@@ -47,6 +47,11 @@ namespace CircuitDiagram.Render
         {
         }
 
+        public void StartSection(object tag)
+        {
+            // Do nothing.
+        }
+
         public void WriteEnhMetafile(Stream stream)
         {
             m_graphics.Dispose();
@@ -79,7 +84,7 @@ namespace CircuitDiagram.Render
             m_graphics.DrawEllipse(m_pen, (int)(centre.X - radiusX), (int)(centre.Y - radiusY), 2 * (int)radiusX, 2 * (int)radiusY);
         }
 
-        public void DrawPath(System.Windows.Point start, IList<Components.Render.Path.IPathCommand> commands, double thickness, bool fill = false)
+        public void DrawPath(System.Windows.Point start, IList<IPathCommand> commands, double thickness, bool fill = false)
         {
             m_pen.Width = (float)thickness;
 
@@ -94,7 +99,7 @@ namespace CircuitDiagram.Render
                             path.StartFigure();
                             break;
                         }
-                    case Components.Render.Path.CommandType.LineTo:
+                    case CommandType.LineTo:
                         {
                             LineTo line = command as LineTo;
                             path.AddLine((float)previous.X, (float)previous.Y, (float)line.X + (float)start.X, (float)line.Y + (float)start.Y);
@@ -128,7 +133,7 @@ namespace CircuitDiagram.Render
             m_graphics.DrawPath(m_pen, path);
         }
 
-        public void DrawText(System.Windows.Point anchor, Components.Render.TextAlignment alignment, IEnumerable<TextRun> textRuns)
+        public void DrawText(System.Windows.Point anchor, TextAlignment alignment, IEnumerable<TextRun> textRuns)
         {
             float totalWidth = 0f;
             float totalHeight = 0f;

@@ -82,10 +82,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BuildChannelAttribute.cs" />
-    <Compile Include="CircularProgressBar.xaml.cs">
-      <DependentUpon>CircularProgressBar.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ComponentEditor.cs" />
+    <Compile Include="Dialogs\CDDXSaveOptionsEditor.xaml.cs">
+      <DependentUpon>CDDXSaveOptionsEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\winDocumentLoadResult.xaml.cs">
       <DependentUpon>winDocumentLoadResult.xaml</DependentUpon>
     </Compile>
@@ -95,6 +95,10 @@
     <Compile Include="Dialogs\winExportPNG.xaml.cs">
       <DependentUpon>winExportPNG.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\winSaveOptions.xaml.cs">
+      <DependentUpon>winSaveOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EmbedComponentOptions.cs" />
     <Compile Include="ImplementationConversion.cs" />
     <Compile Include="Render\CircuitElementDrawingVisual.cs" />
     <Compile Include="Converters\BoolToYesNoConverter.cs" />
@@ -109,12 +113,6 @@
     <Compile Include="UndoManager.cs" />
     <Compile Include="Dialogs\winAbout.xaml.cs">
       <DependentUpon>winAbout.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\winCDDXSave.xaml.cs">
-      <DependentUpon>winCDDXSave.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\winCDDXSaveComponents.xaml.cs">
-      <DependentUpon>winCDDXSaveComponents.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\winComponents.xaml.cs">
       <DependentUpon>winComponents.xaml</DependentUpon>
@@ -137,13 +135,13 @@
     <Compile Include="Dialogs\winToolbox.xaml.cs">
       <DependentUpon>winToolbox.xaml</DependentUpon>
     </Compile>
-    <Page Include="CircularProgressBar.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="DefaultDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dialogs\CDDXSaveOptionsEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\winDocumentLoadResult.xaml">
       <SubType>Designer</SubType>
@@ -154,6 +152,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\winExportPNG.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\winSaveOptions.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -176,14 +178,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Dialogs\winAbout.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\winCDDXSave.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\winCDDXSaveComponents.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -246,6 +240,10 @@
     <ProjectReference Include="..\cdlibrary\cdlibrary.csproj">
       <Project>{D5FD5F79-6BCE-40FB-B556-209758C612EC}</Project>
       <Name>cdlibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">
+      <Project>{445A46BE-19F9-4E30-B476-1D539B024E69}</Project>
+      <Name>CircuitDiagramCore</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

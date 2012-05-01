@@ -32,6 +32,11 @@ namespace CircuitDiagram.Settings
         private static string m_file;
         private static Dictionary<string, object> m_values;
 
+        /// <summary>
+        /// Gets an ISerializer which stores its values in the settings file.
+        /// </summary>
+        public static SettingsSerializer Serializer { get; private set; }
+
         public static void Initialize(string file)
         {
             m_file = file;
@@ -133,6 +138,8 @@ namespace CircuitDiagram.Settings
                 // create new settings file
                 
             }
+
+            Serializer = new SettingsSerializer();
         }
 
         public static void Save()

@@ -118,9 +118,9 @@ namespace CircuitDiagram.Components
                 if (VariableName.ToLower() == "horizontal")
                 {
                     if (Comparison == ConditionComparison.Equal)
-                        return component.Horizontal == (bool)CompareTo;
+                        return (component.Orientation == Orientation.Horizontal) == (bool)CompareTo;
                     else
-                        return component.Horizontal != (bool)CompareTo;
+                        return (component.Orientation == Orientation.Horizontal) != (bool)CompareTo;
                 }
             }
             else

@@ -34,10 +34,10 @@ namespace CircuitDiagram.Components.Render
         {
         }
 
-        public void Render(Component component, IRenderContext dc)
+        public void Render(Component component, IRenderContext dc, bool absolute)
         {
             foreach (IRenderCommand command in Value)
-                command.Render(component, dc);
+                command.Render(component, dc, absolute);
         }
     }
 }

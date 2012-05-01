@@ -53,9 +53,9 @@ namespace CircuitDiagram
         /// <summary>
         /// Gets the circuit elements which are components.
         /// </summary>
-        public IEnumerable<ICircuitElement> Components
+        public IEnumerable<Component> Components
         {
-            get { return m_elements.Where(element => element is Component); }
+            get { return m_elements.Where(element => element is Component).Cast<Component>(); }
         }
 
         /// <summary>
@@ -66,10 +66,15 @@ namespace CircuitDiagram
             get { return m_elements; }
         }
 
+        /// <summary>
+        /// A list of components which cannot be shown because no visual representation is available.
+        /// </summary>
+        public List<DisabledComponent> DisabledComponents { get; set; }
+
         public CircuitDocument()
         {
             Size = new Size(640, 480);
-
+            DisabledComponents = new List<DisabledComponent>();
             Metadata = new CircuitDocumentMetadata();
         }
 
@@ -84,7 +89,7 @@ namespace CircuitDiagram
                 foreach (var renderDescription in component.Description.RenderDescriptions)
                     if (renderDescription.Conditions.ConditionsAreMet(component))
                         foreach (CircuitDiagram.Components.Render.IRenderCommand renderCommand in renderDescription.Value)
-                            renderCommand.Render(component, dc);
+                            renderCommand.Render(component, dc, true);
 
             // Determine connections
             List<ConnectionCentre> connectionCentres = new List<ConnectionCentre>();
@@ -110,7 +115,7 @@ namespace CircuitDiagram
                         if (draw)
                         {
                             connectionCentres.Add(connection.Value.Centre);
-                            connectionPoints.Add(Point.Add(connection.Key, component.Offset));
+                            connectionPoints.Add(Point.Add(connection.Key, component.Location));
                         }
                     }
                 }
@@ -119,6 +124,39 @@ namespace CircuitDiagram
             // Render connections
             foreach (Point connectionPoint in connectionPoints)
                 dc.DrawEllipse(connectionPoint, 2d, 2d, 2d, true);
+        }
+
+        /// <summary>
+        /// Updates the list of components to be embedded when the document is saved.
+        /// </summary>
+        public void UpdateEmbedComponents()
+        {
+            // Remove old items
+            List<EmbedDescription> toRemove = new List<EmbedDescription>();
+            foreach (EmbedDescription description in Metadata.EmbedComponents)
+            {
+                bool found = false;
+                foreach (Component component in Components)
+                    if (component.Description == description.Description)
+                    {
+                        found = true;
+                        break;
+                    }
+                if (!found)
+                    toRemove.Add(description);
+            }
+            foreach(EmbedDescription removeItem in toRemove)
+                Metadata.EmbedComponents.Remove(removeItem);
+
+            // Add new items
+            foreach (Component component in Components)
+            {
+                if (component.Description == ComponentHelper.WireDescription)
+                    continue; // skip wires
+
+                if (Metadata.EmbedComponents.FirstOrDefault(item => item.Description == component.Description) == null)
+                    Metadata.EmbedComponents.Add(new EmbedDescription() { Description = component.Description, IsEmbedded = ComponentHelper.ShouldEmbedDescription(component.Description) });
+            }
         }
     }
 }

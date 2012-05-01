@@ -22,10 +22,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CircuitDiagram.IO;
 
 namespace CircuitDiagram
 {
-    public class CircuitDocumentMetadata
+    /// <summary>
+    /// Extends the DocumentMetadata class to add format and path.
+    /// </summary>
+    public class CircuitDocumentMetadata : DocumentMetadata
     {
         /// <summary>
         /// File format of the document.
@@ -37,14 +41,27 @@ namespace CircuitDiagram
         /// </summary>
         public string Path { get; set; }
 
-        public DublinCoreMetadata DublinCore { get; private set; }
+        public List<EmbedDescription> EmbedComponents { get; private set; }
 
-        public ExtendedMetadata Extended { get; private set; }
-        
         public CircuitDocumentMetadata()
         {
-            DublinCore = new DublinCoreMetadata();
-            Extended = new ExtendedMetadata();
+            EmbedComponents = new List<EmbedDescription>();
+        }
+
+        public CircuitDocumentMetadata(string format, string path, DocumentMetadata baseMetadata)
+        {
+            EmbedComponents = new List<EmbedDescription>();
+
+            base.Application = baseMetadata.Application;
+            base.AppVersion = baseMetadata.AppVersion;
+            base.Created = baseMetadata.Created;
+            base.Creator = baseMetadata.Creator;
+            base.Description = baseMetadata.Description;
+            base.Modified = baseMetadata.Modified;
+            base.Title = baseMetadata.Title;
+
+            Format = format;
+            Path = path;
         }
     }
 

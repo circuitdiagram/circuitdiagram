@@ -120,7 +120,7 @@ namespace CircuitDiagram
                         dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(100, 0, 0, 100)), stroke, Rect.Inflate(rect, new Size(2, 2)));
                     }
                 }
-                m_selectedVisual.Offset = m_selectedComponents[0].Offset;
+                m_selectedVisual.Offset = m_selectedComponents[0].Location;
             }
         }
 
@@ -139,7 +139,7 @@ namespace CircuitDiagram
                         dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(100, 0, 0, 100)), stroke, Rect.Inflate(rect, new Size(2, 2)));
                     }
                 }
-                m_selectedVisual.Offset = component.Offset;
+                m_selectedVisual.Offset = component.Location;
             }
         }
 
@@ -367,7 +367,7 @@ namespace CircuitDiagram
         {
             if (m_selectedComponents.Count == 1)
             {
-                m_selectedComponents[0].Horizontal = !m_selectedComponents[0].Horizontal;
+                m_selectedComponents[0].Orientation = m_selectedComponents[0].Orientation.Reverse();
                 m_selectedComponents[0].ResetConnections();
                 RedrawComponent(m_selectedComponents[0]);
                 foreach (Component component in Document.Components)
@@ -389,7 +389,7 @@ namespace CircuitDiagram
                 Dictionary<Component, string> beforeData = new Dictionary<Component, string>();
                 beforeData.Add(m_resizingComponent, m_resizingComponent.SerializeToString());
 
-                m_resizingComponent.Horizontal = !m_resizingComponent.Horizontal;
+                m_resizingComponent.Orientation = m_resizingComponent.Orientation.Reverse();
                 m_resizingComponent.ResetConnections();
                 RedrawComponent(m_resizingComponent);
                 foreach (Component component in Document.Components)
@@ -422,17 +422,17 @@ namespace CircuitDiagram
 
             Rect resizingRect1 = Rect.Empty;
             Rect resizingRect2 = Rect.Empty;
-            if (m_resizingComponent != null && m_resizingComponent.Horizontal && m_resizingComponent.Description.CanResize)
+            if (m_resizingComponent != null && m_resizingComponent.Orientation == Orientation.Horizontal && m_resizingComponent.Description.CanResize)
             {
                 // Resizing a horizontal component
-                resizingRect1 = new Rect(m_resizingComponent.Offset.X + m_elementVisuals[m_resizingComponent].ContentBounds.X - 2d, m_resizingComponent.Offset.Y + m_elementVisuals[m_resizingComponent].ContentBounds.Top + m_elementVisuals[m_resizingComponent].ContentBounds.Height / 2 - 3d, 6d, 6d);
-                resizingRect2 = new Rect(m_resizingComponent.Offset.X + m_elementVisuals[m_resizingComponent].ContentBounds.Right - 4d, m_resizingComponent.Offset.Y + m_elementVisuals[m_resizingComponent].ContentBounds.Top + m_elementVisuals[m_resizingComponent].ContentBounds.Height / 2 - 3d, 6d, 6d);
+                resizingRect1 = new Rect(m_resizingComponent.Location.X + m_elementVisuals[m_resizingComponent].ContentBounds.X - 2d, m_resizingComponent.Location.Y + m_elementVisuals[m_resizingComponent].ContentBounds.Top + m_elementVisuals[m_resizingComponent].ContentBounds.Height / 2 - 3d, 6d, 6d);
+                resizingRect2 = new Rect(m_resizingComponent.Location.X + m_elementVisuals[m_resizingComponent].ContentBounds.Right - 4d, m_resizingComponent.Location.Y + m_elementVisuals[m_resizingComponent].ContentBounds.Top + m_elementVisuals[m_resizingComponent].ContentBounds.Height / 2 - 3d, 6d, 6d);
             }
             else if (m_resizingComponent != null && m_resizingComponent.Description.CanResize)
             {
                 // Resizing a vertical component
-                resizingRect1 = new Rect(m_resizingComponent.Offset.X + m_elementVisuals[m_resizingComponent].ContentBounds.Left + m_elementVisuals[m_resizingComponent].ContentBounds.Width / 2 - 3d, m_resizingComponent.Offset.Y + m_elementVisuals[m_resizingComponent].ContentBounds.Y - 2d, 6d, 6d);
-                resizingRect2 = new Rect(m_resizingComponent.Offset.X + m_elementVisuals[m_resizingComponent].ContentBounds.Left + m_elementVisuals[m_resizingComponent].ContentBounds.Width / 2 - 3d, m_resizingComponent.Offset.Y + m_elementVisuals[m_resizingComponent].ContentBounds.Bottom - 4d, 6d, 6d);
+                resizingRect1 = new Rect(m_resizingComponent.Location.X + m_elementVisuals[m_resizingComponent].ContentBounds.Left + m_elementVisuals[m_resizingComponent].ContentBounds.Width / 2 - 3d, m_resizingComponent.Location.Y + m_elementVisuals[m_resizingComponent].ContentBounds.Y - 2d, 6d, 6d);
+                resizingRect2 = new Rect(m_resizingComponent.Location.X + m_elementVisuals[m_resizingComponent].ContentBounds.Left + m_elementVisuals[m_resizingComponent].ContentBounds.Width / 2 - 3d, m_resizingComponent.Location.Y + m_elementVisuals[m_resizingComponent].ContentBounds.Bottom - 4d, 6d, 6d);
             }
 
             if (NewComponentData == null && (resizingRect1.IntersectsWith(new Rect(mousePos, new Size(1, 1))) || resizingRect2.IntersectsWith(new Rect(mousePos, new Size(1, 1)))))
@@ -443,28 +443,28 @@ namespace CircuitDiagram
 
                 if (resizingRect1.IntersectsWith(new Rect(mousePos, new Size(1, 1))))
                 {
-                    if (m_resizingComponent.Horizontal)
+                    if (m_resizingComponent.Orientation == Orientation.Horizontal)
                     {
                         m_resizing = ComponentResizeMode.Left;
-                        m_resizeComponentOriginalStartEnd = new Point(m_resizingComponent.Offset.X + m_resizingComponent.Size, m_resizingComponent.Offset.Y);
+                        m_resizeComponentOriginalStartEnd = new Point(m_resizingComponent.Location.X + m_resizingComponent.Size, m_resizingComponent.Location.Y);
                     }
                     else
                     {
                         m_resizing = ComponentResizeMode.Top;
-                        m_resizeComponentOriginalStartEnd = new Point(m_resizingComponent.Offset.X, m_resizingComponent.Offset.Y + m_resizingComponent.Size);
+                        m_resizeComponentOriginalStartEnd = new Point(m_resizingComponent.Location.X, m_resizingComponent.Location.Y + m_resizingComponent.Size);
                     }
                 }
                 else
                 {
-                    if (m_resizingComponent.Horizontal)
+                    if (m_resizingComponent.Orientation == Orientation.Horizontal)
                     {
                         m_resizing = ComponentResizeMode.Right;
-                        m_resizeComponentOriginalStartEnd = new Point(m_resizingComponent.Offset.X, m_resizingComponent.Offset.Y);
+                        m_resizeComponentOriginalStartEnd = new Point(m_resizingComponent.Location.X, m_resizingComponent.Location.Y);
                     }
                     else
                     {
                         m_resizing = ComponentResizeMode.Bottom;
-                        m_resizeComponentOriginalStartEnd = new Point(m_resizingComponent.Offset.X, m_resizingComponent.Offset.Y);
+                        m_resizeComponentOriginalStartEnd = new Point(m_resizingComponent.Location.X, m_resizingComponent.Location.Y);
                     }
                 }
             }
@@ -490,7 +490,7 @@ namespace CircuitDiagram
                             m_selectedComponents.Add((result.VisualHit as CircuitElementDrawingVisual).CircuitElement as Component);
                             m_undoManagerBeforeData.Add((result.VisualHit as CircuitElementDrawingVisual).CircuitElement as Component, ((result.VisualHit as CircuitElementDrawingVisual).CircuitElement as Component).SerializeToString());
                             m_originalOffsets.Add((result.VisualHit as CircuitElementDrawingVisual).CircuitElement as Component, (result.VisualHit as CircuitElementDrawingVisual).Offset);
-                            ComponentInternalMousePos = new Point(mousePos.X - m_selectedComponents[0].Offset.X, mousePos.Y - m_selectedComponents[0].Offset.Y);
+                            ComponentInternalMousePos = new Point(mousePos.X - m_selectedComponents[0].Location.X, mousePos.Y - m_selectedComponents[0].Location.Y);
 
                             using (DrawingContext dc = m_selectedVisual.RenderOpen())
                             {
@@ -498,7 +498,7 @@ namespace CircuitDiagram
                                 Rect rect = VisualTreeHelper.GetContentBounds(result.VisualHit as Visual);
                                 dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(100, 0, 0, 100)), stroke, Rect.Inflate(rect, new Size(2, 2)));
                             }
-                            m_selectedVisual.Offset = m_selectedComponents[0].Offset;
+                            m_selectedVisual.Offset = m_selectedComponents[0].Location;
                             m_originalSelectedVisualOffset = m_selectedVisual.Offset;
 
                             List<Component> removedItems = new List<Component>();
@@ -524,6 +524,10 @@ namespace CircuitDiagram
                         m_elementVisuals.Add(m_tempComponent, new CircuitElementDrawingVisual(m_tempComponent));
                         AddVisualChild(m_elementVisuals[m_tempComponent]);
                         AddLogicalChild(m_elementVisuals[m_tempComponent]);
+
+                        ComponentHelper.SizeComponent(m_tempComponent, m_mouseDownPos, e.GetPosition(this));
+                        m_elementVisuals[m_tempComponent].Offset = m_tempComponent.Location;
+                        m_elementVisuals[m_tempComponent].UpdateVisual();
                     }
                     else
                     {
@@ -542,13 +546,13 @@ namespace CircuitDiagram
                 m_undoManagerBeforeData.Clear();
                 foreach (Component component in m_selectedComponents)
                 {
-                    m_originalOffsets.Add(component, component.Offset);
+                    m_originalOffsets.Add(component, component.Location);
                     m_undoManagerBeforeData.Add(component, component.SerializeToString());
                 }
 
                 using (var dc = m_selectedVisual.RenderOpen())
                     dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(100, 0, 0, 100)), new Pen(Brushes.Gray, 1d), new Rect(0, 0, enclosingRect.Width, enclosingRect.Height));
-
+                
                 m_selectedVisual.Offset = new Vector(enclosingRect.X, enclosingRect.Y);
                 m_originalSelectedVisualOffset = m_selectedVisual.Offset;
             }
@@ -559,6 +563,8 @@ namespace CircuitDiagram
                 m_selectedComponents.Clear();
                 m_originalOffsets.Clear();
                 m_undoManagerBeforeData.Clear();
+
+                enclosingRect = Rect.Empty;
 
                 using (DrawingContext dc = m_selectedVisual.RenderOpen())
                 {
@@ -596,11 +602,11 @@ namespace CircuitDiagram
                             if (draw)
                             {
                                 connections.Add(connection.Value.Centre);
-                                connectionPoints.Add(new Point(connection.Key.X + component.Offset.X, connection.Key.Y + component.Offset.Y));
+                                connectionPoints.Add(new Point(connection.Key.X + component.Location.X, connection.Key.Y + component.Location.Y));
                             }
                         }
                         if (ShowConnectionPoints && (connection.Value.Flags & ConnectionFlags.Edge) == ConnectionFlags.Edge)
-                            dc.DrawEllipse(Brushes.Blue, new Pen(Brushes.Transparent, 0d), Point.Add(connection.Key, component.Offset), 2d, 2d);
+                            dc.DrawEllipse(Brushes.Blue, new Pen(Brushes.Transparent, 0d), Point.Add(connection.Key, component.Location), 2d, 2d);
                     }
                 }
 
@@ -654,11 +660,20 @@ namespace CircuitDiagram
                     offsetDelta = newOffset - m_originalOffsets[component];
                 }
 
+                // Update component positions
                 foreach (Component component in m_selectedComponents)
-                    component.Offset = m_originalOffsets[component] + offsetDelta;
+                {
+                    (component as Component).Location = m_originalOffsets[component] + offsetDelta;
+                    m_elementVisuals[component].Offset = component.Location;
+                }
 
                 // update selection rect
                 m_selectedVisual.Offset = m_originalSelectedVisualOffset + offsetDelta;
+                if (enclosingRect != Rect.Empty)
+                {
+                    enclosingRect.X = m_selectedVisual.Offset.X;
+                    enclosingRect.Y = m_selectedVisual.Offset.Y;
+                }
 
                 // update connections
                 foreach (Component component in Document.Components)
@@ -672,7 +687,7 @@ namespace CircuitDiagram
                 ComponentHelper.SizeComponent(m_tempComponent, m_mouseDownPos, e.GetPosition(this));
 
                 // Flip if necessary
-                if (m_tempComponent.Horizontal && m_tempComponent.Description.CanFlip)
+                if (m_tempComponent.Orientation == Orientation.Horizontal && m_tempComponent.Description.CanFlip)
                 {
                     if (m_mouseDownPos.X > e.GetPosition(this).X)
                         m_tempComponent.IsFlipped = true;
@@ -687,6 +702,7 @@ namespace CircuitDiagram
                         m_tempComponent.IsFlipped = false;
                 }
 
+                m_elementVisuals[m_tempComponent].Offset = m_tempComponent.Location;
                 m_elementVisuals[m_tempComponent].UpdateVisual();
             }
             else if (m_selectionBox)
@@ -708,7 +724,7 @@ namespace CircuitDiagram
                     if (result.VisualHit is CircuitElementDrawingVisual)
                     {
                         Rect rect = VisualTreeHelper.GetContentBounds(result.VisualHit as Visual);
-                        dc.PushTransform(new TranslateTransform(((result.VisualHit as CircuitElementDrawingVisual).CircuitElement as Component).Offset.X, ((result.VisualHit as CircuitElementDrawingVisual).CircuitElement as Component).Offset.Y));
+                        dc.PushTransform(new TranslateTransform(((result.VisualHit as CircuitElementDrawingVisual).CircuitElement as Component).Location.X, ((result.VisualHit as CircuitElementDrawingVisual).CircuitElement as Component).Location.Y));
                         dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(100, 0, 0, 100)), null, rect);
                         dc.Pop();
                     }
@@ -724,18 +740,18 @@ namespace CircuitDiagram
                 Point mousePos = e.GetPosition(this);
 
                 if (m_resizing == ComponentResizeMode.Left)
-                    ComponentHelper.SizeComponent(m_resizingComponent, new Point(mousePos.X, m_resizingComponent.Offset.Y), m_resizeComponentOriginalStartEnd);
+                    ComponentHelper.SizeComponent(m_resizingComponent, new Point(mousePos.X, m_resizingComponent.Location.Y), m_resizeComponentOriginalStartEnd);
                 else if (m_resizing == ComponentResizeMode.Top)
-                    ComponentHelper.SizeComponent(m_resizingComponent, new Point(m_resizingComponent.Offset.X, mousePos.Y), m_resizeComponentOriginalStartEnd);
+                    ComponentHelper.SizeComponent(m_resizingComponent, new Point(m_resizingComponent.Location.X, mousePos.Y), m_resizeComponentOriginalStartEnd);
                 else if (m_resizing == ComponentResizeMode.Right)
-                    ComponentHelper.SizeComponent(m_resizingComponent, m_resizeComponentOriginalStartEnd, new Point(mousePos.X, m_resizingComponent.Offset.Y));
+                    ComponentHelper.SizeComponent(m_resizingComponent, m_resizeComponentOriginalStartEnd, new Point(mousePos.X, m_resizingComponent.Location.Y));
                 else if (m_resizing == ComponentResizeMode.Bottom)
-                    ComponentHelper.SizeComponent(m_resizingComponent, m_resizeComponentOriginalStartEnd, new Point(m_resizingComponent.Offset.X, mousePos.Y));
+                    ComponentHelper.SizeComponent(m_resizingComponent, m_resizeComponentOriginalStartEnd, new Point(m_resizingComponent.Location.X, mousePos.Y));
 
-                m_resizeVisual.Offset = m_resizingComponent.Offset;
+                m_resizeVisual.Offset = m_resizingComponent.Location;
                 using (DrawingContext dc = m_resizeVisual.RenderOpen())
                 {
-                    if (m_resizingComponent.Horizontal)
+                    if (m_resizingComponent.Orientation == Orientation.Horizontal)
                     {
                         dc.DrawRectangle(Brushes.DarkBlue, null, new Rect(m_elementVisuals[m_resizingComponent].ContentBounds.X - 2d, m_elementVisuals[m_resizingComponent].ContentBounds.Top + m_elementVisuals[m_resizingComponent].ContentBounds.Height / 2 - 3d, 6d, 6d));
                         dc.DrawRectangle(Brushes.DarkBlue, null, new Rect(m_elementVisuals[m_resizingComponent].ContentBounds.Right - 4d, m_elementVisuals[m_resizingComponent].ContentBounds.Top + m_elementVisuals[m_resizingComponent].ContentBounds.Height / 2 - 3d, 6d, 6d));
@@ -747,6 +763,7 @@ namespace CircuitDiagram
                     }
                 }
 
+                m_elementVisuals[m_resizingComponent].Offset = m_resizingComponent.Location;
                 m_elementVisuals[m_resizingComponent].UpdateVisual();
                 DrawConnections();
             }
@@ -799,10 +816,10 @@ namespace CircuitDiagram
                 {
                     // If only 1 component selected, can resize
 
-                    m_resizeVisual.Offset = m_resizingComponent.Offset;
+                    m_resizeVisual.Offset = m_resizingComponent.Location;
                     using (DrawingContext dc = m_resizeVisual.RenderOpen())
                     {
-                        if (m_resizingComponent.Horizontal)
+                        if (m_resizingComponent.Orientation == Orientation.Horizontal)
                         {
                             dc.DrawRectangle(Brushes.DarkBlue, null, new Rect(m_elementVisuals[m_resizingComponent].ContentBounds.X - 2d, m_elementVisuals[m_resizingComponent].ContentBounds.Top + m_elementVisuals[m_resizingComponent].ContentBounds.Height / 2 - 3d, 6d, 6d));
                             dc.DrawRectangle(Brushes.DarkBlue, null, new Rect(m_elementVisuals[m_resizingComponent].ContentBounds.Right - 4d, m_elementVisuals[m_resizingComponent].ContentBounds.Top + m_elementVisuals[m_resizingComponent].ContentBounds.Height / 2 - 3d, 6d, 6d));
@@ -817,30 +834,30 @@ namespace CircuitDiagram
                     // Check if cursor should be changed to resizing
                     Rect resizingRect1 = Rect.Empty;
                     Rect resizingRect2 = Rect.Empty;
-                    if (m_resizingComponent != null && m_resizingComponent.Horizontal && m_resizingComponent.Description.CanResize)
+                    if (m_resizingComponent != null && m_resizingComponent.Orientation == Orientation.Horizontal && m_resizingComponent.Description.CanResize)
                     {
                         // Resizing a horizontal component
-                        resizingRect1 = new Rect(m_resizingComponent.Offset.X + m_elementVisuals[m_resizingComponent].ContentBounds.X - 2d, m_resizingComponent.Offset.Y + m_elementVisuals[m_resizingComponent].ContentBounds.Top + m_elementVisuals[m_resizingComponent].ContentBounds.Height / 2 - 3d, 6d, 6d);
-                        resizingRect2 = new Rect(m_resizingComponent.Offset.X + m_elementVisuals[m_resizingComponent].ContentBounds.Right - 4d, m_resizingComponent.Offset.Y + m_elementVisuals[m_resizingComponent].ContentBounds.Top + m_elementVisuals[m_resizingComponent].ContentBounds.Height / 2 - 3d, 6d, 6d);
+                        resizingRect1 = new Rect(m_resizingComponent.Location.X + m_elementVisuals[m_resizingComponent].ContentBounds.X - 2d, m_resizingComponent.Location.Y + m_elementVisuals[m_resizingComponent].ContentBounds.Top + m_elementVisuals[m_resizingComponent].ContentBounds.Height / 2 - 3d, 6d, 6d);
+                        resizingRect2 = new Rect(m_resizingComponent.Location.X + m_elementVisuals[m_resizingComponent].ContentBounds.Right - 4d, m_resizingComponent.Location.Y + m_elementVisuals[m_resizingComponent].ContentBounds.Top + m_elementVisuals[m_resizingComponent].ContentBounds.Height / 2 - 3d, 6d, 6d);
                     }
                     else if (m_resizingComponent != null && m_resizingComponent.Description.CanResize)
                     {
                         // Resizing a vertical component
-                        resizingRect1 = new Rect(m_resizingComponent.Offset.X + m_elementVisuals[m_resizingComponent].ContentBounds.Left + m_elementVisuals[m_resizingComponent].ContentBounds.Width / 2 - 3d, m_resizingComponent.Offset.Y + m_elementVisuals[m_resizingComponent].ContentBounds.Y - 2d, 6d, 6d);
-                        resizingRect2 = new Rect(m_resizingComponent.Offset.X + m_elementVisuals[m_resizingComponent].ContentBounds.Left + m_elementVisuals[m_resizingComponent].ContentBounds.Width / 2 - 3d, m_resizingComponent.Offset.Y + m_elementVisuals[m_resizingComponent].ContentBounds.Bottom - 4d, 6d, 6d);
+                        resizingRect1 = new Rect(m_resizingComponent.Location.X + m_elementVisuals[m_resizingComponent].ContentBounds.Left + m_elementVisuals[m_resizingComponent].ContentBounds.Width / 2 - 3d, m_resizingComponent.Location.Y + m_elementVisuals[m_resizingComponent].ContentBounds.Y - 2d, 6d, 6d);
+                        resizingRect2 = new Rect(m_resizingComponent.Location.X + m_elementVisuals[m_resizingComponent].ContentBounds.Left + m_elementVisuals[m_resizingComponent].ContentBounds.Width / 2 - 3d, m_resizingComponent.Location.Y + m_elementVisuals[m_resizingComponent].ContentBounds.Bottom - 4d, 6d, 6d);
                     }
 
                     Rect mouseRect = new Rect(e.GetPosition(this), new Size(1,1));
                     if (resizingRect1.IntersectsWith(mouseRect))
                     {
-                        if (m_resizingComponent.Horizontal)
+                        if (m_resizingComponent.Orientation == Orientation.Horizontal)
                             this.Cursor = System.Windows.Input.Cursors.SizeWE;
                         else
                             this.Cursor = System.Windows.Input.Cursors.SizeNS;
                     }
                     else if (resizingRect2.IntersectsWith(mouseRect))
                     {
-                        if (m_resizingComponent.Horizontal)
+                        if (m_resizingComponent.Orientation == Orientation.Horizontal)
                             this.Cursor = System.Windows.Input.Cursors.SizeWE;
                         else
                             this.Cursor = System.Windows.Input.Cursors.SizeNS;
@@ -879,7 +896,7 @@ namespace CircuitDiagram
                 ComponentHelper.SizeComponent(newComponent, m_mouseDownPos, e.GetPosition(this));
 
                 // Flip if necessary
-                if (newComponent.Horizontal && newComponent.Description.CanFlip)
+                if (newComponent.Orientation == Orientation.Horizontal && newComponent.Description.CanFlip)
                 {
                     if (m_mouseDownPos.X > e.GetPosition(this).X)
                         newComponent.IsFlipped = true;

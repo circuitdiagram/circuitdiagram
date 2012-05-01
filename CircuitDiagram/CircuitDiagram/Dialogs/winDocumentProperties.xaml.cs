@@ -33,6 +33,8 @@ using System.Windows.Shapes;
 using CircuitDiagram.Components;
 using System.IO;
 using TaskDialogInterop;
+using CircuitDiagram.Elements;
+using CircuitDiagram.IO;
 
 namespace CircuitDiagram
 {
@@ -56,11 +58,70 @@ namespace CircuitDiagram
 
             tbxDimensions.Text = String.Format("{0}x{1}", document.Size.Width, document.Size.Height);
 
-            List<ComponentDescription> componentDescriptions = new List<ComponentDescription>();
-            foreach (Component component in document.Components)
-                if (!componentDescriptions.Contains(component.Description))
-                    componentDescriptions.Add(component.Description);
-            lbxComponents.ItemsSource = componentDescriptions;
+            document.UpdateEmbedComponents();
+            lbxEmbedComponents.ItemsSource = document.Metadata.EmbedComponents;
+
+            Dictionary<string, List<ComponentUsageItem>> processed = new Dictionary<string, List<ComponentUsageItem>>();
+            foreach (IComponentElement element in document.Elements.Where(item => item is IComponentElement))
+            {
+                if (element is Component && (element as Component).Description == ComponentHelper.WireDescription)
+                    continue; // Ignore wires
+
+                string key = element.ImplementationCollection;
+                if (element.ImplementationCollection == CircuitDiagram.IO.ComponentCollections.Common)
+                    key = "Common";
+                else if (element.ImplementationCollection == CircuitDiagram.IO.ComponentCollections.Misc)
+                    key = "Misc";
+                else if (String.IsNullOrEmpty(element.ImplementationCollection))
+                    key = "(unknown)";
+
+                string name = element.ImplementationItem;
+                bool nonstandard = false;
+                if (String.IsNullOrEmpty(element.ImplementationItem))
+                {
+                    if (element is Component)
+                        name = (element as Component).Description.ComponentName;
+                    else
+                        name = "unnamed component";
+                    nonstandard = true;
+                }
+
+                if (processed.ContainsKey(key) && processed[key].Find(item => item.Name == name) != null)
+                    continue; // Avoid duplicates
+
+                if (!processed.ContainsKey(key))
+                    processed.Add(key, new List<ComponentUsageItem>());
+                processed[key].Add(new ComponentUsageItem(name, !(element is DisabledComponent), nonstandard));
+            }
+            foreach (KeyValuePair<string, List<ComponentUsageItem>> item in processed)
+            {
+                TreeViewItem collectionItem = new TreeViewItem();
+                TextBlock header = new TextBlock();
+                header.Text = item.Key;
+                if (item.Key == "Common")
+                    header.ToolTip = CircuitDiagram.IO.ComponentCollections.Common;
+                else if (item.Key == "Misc")
+                    header.ToolTip = CircuitDiagram.IO.ComponentCollections.Misc;
+                collectionItem.Header = header;
+
+                item.Value.Sort(new Comparison<ComponentUsageItem>((element1, element2) => element1.Name.CompareTo(element2.Name)));
+                item.Value.ForEach(leaf =>
+                {
+                    TreeViewItem trvItem = new TreeViewItem();
+                    trvItem.Header = leaf.Name;
+                    if (!leaf.IsAvailable )
+                    {
+                        trvItem.Foreground = Brushes.Gray;
+                        trvItem.ToolTip = "not available";
+                    }
+
+                    collectionItem.Items.Add(trvItem);
+                });
+
+                collectionItem.IsExpanded = true;
+
+                trvComponents.Items.Add(collectionItem);
+            }
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
@@ -68,57 +129,17 @@ namespace CircuitDiagram
             this.Close();
         }
 
-        private void lbxComponents_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        class ComponentUsageItem
         {
-            if (lbxComponents.SelectedItem != null && lbxComponents.SelectedItem is ComponentDescription &&
-                (lbxComponents.SelectedItem as ComponentDescription).Metadata.Location == ComponentDescriptionMetadata.LocationType.Embedded)
-                btnInstallComponent.IsEnabled = true;
-            else
-                btnInstallComponent.IsEnabled = false;
-        }
+            public string Name { get; set; }
+            public bool IsAvailable { get; set; }
+            public bool IsStandard { get; set; }
 
-        private void btnInstallComponent_Click(object sender, RoutedEventArgs e)
-        {
-            if (lbxComponents.SelectedItem != null && lbxComponents.SelectedItem is ComponentDescription &&
-                (lbxComponents.SelectedItem as ComponentDescription).Metadata.Location == ComponentDescriptionMetadata.LocationType.Embedded)
+            public ComponentUsageItem(string name, bool isAvailable = true, bool isStandard = true)
             {
-                ComponentDescription selectedDescription = lbxComponents.SelectedItem as ComponentDescription;
-
-                if (selectedDescription.Metadata.GUID != Guid.Empty)
-                {
-                    foreach (ComponentDescription description in ComponentHelper.ComponentDescriptions)
-                    {
-                        if (description.Metadata.Location == ComponentDescriptionMetadata.LocationType.Installed && description.Metadata.GUID == selectedDescription.Metadata.GUID)
-                        {
-                            MessageBox.Show("The component is already installed.", "Could Not Install Component", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                            return;
-                        }
-                    }
-                }
-
-#if PORTABLE
-                string userComponentsDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\components";
-#else
-                string userComponentsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\components";
-#endif
-
-                if (!Directory.Exists(userComponentsDirectory))
-                    Directory.CreateDirectory(userComponentsDirectory);
-
-                try
-                {
-                    using (FileStream outputStream = new FileStream(userComponentsDirectory + "\\" + selectedDescription.ComponentName.ToLowerInvariant() + ".cdcom", FileMode.Create, FileAccess.Write, FileShare.Read))
-                    {
-                        CircuitDiagram.IO.BinaryWriter writer = new IO.BinaryWriter(outputStream, new IO.BinaryWriter.BinaryWriterSettings());
-                        writer.Descriptions.Add(selectedDescription);
-                        writer.Write();
-                    }
-                    TaskDialog.ShowMessage(this, "The component \"" + selectedDescription.ComponentName + "\" was installed successfully.", "Install Successful", TaskDialogCommonButtons.Close, VistaTaskDialogIcon.Information);
-                }
-                catch (Exception)
-                {
-                    TaskDialog.ShowMessage(this, "An unknown error occurred.", "Unable to Install Component", TaskDialogCommonButtons.Close, VistaTaskDialogIcon.Error);
-                }
+                Name = name;
+                IsAvailable = isAvailable;
+                IsStandard = isStandard;
             }
         }
     }

@@ -141,31 +141,26 @@ namespace CircuitDiagram.Components
         public Point Resolve(Component component)
         {
             ComponentPoint tempPoint = this;
-            if (component.IsFlipped)
-                tempPoint = Flip(component.Horizontal);
+            if (component.IsFlipped == true)
+                tempPoint = Flip(component.Orientation == Orientation.Horizontal);
 
             double x = tempPoint.Offset.X;
             double y = tempPoint.Offset.Y;
 
-            if (tempPoint.RelativeToX != ComponentPosition.Absolute)
-                x += component.StartLocation.X;
-            if (tempPoint.RelativeToY != ComponentPosition.Absolute)
-                y += component.StartLocation.Y;
-
-            if (tempPoint.RelativeToX == ComponentPosition.Middle && component.Horizontal)
+            if (tempPoint.RelativeToX == ComponentPosition.Middle && component.Orientation == Orientation.Horizontal)
                 x += component.Size / 2;
-            else if (tempPoint.RelativeToY == ComponentPosition.Middle && !component.Horizontal)
+            else if (tempPoint.RelativeToY == ComponentPosition.Middle && component.Orientation == Orientation.Vertical)
                 y += component.Size / 2;
 
-            if (tempPoint.RelativeToX == ComponentPosition.End && component.Horizontal)
+            if (tempPoint.RelativeToX == ComponentPosition.End && component.Orientation == Orientation.Horizontal)
                 x += component.Size;
-            else if (tempPoint.RelativeToY == ComponentPosition.End && !component.Horizontal)
+            else if (tempPoint.RelativeToY == ComponentPosition.End && component.Orientation == Orientation.Vertical)
                 y += component.Size;
 
             FlagOptions flags = ComponentHelper.ApplyFlags(component);
             if ((flags & FlagOptions.MiddleMustAlign) == FlagOptions.MiddleMustAlign)
             {
-                if (component.Horizontal && tempPoint.RelativeToX == ComponentPosition.Middle)
+                if (component.Orientation == Orientation.Horizontal && tempPoint.RelativeToX == ComponentPosition.Middle)
                 {
                     if ((x - tempPoint.Offset.X) % ComponentHelper.GridSize != 0d)
                         x += 5d;

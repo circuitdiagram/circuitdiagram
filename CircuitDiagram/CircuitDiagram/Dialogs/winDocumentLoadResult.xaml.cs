@@ -28,27 +28,35 @@ namespace CircuitDiagram
             trvUnavailableComponents.Visibility = System.Windows.Visibility.Collapsed;
         }
 
-        public void SetUnavailableComponents(IList<StandardComponentRef> unavailableComponents)
+        public void SetUnavailableComponents(IList<IOComponentType> unavailableComponents)
         {
             trvUnavailableComponents.Items.Clear();
 
             Dictionary<string, List<string>> processed = new Dictionary<string, List<string>>();
-            foreach (StandardComponentRef item in unavailableComponents)
+            foreach (IOComponentType item in unavailableComponents)
             {
-                if (item.ImplementationSet == null)
+                string itemName = item.Item;
+                if (String.IsNullOrEmpty(item.Item) && !String.IsNullOrEmpty(item.Name))
+                    itemName = item.Name;
+                else if (String.IsNullOrEmpty(item.Item) && item.GUID != Guid.Empty)
+                    itemName = item.GUID.ToString();
+                if (String.IsNullOrEmpty(item.Item))
+                    itemName = "(unnamed)";
+
+                if (item.Collection == null)
                 {
                     if (!processed.ContainsKey("(unknown)"))
                         processed.Add("(unknown)", new List<string>());
-                    processed["(unknown)"].Add(item.ImplementationItem);
+                    processed["(unknown)"].Add(itemName);
                 }
-                else if (!processed.ContainsKey(item.ImplementationSet))
+                else if (!processed.ContainsKey(item.Collection))
                 {
-                    processed.Add(item.ImplementationSet, new List<string>());
-                    processed[item.ImplementationSet].Add(item.ImplementationItem);
+                    processed.Add(item.Collection, new List<string>());
+                    processed[item.Collection].Add(itemName);
                 }
                 else
                 {
-                    processed[item.ImplementationSet].Add(item.ImplementationItem);
+                    processed[item.Collection].Add(itemName);
                 }
             }
 

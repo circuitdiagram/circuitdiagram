@@ -67,16 +67,16 @@ namespace CircuitDiagram.Components.Render
             Fill = fill;
         }
 
-        public void Render(Component component, CircuitDiagram.Render.IRenderContext dc)
+        public void Render(Component component, CircuitDiagram.Render.IRenderContext dc, bool absolute)
         {
             Rect drawRect = new System.Windows.Rect(Location.Resolve(component), new Size(Width, Height));
-            if (component.IsFlipped && component.Horizontal)
+            if (component.IsFlipped == true && component.Orientation == Orientation.Horizontal)
                 drawRect = new Rect(drawRect.X - Width, drawRect.Y, Width, Height);
-            else if (component.IsFlipped && !component.Horizontal)
+            else if (component.IsFlipped == true && component.Orientation == Orientation.Vertical)
                 drawRect = new Rect(drawRect.X, drawRect.Y - Height, Width, Height);
 
-            if (dc.Absolute)
-                dc.DrawRectangle(Point.Add(drawRect.TopLeft, component.Offset), drawRect.Size, StrokeThickness, Fill);
+            if (absolute)
+                dc.DrawRectangle(Point.Add(drawRect.TopLeft, component.Location), drawRect.Size, StrokeThickness, Fill);
             else
                 dc.DrawRectangle(drawRect.TopLeft, drawRect.Size, StrokeThickness, Fill);
         }

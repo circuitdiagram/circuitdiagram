@@ -29,7 +29,7 @@ namespace CircuitDiagram.Components.Render
     public interface IRenderCommand
     {
         RenderCommandType Type { get; }
-        void Render(Component component, CircuitDiagram.Render.IRenderContext dc);
+        void Render(Component component, CircuitDiagram.Render.IRenderContext dc, bool absolute);
     }
 
     public enum RenderCommandType

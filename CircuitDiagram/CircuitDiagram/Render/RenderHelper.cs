@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
-using CircuitDiagram.Components.Render.Path;
+using CircuitDiagram.Render.Path;
 
 namespace CircuitDiagram.Render
 {
@@ -41,7 +41,7 @@ namespace CircuitDiagram.Render
             }
             else if (element is EllipticalArcTo)
             {
-                dc.ArcTo(Point.Add((element as EllipticalArcTo).End, startOffset), (element as EllipticalArcTo).Size, (element as EllipticalArcTo).RotationAngle, (element as EllipticalArcTo).IsLargeArc, (element as EllipticalArcTo).SweepDirection == Components.Render.Path.SweepDirection.Clockwise ? System.Windows.Media.SweepDirection.Clockwise : System.Windows.Media.SweepDirection.Counterclockwise, true, true);
+                dc.ArcTo(Point.Add((element as EllipticalArcTo).End, startOffset), (element as EllipticalArcTo).Size, (element as EllipticalArcTo).RotationAngle, (element as EllipticalArcTo).IsLargeArc, (element as EllipticalArcTo).SweepDirection == Render.Path.SweepDirection.Clockwise ? System.Windows.Media.SweepDirection.Clockwise : System.Windows.Media.SweepDirection.Counterclockwise, true, true);
             }
             else if (element is SmoothCurveTo)
             {

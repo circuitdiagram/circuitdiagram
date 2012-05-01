@@ -94,42 +94,42 @@ namespace CircuitDiagram.Components
 
             if (newStart.X > newEnd.X || newStart.Y > newEnd.Y)
             {
-                component.Offset = new Vector(newEnd.X, newEnd.Y);
+                component.Location = new Vector(newEnd.X, newEnd.Y);
                 if (newStart.X == newEnd.X)
                 {
                     component.Size = newStart.Y - newEnd.Y;
-                    component.Horizontal = false;
+                    component.Orientation = Orientation.Vertical;
                 }
                 else
                 {
                     component.Size = newStart.X - newEnd.X;
-                    component.Horizontal = true;
+                    component.Orientation = Orientation.Horizontal;
                 }
             }
             else
             {
-                component.Offset = new Vector(newStart.X, newStart.Y);
+                component.Location = new Vector(newStart.X, newStart.Y);
                 if (newStart.X == newEnd.X)
                 {
                     component.Size = newEnd.Y - newStart.Y;
-                    component.Horizontal = false;
+                    component.Orientation = Orientation.Vertical;
                 }
                 else
                 {
                     component.Size = newEnd.X - newStart.X;
-                    component.Horizontal = true;
+                    component.Orientation = Orientation.Horizontal;
                 }
             }
 
             FlagOptions flagOptions = ApplyFlags(component);
-            if ((flagOptions & FlagOptions.HorizontalOnly) == FlagOptions.HorizontalOnly && !component.Horizontal)
+            if ((flagOptions & FlagOptions.HorizontalOnly) == FlagOptions.HorizontalOnly && component.Orientation == Orientation.Vertical)
             {
-                component.Horizontal = true;
+                component.Orientation = Orientation.Horizontal;
                 component.Size = component.Description.MinSize;
             }
-            else if ((flagOptions & FlagOptions.VerticalOnly) == FlagOptions.VerticalOnly && component.Horizontal)
+            else if ((flagOptions & FlagOptions.VerticalOnly) == FlagOptions.VerticalOnly && component.Orientation == Orientation.Horizontal)
             {
-                component.Horizontal = false;
+                component.Orientation = Orientation.Vertical;
                 component.Size = component.Description.MinSize;
             }
 
@@ -219,9 +219,12 @@ namespace CircuitDiagram.Components
 
         internal static bool ShouldEmbedDescription(ComponentDescription componentDescription)
         {
-            if (!IsStandardComponent(componentDescription))
+            if (EmbedOptions == ComponentEmbedOptions.All)
                 return true;
-            return false;
+            else if (EmbedOptions == ComponentEmbedOptions.None)
+                return false;
+            else
+                return !IsStandardComponent(componentDescription);
         }
 
         public static string[] InstalledComponentDirectories
@@ -258,6 +261,9 @@ namespace CircuitDiagram.Components
 
         public static ComponentIdentifier GetStandardComponent(string collection, string item)
         {
+            if (collection == null || item == null)
+                return null;
+
             if (m_standardComponents.ContainsKey(collection) && m_standardComponents[collection].ContainsKey(item))
                 return m_standardComponents[collection][item];
             else
@@ -288,6 +294,34 @@ namespace CircuitDiagram.Components
                 return identifier;
             }
         }
+
+        /// <summary>
+        /// Determines whether the specified ICircuitElement is a wire.
+        /// </summary>
+        /// <param name="element">The element to check.</param>
+        /// <returns>True if it is a wire, false otherwise.</returns>
+        public static bool IsWire(CircuitDiagram.Elements.ICircuitElement element)
+        {
+            if (!(element is CircuitDiagram.Elements.IComponentElement))
+                return false;
+
+            CircuitDiagram.Elements.IComponentElement componentElement = element as CircuitDiagram.Elements.IComponentElement;
+
+            return (componentElement.ImplementationCollection == CircuitDiagram.IO.ComponentCollections.Common && componentElement.ImplementationItem == "wire")
+                || (componentElement is Component && (componentElement as Component).Description == WireDescription);
+        }
+
+        /// <summary>
+        /// Determines whether the specified description is available.
+        /// </summary>
+        /// <param name="guid">The guid of the description to check for.</param>
+        /// <returns>True if the description is available, false otherwise.</returns>
+        public static bool IsDescriptionAvailable(Guid guid)
+        {
+            return ComponentDescriptions.FirstOrDefault(item => item.Metadata.GUID == guid) != null;
+        }
+
+        public static ComponentEmbedOptions EmbedOptions { get; set; }
     }
 
     public enum PropertySearchKey
@@ -297,4 +331,11 @@ namespace CircuitDiagram.Components
     }
 
     public delegate object LoadIconDelegate(byte[] data, string mimeType);
+
+    public enum ComponentEmbedOptions
+    {
+        All,
+        Automatic,
+        None
+    }
 }

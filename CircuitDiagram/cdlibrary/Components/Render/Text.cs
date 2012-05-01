@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
+using CircuitDiagram.Render;
 
 namespace CircuitDiagram.Components.Render
 {
@@ -61,12 +62,12 @@ namespace CircuitDiagram.Components.Render
             TextRuns = new List<TextRun>(textRuns);
         }
 
-        public void Render(Component component, CircuitDiagram.Render.IRenderContext dc)
+        public void Render(Component component, CircuitDiagram.Render.IRenderContext dc, bool absolute)
         {
             Point renderLocation = Location.Resolve(component);
 
             TextAlignment tempAlignment = Alignment;
-            if (component.IsFlipped && component.Horizontal)
+            if (component.IsFlipped && component.Orientation == Orientation.Horizontal)
             {
                 switch (Alignment)
                 {
@@ -90,7 +91,7 @@ namespace CircuitDiagram.Components.Render
                         break;
                 }
             }
-            else if (component.IsFlipped && !component.Horizontal)
+            else if (component.IsFlipped && component.Orientation == Orientation.Vertical)
             {
                 switch (Alignment)
                 {
@@ -135,69 +136,69 @@ namespace CircuitDiagram.Components.Render
                 renderTextRuns.Add(new TextRun(renderValue, run.Formatting));
             }
 
-            if (dc.Absolute)
-                dc.DrawText(Point.Add(renderLocation, component.Offset), tempAlignment, renderTextRuns);
+            if (absolute)
+                dc.DrawText(Point.Add(renderLocation, component.Location), tempAlignment, renderTextRuns);
             else
                 dc.DrawText(renderLocation, tempAlignment, renderTextRuns);
         }
     }
 
-    public enum TextAlignment
-    {
-        TopLeft,
-        TopCentre,
-        TopRight,
-        CentreLeft,
-        CentreCentre,
-        CentreRight,
-        BottomLeft,
-        BottomCentre,
-        BottomRight
-    }
+    //public enum TextAlignment
+    //{
+    //    TopLeft,
+    //    TopCentre,
+    //    TopRight,
+    //    CentreLeft,
+    //    CentreCentre,
+    //    CentreRight,
+    //    BottomLeft,
+    //    BottomCentre,
+    //    BottomRight
+    //}
 
-    public enum TextRunFormattingType
-    {
-        Normal = 1,
-        Subscript = 10,
-        Superscript = 11
-    }
+    //public enum TextRunFormattingType
+    //{
+    //    Normal = 1,
+    //    Subscript = 10,
+    //    Superscript = 11
+    //}
 
-    public class TextRunFormatting
-    {
-        public double Size { get; set; }
-        public TextRunFormattingType FormattingType { get; set; }
+    //public class TextRunFormatting
+    //{
+    //    public double Size { get; set; }
+    //    public TextRunFormattingType FormattingType { get; set; }
 
-        public TextRunFormatting(TextRunFormattingType formattingType, double size = 12d)
-        {
-            FormattingType = formattingType;
-            Size = size;
-        }
+    //    public TextRunFormatting(TextRunFormattingType formattingType, double size = 12d)
+    //    {
+    //        FormattingType = formattingType;
+    //        Size = size;
+    //    }
 
-        public static TextRunFormatting Normal
-        {
-            get { return new TextRunFormatting(TextRunFormattingType.Normal); }
-        }
+    //    public static TextRunFormatting Normal
+    //    {
+    //        get { return new TextRunFormatting(TextRunFormattingType.Normal); }
+    //    }
 
-        public static TextRunFormatting Subscript
-        {
-            get { return new TextRunFormatting(TextRunFormattingType.Subscript); }
-        }
+    //    public static TextRunFormatting Subscript
+    //    {
+    //        get { return new TextRunFormatting(TextRunFormattingType.Subscript); }
+    //    }
 
-        public static TextRunFormatting Superscript
-        {
-            get { return new TextRunFormatting(TextRunFormattingType.Superscript); }
-        }
-    }
+    //    public static TextRunFormatting Superscript
+    //    {
+    //        get { return new TextRunFormatting(TextRunFormattingType.Superscript); }
+    //    }
+    //}
 
-    public class TextRun
-    {
-        public TextRunFormatting Formatting { get; set; }
-        public string Text { get; set; }
+    //public class TextRun
+    //{
+    //    public TextRunFormatting Formatting { get; set; }
+    //    public string Text { get; set; }
 
-        public TextRun(string text, TextRunFormatting formatting)
-        {
-            Text = text;
-            Formatting = formatting;
-        }
-    }
+    //    public TextRun(string text, TextRunFormatting formatting)
+    //    {
+    //        Text = text;
+    //        Formatting = formatting;
+    //    }
+    //}
 }

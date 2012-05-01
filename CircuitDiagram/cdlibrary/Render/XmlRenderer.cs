@@ -26,8 +26,9 @@ using System.Xml;
 using System.IO;
 using System.Globalization;
 using System.Windows;
-using CircuitDiagram.Components.Render;
-using CircuitDiagram.Components.Render.Path;
+using CircuitDiagram.Render;
+using CircuitDiagram.Render.Path;
+using CircuitDiagram.IO;
 
 namespace CircuitDiagram.Render
 {
@@ -76,6 +77,11 @@ namespace CircuitDiagram.Render
             m_writer.Flush();
         }
 
+        public void StartSection(object tag)
+        {
+            // TODO
+        }
+
         public void WriteXmlTo(Stream stream)
         {
             m_stream.WriteTo(stream);
@@ -111,7 +117,7 @@ namespace CircuitDiagram.Render
             m_writer.WriteEndElement();
         }
 
-        public void DrawPath(System.Windows.Point start, IList<Components.Render.Path.IPathCommand> commands, double thickness, bool fill = false)
+        public void DrawPath(System.Windows.Point start, IList<IPathCommand> commands, double thickness, bool fill = false)
         {
             m_writer.WriteStartElement("path");
             m_writer.WriteAttributeString("start", start.ToString(CultureInfo.InvariantCulture));
@@ -120,9 +126,9 @@ namespace CircuitDiagram.Render
 
             using (MemoryStream dataStream = new MemoryStream())
             {
-                BinaryWriter dataWriter = new BinaryWriter(dataStream);
+                System.IO.BinaryWriter dataWriter = new System.IO.BinaryWriter(dataStream);
                 dataWriter.Write(commands.Count);
-                foreach (CircuitDiagram.Components.Render.Path.IPathCommand pathCommand in commands)
+                foreach (IPathCommand pathCommand in commands)
                 {
                     dataWriter.Write((int)pathCommand.Type);
                     pathCommand.Write(dataWriter);
@@ -135,7 +141,7 @@ namespace CircuitDiagram.Render
             m_writer.WriteEndElement();
         }
 
-        public void DrawText(System.Windows.Point anchor, Components.Render.TextAlignment alignment, IEnumerable<Components.Render.TextRun> textRuns)
+        public void DrawText(System.Windows.Point anchor, TextAlignment alignment, IEnumerable<TextRun> textRuns)
         {
             m_writer.WriteStartElement("text");
             m_writer.WriteAttributeString("anchor", anchor.ToString(CultureInfo.InvariantCulture));
@@ -199,8 +205,6 @@ namespace CircuitDiagram.Render
                     Point start = Point.Parse(renderElement.Attributes["start"].InnerText);
                     double thickness = double.Parse(renderElement.Attributes["thickness"].InnerText);
                     bool fill = bool.Parse(renderElement.Attributes["fill"].InnerText);
-
-
                     string data = renderElement.InnerText;
                     List<IPathCommand> pathCommands = new List<IPathCommand>();
                     using (MemoryStream dataStream = new MemoryStream(Convert.FromBase64String(data)))
@@ -208,7 +212,7 @@ namespace CircuitDiagram.Render
                         BinaryReader reader = new BinaryReader(dataStream);
 
                         int numCommands = reader.ReadInt32();
-                        
+
                         for (int l = 0; l < numCommands; l++)
                         {
                             CommandType pType = (CommandType)reader.ReadInt32();
@@ -244,7 +248,6 @@ namespace CircuitDiagram.Render
                             pathCommands.Add(theCommand);
                         }
                     }
-
                     renderContext.DrawPath(start, pathCommands, thickness, fill);
                 }
                 else if (renderElement.Name == "text")

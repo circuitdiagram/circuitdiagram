@@ -25,7 +25,7 @@ using System.Text;
 using System.Xml;
 using System.Windows;
 using System.IO;
-using CircuitDiagram.Components.Render;
+using CircuitDiagram.Render.Path;
 
 namespace CircuitDiagram.Render
 {
@@ -64,6 +64,11 @@ namespace CircuitDiagram.Render
             Writer.Flush();
         }
 
+        public void StartSection(object tag)
+        {
+            // Do nothing.
+        }
+
         public void DrawLine(Point start, Point end, double thickness)
         {
             m_writer.WriteStartElement("line");
@@ -99,11 +104,11 @@ namespace CircuitDiagram.Render
             m_writer.WriteEndElement();
         }
 
-        public void DrawPath(Point start, IList<Components.Render.Path.IPathCommand> commands, double thickness, bool fill = false)
+        public void DrawPath(Point start, IList<IPathCommand> commands, double thickness, bool fill = false)
         {
             string data = "M " + start.X.ToString() + "," + start.Y.ToString();
             Point last = new Point(0, 0);
-            foreach (CircuitDiagram.Components.Render.Path.IPathCommand pathCommand in commands)
+            foreach (IPathCommand pathCommand in commands)
             {
                 data += " " + pathCommand.Shorthand(start, last);
                 last = new Point(last.X + pathCommand.End.X, last.Y + pathCommand.End.Y);
@@ -117,22 +122,22 @@ namespace CircuitDiagram.Render
             m_writer.WriteEndElement();
         }
 
-        public void DrawText(Point anchor, Components.Render.TextAlignment alignment, IEnumerable<TextRun> textRuns)
+        public void DrawText(Point anchor, TextAlignment alignment, IEnumerable<TextRun> textRuns)
         {
             m_writer.WriteStartElement("text");
             m_writer.WriteAttributeString("x", anchor.X.ToString());
             m_writer.WriteAttributeString("y", anchor.Y.ToString());
 
             string textAnchor = "start";
-            if (alignment == Components.Render.TextAlignment.BottomCentre  || alignment == Components.Render.TextAlignment.CentreCentre || alignment == Components.Render.TextAlignment.TopCentre)
+            if (alignment == TextAlignment.BottomCentre  || alignment == TextAlignment.CentreCentre || alignment == Render.TextAlignment.TopCentre)
                 textAnchor = "middle";
-            else if (alignment == Components.Render.TextAlignment.BottomRight || alignment == Components.Render.TextAlignment.CentreRight || alignment == Components.Render.TextAlignment.TopRight)
+            else if (alignment == TextAlignment.BottomRight || alignment == TextAlignment.CentreRight || alignment == Render.TextAlignment.TopRight)
                 textAnchor = "end";
 
             string alignmentBaseline = "auto";
-            if (alignment == Components.Render.TextAlignment.CentreCentre || alignment == Components.Render.TextAlignment.CentreLeft || alignment == Components.Render.TextAlignment.CentreRight)
+            if (alignment == TextAlignment.CentreCentre || alignment == TextAlignment.CentreLeft || alignment == TextAlignment.CentreRight)
                 alignmentBaseline = "central";
-            else if (alignment == Components.Render.TextAlignment.TopCentre || alignment == Components.Render.TextAlignment.TopLeft || alignment == Components.Render.TextAlignment.TopRight)
+            else if (alignment == TextAlignment.TopCentre || alignment == TextAlignment.TopLeft || alignment == TextAlignment.TopRight)
                 alignmentBaseline = "before-edge";
 
             m_writer.WriteAttributeString("style", "font-family:Arial;font-size:" + textRuns.FirstOrDefault().Formatting.Size.ToString() + ";text-anchor:" + textAnchor + ";alignment-baseline:" + alignmentBaseline);

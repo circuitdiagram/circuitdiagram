@@ -32,7 +32,7 @@ using CircuitDiagram.Elements;
 
 namespace CircuitDiagram.Components
 {
-    public class Component : ICircuitElement
+    public class Component : IComponentElement
     {
         public event EventHandler Updated;
 
@@ -127,20 +127,9 @@ namespace CircuitDiagram.Components
 
         public double Size { get; set; }
 
-        public Point StartLocation { get { return new Point(); } }
+        public Vector Location { get; set; }
 
-        private Vector m_offset;
-        public Vector Offset
-        {
-            get { return m_offset; }
-            set
-            {
-                m_offset = value;
-                InvalidateVisual();
-            }
-        }
-
-        public bool Horizontal { get; set; }
+        public Orientation Orientation { get; set; }
 
         private Dictionary<ComponentProperty, object> m_propertyValues { get; set; }
 
@@ -258,7 +247,7 @@ namespace CircuitDiagram.Components
                                     else if (i == end.Y && (connectionDescription.Edge == ConnectionEdge.End || connectionDescription.Edge == ConnectionEdge.Both))
                                         flags |= ConnectionFlags.Edge;
                                 }
-                                else if (!Horizontal && reversed)
+                                else if (Orientation == Orientation.Vertical && reversed)
                                 {
                                     if (i == start.Y && (connectionDescription.Edge == ConnectionEdge.End || connectionDescription.Edge == ConnectionEdge.Both))
                                         flags |= ConnectionFlags.Edge;
@@ -282,7 +271,7 @@ namespace CircuitDiagram.Components
                                     else if (i == end.X && (connectionDescription.Edge == ConnectionEdge.End || connectionDescription.Edge == ConnectionEdge.Both))
                                         flags |= ConnectionFlags.Edge;
                                 }
-                                else if (Horizontal && reversed)
+                                else if (Orientation == Orientation.Horizontal && reversed)
                                 {
                                     if (i == start.X && (connectionDescription.Edge == ConnectionEdge.End || connectionDescription.Edge == ConnectionEdge.Both))
                                         flags |= ConnectionFlags.Edge;
@@ -313,17 +302,16 @@ namespace CircuitDiagram.Components
                     continue;
                 foreach (KeyValuePair<Point, Connection> connection in this.GetConnections())
                 {
-                    double thisX = this.Offset.X + connection.Key.X;
-                    double thisY = this.Offset.Y + connection.Key.Y;
+                    double thisX = this.Location.X + connection.Key.X;
+                    double thisY = this.Location.Y + connection.Key.Y;
 
                     foreach (KeyValuePair<Point, Connection> connection2 in component.GetConnections())
                     {
-                        double otherX = component.Offset.X + connection2.Key.X;
-                        double otherY = component.Offset.Y + connection2.Key.Y;
+                        double otherX = component.Location.X + connection2.Key.X;
+                        double otherY = component.Location.Y + connection2.Key.Y;
 
                         if (thisX == otherX && thisY == otherY && (!connection2.Value.IsConnected || !connection2.Value.ConnectedTo.Contains(connection.Value)))
                         {
-                            //if (((connection.Value.Flags & ConnectionFlags.Edge) == ConnectionFlags.Edge && (connection2.Value.Flags & ConnectionFlags.Edge) != ConnectionFlags.Edge) || ((connection.Value.Flags & ConnectionFlags.Edge) != ConnectionFlags.Edge && ((connection2.Value.Flags & ConnectionFlags.Edge) == ConnectionFlags.Edge)))
                             if ((connection.Value.Flags & ConnectionFlags.Edge) == ConnectionFlags.Edge || (connection2.Value.Flags & ConnectionFlags.Edge) == ConnectionFlags.Edge)
                                 connection.Value.ConnectTo(connection2.Value);
                         }
@@ -352,10 +340,10 @@ namespace CircuitDiagram.Components
             return m_connections.Values.Where(connection => connection.IsConnected);
         }
 
-        public void Layout(double x, double y, double size, bool horizontal, bool flipped)
+        public void Layout(double x, double y, double size, Orientation orientation, bool flipped)
         {
-            this.Offset = new Vector(x, y);
-            this.Horizontal = horizontal;
+            this.Location = new Vector(x, y);
+            this.Orientation = orientation;
             this.Size = size;
             this.IsFlipped = flipped;
 
@@ -369,9 +357,9 @@ namespace CircuitDiagram.Components
             properties.Add("@type", this.Description.ComponentName);
             if (!ComponentHelper.IsStandardComponent(this.Description) && this.Description.Metadata.GUID != Guid.Empty)
                 properties.Add("@guid", this.Description.Metadata.GUID);
-            properties.Add("@x", this.Offset.X);
-            properties.Add("@y", this.Offset.Y);
-            properties.Add("@orientation", (Horizontal ? "horizontal" : "vertical"));
+            properties.Add("@x", this.Location.X);
+            properties.Add("@y", this.Location.Y);
+            properties.Add("@orientation", (Orientation == CircuitDiagram.Orientation.Horizontal ? "horizontal" : "vertical"));
             if (Description.CanResize)
                 properties.Add("@size", Size);
             if (Description.CanFlip)
@@ -410,17 +398,17 @@ namespace CircuitDiagram.Components
 
         public void Deserialize(Dictionary<string, object> properties)
         {
-            this.Horizontal = true;
+            this.Orientation = Orientation.Horizontal;
             this.IsFlipped = false;
             foreach (KeyValuePair<string, object> property in properties)
             {
                 // load common properties
                 if (property.Key == "@x")
-                    this.Offset = new Vector((double)GetAsCorrectType(typeof(double), property.Value), this.Offset.Y);
+                    this.Location = new Vector((double)GetAsCorrectType(typeof(double), property.Value), this.Location.Y);
                 else if (property.Key == "@y")
-                    this.Offset = new Vector(this.Offset.X, (double)GetAsCorrectType(typeof(double), property.Value));
+                    this.Location = new Vector(this.Location.X, (double)GetAsCorrectType(typeof(double), property.Value));
                 else if (property.Key == "@orientation" && property.Value.ToString().ToLower() == "vertical")
-                    this.Horizontal = false;
+                    this.Orientation = Orientation.Vertical;
                 else if (property.Key == "@size")
                     this.Size = (double)GetAsCorrectType(typeof(double), property.Value);
                 else if (property.Key == "@flipped" && property.Value.ToString().ToLower() == "true")
@@ -445,7 +433,16 @@ namespace CircuitDiagram.Components
             foreach (RenderDescription renderDescription in Description.RenderDescriptions)
             {
                 if (renderDescription.Conditions.ConditionsAreMet(this))
-                    renderDescription.Render(this, dc);
+                    renderDescription.Render(this, dc, true);
+            }
+        }
+
+        public void Render(CircuitDiagram.Render.IRenderContext dc, bool absolute = true)
+        {
+            foreach (RenderDescription renderDescription in Description.RenderDescriptions)
+            {
+                if (renderDescription.Conditions.ConditionsAreMet(this))
+                    renderDescription.Render(this, dc, absolute);
             }
         }
 
@@ -458,6 +455,47 @@ namespace CircuitDiagram.Components
         {
             if (Updated != null)
                 Updated(this, new EventArgs());
+        }
+
+        public string ImplementationCollection
+        {
+            get { return Description.Metadata.ImplementSet; }
+        }
+
+        public string ImplementationItem
+        {
+            get
+            {
+                foreach (ComponentConfiguration configuration in Description.Metadata.Configurations)
+                {
+                    if (configuration.Matches(this))
+                        return configuration.ImplementationName;
+                }
+                return Description.Metadata.ImplementItem;
+            }
+        }
+
+        public IDictionary<string, object> Properties
+        {
+            get
+            {
+                return m_propertyValues.ToDictionary(item => item.Key.SerializedName, item => item.Value);
+            }
+        }
+
+        /// <summary>
+        /// Gets the first ComponentConfiguration that this component satisfies.
+        /// </summary>
+        /// <returns>The ComponentConfiguration that is satisfied, or null if none are satisfied.</returns>
+        public ComponentConfiguration Configuration()
+        {
+            foreach (ComponentConfiguration configuration in Description.Metadata.Configurations)
+            {
+                if (configuration.Matches(this))
+                    return configuration;
+            }
+
+            return null;
         }
     }
 }

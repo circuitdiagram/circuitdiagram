@@ -52,10 +52,10 @@ namespace CircuitDiagram.Components.Render
             get { return RenderCommandType.Line; }
         }
 
-        public void Render(Component component, CircuitDiagram.Render.IRenderContext dc)
+        public void Render(Component component, CircuitDiagram.Render.IRenderContext dc, bool absolute)
         {
-            if (dc.Absolute)
-                dc.DrawLine(Point.Add(Start.Resolve(component), new Vector(component.Offset.X, component.Offset.Y)), Point.Add(End.Resolve(component), new Vector(component.Offset.X, component.Offset.Y)), Thickness);
+            if (absolute)
+                dc.DrawLine(Point.Add(Start.Resolve(component), component.Location), Point.Add(End.Resolve(component), component.Location), Thickness);
             else
                 dc.DrawLine(Start.Resolve(component), End.Resolve(component), Thickness);
         }

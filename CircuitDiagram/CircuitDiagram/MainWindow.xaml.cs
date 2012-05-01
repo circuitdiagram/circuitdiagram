@@ -37,6 +37,7 @@ using Microsoft.Win32;
 using System.Windows.Threading;
 using CircuitDiagram.IO;
 using TaskDialogInterop;
+using System.Diagnostics;
 
 namespace CircuitDiagram
 {
@@ -48,6 +49,7 @@ namespace CircuitDiagram
         #region Variables
         string m_documentTitle;
         string m_docPath = "";
+        IO.CDDX.CDDXSaveOptions m_lastSaveOptions;
         DispatcherTimer m_statusTimer;
         UndoManager m_undoManager;
         Dictionary<Key, string> m_toolboxShortcuts = new Dictionary<Key, string>();
@@ -94,8 +96,9 @@ namespace CircuitDiagram
                 });
 
             circuitDisplay.Document = new CircuitDocument();
-            circuitDisplay.Document.Metadata.DublinCore.Creator = Environment.UserName;
-            circuitDisplay.Document.Metadata.DublinCore.Date = DateTime.Now;
+            circuitDisplay.Document.Metadata.Creator = Environment.UserName;
+            circuitDisplay.Document.Metadata.Created = DateTime.Now;
+
             Load();
 
             // load recent items
@@ -157,6 +160,8 @@ namespace CircuitDiagram
         {
             toolboxScroll.VerticalScrollBarVisibility = (CircuitDiagram.Settings.Settings.ReadBool("showToolboxScrollBar") ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden);
             circuitDisplay.ShowConnectionPoints = Settings.Settings.ReadBool("showConnectionPoints");
+            if (Settings.Settings.HasSetting("EmbedComponents"))
+                ComponentHelper.EmbedOptions = (ComponentEmbedOptions)Settings.Settings.Read("EmbedComponents");
         }
 
         /// <summary>
@@ -182,9 +187,6 @@ namespace CircuitDiagram
         /// </summary>
         private void Load()
         {
-            if (m_defaultSaveOptions == null)
-                LoadDefaultCDDXSaveOptions();
-
             #region Load component descriptions
             bool conflictingGuid = false;
             List<string> componentLocations = new List<string>();
@@ -630,30 +632,6 @@ namespace CircuitDiagram
             circuitDisplay.NewComponentData = null;
         }
 
-        CircuitDiagram.IO.CDDX.CDDXSaveOptions m_defaultSaveOptions;
-        CircuitDiagram.IO.CDDX.CDDXSaveOptions m_lastSaveOptions;
-        private void LoadDefaultCDDXSaveOptions()
-        {
-            string settingsData = Settings.Settings.Read("DefaultCDDXSaveSettings") as string;
-            if (settingsData != null)
-            {
-                try
-                {
-                    using (MemoryStream stream = new MemoryStream(System.Convert.FromBase64String(settingsData)))
-                    {
-                        BinaryFormatter binaryFormatter = new BinaryFormatter();
-                        m_defaultSaveOptions = (IO.CDDX.CDDXSaveOptions)binaryFormatter.Deserialize(stream);
-                    }
-                }
-                catch (Exception)
-                {
-                    m_defaultSaveOptions = new IO.CDDX.CDDXSaveOptions();
-                }
-            }
-            else
-                m_defaultSaveOptions = new IO.CDDX.CDDXSaveOptions();
-        }
-
         /// <summary>
         /// Set the status bar text.
         /// </summary>
@@ -838,61 +816,86 @@ namespace CircuitDiagram
         {
             if (System.IO.Path.GetExtension(path).ToLowerInvariant() == ".cddx" || System.IO.Path.GetExtension(path).ToLowerInvariant() == ".zip")
             {
-                CircuitDocument document;
-                CircuitDiagram.IO.DocumentLoadResult result = CircuitDiagram.IO.CDDX.CDDXIO.Read(File.OpenRead(path), out document);
-
-                if (result.Type != DocumentLoadResultType.Success || result.Errors.Count > 0 || result.UnavailableComponents.Count > 0)
+                using (IO.CDDX.CDDXReader reader = new IO.CDDX.CDDXReader())
                 {
-                    winDocumentLoadResult loadResultWindow = new winDocumentLoadResult();
-                    loadResultWindow.Owner = this;
-                    loadResultWindow.SetMessage(result.Type);
-                    loadResultWindow.SetErrors(result.Errors);
-                    loadResultWindow.SetUnavailableComponents(result.UnavailableComponents);
-                    loadResultWindow.ShowDialog();
-                }
+                    bool succeeded = reader.Load(File.OpenRead(path));
 
-                if (result.Type == DocumentLoadResultType.Success || result.Type == DocumentLoadResultType.SuccessNewerVersion)
-                {
-                    circuitDisplay.Document = document;
-                    circuitDisplay.DrawConnections();
-                    m_docPath = path;
-                    m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
-                    this.Title = m_documentTitle + " - Circuit Diagram";
-                    m_undoManager = new UndoManager();
-                    circuitDisplay.UndoManager = m_undoManager;
-                    m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
-                    m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
-                    AddRecentFile(path);
+                    List<IOComponentType> unavailableComponents = null;
+                    CircuitDocument loadedDocument = null;
+                    if (succeeded)
+                    {
+                        loadedDocument = reader.Document.ToCircuitDocument(reader, out unavailableComponents);
+                        loadedDocument.Metadata.Format = reader.LoadResult.Format; // Set format
+                    }
+                    if (unavailableComponents == null)
+                        unavailableComponents = new List<IOComponentType>();
+
+                    // Show load result dialog
+                    if (reader.LoadResult.Type != DocumentLoadResultType.Success || reader.LoadResult.Errors.Count > 0 || unavailableComponents.Count > 0)
+                    {
+                        winDocumentLoadResult loadResultWindow = new winDocumentLoadResult();
+                        loadResultWindow.Owner = this;
+                        loadResultWindow.SetMessage(reader.LoadResult.Type);
+                        loadResultWindow.SetErrors(reader.LoadResult.Errors);
+                        loadResultWindow.SetUnavailableComponents(unavailableComponents);
+                        loadResultWindow.ShowDialog();
+                    }
+
+                    if (succeeded)
+                    {
+                        circuitDisplay.Document = loadedDocument;
+                        circuitDisplay.DrawConnections();
+                        m_docPath = path;
+                        m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
+                        this.Title = m_documentTitle + " - Circuit Diagram";
+                        m_undoManager = new UndoManager();
+                        circuitDisplay.UndoManager = m_undoManager;
+                        m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
+                        m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
+                        AddRecentFile(path);
+                    }
                 }
             }
             else
             {
-                CircuitDiagram.IO.CircuitDocumentLoader loader = new IO.CircuitDocumentLoader();
-
-                CircuitDiagram.IO.DocumentLoadResult result = loader.Load(File.OpenRead(path));
-
-                if (result.Type != DocumentLoadResultType.Success || result.Errors.Count > 0 || result.UnavailableComponents.Count > 0)
+                using (IO.Xml.XmlReader reader = new IO.Xml.XmlReader())
                 {
-                    winDocumentLoadResult loadResultWindow = new winDocumentLoadResult();
-                    loadResultWindow.Owner = this;
-                    loadResultWindow.SetMessage(result.Type);
-                    loadResultWindow.SetUnavailableComponents(result.UnavailableComponents);
-                    loadResultWindow.ShowDialog();
-                }
+                    bool succeeded = reader.Load(File.OpenRead(path));
 
-                if (result.Type == IO.DocumentLoadResultType.Success)
-                {
-                    circuitDisplay.Document = loader.Document;
-                    circuitDisplay.DrawConnections();
+                    List<IOComponentType> unavailableComponents = null;
+                    CircuitDocument loadedDocument = null;
+                    if (succeeded)
+                    {
+                        loadedDocument = reader.Document.ToCircuitDocument(reader, out unavailableComponents);
+                        loadedDocument.Metadata.Format = reader.LoadResult.Format; // Set format
+                    }
+                    if (unavailableComponents == null)
+                        unavailableComponents = new List<IOComponentType>();
 
-                    m_docPath = path;
-                    m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
-                    this.Title = m_documentTitle + " - Circuit Diagram";
-                    m_undoManager = new UndoManager();
-                    circuitDisplay.UndoManager = m_undoManager;
-                    m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
-                    m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
-                    AddRecentFile(path);
+                    // Show load result dialog
+                    if (reader.LoadResult.Type != DocumentLoadResultType.Success || reader.LoadResult.Errors.Count > 0 || unavailableComponents.Count > 0)
+                    {
+                        winDocumentLoadResult loadResultWindow = new winDocumentLoadResult();
+                        loadResultWindow.Owner = this;
+                        loadResultWindow.SetMessage(reader.LoadResult.Type);
+                        loadResultWindow.SetErrors(reader.LoadResult.Errors);
+                        loadResultWindow.SetUnavailableComponents(unavailableComponents);
+                        loadResultWindow.ShowDialog();
+                    }
+
+                    if (succeeded)
+                    {
+                        circuitDisplay.Document = loadedDocument;
+                        circuitDisplay.DrawConnections();
+                        m_docPath = path;
+                        m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
+                        this.Title = m_documentTitle + " - Circuit Diagram";
+                        m_undoManager = new UndoManager();
+                        circuitDisplay.UndoManager = m_undoManager;
+                        m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
+                        m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
+                        AddRecentFile(path);
+                    }
                 }
             }
         }
@@ -905,18 +908,43 @@ namespace CircuitDiagram
         {
             if (m_docPath != "")
             {
+                IDictionary<IOComponentType, EmbedComponentData> embedComponents;
+                IODocument ioDocument = circuitDisplay.Document.ToIODocument(out embedComponents);
+
                 string extension = Path.GetExtension(m_docPath);
                 if (extension == ".cddx")
                 {
-                    // Save in CDDX format
-                    if (m_lastSaveOptions == null)
-                        m_lastSaveOptions = m_defaultSaveOptions;
-                    CircuitDiagram.IO.CDDX.CDDXIO.Write(new FileStream(m_docPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), circuitDisplay.Document, m_lastSaveOptions);
+                    IO.CDDX.CDDXWriter writer = new IO.CDDX.CDDXWriter();
+                    writer.Document = ioDocument;
+                    writer.Options = m_lastSaveOptions;
+                    writer.EmbedComponents = embedComponents;
+
+                    writer.Begin();
+                    if (writer.RenderContext != null)
+                    {
+                        writer.RenderContext.Begin();
+                        circuitDisplay.Document.Render(writer.RenderContext);
+                        writer.RenderContext.End();
+                    }
+
+                    using (FileStream fs = new FileStream(m_docPath, FileMode.Create, FileAccess.Write, FileShare.Read))
+                    {
+                        writer.Write(fs);
+                    }
+
+                    writer.End();
                 }
                 else
                 {
-                    // Save in XML format
-                    CircuitDiagram.IO.CircuitDocumentWriter.WriteXml(circuitDisplay.Document, new FileStream(m_docPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite));
+                    IO.Xml.XmlWriter writer = new IO.Xml.XmlWriter();
+                    writer.Document = ioDocument;
+
+                    writer.Begin();
+                    using (FileStream fs = new FileStream(m_docPath, FileMode.Create, FileAccess.Write, FileShare.Read))
+                    {
+                        writer.Write(fs);
+                    }
+                    writer.End();
                 }
                 this.Title = System.IO.Path.GetFileNameWithoutExtension(m_docPath) + " - Circuit Diagram";
                 UndoManager.SetSaveIndex();
@@ -940,62 +968,67 @@ namespace CircuitDiagram
             {
                 string extension = Path.GetExtension(sfd.FileName);
 
+                IDictionary<IOComponentType, EmbedComponentData> embedComponents;
+                IODocument ioDocument = circuitDisplay.Document.ToIODocument(out embedComponents);
+
                 if (extension == ".cddx")
                 {
-                    IO.CDDX.CDDXSaveOptions saveOptions = m_lastSaveOptions;
+                    bool doSave = false;
 
-                    bool doSave = true;
-                    bool alwaysUseSettings = Settings.Settings.ReadBool("AlwaysUseCDDXSaveSettings");
-                    if (alwaysUseSettings && m_defaultSaveOptions != null)
-                        saveOptions = m_defaultSaveOptions;
-                    if (!alwaysUseSettings || saveOptions == null)
+                    // Load default save options
+                    Settings.SettingsSerializer serializer = new Settings.SettingsSerializer();
+                    serializer.Category = "CDDX";
+                    CircuitDiagram.IO.CDDX.CDDXSaveOptions saveOptions = new CircuitDiagram.IO.CDDX.CDDXSaveOptions();
+                    saveOptions.Deserialize(serializer);
+
+                    if (!Settings.Settings.ReadBool("CDDX.AlwaysUseSettings"))
                     {
-                        winCDDXSave saveOptionsDialog = new winCDDXSave();
-                        saveOptionsDialog.Owner = this;
-                        saveOptionsDialog.LoadSaveOptions(m_defaultSaveOptions);
-
-                        List<ComponentDescription> usedDescriptions = new List<ComponentDescription>();
-                        foreach (Component component in circuitDisplay.Document.Components)
-                            if (!usedDescriptions.Contains(component.Description))
-                                usedDescriptions.Add(component.Description);
-                        saveOptionsDialog.AvailableComponents = usedDescriptions;
-
-                        if (saveOptionsDialog.ShowDialog() == true)
+                        winSaveOptions saveOptionsWindow = new winSaveOptions(new CDDXSaveOptionsEditor(), saveOptions);
+                        saveOptionsWindow.Owner = this;
+                        if (saveOptionsWindow.ShowDialog() == true)
                         {
-                            doSave = true;
-                            saveOptions = saveOptionsDialog.SaveOptions;
-                            if (saveOptionsDialog.AlwaysUseSettings)
+                            saveOptions = saveOptionsWindow.Options as CircuitDiagram.IO.CDDX.CDDXSaveOptions;
+
+                            if (saveOptionsWindow.AlwaysUseSettings)
                             {
-                                m_defaultSaveOptions = saveOptionsDialog.SaveOptions;
-                                Settings.Settings.Write("AlwaysUseCDDXSaveSettings", true);
-
-                                using (MemoryStream stream = new MemoryStream())
-                                {
-                                    BinaryFormatter binaryFormatter = new BinaryFormatter();
-                                    binaryFormatter.Serialize(stream, m_defaultSaveOptions);
-
-                                    string encodedData = System.Convert.ToBase64String(stream.ToArray());
-                                    Settings.Settings.Write("DefaultCDDXSaveSettings", encodedData);
-                                }
+                                saveOptions.Serialize(serializer);
+                                Settings.Settings.Write("CDDX.AlwaysUseSettings", true);
                             }
+
+                            doSave = true;
                         }
-                        else
-                            doSave = false;
                     }
+                    else
+                        doSave = true;
 
                     if (doSave)
                     {
-                        m_lastSaveOptions = saveOptions;
+                        IO.CDDX.CDDXWriter writer = new IO.CDDX.CDDXWriter();
+                        writer.Document = ioDocument;
+                        writer.Options = saveOptions;
+                        writer.EmbedComponents = embedComponents;
+
+                        writer.Begin();
+                        if (writer.RenderContext != null)
+                        {
+                            writer.RenderContext.Begin();
+                            circuitDisplay.Document.Render(writer.RenderContext);
+                            writer.RenderContext.End();
+                        }
+
                         using (FileStream fs = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.Read))
                         {
-                            CircuitDiagram.IO.CDDX.CDDXIO.Write(fs, circuitDisplay.Document, saveOptions);
+                            writer.Write(fs);
                         }
+
+                        writer.End();
+
                         m_docPath = sfd.FileName;
                         m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName);
                         this.Title = m_documentTitle + " - Circuit Diagram";
                         m_undoManager.SetSaveIndex();
-
                         AddRecentFile(m_docPath);
+                        m_lastSaveOptions = saveOptions;
 
                         saved = true;
                     }
@@ -1004,13 +1037,20 @@ namespace CircuitDiagram
                 }
                 else
                 {
-                    // Save in XML format
-                    CircuitDiagram.IO.CircuitDocumentWriter.WriteXml(circuitDisplay.Document, new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite));
+                    IO.Xml.XmlWriter writer = new IO.Xml.XmlWriter();
+                    writer.Document = ioDocument;
+
+                    writer.Begin();
+                    using (FileStream fs = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+                    {
+                        writer.Write(fs);
+                    }
+                    writer.End();
+
                     m_docPath = sfd.FileName;
                     m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName);
                     this.Title = m_documentTitle + " - Circuit Diagram";
                     m_undoManager.SetSaveIndex();
-
                     AddRecentFile(m_docPath);
 
                     saved = true;
@@ -1309,12 +1349,13 @@ namespace CircuitDiagram
 
                 CircuitDocument newDocument = new CircuitDocument();
                 newDocument.Size = new Size(newDocumentWindow.DocumentWidth, newDocumentWindow.DocumentHeight);
-                newDocument.Metadata.DublinCore.Creator = Environment.UserName;
-                newDocument.Metadata.DublinCore.Date = DateTime.Now;
+                newDocument.Metadata.Creator = Environment.UserName;
+                newDocument.Metadata.Created = DateTime.Now;
                 circuitDisplay.Document = newDocument;
                 circuitDisplay.DrawConnections();
                 this.Title = "Untitled - Circuit Diagram";
                 m_documentTitle = "Untitled";
+                m_docPath = "";
                 m_undoManager = new UndoManager();
                 circuitDisplay.UndoManager = m_undoManager;
                 m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);

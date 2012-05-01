@@ -27,9 +27,24 @@ using CircuitDiagram.Render;
 
 namespace CircuitDiagram.Elements
 {
+    /// <summary>
+    /// Represents a visible item within a CircuitDocument.
+    /// </summary>
     public interface ICircuitElement
     {
+        /// <summary>
+        /// The position of the element within the document.
+        /// </summary>
+        System.Windows.Vector Location { get; }
+        /// <summary>
+        /// Occurs when the element is updated.
+        /// </summary>
         event EventHandler Updated;
-        void Render(IRenderContext dc);
+        /// <summary>
+        /// Renders the element using the specified IRenderContext.
+        /// </summary>
+        /// <param name="dc">The IRenderContext to use for rendering.</param>
+        /// <param name="absolute">Whether to take the element's position within the document into account.</param>
+        void Render(IRenderContext dc, bool absolute = true);
     }
 }

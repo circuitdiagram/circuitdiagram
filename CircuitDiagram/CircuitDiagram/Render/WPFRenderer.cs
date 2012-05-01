@@ -24,11 +24,12 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
-using TextAlignment = CircuitDiagram.Components.Render.TextAlignment;
+using TextAlignment = CircuitDiagram.Render.TextAlignment;
 using System.Windows.Media.Imaging;
 using CircuitDiagram.Components.Render;
 using System.Windows.Documents;
 using System.Windows.Controls;
+using CircuitDiagram.Render.Path;
 
 namespace CircuitDiagram.Render
 {
@@ -54,6 +55,10 @@ namespace CircuitDiagram.Render
         public void End()
         {
             dc.Close();
+        }
+
+        public void StartSection(object tag)
+        {
         }
 
         public System.IO.MemoryStream GetPNGImage(int width, int height, bool center = false)
@@ -143,7 +148,7 @@ namespace CircuitDiagram.Render
             dc.DrawEllipse((fill ? Brushes.Black : Brushes.Transparent), new Pen(Brushes.Black, thickness), centre, radiusX, radiusY);
         }
 
-        public void DrawPath(Point start, IList<Components.Render.Path.IPathCommand> commands, double thickness, bool fill = false)
+        public void DrawPath(Point start, IList<IPathCommand> commands, double thickness, bool fill = false)
         {
             Pen newPen = new System.Windows.Media.Pen(Brushes.Black, thickness);
             newPen.StartLineCap = PenLineCap.Square;
@@ -151,7 +156,7 @@ namespace CircuitDiagram.Render
             dc.DrawGeometry((fill ? Brushes.Black : Brushes.Transparent), newPen, RenderHelper.GetGeometry(start, commands, fill));
         }
 
-        public void DrawText(Point anchor, Components.Render.TextAlignment alignment, IEnumerable<CircuitDiagram.Components.Render.TextRun> textRuns)
+        public void DrawText(Point anchor, TextAlignment alignment, IEnumerable<TextRun> textRuns)
         {
             double totalWidth = 0d;
             double totalHeight = 0d;

@@ -58,10 +58,10 @@ namespace CircuitDiagram.Components.Render
             Fill = fill;
         }
 
-        public void Render(Component component, CircuitDiagram.Render.IRenderContext dc)
+        public void Render(Component component, CircuitDiagram.Render.IRenderContext dc, bool absolute)
         {
-            if (dc.Absolute)
-                dc.DrawEllipse(Point.Add(Centre.Resolve(component), new Vector(component.Offset.X, component.Offset.Y)), RadiusX, RadiusY, Thickness, Fill);
+            if (absolute)
+                dc.DrawEllipse(Point.Add(Centre.Resolve(component), component.Location), RadiusX, RadiusY, Thickness, Fill);
             else
                 dc.DrawEllipse(Centre.Resolve(component), RadiusX, RadiusY, Thickness, Fill);
         }

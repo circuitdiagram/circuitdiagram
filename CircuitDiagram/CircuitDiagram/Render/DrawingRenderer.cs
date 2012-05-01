@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
-using TextAlignment = CircuitDiagram.Components.Render.TextAlignment;
+using TextAlignment = CircuitDiagram.Render.TextAlignment;
 using CircuitDiagram.Components.Render;
+using CircuitDiagram.Render.Path;
 
 namespace CircuitDiagram.Render
 {
@@ -32,6 +33,11 @@ namespace CircuitDiagram.Render
         {
         }
 
+        public void StartSection(object tag)
+        {
+            // Do nothing
+        }
+
         public void DrawLine(Point start, Point end, double thickness)
         {
             Pen newPen = new System.Windows.Media.Pen(Brushes.Black, thickness);
@@ -52,7 +58,7 @@ namespace CircuitDiagram.Render
             Context.DrawEllipse(fill ? Brushes.Black : null, Pen, centre, radiusX, radiusY);
         }
 
-        public void DrawPath(Point start, IList<Components.Render.Path.IPathCommand> commands, double thickness, bool fill = false)
+        public void DrawPath(Point start, IList<IPathCommand> commands, double thickness, bool fill = false)
         {
             Pen newPen = new System.Windows.Media.Pen(Brushes.Black, thickness);
             newPen.StartLineCap = PenLineCap.Square;
@@ -60,7 +66,7 @@ namespace CircuitDiagram.Render
             Context.DrawGeometry((fill ? Brushes.Black : null), newPen, RenderHelper.GetGeometry(start, commands, fill));
         }
 
-        public void DrawText(Point anchor, Components.Render.TextAlignment alignment, IEnumerable<TextRun> textRuns)
+        public void DrawText(Point anchor, TextAlignment alignment, IEnumerable<TextRun> textRuns)
         {
             double totalWidth = 0d;
             double totalHeight = 0d;

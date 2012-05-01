@@ -44,10 +44,16 @@ namespace CircuitDiagram
         {
             InitializeComponent();
 
+            // General
             chbShowConnectionPoints.IsChecked = Settings.Settings.ReadBool("showConnectionPoints");
             chbShowToolboxScrollBar.IsChecked = Settings.Settings.ReadBool("showToolboxScrollBar");
-            chbShowCDDXOptions.IsChecked = !Settings.Settings.ReadBool("AlwaysUseCDDXSaveSettings");
             chbCheckForUpdatesAutomatically.IsChecked = Settings.Settings.ReadBool("CheckForUpdatesOnStartup");
+
+            // Export
+            cbxEmbedComponents.SelectedIndex = 0;
+            if (Settings.Settings.HasSetting("EmbedComponents"))
+                cbxEmbedComponents.SelectedIndex = (int)Settings.Settings.Read("EmbedComponents");
+            chbShowCDDXOptions.IsChecked = !Settings.Settings.ReadBool("CDDX.AlwaysUseSettings");
         }
 
         public List<ImplementationConversionCollection> ComponentRepresentations
@@ -58,10 +64,15 @@ namespace CircuitDiagram
 
         private void button2_Click(object sender, RoutedEventArgs e)
         {
+            // General
             Settings.Settings.Write("showConnectionPoints", chbShowConnectionPoints.IsChecked.Value);
             Settings.Settings.Write("showToolboxScrollBar", chbShowToolboxScrollBar.IsChecked.Value);
-            Settings.Settings.Write("AlwaysUseCDDXSaveSettings", chbShowCDDXOptions.IsChecked.Value == false);
             Settings.Settings.Write("CheckForUpdatesOnStartup", chbCheckForUpdatesAutomatically.IsChecked.Value);
+
+            // Export
+            Settings.Settings.Write("EmbedComponents", cbxEmbedComponents.SelectedIndex);
+            ComponentHelper.EmbedOptions = (ComponentEmbedOptions)cbxEmbedComponents.SelectedIndex;
+            Settings.Settings.Write("CDDX.AlwaysUseSettings", chbShowCDDXOptions.IsChecked.Value == false);
 
             this.DialogResult = true;
             this.Close();
