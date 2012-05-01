@@ -61,13 +61,21 @@
             </TabItem>
             <TabItem Header="Export">
                 <Grid>
-                    <CheckBox Content="Show Circuit Diagram Document options when saving" Height="16" Margin="6,55,6,0" Name="chbShowCDDXOptions" VerticalAlignment="Top" />
-                    <Label Content="Embed components" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label4" VerticalAlignment="Top" />
-                    <ComboBox Height="23" Margin="186,10,6,0" Name="cbxEmbedComponents" VerticalAlignment="Top">
-                        <ComboBoxItem>All</ComboBoxItem>
-                        <ComboBoxItem>Automatic</ComboBoxItem>
-                        <ComboBoxItem>None</ComboBoxItem>
-                    </ComboBox>
+                    <GroupBox Header="Embed" Height="67" Margin="6,6,6,0" VerticalAlignment="Top">
+                        <Grid>
+                            <Label Content="Embed components" Height="28" HorizontalAlignment="Left" Margin="6,9,0,0" Name="label4" VerticalAlignment="Top" />
+                            <ComboBox Height="23" Margin="193,12,6,0" Name="cbxEmbedComponents" VerticalAlignment="Top">
+                                <ComboBoxItem>All</ComboBoxItem>
+                                <ComboBoxItem>Automatic</ComboBoxItem>
+                                <ComboBoxItem>None</ComboBoxItem>
+                            </ComboBox>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Display" Height="68" Margin="6,79,6,0" VerticalAlignment="Top">
+                        <Grid>
+                            <CheckBox Content="Show Circuit Diagram Document options when saving" Height="16" Margin="6,17,99,0" Name="chbShowCDDXOptions" VerticalAlignment="Top" Width="309" />
+                        </Grid>
+                    </GroupBox>
                 </Grid>
             </TabItem>
         </TabControl>
