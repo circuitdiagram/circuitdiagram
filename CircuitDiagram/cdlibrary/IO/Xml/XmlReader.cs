@@ -31,6 +31,12 @@ namespace CircuitDiagram.IO.Xml
     /// </summary>
     public class XmlReader : IDocumentReader
     {
+        public string PluginName { get { return "Xml Reader"; } }
+
+        public string ReaderVersion { get { return "1.0"; } }
+
+        public Guid GUID { get { return new Guid("f90e8458-3615-4f8a-9ba6-4115c6f2d6ba"); } }
+
         public IODocument Document { get; private set; }
 
         public DocumentLoadResult LoadResult { get; private set; }

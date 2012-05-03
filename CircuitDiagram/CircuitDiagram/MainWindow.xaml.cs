@@ -53,12 +53,9 @@ namespace CircuitDiagram
         DispatcherTimer m_statusTimer;
         UndoManager m_undoManager;
         Dictionary<Key, string> m_toolboxShortcuts = new Dictionary<Key, string>();
-
         UndoManager UndoManager { get { return m_undoManager; } }
         public System.Collections.ObjectModel.ObservableCollection<string> RecentFiles = new System.Collections.ObjectModel.ObservableCollection<string>();
-
         List<ImplementationConversionCollection> m_componentRepresentations = new List<ImplementationConversionCollection>();
-
         string m_docToLoad = null;
         #endregion
 
@@ -358,6 +355,8 @@ namespace CircuitDiagram
                 }
             }
             #endregion
+
+            PluginManager.Initialize();
         }
 
         /// <summary>
@@ -1066,7 +1065,13 @@ namespace CircuitDiagram
         {
             Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog();
             sfd.Title = "Export";
-            sfd.Filter = "PNG (*.png)|*.png|Scalable Vector Graphics (*.svg)|*.svg|Enhanced Metafile (*.emf)|*.emf";
+
+            string filter = "PNG (*.png)|*.png|Scalable Vector Graphics (*.svg)|*.svg|Enhanced Metafile (*.emf)|*.emf";
+            // Add plugin exporters
+            foreach (IDocumentWriter pluginWriter in PluginManager.EnabledExportWriters)
+                filter += String.Format("|{0} (*{1})|*{1}", pluginWriter.FileTypeName, pluginWriter.FileTypeExtension);
+
+            sfd.Filter = filter;
             sfd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
             if (sfd.ShowDialog() == true)
             {
@@ -1110,6 +1115,25 @@ namespace CircuitDiagram
                     {
                         renderer.WriteEnhMetafile(stream);
                     }
+                }
+                else
+                {
+                    IDocumentWriter writer = PluginManager.ExportWriters[sfd.FilterIndex - 4];
+                    IDictionary<IOComponentType, EmbedComponentData> embedComponents = new Dictionary<IOComponentType,EmbedComponentData>();
+                    if (writer is IElementDocumentWriter)
+                        (writer as IElementDocumentWriter).Document = circuitDisplay.Document.ToIODocument(out embedComponents);
+                    writer.Begin();
+                    if (writer is IVisualDocumentWriter)
+                    {
+                        (writer as IVisualDocumentWriter).RenderContext.Begin();
+                        circuitDisplay.Document.Render((writer as IVisualDocumentWriter).RenderContext);
+                        (writer as IVisualDocumentWriter).RenderContext.End();
+                    }
+                    using (FileStream stream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+                    {
+                        writer.Write(stream);
+                    }
+                    writer.End();
                 }
             }
         }

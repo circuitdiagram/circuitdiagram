@@ -32,6 +32,21 @@ namespace CircuitDiagram.IO
     public interface IDocumentReader : IDisposable
     {
         /// <summary>
+        /// The name for the plugin this reader belongs to.
+        /// </summary>
+        string PluginName { get; }
+
+        /// <summary>
+        /// The version of this reader.
+        /// </summary>
+        string ReaderVersion { get; }
+
+        /// <summary>
+        /// The unique GUID for this reader.
+        /// </summary>
+        Guid GUID { get; }
+
+        /// <summary>
         /// Gets the document loaded from the stream.
         /// </summary>
         IODocument Document { get; }

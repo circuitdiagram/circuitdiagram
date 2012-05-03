@@ -54,6 +54,12 @@ namespace CircuitDiagram
             if (Settings.Settings.HasSetting("EmbedComponents"))
                 cbxEmbedComponents.SelectedIndex = (int)Settings.Settings.Read("EmbedComponents");
             chbShowCDDXOptions.IsChecked = !Settings.Settings.ReadBool("CDDX.AlwaysUseSettings");
+
+            // Plugins
+            foreach (var item in PluginManager.ExportWriters)
+                lbxPlugins.Items.Add(new PluginListItem(item, item.PluginName, PluginManager.ExportWritersEnabled[item]));
+            foreach (var item in PluginManager.ImportReaders)
+                lbxPlugins.Items.Add(new PluginListItem(item, item.PluginName, PluginManager.ImportReadersEnabled[item]));
         }
 
         public List<ImplementationConversionCollection> ComponentRepresentations
@@ -73,6 +79,16 @@ namespace CircuitDiagram
             Settings.Settings.Write("EmbedComponents", cbxEmbedComponents.SelectedIndex);
             ComponentHelper.EmbedOptions = (ComponentEmbedOptions)cbxEmbedComponents.SelectedIndex;
             Settings.Settings.Write("CDDX.AlwaysUseSettings", chbShowCDDXOptions.IsChecked.Value == false);
+
+            // Plugins
+            foreach (PluginListItem item in lbxPlugins.Items)
+            {
+                if (item.Tag is CircuitDiagram.IO.IDocumentWriter)
+                    PluginManager.ExportWritersEnabled[item.Tag as CircuitDiagram.IO.IDocumentWriter] = item.IsEnabled;
+                if (item.Tag is CircuitDiagram.IO.IDocumentReader)
+                    PluginManager.ImportReadersEnabled[item.Tag as CircuitDiagram.IO.IDocumentReader] = item.IsEnabled;
+            }
+            PluginManager.SaveSettings();
 
             this.DialogResult = true;
             this.Close();
@@ -123,6 +139,20 @@ namespace CircuitDiagram
             }
 
             btnClearRecentFiles.IsEnabled = false;
+        }
+    }
+
+    class PluginListItem
+    {
+        public bool IsEnabled { get; set; }
+        public string Name { get; set; }
+        public object Tag { get; set; }
+
+        public PluginListItem(object tag, string name, bool isEnabled)
+        {
+            Tag = tag;
+            Name = name;
+            IsEnabled = isEnabled;
         }
     }
 }

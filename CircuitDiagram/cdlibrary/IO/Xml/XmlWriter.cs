@@ -32,6 +32,16 @@ namespace CircuitDiagram.IO.Xml
     /// </summary>
     public class XmlWriter : IElementDocumentWriter
     {
+        public string PluginName { get { return "Xml Writer"; } }
+
+        public string WriterVersion { get { return "1.0"; } }
+
+        public Guid GUID { get { return new Guid("03985dc3-2648-49e9-84db-8d9f273ed92d"); } }
+
+        public string FileTypeName { get { return "XML Files"; } }
+
+        public string FileTypeExtension { get { return ".xml"; } }
+
         /// <summary>
         /// Options for saving.
         /// </summary>

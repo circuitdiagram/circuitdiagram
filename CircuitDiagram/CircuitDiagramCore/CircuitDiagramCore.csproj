@@ -54,6 +54,7 @@
     <Compile Include="IO\DocumentLoadResultType.cs" />
     <Compile Include="IO\EmbedComponentData.cs" />
     <Compile Include="IO\Interfaces\IDocumentReader.cs" />
+    <Compile Include="IO\Interfaces\IDocumentWriter.cs" />
     <Compile Include="IO\Interfaces\IElementDocumentWriter.cs" />
     <Compile Include="IO\Interfaces\IEmbedDocumentWriter.cs" />
     <Compile Include="IO\SaveOptionsEditor.cs" />
