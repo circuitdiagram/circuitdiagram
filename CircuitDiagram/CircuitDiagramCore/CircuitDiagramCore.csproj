@@ -67,6 +67,8 @@
     <Compile Include="IO\Interfaces\ISaveOptions.cs" />
     <Compile Include="IO\Interfaces\IVisualDocumentWriter.cs" />
     <Compile Include="IO\SaveOptionsTypeAttribute.cs" />
+    <Compile Include="IPluginPart.cs" />
+    <Compile Include="IPlugin.cs" />
     <Compile Include="Render\IRenderContext.cs" />
     <Compile Include="Render\Path\ClosePath.cs" />
     <Compile Include="Render\Path\CommandType.cs" />

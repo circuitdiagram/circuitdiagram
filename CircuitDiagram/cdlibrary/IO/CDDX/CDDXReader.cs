@@ -33,11 +33,11 @@ namespace CircuitDiagram.IO.CDDX
     /// </summary>
     public class CDDXReader : IDocumentReader
     {
-        public string PluginName { get { return "CDDX Reader"; } }
+        public string PluginPartName { get { return "CDDX Reader"; } }
 
-        public string ReaderVersion { get { return "1.0"; } }
+        public string FileTypeName { get { return "Circuit Diagram Document"; } }
 
-        public Guid GUID { get { return new Guid("f036b9f4-b361-4685-90cc-1377b9a2f226"); } }
+        public string FileTypeExtension { get { return ".cddx"; } }
 
         /// <summary>
         /// The CDDX format version that this class is capable of reading.

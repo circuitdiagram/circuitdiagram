@@ -29,22 +29,17 @@ namespace CircuitDiagram.IO
     /// <summary>
     /// Provides methods to read an IODocument from a stream.
     /// </summary>
-    public interface IDocumentReader : IDisposable
+    public interface IDocumentReader : IDisposable, IPluginPart
     {
         /// <summary>
-        /// The name for the plugin this reader belongs to.
+        /// Gets the name of the file type associated with this reader.
         /// </summary>
-        string PluginName { get; }
+        string FileTypeName { get; }
 
         /// <summary>
-        /// The version of this reader.
+        /// Gets the file extension associated with this reader, including the preceeding period.
         /// </summary>
-        string ReaderVersion { get; }
-
-        /// <summary>
-        /// The unique GUID for this reader.
-        /// </summary>
-        Guid GUID { get; }
+        string FileTypeExtension { get; }
 
         /// <summary>
         /// Gets the document loaded from the stream.

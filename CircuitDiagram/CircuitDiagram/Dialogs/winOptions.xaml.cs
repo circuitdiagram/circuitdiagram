@@ -56,10 +56,8 @@ namespace CircuitDiagram
             chbShowCDDXOptions.IsChecked = !Settings.Settings.ReadBool("CDDX.AlwaysUseSettings");
 
             // Plugins
-            foreach (var item in PluginManager.ExportWriters)
-                lbxPlugins.Items.Add(new PluginListItem(item, item.PluginName, PluginManager.ExportWritersEnabled[item]));
-            foreach (var item in PluginManager.ImportReaders)
-                lbxPlugins.Items.Add(new PluginListItem(item, item.PluginName, PluginManager.ImportReadersEnabled[item]));
+            foreach (var item in PluginManager.Plugins)
+                lbxPlugins.Items.Add(new PluginListItem(item, item.Name, item.Author, item.Version, PluginManager.IsPluginEnabled(item)));
         }
 
         public List<ImplementationConversionCollection> ComponentRepresentations
@@ -83,11 +81,9 @@ namespace CircuitDiagram
             // Plugins
             foreach (PluginListItem item in lbxPlugins.Items)
             {
-                if (item.Tag is CircuitDiagram.IO.IDocumentWriter)
-                    PluginManager.ExportWritersEnabled[item.Tag as CircuitDiagram.IO.IDocumentWriter] = item.IsEnabled;
-                if (item.Tag is CircuitDiagram.IO.IDocumentReader)
-                    PluginManager.ImportReadersEnabled[item.Tag as CircuitDiagram.IO.IDocumentReader] = item.IsEnabled;
+                PluginManager.SetPluginEnabled(item.Tag as IPlugin, item.IsEnabled);
             }
+            PluginManager.Update();
             PluginManager.SaveSettings();
 
             this.DialogResult = true;
@@ -146,12 +142,16 @@ namespace CircuitDiagram
     {
         public bool IsEnabled { get; set; }
         public string Name { get; set; }
+        public string Author { get; set; }
+        public string Version { get; set; }
         public object Tag { get; set; }
 
-        public PluginListItem(object tag, string name, bool isEnabled)
+        public PluginListItem(object tag, string name, string author, string version, bool isEnabled)
         {
             Tag = tag;
             Name = name;
+            Author = author;
+            Version = version;
             IsEnabled = isEnabled;
         }
     }

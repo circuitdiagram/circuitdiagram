@@ -357,6 +357,34 @@ namespace CircuitDiagram
             #endregion
 
             PluginManager.Initialize();
+            try
+            {
+                LoadImportMenu();
+            }
+            catch (Exception)
+            {
+                SetStatusText("An error occurred loading plugins.");
+            }
+        }
+
+        private void LoadImportMenu()
+        {
+            mnuFileImport.Items.Clear();
+            if (PluginManager.EnabledImportReaders.Count() > 0)
+            {
+                mnuFileImport.Visibility = System.Windows.Visibility.Visible;
+
+                foreach (var item in PluginManager.EnabledImportReaders)
+                {
+                    MenuItem importMenuItem = new MenuItem();
+                    importMenuItem.Header = item.PluginPartName;
+                    importMenuItem.Tag = item;
+                    importMenuItem.Click += new RoutedEventHandler(importMenuItem_Click);
+                    mnuFileImport.Items.Add(importMenuItem);
+                }
+            }
+            else
+                mnuFileImport.Visibility = System.Windows.Visibility.Collapsed;
         }
 
         /// <summary>
@@ -905,7 +933,7 @@ namespace CircuitDiagram
         /// <param name="saved">Whether the document was saved.</param>
         private void SaveDocument(out bool saved)
         {
-            if (m_docPath != "")
+            if (!String.IsNullOrEmpty(m_docPath))
             {
                 IDictionary<IOComponentType, EmbedComponentData> embedComponents;
                 IODocument ioDocument = circuitDisplay.Document.ToIODocument(out embedComponents);
@@ -1061,6 +1089,52 @@ namespace CircuitDiagram
         #endregion
 
         #region Menu Bar
+        void importMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Title = "Import";
+            IDocumentReader reader = (sender as MenuItem).Tag as IDocumentReader;
+            ofd.Filter = String.Format("{0} (*{1})|{1}", reader.FileTypeName, reader.FileTypeExtension);
+            if (ofd.ShowDialog() == true)
+            {
+                bool succeeded = reader.Load(File.OpenRead(ofd.FileName));
+
+                List<IOComponentType> unavailableComponents = null;
+                CircuitDocument loadedDocument = null;
+                if (succeeded)
+                {
+                    loadedDocument = reader.Document.ToCircuitDocument(reader, out unavailableComponents);
+                    loadedDocument.Metadata.Format = reader.LoadResult.Format; // Set format
+                }
+                if (unavailableComponents == null)
+                    unavailableComponents = new List<IOComponentType>();
+
+                // Show load result dialog
+                if (reader.LoadResult.Type != DocumentLoadResultType.Success || reader.LoadResult.Errors.Count > 0 || unavailableComponents.Count > 0)
+                {
+                    winDocumentLoadResult loadResultWindow = new winDocumentLoadResult();
+                    loadResultWindow.Owner = this;
+                    loadResultWindow.SetMessage(reader.LoadResult.Type);
+                    loadResultWindow.SetErrors(reader.LoadResult.Errors);
+                    loadResultWindow.SetUnavailableComponents(unavailableComponents);
+                    loadResultWindow.ShowDialog();
+                }
+
+                if (succeeded)
+                {
+                    circuitDisplay.Document = loadedDocument;
+                    circuitDisplay.DrawConnections();
+                    m_docPath = null; // Cannot be saved to imported format
+                    m_documentTitle = System.IO.Path.GetFileName(ofd.FileName);
+                    this.Title = m_documentTitle + " - Circuit Diagram";
+                    m_undoManager = new UndoManager();
+                    circuitDisplay.UndoManager = m_undoManager;
+                    m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
+                    m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
+                }
+            }
+        }
+
         private void mnuFileExport_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog();
@@ -1118,7 +1192,7 @@ namespace CircuitDiagram
                 }
                 else
                 {
-                    IDocumentWriter writer = PluginManager.ExportWriters[sfd.FilterIndex - 4];
+                    IDocumentWriter writer = PluginManager.EnabledExportWriters[sfd.FilterIndex - 4];
                     IDictionary<IOComponentType, EmbedComponentData> embedComponents = new Dictionary<IOComponentType,EmbedComponentData>();
                     if (writer is IElementDocumentWriter)
                         (writer as IElementDocumentWriter).Document = circuitDisplay.Document.ToIODocument(out embedComponents);
@@ -1239,6 +1313,8 @@ namespace CircuitDiagram
                 }
                 writer.Flush();
                 writer.Close();
+
+                LoadImportMenu();
             }
         }
 

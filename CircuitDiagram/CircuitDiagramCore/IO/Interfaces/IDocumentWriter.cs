@@ -9,23 +9,8 @@ namespace CircuitDiagram.IO
     /// <summary>
     /// The base interface for all document writers.
     /// </summary>
-    public interface IDocumentWriter
+    public interface IDocumentWriter : IPluginPart
     {
-        /// <summary>
-        /// The name for the plugin this writer belongs to.
-        /// </summary>
-        string PluginName { get; }
-
-        /// <summary>
-        /// The version of this writer.
-        /// </summary>
-        string WriterVersion { get; }
-
-        /// <summary>
-        /// The unique GUID for this writer.
-        /// </summary>
-        Guid GUID { get; }
-
         /// <summary>
         /// Gets the name of the file type associated with this writer.
         /// </summary>

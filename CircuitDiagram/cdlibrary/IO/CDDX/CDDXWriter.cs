@@ -34,11 +34,7 @@ namespace CircuitDiagram.IO.CDDX
     [SaveOptionsType(typeof(CDDXSaveOptions))]
     public class CDDXWriter : IEmbedDocumentWriter, IVisualDocumentWriter
     {
-        public string PluginName { get { return "CDDX Writer"; } }
-
-        public string WriterVersion { get { return "1.0"; } }
-
-        public Guid GUID { get { return new Guid("f738a203-67fe-4ed4-a7aa-d05e4f2a98bb"); } }
+        public string PluginPartName { get { return "CDDX Writer"; } }
 
         public string FileTypeName { get { return "Circuit Diagram Document"; } }
 

@@ -85,8 +85,15 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <CheckBox IsChecked="{Binding IsEnabled}" VerticalAlignment="Center" Margin="0,0,5,0" />
-                                    <TextBlock Text="{Binding Name}" />
+                                    <CheckBox IsChecked="{Binding IsEnabled}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{Binding Name}" FontSize="12" />
+                                        <TextBlock Text="{Binding Author}" FontSize="10" Foreground="Gray" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Version " FontSize="10" Foreground="Gray" />
+                                            <TextBlock Text="{Binding Version}" FontSize="10" Foreground="Gray" />
+                                        </StackPanel>
+                                    </StackPanel>
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
