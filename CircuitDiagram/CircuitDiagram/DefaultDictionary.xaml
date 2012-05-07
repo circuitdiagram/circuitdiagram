@@ -119,6 +119,10 @@
                             <Setter Property="Background" Value="Gray" />
                             <Setter TargetName="MainBorder" Property="CornerRadius" Value="3" />
                         </Trigger>
+                        <Trigger Property="IsSelectedCategory" Value="True">
+                            <Setter Property="Background" Value="Gray" />
+                            <Setter TargetName="MainBorder" Property="CornerRadius" Value="3" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

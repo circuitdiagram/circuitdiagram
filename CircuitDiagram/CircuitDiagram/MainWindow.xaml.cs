@@ -637,6 +637,7 @@ namespace CircuitDiagram
             }
 
             // Set select as current tool
+            mainToolbox.SetSelected(tbxcatSelect);
             circuitDisplay.NewComponentData = null;
         }
 

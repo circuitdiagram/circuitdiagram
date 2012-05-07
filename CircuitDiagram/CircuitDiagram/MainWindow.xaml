@@ -57,7 +57,7 @@
                         </LinearGradientBrush.GradientStops>
                     </LinearGradientBrush>
                 </tb:Toolbox.Background>
-                <tb:ToolboxCategory>
+                <tb:ToolboxCategory x:Name="tbxcatSelect">
                     <tb:ToolboxItem ToolTip="Select (v)" Click="btnSelect_Click">
                         <Image Source="select icon.png" Width="45" Height="45" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor">
                             <Image.Effect>
