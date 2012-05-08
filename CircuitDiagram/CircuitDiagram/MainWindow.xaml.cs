@@ -52,7 +52,7 @@ namespace CircuitDiagram
         IO.CDDX.CDDXSaveOptions m_lastSaveOptions;
         DispatcherTimer m_statusTimer;
         UndoManager m_undoManager;
-        Dictionary<Key, string> m_toolboxShortcuts = new Dictionary<Key, string>();
+        Dictionary<Key, FrameworkElement> m_toolboxShortcuts = new Dictionary<Key, FrameworkElement>();
         UndoManager UndoManager { get { return m_undoManager; } }
         public System.Collections.ObjectModel.ObservableCollection<string> RecentFiles = new System.Collections.ObjectModel.ObservableCollection<string>();
         List<ImplementationConversionCollection> m_componentRepresentations = new List<ImplementationConversionCollection>();
@@ -464,7 +464,7 @@ namespace CircuitDiagram
 
                                             if (!m_toolboxShortcuts.ContainsKey(key))
                                             {
-                                                m_toolboxShortcuts.Add(key, "@rid:" + description.RuntimeID + ", @config: " + configuration.Name);
+                                                m_toolboxShortcuts.Add(key, newItem);
                                                 
                                                 // Add key to tooltip
                                                 newItem.ToolTip = configuration.Name + " (" + key.ToString().ToLowerInvariant() + ")";
@@ -508,7 +508,7 @@ namespace CircuitDiagram
 
                                         if (!m_toolboxShortcuts.ContainsKey(key))
                                         {
-                                            m_toolboxShortcuts.Add(key, "@rid:" + description.RuntimeID);
+                                            m_toolboxShortcuts.Add(key, newItem);
 
                                             // Add key to tooltip
                                             newItem.ToolTip = description.ComponentName + " (" + key.ToString().ToLowerInvariant() + ")";
@@ -565,7 +565,7 @@ namespace CircuitDiagram
 
                                             if (!m_toolboxShortcuts.ContainsKey(key))
                                             {
-                                                m_toolboxShortcuts.Add(key, "@rid:" + description.RuntimeID + ", @config: " + configuration.Name);
+                                                m_toolboxShortcuts.Add(key, newItem);
 
                                                 // Add key to tooltip
                                                 newItem.ToolTip = configuration.Name + " (" + key.ToString().ToLowerInvariant() + ")";
@@ -609,7 +609,7 @@ namespace CircuitDiagram
 
                                         if (!m_toolboxShortcuts.ContainsKey(key))
                                         {
-                                            m_toolboxShortcuts.Add(key, "@rid:" + description.RuntimeID);
+                                            m_toolboxShortcuts.Add(key, newItem);
 
                                             // Add key to tooltip
                                             newItem.ToolTip = description.ComponentName + " (" + key.ToString().ToLowerInvariant() + ")";
@@ -1577,6 +1577,16 @@ namespace CircuitDiagram
                 {
                     circuitDisplay.NewComponentData = "@rid: " + ComponentHelper.WireDescription.RuntimeID;
 
+                    foreach (object category in mainToolbox.Items)
+                    {
+                        if (category is Toolbox.ToolboxCategory && (category as Toolbox.ToolboxCategory).Items.Count == 1 && (category as Toolbox.ToolboxCategory).Items[0] is Toolbox.ToolboxItem &&
+                            String.Equals(((category as Toolbox.ToolboxCategory).Items[0] as Toolbox.ToolboxItem).Tag as string, "@rid:" + ComponentHelper.WireDescription.RuntimeID))
+                        {
+                            mainToolbox.SetSelected(category as Toolbox.ToolboxCategory);
+                            break;
+                        }
+                    }
+
                     SetStatusText("Placing wire.");
 
                     e.Handled = true;
@@ -1592,7 +1602,11 @@ namespace CircuitDiagram
                     // Check custom toolbox entries
                     if (m_toolboxShortcuts.ContainsKey(e.Key))
                     {
-                        circuitDisplay.NewComponentData = m_toolboxShortcuts[e.Key];
+                        circuitDisplay.NewComponentData = m_toolboxShortcuts[e.Key].Tag.ToString();
+                        if (m_toolboxShortcuts[e.Key] is Toolbox.ToolboxCategory)
+                            mainToolbox.SetSelected(m_toolboxShortcuts[e.Key] as Toolbox.ToolboxCategory);
+                        else if (m_toolboxShortcuts[e.Key].Parent is Toolbox.ToolboxCategory)
+                            mainToolbox.SetSelected(m_toolboxShortcuts[e.Key].Parent as Toolbox.ToolboxCategory);
 
                         string rid = circuitDisplay.NewComponentData.Substring(circuitDisplay.NewComponentData.IndexOf("@rid:") + 5);
                         string configuration = null;
