@@ -99,7 +99,8 @@
                     <Grid Width="45" Height="45">
                         <Border Name="MainBorder" Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="3">
                             <ContentPresenter Content="{TemplateBinding MainItem}" />
                         </Border>
                         <Canvas Name="ExpanderCanvas" Visibility="Collapsed">
@@ -117,11 +118,9 @@
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value="Gray" />
-                            <Setter TargetName="MainBorder" Property="CornerRadius" Value="3" />
                         </Trigger>
                         <Trigger Property="IsSelectedCategory" Value="True">
                             <Setter Property="Background" Value="Gray" />
-                            <Setter TargetName="MainBorder" Property="CornerRadius" Value="3" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

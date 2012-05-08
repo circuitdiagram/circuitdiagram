@@ -1568,6 +1568,7 @@ namespace CircuitDiagram
                 {
                     circuitDisplay.NewComponentData = null;
 
+                    mainToolbox.SetSelected(tbxcatSelect);
                     SetStatusText("Select tool.");
 
                     e.Handled = true;
