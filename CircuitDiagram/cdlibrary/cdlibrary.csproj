@@ -84,6 +84,7 @@
     <Compile Include="EmbedDescription.cs" />
     <Compile Include="IO\ApplicationInfo.cs" />
     <Compile Include="IO\BinaryIOExtentions.cs" />
+    <Compile Include="IO\CDDX\LegacyCDDXReader.cs" />
     <Compile Include="IO\Descriptions\BinaryLoader.cs" />
     <Compile Include="IO\Descriptions\BinaryResource.cs" />
     <Compile Include="IO\Descriptions\BinaryWriter.cs" />

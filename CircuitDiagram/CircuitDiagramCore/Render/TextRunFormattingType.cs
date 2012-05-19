@@ -38,11 +38,11 @@ namespace CircuitDiagram.Render
         /// <summary>
         /// The text should be rendered as subscript.
         /// </summary>
-        Subscript = 2,
+        Subscript = 10,
 
         /// <summary>
         /// The text should be rendered as superscript.
         /// </summary>
-        Superscript = 4
+        Superscript = 11
     }
 }

@@ -286,9 +286,8 @@ namespace CircuitDiagram.IO.Xml
 
                         if (properties.ContainsKey("flipped"))
                         {
-                            bool flipped = bool.Parse(properties["flipped"].ToString());
+                            component.IsFlipped = bool.Parse(properties["flipped"].ToString());
                             properties.Remove("flipped");
-                            properties.Add("@flipped", flipped);
                         }
 
                         // Convert component name
@@ -372,47 +371,108 @@ namespace CircuitDiagram.IO.Xml
                 newType = "not";
             else if (oldType == "logicgate" && t == "6")
                 newType = "schmittnot";
-            else if (oldType == "resistor" && t == "0" || t == "Standard")
+            else if (oldType == "resistor" && (t == "0" || t == "5" || t == "Standard"))
                 newType = "resistor";
-            else if (oldType == "resistor" && t == "1" || t == "Variable")
-                newType = "variableresistor";
-            else if (oldType == "resistor" && t == "2" || t == "Potentiometer")
+            else if (oldType == "resistor" && (t == "1" || t == "Potentiometer"))
                 newType = "potentiometer";
-            else if (oldType == "resistor" && t == "3" || t == "Thermistor")
-                newType = "thermistor";
-            else if (oldType == "resistor" && t == "4" || t == "LDR")
+            else if (oldType == "resistor" && (t == "2" || t == "LDR"))
                 newType = "ldr";
+            else if (oldType == "resistor" && (t == "3" || t == "Thermistor"))
+                newType = "thermistor";
+            else if (oldType == "resistor" && (t == "4" || t == "Variable"))
+                newType = "variableresistor";
+            else if (oldType == "capacitor" & (t == "1" || t == "Variable"))
+                newType = "variablecapacitor";
+            else if (oldType == "capacitor" & (t == "2" || t == "Trimmer"))
+                newType = "trimmercapacitor";
+            else if (oldType == "capacitor" & (t == "3" || t == "Polarised"))
+                newType = "polarisedcapacitor";
+            else if (oldType == "capacitor")
+                newType = "capacitor";
             else if (oldType == "rail")
                 newType = "rail";
             else if (oldType == "supply")
                 newType = "cell";
+            else if (oldType == "ground")
+                newType = "ground";
             else if (oldType == "switch" && t == "0")
                 newType = "pushswitch";
             else if (oldType == "switch" && t == "1")
                 newType = "toggleswitch";
+            else if (oldType == "switch" && t == "2")
+                newType = "analogueswitch";
+            else if (oldType == "switch" && t == "3")
+                newType = "ptbswitch";
+            else if (oldType == "switch" && t == "4")
+                newType = "changeoverswitch";
             else if (oldType == "transistor" && t == "0")
-                newType = "mosfetn";
-            else if (oldType == "transistor" && t == "1")
-                newType = "mosfetp";
-            else if (oldType == "transistor" && t == "2")
                 newType = "transnpn";
-            else if (oldType == "transistor" && t == "3")
+            else if (oldType == "transistor" && t == "1")
                 newType = "transpnp";
-            else if (oldType == "outputdevice" && t == "3")
-                newType = "heater";
+            else if (oldType == "transistor" && t == "2")
+                newType = "mosfetn";
+            else if (oldType == "transistor" && t == "3")
+                newType = "mosfetp";
             else if (oldType == "mosfet")
                 newType = "mosfetn";
-            else if (oldType == "externalconnection")
-            {
-                newType = "extconnection";
-                collection = ComponentCollections.Misc;
-            }
+            else if (oldType == "opamp")
+                newType = "opamp";
+            else if (oldType == "diode" && t == "0")
+                newType = "diode";
+            else if (oldType == "diode" && t == "1")
+                newType = "zenerdiode";
+            else if (oldType == "diode" && t == "2")
+                newType = "led";
+            else if (oldType == "diode" && t == "3")
+                newType = "photodiode";
+            else if (oldType == "diode" && t == "4")
+                newType = "diodebridge";
             else if (oldType == "counter")
                 newType = "counter4";
             else if (oldType == "switch")
                 newType = "pushswitch";
             else if (oldType == "microphone")
                 newType = "microphone";
+            else if (oldType == "lamp")
+                newType = "lamp";
+            else if (oldType == "meter" && t == "0")
+                newType = "voltmeter";
+            else if (oldType == "meter" && t == "1")
+                newType = "ammeter";
+            else if (oldType == "inductor")
+                newType = "inductor";
+            else if (oldType == "transformer")
+                newType = "transformer";
+            else if (oldType == "crystal")
+                newType = "crystal";
+            else if (oldType == "segdisplay")
+                newType = "7segdisplay";
+            else if (oldType == "segdecoder")
+                newType = "7segdecoder";
+            else if (oldType == "microcontroller")
+                newType = "microcontroller";
+            else if (oldType == "outputdevice" && t == "0")
+                newType = "speaker";
+            else if (oldType == "outputdevice" && t == "1")
+                newType = "motor";
+            else if (oldType == "outputdevice" && t == "2")
+                newType = "buzzer";
+            else if (oldType == "outputdevice" && t == "3")
+                newType = "heater";
+            else if (oldType == "fuse")
+                newType = "fuse";
+            else if (oldType == "flipflop")
+                newType = "dflipflop";
+            else if (oldType == "externalconnection")
+            {
+                newType = "extconnection";
+                collection = ComponentCollections.Misc;
+            }
+            else if (oldType == "elabel")
+            {
+                newType = "label";
+                collection = ComponentCollections.Misc;
+            }
             else
             {
                 newType = oldType;

@@ -94,6 +94,8 @@ namespace CircuitDiagram.IO.Xml
                     writer.WriteAttributeString("orientation", (component.Orientation == Orientation.Horizontal ? "horizontal" : "vertical"));
                 if (component.Size.HasValue)
                     writer.WriteAttributeString("size", component.Size.Value.ToString());
+                if (component.IsFlipped.HasValue)
+                    writer.WriteAttributeString("flipped", component.IsFlipped.Value.ToString());
                 if (component.Type.GUID != Guid.Empty)
                     writer.WriteAttributeString("guid", component.Type.GUID.ToString());
 

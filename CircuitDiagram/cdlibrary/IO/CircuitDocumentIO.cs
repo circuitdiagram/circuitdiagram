@@ -186,6 +186,12 @@ namespace CircuitDiagram
 
                     Component addComponent = Component.Create(identifier, properties);
                     addComponent.Layout(component.Location.Value.X, component.Location.Value.Y, (component.Size.HasValue ? component.Size.Value : identifier.Description.MinSize), component.Orientation.Value, component.IsFlipped == true);
+                    addComponent.ImplementMinimumSize(addComponent.Description.MinSize);
+                    FlagOptions flagOptions = ComponentHelper.ApplyFlags(addComponent);
+                    if ((flagOptions & FlagOptions.HorizontalOnly) == FlagOptions.HorizontalOnly && component.Orientation == Orientation.Vertical)
+                        addComponent.Orientation = Orientation.Horizontal;
+                    else if ((flagOptions & FlagOptions.VerticalOnly) == FlagOptions.VerticalOnly && component.Orientation == Orientation.Horizontal)
+                        addComponent.Orientation = Orientation.Vertical;
                     circuitDocument.Elements.Add(addComponent);
                 }
                 else

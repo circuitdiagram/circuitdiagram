@@ -69,6 +69,7 @@ namespace CircuitDiagram.IO.CDDX
         /// </summary>
         public CDDXReader()
         {
+            m_typeParts = new Dictionary<IOComponentType, PackagePart>();
         }
 
         /// <summary>
@@ -93,6 +94,17 @@ namespace CircuitDiagram.IO.CDDX
                 ReadMetadata();
 
                 return success;
+            }
+            catch (FileFormatException)
+            {
+                // Try opening as legacy format
+                IODocument circuitDocument;
+                DocumentLoadResult loadResult;
+                stream.Seek(0, SeekOrigin.Begin);
+                bool succeeded = LegacyCDDXReader.Read(stream, out circuitDocument, out loadResult);
+                Document = circuitDocument;
+                LoadResult = loadResult;
+                return succeeded;
             }
             catch
             {
@@ -186,7 +198,7 @@ namespace CircuitDiagram.IO.CDDX
                 Document.Size = new System.Windows.Size(width, height);
 
                 // Read sources
-                m_typeParts = new Dictionary<IOComponentType, PackagePart>();
+                m_typeParts.Clear();
                 Dictionary<string, IOComponentType> componentTypes = new Dictionary<string, IOComponentType>(); // for use when loading component elements
                 XmlNodeList componentSourceNodes = doc.SelectNodes("/cdd:circuit/cdd:definitions/cdd:src", namespaceManager);
                 foreach (XmlElement source in componentSourceNodes)

@@ -113,7 +113,7 @@ namespace CircuitDiagram
 
                 // Don't allow duplicates
                 if ((cbxImplementationsSet.SelectedItem as ImplementationConversionCollection).Items.FirstOrDefault(item => item.ImplementationName == conversion.ImplementationName) != null)
-                    MessageBox.Show("The item is already present.", "Could Not Add Implementation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    TaskDialogInterop.TaskDialog.ShowMessage(this, "The item could not be added because it is already present.\r\n\r\nYou can add this item again if you delete its current representation first.", "Could Not Add Item", TaskDialogInterop.TaskDialogCommonButtons.Close, TaskDialogInterop.VistaTaskDialogIcon.Warning);
                 else
                     (cbxImplementationsSet.SelectedItem as ImplementationConversionCollection).Items.Add(newComImplementation.GetChosenComponent());
             }
