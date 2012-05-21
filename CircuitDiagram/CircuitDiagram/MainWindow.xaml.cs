@@ -1141,7 +1141,7 @@ namespace CircuitDiagram
             Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog();
             sfd.Title = "Export";
 
-            string filter = "PNG (*.png)|*.png|Scalable Vector Graphics (*.svg)|*.svg|Enhanced Metafile (*.emf)|*.emf";
+            string filter = "PNG (*.png)|*.png|Scalable Vector Graphics (*.svg)|*.svg";
             // Add plugin exporters
             foreach (IDocumentWriter pluginWriter in PluginManager.EnabledExportWriters)
                 filter += String.Format("|{0} (*{1})|*{1}", pluginWriter.FileTypeName, pluginWriter.FileTypeExtension);
@@ -1180,7 +1180,7 @@ namespace CircuitDiagram
                         }
                     }
                 }
-                else if (extension == ".emf")
+                else if (extension == ".emf") // Disabled
                 {
                     EMFRenderer renderer = new EMFRenderer((int)circuitDisplay.Document.Size.Width, (int)circuitDisplay.Document.Size.Height);
                     renderer.Begin();
