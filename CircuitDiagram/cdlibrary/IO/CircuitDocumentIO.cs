@@ -140,7 +140,7 @@ namespace CircuitDiagram
                     List<IOComponentType> associatedTypes = new List<IOComponentType>();
                     foreach (var item in componentTypes)
                     {
-                        if (item.Key.Description == embedItem.Description)
+                        if (item.Key.Description == embedItem.Description && !embedComponents.ContainsKey(item.Value))
                             embedComponents.Add(item.Value, embedData);
                     }
                 }

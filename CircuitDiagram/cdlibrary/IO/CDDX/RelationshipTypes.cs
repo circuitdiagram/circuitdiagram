@@ -54,5 +54,10 @@ namespace CircuitDiagram.IO.CDDX
         /// Relationship for the extended properties.
         /// </summary>
         public const string ExtendedProperties = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/metadata/extended-properties";
+
+        /// <summary>
+        /// Relationship for format properties.
+        /// </summary>
+        public const string FormatProperties = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/relationships/format/properties";
     }
 }

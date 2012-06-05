@@ -138,11 +138,9 @@ namespace CircuitDiagram.IO
                     if (!t1.ContainsKey(item2.Component))
                         t1.Add(item2.Component, new Dictionary<string, string>());
                     if (item.Count > 1 && !t1[item2.Component].ContainsKey(item2.ConnectionDescription.Name))
-                    {
                         t1[item2.Component].Add(item2.ConnectionDescription.Name, namedConnectionRefCounter.ToString());
-                        namedConnectionRefCounter++;
-                    }
                 }
+                namedConnectionRefCounter++;
             }
 
             // Restore normal connections

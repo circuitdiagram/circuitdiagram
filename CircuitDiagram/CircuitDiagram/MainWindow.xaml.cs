@@ -942,6 +942,12 @@ namespace CircuitDiagram
                 string extension = Path.GetExtension(m_docPath);
                 if (extension == ".cddx")
                 {
+                    // Load default save options if no previous options (e.g. if file opened)
+                    Settings.SettingsSerializer serializer = new Settings.SettingsSerializer();
+                    serializer.Category = "CDDX";
+                    m_lastSaveOptions = new IO.CDDX.CDDXSaveOptions();
+                    m_lastSaveOptions.Deserialize(serializer);
+
                     IO.CDDX.CDDXWriter writer = new IO.CDDX.CDDXWriter();
                     writer.Document = ioDocument;
                     writer.Options = m_lastSaveOptions;
@@ -1194,7 +1200,7 @@ namespace CircuitDiagram
                 else
                 {
                     IDocumentWriter writer = PluginManager.EnabledExportWriters[sfd.FilterIndex - 4];
-                    IDictionary<IOComponentType, EmbedComponentData> embedComponents = new Dictionary<IOComponentType,EmbedComponentData>();
+                    IDictionary<IOComponentType, EmbedComponentData> embedComponents = new Dictionary<IOComponentType, EmbedComponentData>();
                     if (writer is IElementDocumentWriter)
                         (writer as IElementDocumentWriter).Document = circuitDisplay.Document.ToIODocument(out embedComponents);
                     writer.Begin();
@@ -1321,10 +1327,21 @@ namespace CircuitDiagram
 
         private void mnuFileDocument_Click(object sender, RoutedEventArgs e)
         {
+            string previousTitle = circuitDisplay.Document.Metadata.Title;
+            string previousDescription = circuitDisplay.Document.Metadata.Description;
+
             winDocumentProperties documentInfoWindow = new winDocumentProperties();
             documentInfoWindow.Owner = this;
             documentInfoWindow.SetDocument(circuitDisplay.Document);
             documentInfoWindow.ShowDialog();
+
+            if (circuitDisplay.Document.Metadata.Title != previousTitle || circuitDisplay.Document.Metadata.Description != previousDescription)
+            {
+                UndoAction editMetadataAction = new UndoAction(UndoCommand.ModifyMetadata, "Modify metadata");
+                editMetadataAction.AddData("before", new string[2] { previousTitle, previousDescription});
+                editMetadataAction.AddData("after", new string[2] { circuitDisplay.Document.Metadata.Title, circuitDisplay.Document.Metadata.Description });
+                UndoManager.AddAction(editMetadataAction);
+            }
         }
 
         private void mnuHelpDocumentation_Click(object sender, RoutedEventArgs e)
@@ -1357,8 +1374,16 @@ namespace CircuitDiagram
             docSizeWindow.DocumentHeight = circuitDisplay.Document.Size.Height;
             if (docSizeWindow.ShowDialog() == true)
             {
-                circuitDisplay.Document.Size = new Size(docSizeWindow.DocumentWidth, docSizeWindow.DocumentHeight);
-                circuitDisplay.DocumentSizeChanged();
+                Size newSize = new Size(docSizeWindow.DocumentWidth, docSizeWindow.DocumentHeight);
+                if (newSize != circuitDisplay.Document.Size)
+                {
+                    UndoAction resizeAction = new UndoAction(UndoCommand.ResizeDocument, "Resize document");
+                    resizeAction.AddData("before", circuitDisplay.Document.Size);
+                    circuitDisplay.Document.Size = newSize;
+                    circuitDisplay.DocumentSizeChanged();
+                    resizeAction.AddData("after", newSize);
+                    UndoManager.AddAction(resizeAction);
+                }
             }
         }
 
@@ -1686,6 +1711,19 @@ namespace CircuitDiagram
                             circuitDisplay.Document.Elements.Remove(component);
                         }
                         break;
+                    case UndoCommand.ResizeDocument:
+                        {
+                            circuitDisplay.Document.Size = e.Action.GetData<Size>("before");
+                            circuitDisplay.DocumentSizeChanged();
+                        }
+                        break;
+                    case UndoCommand.ModifyMetadata:
+                        {
+                            string[] metadata = e.Action.GetData<string[]>("before");
+                            circuitDisplay.Document.Metadata.Title = metadata[0];
+                            circuitDisplay.Document.Metadata.Description = metadata[1];
+                        }
+                        break;
                 }
             }
             else
@@ -1722,6 +1760,19 @@ namespace CircuitDiagram
                             circuitDisplay.Document.Elements.Add(component);
                             component.ResetConnections();
                             component.ApplyConnections(circuitDisplay.Document);
+                        }
+                        break;
+                    case UndoCommand.ResizeDocument:
+                        {
+                            circuitDisplay.Document.Size = e.Action.GetData<Size>("after");
+                            circuitDisplay.DocumentSizeChanged();
+                        }
+                        break;
+                    case UndoCommand.ModifyMetadata:
+                        {
+                            string[] metadata = e.Action.GetData<string[]>("after");
+                            circuitDisplay.Document.Metadata.Title = metadata[0];
+                            circuitDisplay.Document.Metadata.Description = metadata[1];
                         }
                         break;
                 }

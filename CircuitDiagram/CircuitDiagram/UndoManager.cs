@@ -120,8 +120,10 @@ namespace CircuitDiagram
             Data = new Dictionary<string, object>();
             dTypeKeys = new Dictionary<Type, string>();
             if (data != null)
+            {
                 Data.Add("/default", data);
-            dTypeKeys.Add(data.GetType(), "/default");
+                dTypeKeys.Add(data.GetType(), "/default");
+            }
         }
 
         public void AddData(string key, object data)
@@ -168,7 +170,9 @@ namespace CircuitDiagram
     {
         AddComponent,
         DeleteComponents,
-        ModifyComponents
+        ModifyComponents,
+        ResizeDocument,
+        ModifyMetadata
     }
 
     public enum UndoActionEvent

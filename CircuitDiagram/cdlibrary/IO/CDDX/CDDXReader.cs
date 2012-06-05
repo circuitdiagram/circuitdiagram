@@ -55,6 +55,11 @@ namespace CircuitDiagram.IO.CDDX
         Dictionary<IOComponentType, PackagePart> m_typeParts;
 
         /// <summary>
+        /// Determines whether the format being read is a newer version than is supported.
+        /// </summary>
+        bool m_newerVersion;
+
+        /// <summary>
         /// The document loaded from the CDDX stream.
         /// </summary>
         public IODocument Document { get; private set; }
@@ -87,6 +92,10 @@ namespace CircuitDiagram.IO.CDDX
                 bool success = true;
 
                 m_package = ZipPackage.Open(stream);
+
+                // Load format properties, if available
+                ReadFormatProperties();
+
                 // Load main document
                 success = LoadMainDocument(m_package);
 
@@ -182,6 +191,9 @@ namespace CircuitDiagram.IO.CDDX
                 if (rootElement != null && rootElement.HasAttribute("version"))
                     double.TryParse(rootElement.Attributes["version"].InnerText, out version);
                 if (version > FormatVersion)
+                    m_newerVersion = true;
+
+                if (m_newerVersion)
                     LoadResult.Type = DocumentLoadResultType.SuccessNewerVersion;
                 else
                     LoadResult.Type = DocumentLoadResultType.Success;
@@ -323,7 +335,7 @@ namespace CircuitDiagram.IO.CDDX
                         if (componentTypes.ContainsKey(typeIdOnly))
                             type = componentTypes[typeIdOnly];
                         else
-                            throw new NotImplementedException(); // Undefined type
+                            throw new NotSupportedException(); // Undefined type
                     }
 
                     Document.Components.Add(new IOComponent(id, location, size, flipped, orientation, type, properties, connections));
@@ -396,6 +408,38 @@ namespace CircuitDiagram.IO.CDDX
                         XmlNode appVersion = doc.SelectSingleNode("cp:extendedProperties/cp:appVersion", namespaceManager);
                         if (appVersion != null)
                             Document.Metadata.AppVersion = appVersion.InnerText;
+                    }
+                }
+                catch { }
+            }
+        }
+
+        /// <summary>
+        /// Reads information about the format version in use.
+        /// </summary>
+        private void ReadFormatProperties()
+        {
+            PackageRelationship formatPropertiesRelationship = m_package.GetRelationshipsByType(RelationshipTypes.FormatProperties).FirstOrDefault();
+            if (formatPropertiesRelationship != null)
+            {
+                PackagePart extendedPart = m_package.GetPart(formatPropertiesRelationship.TargetUri);
+                try
+                {
+                    using (Stream extendedStream = extendedPart.GetStream(FileMode.Open))
+                    {
+                        XmlDocument doc = new XmlDocument();
+                        doc.Load(extendedStream);
+
+                        XmlNamespaceManager namespaceManager = new XmlNamespaceManager(doc.NameTable);
+                        namespaceManager.AddNamespace("fp", "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/format/properties");
+
+                        XmlNode formatVersion = doc.SelectSingleNode("fp:formatProperties/fp:formatVersion", namespaceManager);
+                        if (formatVersion != null)
+                        {
+                            double formatVersionValue = 1.0d;
+                            if (double.TryParse(formatVersion.InnerText, out formatVersionValue) && formatVersionValue > FormatVersion)
+                                m_newerVersion = true;
+                        }
                     }
                 }
                 catch { }

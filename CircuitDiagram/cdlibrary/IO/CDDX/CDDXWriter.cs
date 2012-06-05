@@ -132,8 +132,6 @@ namespace CircuitDiagram.IO.CDDX
                 writer.WriteAttributeString("version", String.Format("{0:0.0}", FormatVersion));
                 writer.WriteAttributeString("xmlns", "r", null, Namespaces.Relationships);
                 writer.WriteAttributeString("xmlns", "ec", null, Namespaces.DocumentComponentDescriptions);
-                if (EmbedComponents.Count > 0)
-                    writer.WriteAttributeString("xmlns", "ec", null, Namespaces.DocumentComponentDescriptions);
 
                 // Document size
                 writer.WriteStartElement("properties");
