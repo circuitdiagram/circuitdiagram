@@ -157,6 +157,7 @@ namespace CircuitDiagram
         {
             toolboxScroll.VerticalScrollBarVisibility = (CircuitDiagram.Settings.Settings.ReadBool("showToolboxScrollBar") ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden);
             circuitDisplay.ShowConnectionPoints = Settings.Settings.ReadBool("showConnectionPoints");
+            circuitDisplay.ShowGrid = Settings.Settings.ReadBool("showEditorGrid");
             if (Settings.Settings.HasSetting("EmbedComponents"))
                 ComponentHelper.EmbedOptions = (ComponentEmbedOptions)Settings.Settings.Read("EmbedComponents");
         }
@@ -191,9 +192,11 @@ namespace CircuitDiagram
             string permanentComponentsDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\ext";
             if (Directory.Exists(permanentComponentsDirectory))
                 componentLocations.Add(permanentComponentsDirectory);
+#if !PORTABLE
             string userComponentsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\components";
             if (Directory.Exists(userComponentsDirectory))
                 componentLocations.Add(userComponentsDirectory);
+#endif
 
 #if DEBUG
             string debugComponentsDirectory = Path.GetFullPath("../../Components");
@@ -1322,6 +1325,7 @@ namespace CircuitDiagram
                 writer.Close();
 
                 LoadImportMenu();
+                circuitDisplay.RenderBackground();
             }
         }
 

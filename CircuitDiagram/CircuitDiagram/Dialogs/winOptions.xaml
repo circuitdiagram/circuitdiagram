@@ -11,6 +11,7 @@
                         <GroupBox Header="Appearance" Margin="12,10,12,0">
                             <StackPanel>
                                 <CheckBox Content="Show toolbox scroll bar" Height="16" Margin="6,6,6,6" Name="chbShowToolboxScrollBar" />
+                                <CheckBox Content="Show grid" Height="16" Margin="6,0,6,6" Name="chbShowGrid" />
                             </StackPanel>
                         </GroupBox>
                         <GroupBox Header="Developer" Margin="12,4,12,0">

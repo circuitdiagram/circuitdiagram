@@ -46,6 +46,7 @@ namespace CircuitDiagram
 
             // General
             chbShowConnectionPoints.IsChecked = Settings.Settings.ReadBool("showConnectionPoints");
+            chbShowGrid.IsChecked = Settings.Settings.ReadBool("showEditorGrid");
             chbShowToolboxScrollBar.IsChecked = Settings.Settings.ReadBool("showToolboxScrollBar");
             chbCheckForUpdatesAutomatically.IsChecked = Settings.Settings.ReadBool("CheckForUpdatesOnStartup");
 
@@ -70,6 +71,7 @@ namespace CircuitDiagram
         {
             // General
             Settings.Settings.Write("showConnectionPoints", chbShowConnectionPoints.IsChecked.Value);
+            Settings.Settings.Write("showEditorGrid", chbShowGrid.IsChecked.Value);
             Settings.Settings.Write("showToolboxScrollBar", chbShowToolboxScrollBar.IsChecked.Value);
             Settings.Settings.Write("CheckForUpdatesOnStartup", chbCheckForUpdatesAutomatically.IsChecked.Value);
 

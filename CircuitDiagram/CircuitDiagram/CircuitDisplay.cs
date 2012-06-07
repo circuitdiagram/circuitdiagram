@@ -60,6 +60,8 @@ namespace CircuitDiagram
 
         public bool ShowConnectionPoints { get; set; }
 
+        public bool ShowGrid { get; set; }
+
         public CircuitDocument Document
         {
             get { return m_document; }
@@ -174,17 +176,7 @@ namespace CircuitDiagram
             this.Width = Document.Size.Width;
             this.Height = Document.Size.Height;
 
-            using (DrawingContext dc = m_backgroundVisual.RenderOpen())
-            {
-                GuidelineSet guidelines = new GuidelineSet();
-                guidelines.GuidelinesX.Add(0d);
-                guidelines.GuidelinesY.Add(0d);
-                dc.PushGuidelineSet(guidelines);
-
-                dc.DrawRectangle(Brushes.White, null, new Rect(Document.Size));
-
-                dc.Pop();
-            }
+            RenderBackground();
 
             foreach (CircuitDiagram.Elements.ICircuitElement element in Document.Elements)
             {
@@ -194,6 +186,39 @@ namespace CircuitDiagram
                 AddLogicalChild(m_elementVisuals[element]);
                 m_elementVisuals[element].UpdateVisual();
                 element.Updated += new EventHandler(Component_Updated);
+            }
+        }
+
+        public void RenderBackground()
+        {
+            using (DrawingContext dc = m_backgroundVisual.RenderOpen())
+            {
+                GuidelineSet guidelines = new GuidelineSet();
+                guidelines.GuidelinesX.Add(0d);
+                guidelines.GuidelinesY.Add(0d);
+                dc.PushGuidelineSet(guidelines);
+
+                dc.DrawRectangle(Brushes.White, null, new Rect(Document.Size));
+
+                if (ShowGrid)
+                {
+                    for (double x = ComponentHelper.GridSize; x < this.Width; x += ComponentHelper.GridSize)
+                    {
+                        Pen pen = new Pen(Brushes.LightBlue, 1.0d);
+                        if (x % (5 * ComponentHelper.GridSize) == 0)
+                            pen = new Pen(Brushes.LightGray, 1.5d);
+                        dc.DrawLine(pen, new Point(x, 0), new Point(x, this.Height));
+                    }
+                    for (double y = ComponentHelper.GridSize; y < this.Height; y += ComponentHelper.GridSize)
+                    {
+                        Pen pen = new Pen(Brushes.LightBlue, 1.0d);
+                        if (y % (5 * ComponentHelper.GridSize) == 0)
+                            pen = new Pen(Brushes.LightGray, 1.5d);
+                        dc.DrawLine(pen, new Point(0, y), new Point(this.Width, y));
+                    }
+                }
+
+                dc.Pop();
             }
         }
 
