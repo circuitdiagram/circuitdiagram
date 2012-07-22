@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml" version="1.0">
+  <declaration>
+    <meta name="name" value="Transistor" />
+    <meta name="minsize" value="50" />
+    <meta name="canflip" value="true" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="247a790e-c7aa-43ca-9e0c-c524257c0cd5" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+
+    <property name="Type" type="enum" default="Standard" serialize="t" display="Type">
+      <option>NPN</option>
+      <option>PNP</option>
+      <option>NChannelMosfet</option>
+      <option>PChannelMosfet</option>
+    </property>
+
+    <flags>
+      <option>MiddleMustAlign</option>
+    </flags>
+    
+    <configurations>
+      <configuration name="NPN Transistor" value="Type:NPN" implements="npntransistor" />
+      <configuration name="PNP Transistor" value="Type:PNP" implements="pnptransistor" />
+      <configuration name="N-Channel MOSFET" value="Type:NChannelMosfet" implements="nmosfet" />
+      <configuration name="P-ChannelMOSFET" value="Type:PChannelMosfet" implements="pmosfet" />
+    </configurations>
+
+  </declaration>
+  <connections>
+    <!-- Transistor -->
+    <group conditions="_Horizontal,$Type(eq_NPN)">
+      <connection name="col" start="_Start" end="_Middle-16x" edge="Start" />
+      <connection name="base" start="_Middle+16x" end="_End" edge="End" />
+      <connection name="emit" start="_Middle-40y" end="_Middle-16y" edge="Start" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_NPN)">
+      <connection name="col" start="_Start" end="_Middle-16y" edge="Start" />
+      <connection name="base" start="_Middle+16y" end="_End" edge="End" />
+      <connection name="emit" start="_Middle-40x" end="_Middle-16x" edge="Start" />
+    </group>
+    <group conditions="_Horizontal,$Type(eq_PNP)">
+      <connection name="emit" start="_Start" end="_Middle-16x" edge="Start" />
+      <connection name="base" start="_Middle+16x" end="_End" edge="End" />
+      <connection name="col" start="_Middle-40y" end="_Middle-16y" edge="Start" />
+    </group>
+    <group conditions="!_Horizontal,!$Type(eq_PNP)">
+      <connection name="emit" start="_Start" end="_Middle-16y" edge="Start" />
+      <connection name="base" start="_Middle+16y" end="_End" edge="End" />
+      <connection name="col" start="_Middle-40x" end="_Middle-16x" edge="Start" />
+    </group>
+    
+    <!-- MOSFET -->
+    <group conditions="_Horizontal,$Type(eq_NChannelMosfet)">
+      <connection name="drn" start="_Start" end="_Middle-21x" edge="Start" />
+      <connection name="gate" start="_Middle+11x" end="_End" edge="End" />
+      <connection name="src" start="_Middle-40y+10x" end="_Middle-25y+10x" edge="Start" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_NChannelMosfet)">
+      <connection name="drn" start="_Start" end="_Middle-21y" edge="Start" />
+      <connection name="gate" start="_Middle+11y" end="_End" edge="End" />
+      <connection name="src" start="_Middle-40x+10y" end="_Middle-25x+10y" edge="Start" />
+    </group>
+    <group conditions="_Horizontal,$Type(eq_PChannelMosfet)">
+      <connection name="src" start="_Start" end="_Middle-21x" edge="Start" />
+      <connection name="gate" start="_Middle+11x" end="_End" edge="End" />
+      <connection name="drn" start="_Middle-40y+10x" end="_Middle-25y+10x" edge="Start" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_PChannelMosfet)">
+      <connection name="src" start="_Start" end="_Middle-21y" edge="Start" />
+      <connection name="gate" start="_Middle+11y" end="_End" edge="End" />
+      <connection name="drn" start="_Middle-40x+10y" end="_Middle-25x+10y" edge="Start" />
+    </group>
+  </connections>
+  <render>
+    <!-- Transistor Common -->
+    <group conditions="_Horizontal,!$Type(eq_NChannelMosfet),!$Type(eq_PChannelMosfet)">
+      <line start="_Start" end="_Middle-13x" />
+      <line start="_Middle+13x" end="_End" />
+      <line start="_Middle-40y" end="_Middle-14y" />
+      <line start="_Middle-14.5y-8x" end="_Middle-14.5y+8x" thickness="3" />
+      <line start="_Middle-13x" end="_Middle-14.5y-4x" />
+      <line start="_Middle-14.5y+4x" end="_Middle+13x" />
+      <ellipse centre="_Middle-10y" radiusy="16" radiusx="16" />
+    </group>
+    <group conditions="!_Horizontal,!$Type(eq_NChannelMosfet),!$Type(eq_PChannelMosfet)">
+      <line start="_Start" end="_Middle-13y" />
+      <line start="_Middle+13y" end="_End" />
+      <line start="_Middle-40x" end="_Middle-14x" />
+      <line start="_Middle-14.5x-8y" end="_Middle-14.5x+8y" thickness="3" />
+      <line start="_Middle-13y" end="_Middle-14.5x-4y" />
+      <line start="_Middle-14.5x+4y" end="_Middle+13y" />
+      <ellipse centre="_Middle-10x" radiusx="16" radiusy="16" />
+    </group>
+    
+    <!-- NPN Transistor -->
+    <group conditions="_Horizontal,$Type(eq_NPN)">
+      <path start="_Middle+7x-8y" data="l -2,4 l 7,1 l -4,-6 l -1,2" fill="true" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_NPN)">
+      <path start="_Middle-8x+7y" data="l 4,-2 l 1,7 l -6,-4 l 2,-1" fill="true" />
+    </group>
+    
+    <!-- PNP Transistor -->
+    <group conditions="_Horizontal,$Type(eq_PNP)">
+      <path start="_Middle-10x-7y" data="l 4,2 l 1,-7 l -6,4 l 2,1" fill="true" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_PNP)">
+      <path start="_Middle-7x-10y" data="l 2,4 l -7,1 l 4,-6 l 1,2" fill="true" />
+    </group>
+    
+    <!-- MOSFET Common -->
+    <group conditions="_Horizontal,!$Type(eq_NPN),!$Type(eq_PNP)">
+      <line start="_Start" end="_Middle-18x" />
+      <line start="_Middle+9x" end="_End" />
+      <line start="_Middle-25y-18x" end="_Middle-25y+10x" />
+      <line start="_Middle-40y+10x" end="_Middle-25y+10x" />
+      <line start="_Middle-18y-20x" end="_Middle-18y-15x" thickness="4" />
+      <line start="_Middle-18y-7x" end="_Middle-18y-2x" thickness="4" />
+      <line start="_Middle-18y+6x" end="_Middle-18y+11x" thickness="4" />
+      <line start="_Middle-18y-18x" end="_Middle-18x" />
+      <line start="_Middle-18y+9x" end="_Middle+9x" />
+    </group>
+    <group conditions="!_Horizontal,!$Type(eq_NPN),!$Type(eq_PNP)">
+      <line start="_Start" end="_Middle-18y" />
+      <line start="_Middle+9y" end="_End" />
+      <line start="_Middle-25x-18y" end="_Middle-25x+10y" />
+      <line start="_Middle-40x+10y" end="_Middle-25x+10y" />
+      <line start="_Middle-18x-20y" end="_Middle-18x-15y" thickness="4" />
+      <line start="_Middle-18x-7y" end="_Middle-18x-2y" thickness="4" />
+      <line start="_Middle-18x+6y" end="_Middle-18x+11y" thickness="4" />
+      <line start="_Middle-18x-18y" end="_Middle-18y" />
+      <line start="_Middle-18x+9y" end="_Middle+9y" />
+    </group>
+    
+    <!-- MOSFET N-Channel -->
+    <group conditions="_Horizontal,$Type(eq_NChannelMosfet)">
+      <line start="_Middle+18x" end="_Middle+10y+18x" />
+      <ellipse centre="_Middle+18x" radiusy="2" radiusx="2" fill="true" />
+      <line start="_Middle+10y-4x" end="_Middle+10y+18x" />
+      <line start="_Middle-18y-4x" end="_Middle+10y-4x" />
+      <path start="_Middle-15y-4x" data="l 3,4 l -6,0 l 3,-4 l 2,2" fill="true" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_NChannelMosfet)">
+      <line start="_Middle+18y" end="_Middle+10x+18y" />
+      <ellipse centre="_Middle+18y" radiusx="2" radiusy="2" fill="true" />
+      <line start="_Middle+10x-4y" end="_Middle+10x+18y" />
+      <line start="_Middle-18x-4y" end="_Middle+10x-4y" />
+      <path start="_Middle-15x-4y" data="l 4,3 l 0,-6 l -4,3 l 2,2" fill="true" />
+    </group>
+
+    <!-- MOSFET P-Channel -->
+    <group conditions="_Horizontal,$Type(eq_PChannelMosfet)">
+      <line start="_Middle-28x" end="_Middle+10y-28x" />
+      <ellipse centre="_Middle-28x" radiusy="2" radiusx="2" fill="true" />
+      <line start="_Middle+10y-28x" end="_Middle+10y-4x" />
+      <line start="_Middle-18y-4x" end="_Middle+10y-4x" />
+      <path start="_Middle-8y-4x" data="l 3,-4 l -6,0 l 3,4 l 2,-2" fill="true" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_PChannelMosfet)">
+      <line start="_Middle-28y" end="_Middle+10x-28y" />
+      <ellipse centre="_Middle-28y" radiusx="2" radiusy="2" fill="true" />
+      <line start="_Middle+10x-28y" end="_Middle+10x-4y" />
+      <line start="_Middle-18x-4y" end="_Middle+10x-4y" />
+      <path start="_Middle-8x-4y" data="l -4,3 l 0,-6 l 4,3 l -2,2" fill="true" />
+    </group>
+  </render>
+</component>
