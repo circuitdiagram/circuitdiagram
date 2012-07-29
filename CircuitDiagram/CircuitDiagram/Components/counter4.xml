@@ -6,7 +6,8 @@
     <meta name="author" value="Circuit Diagram" />
     <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
     <meta name="guid" value="c73b2bac-cb8e-4153-8454-3dfdc30c4d7d" />
-
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+    <meta name="implementitem" value="counter4" />
     <flags>
       <option>horizontalonly</option>
       <option>middlemustalign</option>

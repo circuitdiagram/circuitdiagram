@@ -6,7 +6,9 @@
     <meta name="author" value="Circuit Diagram" />
     <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
     <meta name="guid" value="06ca73da-1151-4e31-97d6-ccb2108fde23" />
-
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+    <meta name="implementitem" value="dflipflop" />
+    
     <property name="SetReset" type="bool" default="true" serialize="sr" display="Show set/reset" />
     <flags>
       <option>horizontalonly</option>

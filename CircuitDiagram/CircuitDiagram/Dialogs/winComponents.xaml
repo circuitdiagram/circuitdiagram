@@ -21,7 +21,6 @@
                 <RowDefinition Height="27" />
                 <RowDefinition Height="27" />
                 <RowDefinition Height="27" />
-                <RowDefinition Height="27" />
                 <RowDefinition Height="45" />
                 <RowDefinition Height="27" />
                 <RowDefinition Height="27" />
@@ -29,26 +28,24 @@
                 <RowDefinition Height="27" />
             </Grid.RowDefinitions>
             <Label Grid.Column="0" Grid.Row="0">Name</Label>
-            <Label Grid.Column="0" Grid.Row="1">Signed</Label>
-            <Label Grid.Column="0" Grid.Row="2">Author</Label>
-            <Label Grid.Column="0" Grid.Row="3">Embed by default</Label>
-            <Label Grid.Column="0" Grid.Row="4">Type</Label>
-            <Label Grid.Column="0" Grid.Row="5" VerticalAlignment="Center">Icon</Label>
-            <Label Grid.Column="0" Grid.Row="6">GUID</Label>
-            <Label Grid.Column="0" Grid.Row="7">Version</Label>
-            <Label Grid.Column="0" Grid.Row="8">Additional information</Label>
-            <Label Grid.Column="0" Grid.Row="9">Location</Label>
+            <Label Grid.Column="0" Grid.Row="1">Author</Label>
+            <Label Grid.Column="0" Grid.Row="2">Embed by default</Label>
+            <Label Grid.Column="0" Grid.Row="3">Type</Label>
+            <Label Grid.Column="0" Grid.Row="4" VerticalAlignment="Center">Icon</Label>
+            <Label Grid.Column="0" Grid.Row="5">GUID</Label>
+            <Label Grid.Column="0" Grid.Row="6">Version</Label>
+            <Label Grid.Column="0" Grid.Row="7">Additional information</Label>
+            <Label Grid.Column="0" Grid.Row="8">Location</Label>
 
             <Label Grid.Column="1" Grid.Row="0" Content="{Binding Path=ComponentName}" />
-            <Label Grid.Column="1" Grid.Row="1" Content="{Binding Path=Metadata.Signed, Converter={StaticResource YesNoConverter}}" Foreground="{Binding Path=Metadata.Signed, Converter={StaticResource SignedColourConverter}}" />
-            <Label Grid.Column="1" Grid.Row="2" Content="{Binding Path=Metadata.Author}" />
-            <Label Grid.Column="1" Grid.Row="3" Content="{Binding ElementName=lbxComponents, Path=SelectedItem, Converter={StaticResource EmbedByDefaultConverter}}" />
-            <Label Grid.Column="1" Grid.Row="4" Content="{Binding Path=Metadata.Type}" />
-            <Image Grid.Column="1" Grid.Row="5" Source="{Binding Path=Metadata.Icon}" Stretch="Uniform" HorizontalAlignment="Left" />
-            <Label Grid.Column="1" Grid.Row="6" Content="{Binding Path=Metadata.GUID}" />
-            <Label Grid.Column="1" Grid.Row="7" Content="{Binding Path=Metadata.Version}" />
-            <Label Grid.Column="1" Grid.Row="8" Content="{Binding Path=Metadata.AdditionalInformation}" />
-            <Label Grid.Column="1" Grid.Row="9" Content="{Binding Path=Metadata.Location}" />
+            <Label Grid.Column="1" Grid.Row="1" Content="{Binding Path=Metadata.Author}" />
+            <Label Grid.Column="1" Grid.Row="2" Content="{Binding ElementName=lbxComponents, Path=SelectedItem, Converter={StaticResource EmbedByDefaultConverter}}" />
+            <Label Grid.Column="1" Grid.Row="3" Content="{Binding Path=Metadata.Type}" />
+            <Image Grid.Column="1" Grid.Row="4" Source="{Binding Path=Metadata.Icon}" Stretch="Uniform" HorizontalAlignment="Left" />
+            <Label Grid.Column="1" Grid.Row="5" Content="{Binding Path=Metadata.GUID}" />
+            <Label Grid.Column="1" Grid.Row="6" Content="{Binding Path=Metadata.Version}" />
+            <Label Grid.Column="1" Grid.Row="7" Content="{Binding Path=Metadata.AdditionalInformation}" />
+            <Label Grid.Column="1" Grid.Row="8" Content="{Binding Path=Metadata.Location}" />
         </Grid>
         <Label Margin="0,0,93,9" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="136">
             <Hyperlink Click="hyperlinkGetMoreComponents_Click">Get more components</Hyperlink>

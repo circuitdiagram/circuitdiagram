@@ -295,6 +295,33 @@
   <ItemGroup>
     <Resource Include="Components\transistor.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Components\lamp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Components\heater.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Components\motor.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Components\buzzer.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Components\speaker.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Components\externalconnection.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Components\microphone.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Components\transformer.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Components\crystal.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -24,7 +24,7 @@
       <configuration name="Push Switch" value="Type:Push" implements="pushswitch" />
       <configuration name="Toggle Switch" value="Type:Toggle" implements="toggleswitch" />
       <configuration name="Analogue Switch" value="Type:Analogue" implements="analogueswitch" />
-      <configuration name="Push to Break Switch" value="Type:PushToBreak" implements="pushtobreakswitch" />
+      <configuration name="Push to Break Switch" value="Type:PushToBreak" implements="ptbswitch" />
       <configuration name="Changeover Switch" value="Type:Changeover" implements="changeoverswitch" />
     </configurations>
   </declaration>

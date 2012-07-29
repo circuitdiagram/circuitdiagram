@@ -518,7 +518,7 @@ namespace CircuitDiagram
                                             newItem.ToolTip = description.ComponentName + " (" + key.ToString().ToLowerInvariant() + ")";
                                         }
                                     }
-
+                                    
                                     newItem.Click += new RoutedEventHandler(toolboxButton_Click);
                                     newCategory.Items.Add(newItem);
                                 }

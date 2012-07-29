@@ -6,6 +6,8 @@
     <meta name="author" value="Circuit Diagram" />
     <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
     <meta name="guid" value="7af9b261-baea-404d-b165-86e4e2089c03" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+    <meta name="implementitem" value="fuse" />
     <property name="Value" type="double" default="2" serialize="value" display="Value">
       <formatting>
         <format value="$Value(round_1)  A" />

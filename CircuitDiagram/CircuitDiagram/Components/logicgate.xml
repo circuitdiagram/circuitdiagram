@@ -3,6 +3,7 @@
   <declaration>
     <meta name="name" value="Logic Gate" />
     <meta name="minsize" value="70" />
+    <meta name="canflip" value="true" />
     <meta name="author" value="Circuit Diagram" />
     <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
     <meta name="guid" value="4eaeba15-24b6-4a28-bba5-d25e52ada278" />
@@ -19,13 +20,13 @@
     </property>
 
     <configurations>
-      <configuration name="AND Gate" value="Type:AND" implements="andgate" />
-      <configuration name="NAND Gate" value="Type:NAND" implements="nandgate" />
-      <configuration name="OR Gate" value="Type:OR" implements="orgate" />
-      <configuration name="NOR Gate" value="Type:NOR" implements="norgate" />
-      <configuration name="XOR Gate" value="Type:XOR" implements="xorgate" />
-      <configuration name="NOT Gate" value="Type:NOT" implements="notgate" />
-      <configuration name="Schmitt Trigger NOT Gate" value="Type:Schmitt" implements="schmittnotgate" />
+      <configuration name="AND Gate" value="Type:AND" implements="and2" />
+      <configuration name="NAND Gate" value="Type:NAND" implements="nand2" />
+      <configuration name="OR Gate" value="Type:OR" implements="or2" />
+      <configuration name="NOR Gate" value="Type:NOR" implements="nor2" />
+      <configuration name="XOR Gate" value="Type:XOR" implements="xor2" />
+      <configuration name="NOT Gate" value="Type:NOT" implements="not" />
+      <configuration name="Schmitt Trigger NOT Gate" value="Type:Schmitt" implements="schmittnot" />
     </configurations>
   </declaration>
   <connections>

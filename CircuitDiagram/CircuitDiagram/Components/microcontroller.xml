@@ -6,7 +6,8 @@
     <meta name="author" value="Circuit Diagram" />
     <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
     <meta name="guid" value="b7586b7a-5963-4c62-a3c7-5e2967f9601e" />
-
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+    <meta name="implementitem" value="microcontroller" />
     <flags>
       <option>horizontalonly</option>
     </flags>

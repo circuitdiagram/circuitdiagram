@@ -38,7 +38,7 @@
     <configurations>
       <configuration name="Rail" value="Type:Rail" implements="rail" />
       <configuration name="Rail2" value="Type:Rail2" implements="rail" />
-      <configuration name="Ground" value="Type:Ground,Voltage:0" implements="rail" />
+      <configuration name="Ground" value="Type:Ground,Voltage:0" implements="ground" />
       <configuration name="Earth" value="Type:Earth,Voltage:0" implements="rail" />
       <configuration name="Cell" value="Type:Cell" implements="cell" />
       <configuration name="AC Source" value="Type:AC" implements="acsource" />
