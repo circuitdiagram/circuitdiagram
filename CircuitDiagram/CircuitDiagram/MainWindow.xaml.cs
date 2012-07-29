@@ -401,14 +401,15 @@ namespace CircuitDiagram
 
             m_toolboxShortcuts.Clear();
 
+#if PORTABLE
+            string toolboxSettingsPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\toolbox.xml";
+#else
+            string toolboxSettingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml";
+#endif
+
             try
             {
                 XmlDocument toolboxSettings = new XmlDocument();
-#if PORTABLE
-                string toolboxSettingsPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\toolbox.xml";
-#else
-                string toolboxSettingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml";
-#endif
                 toolboxSettings.Load(toolboxSettingsPath);
 
                 XmlNodeList categoryNodes = toolboxSettings.SelectNodes("/display/category");
@@ -468,7 +469,7 @@ namespace CircuitDiagram
                                             if (!m_toolboxShortcuts.ContainsKey(key))
                                             {
                                                 m_toolboxShortcuts.Add(key, newItem);
-                                                
+
                                                 // Add key to tooltip
                                                 newItem.ToolTip = configuration.Name + " (" + key.ToString().ToLowerInvariant() + ")";
                                             }
@@ -631,12 +632,18 @@ namespace CircuitDiagram
             }
             catch (Exception)
             {
-                MessageBox.Show("The toolbox is corrupt. Please go to Tools->Toolbox to add items.", "Toolbox Corrupt", MessageBoxButton.OK, MessageBoxImage.Error);
-#if PORTABLE
-                File.WriteAllText(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\toolbox.xml", "<?xml version=\"1.0\" encoding=\"utf-8\"?><display></display>");
-#else
-                File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml", "<?xml version=\"1.0\" encoding=\"utf-8\"?><display></display>");
-#endif
+                TaskDialogOptions tdOptions = new TaskDialogOptions();
+                tdOptions.Title = "Circuit Diagram";
+                tdOptions.MainInstruction = "The toolbox is corrupt.";
+                tdOptions.Content = "New items can be added to the toolbox under Tools->Toolbox."; // Toolbox missing
+                tdOptions.CommonButtons = TaskDialogCommonButtons.Close;
+                tdOptions.Owner = this;
+                TaskDialogResult result = TaskDialog.Show(tdOptions);
+
+                // Create new toolbox file
+                if (!Directory.Exists(Path.GetDirectoryName(toolboxSettingsPath)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(toolboxSettingsPath));
+                File.WriteAllText(toolboxSettingsPath, "<?xml version=\"1.0\" encoding=\"utf-8\"?><display></display>");
             }
 
             // Set select as current tool
@@ -808,6 +815,9 @@ namespace CircuitDiagram
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (UndoManager == null)
+                return;
+
             if (!UndoManager.IsSavedState())
             {
                 TaskDialogOptions tdOptions = new TaskDialogOptions();

@@ -280,6 +280,21 @@
   <ItemGroup>
     <None Include="Components\source.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Components\microcontroller.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Components\counter4.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Components\inductor.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Components\meter.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Components\transistor.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

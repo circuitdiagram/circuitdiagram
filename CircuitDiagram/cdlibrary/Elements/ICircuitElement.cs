@@ -36,10 +36,12 @@ namespace CircuitDiagram.Elements
         /// The position of the element within the document.
         /// </summary>
         System.Windows.Vector Location { get; }
+
         /// <summary>
         /// Occurs when the element is updated.
         /// </summary>
         event EventHandler Updated;
+
         /// <summary>
         /// Renders the element using the specified IRenderContext.
         /// </summary>

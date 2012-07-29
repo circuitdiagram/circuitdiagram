@@ -24,7 +24,13 @@ namespace CircuitDiagram
 
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            System.IO.File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\ErrorLog.txt", e.Exception.ToString());
+#if PORTABLE
+            string errorLogDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+#else
+            string errorLogDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram";
+#endif
+            if (System.IO.Directory.Exists(errorLogDirectory))
+                System.IO.File.WriteAllText(errorLogDirectory + "\\ErrorLog.txt", e.Exception.ToString());
         }
     }
 }
