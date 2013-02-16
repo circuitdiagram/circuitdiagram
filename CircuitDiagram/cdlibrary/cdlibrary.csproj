@@ -57,12 +57,14 @@
     <Compile Include="Components\ComponentDescriptionConditionCollection.cs" />
     <Compile Include="Components\ComponentDescriptionMetadata.cs" />
     <Compile Include="Components\ComponentDescriptionSource.cs" />
+    <Compile Include="Components\ComponentDeserializer.cs" />
     <Compile Include="Components\ComponentEditor.cs" />
     <Compile Include="Components\ComponentHelper.cs" />
     <Compile Include="Components\ComponentIdentifier.cs" />
     <Compile Include="Components\ComponentPoint.cs" />
     <Compile Include="Components\ComponentProperty.cs" />
     <Compile Include="Components\ComponentPropertyFormat.cs" />
+    <Compile Include="Components\ComponentSerializer.cs" />
     <Compile Include="Components\Conditional.cs" />
     <Compile Include="Components\Connection.cs" />
     <Compile Include="Components\ConnectionCentre.cs" />

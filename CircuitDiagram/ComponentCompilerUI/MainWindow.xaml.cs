@@ -93,13 +93,19 @@ namespace ComponentCompiler
             sfd.Filter = "Circuit Diagram Component (*.cdcom)|*.cdcom";
             if (sfd.ShowDialog() == true)
             {
+                string path = System.IO.Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+                if (!System.IO.File.Exists(path + "\\cdcompile.exe"))
+                {
+                    MessageBox.Show(this, "The file cdcompile.exe cannot be found.", "Configuration Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
                 if (!String.IsNullOrEmpty(tbxInputPath.Text))
                 {
                     string xmlPath = System.IO.Path.GetDirectoryName(sfd.FileName) + "\\" + System.IO.Path.GetFileNameWithoutExtension(sfd.FileName) + ".temp.xml";
 
                     SaveConfiguration(xmlPath);
-
-                    string path = System.IO.Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+                    
                     string one = path + "\\" + String.Format("cdcompile.exe -o \"{0}\" --config \"{1}\"", sfd.FileName, xmlPath);
                     System.Diagnostics.Process.Start(path + "\\cdcompile.exe", String.Format("-o \"{0}\" --config \"{1}\"", sfd.FileName, xmlPath));
 

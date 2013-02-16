@@ -37,6 +37,19 @@ namespace CircuitDiagram.Components
             return builder.ToString();
         }
 
+        public static string ConvertToString(Dictionary<string, object> properties, string separator)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach (KeyValuePair<string, object> property in properties)
+            {
+                builder.Append(property.Key + ":" + property.Value.ToString() + separator);
+            }
+            // Remove last separator
+            if (builder.Length > 0)
+                builder.Remove(builder.Length - separator.Length, separator.Length);
+            return builder.ToString();
+        }
+
         public static Dictionary<string, object> ConvertToDictionary(string description)
         {
             string[] propertyPairs = description.Split(new string[] { "\r\n", "," }, StringSplitOptions.RemoveEmptyEntries);

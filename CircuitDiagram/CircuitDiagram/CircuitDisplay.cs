@@ -29,6 +29,7 @@ using CircuitDiagram.Components;
 using CircuitDiagram.Elements;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Collections.ObjectModel;
 
 namespace CircuitDiagram
 {
@@ -61,6 +62,8 @@ namespace CircuitDiagram
         public bool ShowConnectionPoints { get; set; }
 
         public bool ShowGrid { get; set; }
+
+        public ReadOnlyCollection<Component> SelectedComponents { get { return m_selectedComponents.AsReadOnly(); } }
 
         public CircuitDocument Document
         {
@@ -187,6 +190,42 @@ namespace CircuitDiagram
                 m_elementVisuals[element].UpdateVisual();
                 element.Updated += new EventHandler(Component_Updated);
             }
+        }
+
+        public void SetSelectedComponents(IEnumerable<Component> selected)
+        {
+            List<Component> removedItems = new List<Component>(m_selectedComponents);
+            m_selectedComponents.Clear();
+            m_selectedComponents.AddRange(selected);
+
+            m_selectedVisual.Offset = new Vector(0, 0);
+            using (DrawingContext dc = m_selectedVisual.RenderOpen())
+            {
+                enclosingRect = Rect.Empty;
+
+                foreach (Component component in m_selectedComponents)
+                {
+                    Rect rect = VisualTreeHelper.GetContentBounds(m_elementVisuals[component]);
+                    dc.PushTransform(new TranslateTransform((m_elementVisuals[component]).Offset.X, (m_elementVisuals[component]).Offset.Y));
+                    dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(100, 0, 0, 100)), null, rect);
+                    dc.Pop();
+
+                    if (enclosingRect.IsEmpty)
+                    {
+                        rect.Offset((m_elementVisuals[component]).Offset.X, (m_elementVisuals[component]).Offset.Y);
+                        enclosingRect = rect;
+                    }
+                    else
+                    {
+                        rect.Offset((m_elementVisuals[component]).Offset.X, (m_elementVisuals[component]).Offset.Y);
+                        enclosingRect.Union(rect);
+                    }
+                }
+
+                dc.DrawRectangle(Brushes.Transparent, new Pen(Brushes.Black, 1d), enclosingRect);
+            }
+
+            RaiseEvent(new SelectionChangedEventArgs(Selector.SelectionChangedEvent, removedItems, m_selectedComponents));
         }
 
         public void RenderBackground()
@@ -941,7 +980,7 @@ namespace CircuitDiagram
                 DrawConnections();
                 m_placingComponent = false;
 
-                UndoAction undoAction = new UndoAction(UndoCommand.AddComponent, "Add component", newComponent);
+                UndoAction undoAction = new UndoAction(UndoCommand.AddComponents, "Add component", new Component[] { newComponent });
                 UndoManager.AddAction(undoAction);
 
                 RemoveVisualChild(m_elementVisuals[m_tempComponent]);

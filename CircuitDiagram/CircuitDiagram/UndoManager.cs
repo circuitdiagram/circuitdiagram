@@ -168,7 +168,7 @@ namespace CircuitDiagram
 
     public enum UndoCommand
     {
-        AddComponent,
+        AddComponents,
         DeleteComponents,
         ModifyComponents,
         ResizeDocument,

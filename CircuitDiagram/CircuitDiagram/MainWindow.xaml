@@ -27,6 +27,10 @@
                 <MenuItem Command="Undo" Header="_Undo" />
                 <MenuItem Command="Redo" Header="_Redo" />
                 <Separator />
+                <MenuItem Command="Cut" Header="_Cut" />
+                <MenuItem Command="Copy" Header="_Copy" />
+                <MenuItem Command="Paste" Header="_Paste" />
+                <Separator />
                 <MenuItem Header="_Document Size" Click="mnuEditResizeDocument" />
             </MenuItem>
             <MenuItem Header="_Tools">
@@ -112,6 +116,9 @@
         <CommandBinding Command="ApplicationCommands.Save"  CanExecute="CommandSave_CanExecute" Executed="CommandSave_Executed" />
         <CommandBinding Command="Undo" CanExecute="CommandUndo_CanExecute" Executed="CommandUndo_Executed" />
         <CommandBinding Command="Redo" CanExecute="CommandRedo_CanExecute" Executed="CommandRedo_Executed" />
+        <CommandBinding Command="Cut" CanExecute="CommandCut_CanExecute" Executed="CommandCut_Executed" />
+        <CommandBinding Command="Copy" CanExecute="CommandCopy_CanExecute" Executed="CommandCopy_Executed" />
+        <CommandBinding Command="Paste" CanExecute="CommandPaste_CanExecute" Executed="CommandPaste_Executed" />
         <CommandBinding Command="cd:CustomCommands.DeleteComponent" CanExecute="DeleteComponentCommand_CanExecute" Executed="DeleteComponentCommand_Executed" />
         <CommandBinding Command="cd:CustomCommands.FlipComponent" CanExecute="FlipComponentCommand_CanExecute" Executed="FlipComponentCommand_Executed" />
         <CommandBinding Command="cd:CustomCommands.RotateComponent" CanExecute="RotateComponentCommand_CanExecute" Executed="RotateComponentCommand_Executed" />

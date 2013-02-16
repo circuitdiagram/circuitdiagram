@@ -1669,6 +1669,48 @@ namespace CircuitDiagram
                 }
             }
         }
+
+        private void CommandCut_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = circuitDisplay.SelectedComponents.Count > 0;
+        }
+
+        private void CommandCut_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            // Copy components
+            CommandCopy_Executed(sender, e);
+
+            // Delete components
+            circuitDisplay.DeleteComponentCommand(sender, e);
+        }
+
+        private void CommandCopy_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = circuitDisplay.SelectedComponents.Count > 0;
+        }
+
+        private void CommandCopy_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            ComponentSerializer serializer = new ComponentSerializer();
+            foreach (Component component in circuitDisplay.SelectedComponents)
+                serializer.AddComponent(component);
+            Clipboard.SetData("CircuitDiagram.ComponentData", serializer.ToString());
+        }
+
+        private void CommandPaste_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = Clipboard.ContainsData("CircuitDiagram.ComponentData");
+        }
+
+        private void CommandPaste_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            ComponentDeserializer deserializer = new ComponentDeserializer(Clipboard.GetData("CircuitDiagram.ComponentData") as string);
+            deserializer.Components.ForEach(c => circuitDisplay.Document.Elements.Add(c));
+            circuitDisplay.SetSelectedComponents(deserializer.Components);
+
+            UndoAction action = new UndoAction(UndoCommand.AddComponents, "Add components", deserializer.Components.ToArray());
+            UndoManager.AddAction(action);
+        }
         #endregion
 
         #region Undo Manager
@@ -1718,11 +1760,14 @@ namespace CircuitDiagram
                             }
                         }
                         break;
-                    case UndoCommand.AddComponent:
+                    case UndoCommand.AddComponents:
                         {
-                            Component component = (e.Action.GetDefaultData() as Component);
-                            component.DisconnectConnections();
-                            circuitDisplay.Document.Elements.Remove(component);
+                            Component[] components = (e.Action.GetDefaultData() as Component[]);
+                            foreach (Component component in components)
+                            {
+                                component.DisconnectConnections();
+                                circuitDisplay.Document.Elements.Remove(component);
+                            }
                         }
                         break;
                     case UndoCommand.ResizeDocument:
@@ -1768,12 +1813,15 @@ namespace CircuitDiagram
                             }
                         }
                         break;
-                    case UndoCommand.AddComponent:
+                    case UndoCommand.AddComponents:
                         {
-                            Component component = (e.Action.GetDefaultData() as Component);
-                            circuitDisplay.Document.Elements.Add(component);
-                            component.ResetConnections();
-                            component.ApplyConnections(circuitDisplay.Document);
+                            Component[] components = (e.Action.GetDefaultData() as Component[]);
+                            foreach (Component component in components)
+                            {
+                                circuitDisplay.Document.Elements.Add(component);
+                                component.ResetConnections();
+                                component.ApplyConnections(circuitDisplay.Document);
+                            }
                         }
                         break;
                     case UndoCommand.ResizeDocument:
