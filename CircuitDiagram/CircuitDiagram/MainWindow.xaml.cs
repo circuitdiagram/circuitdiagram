@@ -1114,7 +1114,7 @@ namespace CircuitDiagram
             Microsoft.Win32.OpenFileDialog ofd = new OpenFileDialog();
             ofd.Title = "Import";
             IDocumentReader reader = (sender as MenuItem).Tag as IDocumentReader;
-            ofd.Filter = String.Format("{0} (*{1})|{1}", reader.FileTypeName, reader.FileTypeExtension);
+            ofd.Filter = String.Format("{0} (*{1})|*{1}", reader.FileTypeName, reader.FileTypeExtension);
             if (ofd.ShowDialog() == true)
             {
                 bool succeeded = reader.Load(File.OpenRead(ofd.FileName));
