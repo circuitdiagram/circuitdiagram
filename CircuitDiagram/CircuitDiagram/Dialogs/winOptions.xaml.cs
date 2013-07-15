@@ -117,7 +117,14 @@ namespace CircuitDiagram
                 if ((cbxImplementationsSet.SelectedItem as ImplementationConversionCollection).Items.FirstOrDefault(item => item.ImplementationName == conversion.ImplementationName) != null)
                     TaskDialogInterop.TaskDialog.ShowMessage(this, "The item could not be added because it is already present.\r\n\r\nYou can add this item again if you delete its current representation first.", "Could Not Add Item", TaskDialogInterop.TaskDialogCommonButtons.Close, TaskDialogInterop.VistaTaskDialogIcon.Warning);
                 else
+                {
                     (cbxImplementationsSet.SelectedItem as ImplementationConversionCollection).Items.Add(newComImplementation.GetChosenComponent());
+                    
+                    // Add to ComponentHelper's list of conversions
+                    ComponentDescription description = ComponentHelper.FindDescription(conversion.ToGUID);
+                    ComponentConfiguration theConfiguration = description.Metadata.Configurations.FirstOrDefault(check => check.Name == conversion.ToConfiguration);
+                    ComponentHelper.SetStandardComponent(cbxImplementationsSet.Text, conversion.ImplementationName, description, theConfiguration);
+                }
             }
         }
 
