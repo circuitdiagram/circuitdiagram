@@ -78,6 +78,11 @@ namespace CircuitDiagram.Components
                 m_connectionCentre = null;
             }
         }
+
+        internal void SetCentre(ConnectionCentre centre)
+        {
+            m_connectionCentre = centre;
+        }
     }
 
     [Flags]

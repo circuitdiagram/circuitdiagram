@@ -38,109 +38,98 @@ namespace CircuitDiagram.IO
         /// <returns>A dictionary containing all components and their associated connections in the format Name-ConnectionID.</returns>
         public static Dictionary<Component, Dictionary<string, string>> RemoveWires(CircuitDocument document)
         {
-            // Remove wires from connections
-            foreach (Component component in document.Components)
+            
+            // Remove wires
+            foreach (Component wire in document.Components.Where(c => ComponentHelper.IsWire(c)))
             {
-                if (component.Description.ComponentName.ToLower() == "wire")
-                {
-                    ConnectionCentre destination = null;
+                // Get list of all connections for this wire
+                var connections = wire.GetConnectedConnections();
 
-                    foreach (var connection in component.GetConnectedConnections())
+                // If no connections, skip
+                if (connections.Count() == 0)
+                    continue;
+
+                // Choose a centre to connect everything to
+                var centre = connections.First().Centre;
+
+                // For each connection, remove the wire itself
+                foreach (var connection in connections.Where(conn => conn.Centre != centre))
+                {
+                    // This centre will be merged with 'centre' above
+                    var tempCentre = connection.Centre;
+
+                    // Disconnect this wire
+                    //connection.Disconnect();
+
+                    // If no longer a centre, skip
+                    if (connection.Centre == null)
+                        continue;
+
+                    // Join 'tempCentre' to 'centre'
+                    foreach (var moveConnection in tempCentre.Connected)
                     {
-                        if (destination == null)
+                        moveConnection.SetCentre(centre);
+                        centre.Connected.Add(moveConnection);
+                    }
+                }
+            }
+            
+            // Join ConnectionCentre's for the same connection name on a component
+            foreach (Component component in document.Components.Where(c => !ComponentHelper.IsWire(c)))
+            {
+                Dictionary<string, List<ConnectionCentre>> connectionNames = new Dictionary<string,List<ConnectionCentre>>();
+
+                foreach (var connection in component.GetConnectedConnections().Where(conn => conn.IsConnected))
+                {
+                    if (!connectionNames.ContainsKey(connection.Description.Name))
+                        connectionNames.Add(connection.Description.Name, new List<ConnectionCentre>());
+
+                    if (!connectionNames[connection.Description.Name].Contains(connection.Centre))
+                        connectionNames[connection.Description.Name].Add(connection.Centre);
+                }
+
+                // Join all ConnectionCentre's with same name
+                foreach (var connectionName in connectionNames)
+                {
+                    // The centres will be merged with this one
+                    var centre = connectionName.Value.First();
+
+                    foreach (var oldCentre in connectionName.Value.Skip(1))
+                    {
+                        foreach (Connection moveConnection in oldCentre.Connected)
                         {
-                            destination = connection.Centre;
-                            connection.Centre.Connected.Remove(connection);
-                        }
-                        else
-                        {
-                            if (destination.Connected.Count < 0)
-                                continue;
-                            ConnectionCentre b = connection.Centre;
-                            connection.Centre.Connected.Remove(connection);
-                            JoinConnectionCentres(destination, connection.Centre);
+                            moveConnection.SetCentre(centre);
+                            centre.Connected.Add(moveConnection);
                         }
                     }
                 }
             }
 
-            // Build list of connections
-            Dictionary<Component, Dictionary<string, string>> t1 = new Dictionary<Component, Dictionary<string, string>>();
-
-            List<UniqueConnectionDescription> allUniqueConnectionDescriptions = new List<UniqueConnectionDescription>();
-            Dictionary<UniqueConnectionDescription, List<Connection>> connectRef = new Dictionary<UniqueConnectionDescription, List<Connection>>();
-            foreach (Component component in document.Components)
+            // Assign an ID to each ConnectionCentre
+            int connectionIdCounter = 0;
+            var connectionIDs = new Dictionary<ConnectionCentre, string>();
+            foreach (Component component in document.Components.Where(c => !ComponentHelper.IsWire(c)))
             {
-                Dictionary<ConnectionDescription, UniqueConnectionDescription> processed = new Dictionary<ConnectionDescription, UniqueConnectionDescription>();
-                foreach (KeyValuePair<System.Windows.Point, Connection> connection in component.GetConnections())
+                foreach (var connection in component.GetConnectedConnections().Where(conn => conn.IsConnected))
                 {
-                    if (!processed.ContainsKey(connection.Value.Description))
-                    {
-                        UniqueConnectionDescription a = new UniqueConnectionDescription(component, connection.Value.Description);
-                        processed.Add(connection.Value.Description, a);
-                        allUniqueConnectionDescriptions.Add(a);
-                        connectRef.Add(a, new List<Connection>());
-                    }
-                    connectRef[processed[connection.Value.Description]].Add(connection.Value);
+                    if (!connectionIDs.ContainsKey(connection.Centre))
+                        connectionIDs.Add(connection.Centre, (connectionIdCounter++).ToString());
                 }
             }
 
-            List<List<UniqueConnectionDescription>> collectionY = new List<List<UniqueConnectionDescription>>();
-            foreach (UniqueConnectionDescription x in allUniqueConnectionDescriptions)
+            // Create return dictionary
+            var returnDict = new Dictionary<Component, Dictionary<string, string>>();
+
+            // Create dictionary of connections for each component
+            foreach (Component component in document.Components.Where(c => !ComponentHelper.IsWire(c)))
             {
-                bool breakAll = false;
+                var connectionsDict = new Dictionary<string, string>();
 
-                foreach (List<UniqueConnectionDescription> y in collectionY)
-                {
-                    foreach (Connection connectionX in connectRef[x])
-                    {
-                        foreach (UniqueConnectionDescription y1 in y)
-                        {
-                            if (x == y1)
-                                break;
+                foreach (var connection in component.GetConnectedConnections())
+                    if (!connectionsDict.ContainsKey(connection.Description.Name))
+                        connectionsDict.Add(connection.Description.Name, connectionIDs[connection.Centre]);
 
-                            foreach (Connection connectionY in connectRef[y1])
-                            {
-                                if (connectionY.IsConnected && connectionX.IsConnected && connectionY.Centre == connectionX.Centre)
-                                {
-                                    y.Add(x);
-                                    breakAll = true;
-                                    break;
-                                }
-                            }
-
-                            if (breakAll)
-                                break;
-                        }
-
-                        if (breakAll)
-                            break;
-                    }
-
-                    if (breakAll)
-                        break;
-                }
-
-                if (!breakAll)
-                {
-                    List<UniqueConnectionDescription> nl = new List<UniqueConnectionDescription>();
-                    nl.Add(x);
-                    collectionY.Add(nl);
-                }
-            }
-
-            // Asign an ID to each connection
-            int namedConnectionRefCounter = 0;
-            foreach (var item in collectionY)
-            {
-                foreach (var item2 in item)
-                {
-                    if (!t1.ContainsKey(item2.Component))
-                        t1.Add(item2.Component, new Dictionary<string, string>());
-                    if (item.Count > 1 && !t1[item2.Component].ContainsKey(item2.ConnectionDescription.Name))
-                        t1[item2.Component].Add(item2.ConnectionDescription.Name, namedConnectionRefCounter.ToString());
-                }
-                namedConnectionRefCounter++;
+                returnDict.Add(component, connectionsDict);
             }
 
             // Restore normal connections
@@ -149,7 +138,7 @@ namespace CircuitDiagram.IO
             foreach (Component component in document.Components)
                 component.ApplyConnections(document);
 
-            return t1;
+            return returnDict;
         }
 
         /// <summary>

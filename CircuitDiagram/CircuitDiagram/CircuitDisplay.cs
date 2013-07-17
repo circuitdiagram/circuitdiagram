@@ -643,7 +643,7 @@ namespace CircuitDiagram
             using (DrawingContext dc = m_connectionsVisual.RenderOpen())
             {
                 List<ConnectionCentre> connections = new List<ConnectionCentre>();
-                List<Point> connectionPoints = new List<Point>();
+                Dictionary<Point, bool> connectionPoints = new Dictionary<Point, bool>();
                 foreach (Component component in Document.Components)
                 {
                     foreach (KeyValuePair<Point, Connection> connection in component.GetConnections())
@@ -663,20 +663,22 @@ namespace CircuitDiagram
                                     break;
                             }
 
-                            if (draw)
-                            {
-                                connections.Add(connection.Value.Centre);
-                                connectionPoints.Add(new Point(connection.Key.X + component.Location.X, connection.Key.Y + component.Location.Y));
-                            }
+                            connections.Add(connection.Value.Centre);
+                            connectionPoints.Add(new Point(connection.Key.X + component.Location.X, connection.Key.Y + component.Location.Y), draw);
                         }
                         if (ShowConnectionPoints && (connection.Value.Flags & ConnectionFlags.Edge) == ConnectionFlags.Edge)
                             dc.DrawEllipse(Brushes.Blue, new Pen(Brushes.Transparent, 0d), Point.Add(connection.Key, component.Location), 2d, 2d);
                     }
                 }
 
-                foreach (Point connectionPoint in connectionPoints)
+                int connectionIdCounter = 0;
+                foreach (var connectionPoint in connectionPoints)
                 {
-                    dc.DrawEllipse(Brushes.Black, new Pen(Brushes.Black, 1d), connectionPoint, 3d, 3d);
+                    if (connectionPoint.Value)
+                        dc.DrawEllipse(Brushes.Black, new Pen(Brushes.Black, 1d), connectionPoint.Key, 3d, 3d);
+                    if (ShowConnectionPoints)
+                        dc.DrawText(new FormattedText((connectionIdCounter++).ToString(), System.Globalization.CultureInfo.CurrentCulture, System.Windows.FlowDirection.LeftToRight,
+                            new Typeface("Arial"), 10d, Brushes.OrangeRed), connectionPoint.Key);
                 }
             }
         }
