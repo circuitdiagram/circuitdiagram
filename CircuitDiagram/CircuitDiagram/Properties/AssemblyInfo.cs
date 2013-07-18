@@ -13,7 +13,7 @@ using CircuitDiagram;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Circuit Diagram")]
 [assembly: AssemblyProduct("Circuit Diagram")]
-[assembly: AssemblyCopyright("Copyright © Circut Diagram 2012")]
+[assembly: AssemblyCopyright("Copyright © Circut Diagram 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -54,4 +54,4 @@ using CircuitDiagram;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("2.0.0.0")]
 [assembly: AssemblyFileVersion("2.0.0.0")]
-[assembly: BuildChannel("Beta 1", BuildChannelAttribute.ChannelType.Dev, 3)]
+[assembly: BuildChannel("Beta 2", BuildChannelAttribute.ChannelType.Dev, 4)]

@@ -197,7 +197,8 @@
     <Style x:Key="SelectLabel" TargetType="{x:Type TextBox}">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="{x:Null}"/>
-        <Setter Property="BorderThickness" Value="4"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="Padding" Value="4" />
     </Style>
 </ResourceDictionary>

@@ -93,7 +93,7 @@ namespace CircuitDiagram
                 });
 
             circuitDisplay.Document = new CircuitDocument();
-            circuitDisplay.Document.Metadata.Creator = Environment.UserName;
+            circuitDisplay.Document.Metadata.Creator = System.DirectoryServices.AccountManagement.UserPrincipal.Current.DisplayName;
             circuitDisplay.Document.Metadata.Created = DateTime.Now;
 
             Load();
@@ -1489,7 +1489,7 @@ namespace CircuitDiagram
 
                 CircuitDocument newDocument = new CircuitDocument();
                 newDocument.Size = new Size(newDocumentWindow.DocumentWidth, newDocumentWindow.DocumentHeight);
-                newDocument.Metadata.Creator = Environment.UserName;
+                newDocument.Metadata.Creator = System.DirectoryServices.AccountManagement.UserPrincipal.Current.DisplayName;
                 newDocument.Metadata.Created = DateTime.Now;
                 circuitDisplay.Document = newDocument;
                 circuitDisplay.DrawConnections();
