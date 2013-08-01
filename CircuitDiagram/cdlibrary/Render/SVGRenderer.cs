@@ -111,7 +111,7 @@ namespace CircuitDiagram.Render
             foreach (IPathCommand pathCommand in commands)
             {
                 data += " " + pathCommand.Shorthand(start, last);
-                last = new Point(last.X + pathCommand.End.X, last.Y + pathCommand.End.Y);
+                last = new Point(pathCommand.End.X, pathCommand.End.Y);
             }
 
             string fillOpacity = ((fill ? 255f : 0f) / 255f).ToString();
