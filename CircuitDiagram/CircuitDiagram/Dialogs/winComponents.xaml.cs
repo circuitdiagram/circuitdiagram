@@ -62,6 +62,22 @@ namespace CircuitDiagram
         {
             System.Diagnostics.Process.Start("http://www.circuit-diagram.org/components");
         }
+
+        private void hyperlinkComponentsFolder_Click(object sender, RoutedEventArgs e)
+        {
+#if !PORTABLE
+            string componentsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\components";
+#endif
+
+#if PORTABLE
+            string componentsDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\components";
+#endif
+
+            if (!System.IO.Directory.Exists(componentsDirectory))
+                System.IO.Directory.CreateDirectory(componentsDirectory);
+
+            System.Diagnostics.Process.Start(componentsDirectory);
+        }
     }
 
     class EmbedByDefaultConverter : IValueConverter
