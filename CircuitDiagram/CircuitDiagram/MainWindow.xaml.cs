@@ -1172,7 +1172,7 @@ namespace CircuitDiagram
                 string extension = System.IO.Path.GetExtension(sfd.FileName);
                 if (extension == ".svg")
                 {
-                    SVGRenderer renderer = new SVGRenderer();
+                    SVGRenderer renderer = new SVGRenderer(circuitDisplay.Document.Size.Width, circuitDisplay.Document.Size.Height);
                     renderer.Begin();
                     circuitDisplay.Document.Render(renderer);
                     renderer.End();

@@ -32,17 +32,26 @@ namespace CircuitDiagram.Render
     public class SVGRenderer : IRenderContext
     {
         public bool Absolute { get { return true; } }
+        public double Width { get; private set; }
+        public double Height { get; private set; }
 
         public MemoryStream SVGDocument { get; private set; }
         private XmlTextWriter Writer { get { return m_writer; } }
 
         private XmlTextWriter m_writer;
 
-        public SVGRenderer()
+        /// <summary>
+        /// Creates a new SVGRenderer, which will produce an output SVG with the specified width and height.
+        /// </summary>
+        /// <param name="width">Width of the output SVG.</param>
+        /// <param name="height">Height of the output SVG.</param>
+        public SVGRenderer(double width, double height)
         {
             SVGDocument = new MemoryStream();
             m_writer = new XmlTextWriter(SVGDocument, Encoding.UTF8);
             m_writer.Formatting = Formatting.Indented;
+            this.Width = width;
+            this.Height = height;
         }
 
         public void Begin()
@@ -54,8 +63,8 @@ namespace CircuitDiagram.Render
             Writer.WriteDocType("svg", "-//W3C//DTD SVG 1.1//EN", "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd", null);
             Writer.WriteStartElement("svg", "http://www.w3.org/2000/svg");
             Writer.WriteAttributeString("version", "1.1");
-            Writer.WriteAttributeString("width", "100%");
-            Writer.WriteAttributeString("height", "100%");
+            Writer.WriteAttributeString("width", this.Width.ToString());
+            Writer.WriteAttributeString("height", this.Height.ToString());
         }
 
         public void End()
