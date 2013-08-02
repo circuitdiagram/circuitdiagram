@@ -3,6 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:cd="clr-namespace:CircuitDiagram"
         Title="Options" Height="373" Width="490" ShowInTaskbar="False" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <cd:NotConverter x:Key="NotConverter" />
+    </Window.Resources>
     <Grid>
         <TabControl Margin="12,12,12,41" Name="tbctlMain">
             <TabItem Header="General" Name="tabGeneral">
@@ -60,7 +63,7 @@
                     <Button Content="Delete" Height="23" HorizontalAlignment="Left" Margin="217,0,0,6" Name="btnImplementationsDelete" VerticalAlignment="Bottom" Width="75" Click="btnImplementationsDelete_Click" />
                 </Grid>
             </TabItem>
-            <TabItem Header="Export">
+            <TabItem Header="CDDX">
                 <Grid>
                     <GroupBox Header="Embed" Height="67" Margin="6,6,6,0" VerticalAlignment="Top">
                         <Grid>
@@ -75,6 +78,13 @@
                     <GroupBox Header="Display" Height="68" Margin="6,79,6,0" VerticalAlignment="Top">
                         <Grid>
                             <CheckBox Content="Show Circuit Diagram Document options when saving" Height="16" Margin="6,17,99,0" Name="chbShowCDDXOptions" VerticalAlignment="Top" Width="309" />
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Information" Height="101" Margin="6,152,6,0" VerticalAlignment="Top">
+                        <Grid>
+                            <Label Content="Creator" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                            <CheckBox Name="chbCreatorUseComputerUserName" Content="Use computer user name" HorizontalAlignment="Left" Margin="115,16,0,0" VerticalAlignment="Top"/>
+                            <TextBox Name="tbxCreatorName" HorizontalAlignment="Left" Height="23" Margin="138,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="286" IsEnabled="{Binding ElementName=chbCreatorUseComputerUserName, Path=IsChecked, Converter={StaticResource NotConverter}, Mode=OneWay}" />
                         </Grid>
                     </GroupBox>
                 </Grid>

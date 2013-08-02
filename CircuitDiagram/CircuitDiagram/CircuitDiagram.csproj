@@ -85,6 +85,7 @@
     </ApplicationDefinition>
     <Compile Include="BuildChannelAttribute.cs" />
     <Compile Include="ComponentEditor.cs" />
+    <Compile Include="Converters\NotConverter.cs" />
     <Compile Include="Dialogs\CDDXSaveOptionsEditor.xaml.cs">
       <DependentUpon>CDDXSaveOptionsEditor.xaml</DependentUpon>
     </Compile>

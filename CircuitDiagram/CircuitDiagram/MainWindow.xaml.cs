@@ -93,8 +93,7 @@ namespace CircuitDiagram
                 });
 
             circuitDisplay.Document = new CircuitDocument();
-            circuitDisplay.Document.Metadata.Creator = System.DirectoryServices.AccountManagement.UserPrincipal.Current.DisplayName;
-            circuitDisplay.Document.Metadata.Created = DateTime.Now;
+            InitializeMetadata(circuitDisplay.Document);
 
             Load();
 
@@ -160,6 +159,10 @@ namespace CircuitDiagram
             circuitDisplay.ShowGrid = Settings.Settings.ReadBool("showEditorGrid");
             if (Settings.Settings.HasSetting("EmbedComponents"))
                 ComponentHelper.EmbedOptions = (ComponentEmbedOptions)Settings.Settings.Read("EmbedComponents");
+
+            // Load user name
+            if (!Settings.Settings.HasSetting("ComputerUserName"))
+                Settings.Settings.Write("ComputerUserName", System.DirectoryServices.AccountManagement.UserPrincipal.Current.DisplayName);
         }
 
         /// <summary>
@@ -1489,8 +1492,7 @@ namespace CircuitDiagram
 
                 CircuitDocument newDocument = new CircuitDocument();
                 newDocument.Size = new Size(newDocumentWindow.DocumentWidth, newDocumentWindow.DocumentHeight);
-                newDocument.Metadata.Creator = System.DirectoryServices.AccountManagement.UserPrincipal.Current.DisplayName;
-                newDocument.Metadata.Created = DateTime.Now;
+                InitializeMetadata(newDocument);
                 circuitDisplay.Document = newDocument;
                 circuitDisplay.DrawConnections();
                 this.Title = "Untitled - Circuit Diagram";
@@ -1501,6 +1503,16 @@ namespace CircuitDiagram
                 m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
                 m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
             }
+        }
+
+        private static void InitializeMetadata(CircuitDocument newDocument)
+        {
+            newDocument.Metadata.Creator = Settings.Settings.Read("ComputerUserName") as string;
+            if (!Settings.Settings.ReadBool("CreatorUseComputerUserName") && Settings.Settings.HasSetting("CreatorName"))
+                newDocument.Metadata.Creator = Settings.Settings.Read("CreatorName") as string;
+            newDocument.Metadata.Created = DateTime.Now;
+            newDocument.Metadata.Application = ApplicationInfo.Name;
+            newDocument.Metadata.AppVersion = ApplicationInfo.Version;
         }
 
         private void CommandOpen_CanExecute(object sender, CanExecuteRoutedEventArgs e)

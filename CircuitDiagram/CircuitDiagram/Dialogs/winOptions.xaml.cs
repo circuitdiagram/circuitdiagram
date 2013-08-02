@@ -50,11 +50,17 @@ namespace CircuitDiagram
             chbShowToolboxScrollBar.IsChecked = Settings.Settings.ReadBool("showToolboxScrollBar");
             chbCheckForUpdatesAutomatically.IsChecked = Settings.Settings.ReadBool("CheckForUpdatesOnStartup");
 
-            // Export
+            // CDDX
             cbxEmbedComponents.SelectedIndex = 0;
             if (Settings.Settings.HasSetting("EmbedComponents"))
                 cbxEmbedComponents.SelectedIndex = (int)Settings.Settings.Read("EmbedComponents");
             chbShowCDDXOptions.IsChecked = !Settings.Settings.ReadBool("CDDX.AlwaysUseSettings");
+            chbCreatorUseComputerUserName.IsChecked = true;
+            if (Settings.Settings.HasSetting("CreatorUseComputerUserName"))
+                chbCreatorUseComputerUserName.IsChecked = Settings.Settings.ReadBool("CreatorUseComputerUserName");
+            string creatorName = Settings.Settings.Read("ComputerUserName") as string;
+            if (Settings.Settings.HasSetting("CreatorName"))
+                tbxCreatorName.Text = Settings.Settings.Read("CreatorName") as string;
 
             // Plugins
             foreach (var item in PluginManager.Plugins)
@@ -75,10 +81,12 @@ namespace CircuitDiagram
             Settings.Settings.Write("showToolboxScrollBar", chbShowToolboxScrollBar.IsChecked.Value);
             Settings.Settings.Write("CheckForUpdatesOnStartup", chbCheckForUpdatesAutomatically.IsChecked.Value);
 
-            // Export
+            // CDDX
             Settings.Settings.Write("EmbedComponents", cbxEmbedComponents.SelectedIndex);
             ComponentHelper.EmbedOptions = (ComponentEmbedOptions)cbxEmbedComponents.SelectedIndex;
             Settings.Settings.Write("CDDX.AlwaysUseSettings", chbShowCDDXOptions.IsChecked.Value == false);
+            Settings.Settings.Write("CreatorUseComputerUserName", chbCreatorUseComputerUserName.IsChecked == true);
+            Settings.Settings.Write("CreatorName", tbxCreatorName.Text);
 
             // Plugins
             foreach (PluginListItem item in lbxPlugins.Items)
