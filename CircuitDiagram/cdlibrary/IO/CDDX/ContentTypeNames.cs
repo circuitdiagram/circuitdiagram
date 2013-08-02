@@ -49,5 +49,10 @@ namespace CircuitDiagram.IO.CDDX
         /// The extended properties part.
         /// </summary>
         public const string ExtendedProperties = "application/vnd.circuitdiagram.document.extended-properties+xml";
+
+        /// <summary>
+        /// The type name for a CDCOM component.
+        /// </summary>
+        public const string BinaryComponent = "application/vnd.circuitdiagram.component";
     }
 }

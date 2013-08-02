@@ -79,7 +79,7 @@
     <Compile Include="Components\Render\Rectangle.cs" />
     <Compile Include="Components\Render\RenderDescription.cs" />
     <Compile Include="Components\Render\Text.cs" />
-    <Compile Include="Elements\ComponentElement.cs" />
+    <Compile Include="Elements\DisabledComponent.cs" />
     <Compile Include="Elements\ICircuitElement.cs" />
     <Compile Include="Elements\IComponentElement.cs" />
     <Compile Include="Elements\UnavailableComponent.cs" />

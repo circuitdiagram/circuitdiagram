@@ -135,7 +135,16 @@ namespace CircuitDiagram
                     EmbedComponentData embedData = new EmbedComponentData();
                     embedData.Stream = System.IO.File.OpenRead(embedItem.Description.Source.Path);
                     embedData.FileExtension = System.IO.Path.GetExtension(embedItem.Description.Source.Path);
-                    embedData.ContentType = "application/xml";
+
+                    switch (embedData.FileExtension)
+                    {
+                        case ".xml":
+                            embedData.ContentType = "application/xml";
+                            break;
+                        case ".cdcom":
+                            embedData.ContentType = IO.CDDX.ContentTypeNames.BinaryComponent;
+                            break;
+                    }
 
                     List<IOComponentType> associatedTypes = new List<IOComponentType>();
                     foreach (var item in componentTypes)
@@ -233,7 +242,7 @@ namespace CircuitDiagram
         /// <returns>A configuration with the loaded component description if it was available, null if it could not be loaded.</returns>
         private static ComponentIdentifier LoadDescription(EmbedComponentData data, IOComponentType type)
         {
-            if (data.ContentType == "")
+            if (data.ContentType == IO.CDDX.ContentTypeNames.BinaryComponent)
             {
                 // Binary component
                 BinaryLoader loader = new BinaryLoader();
@@ -251,7 +260,7 @@ namespace CircuitDiagram
                     return null;
                 }
             }
-            else if (data.ContentType == "")
+            else if (data.ContentType == "application/xml")
             {
                 // XML component
                 XmlLoader loader = new XmlLoader();
