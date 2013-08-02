@@ -32,6 +32,11 @@ namespace CircuitDiagram.IO
     public class IODocument
     {
         /// <summary>
+        /// Represents an unknown collection source.
+        /// </summary>
+        public const string UnknownCollection = "special:unknown";
+
+        /// <summary>
         /// The document metadata.
         /// </summary>
         public DocumentMetadata Metadata { get; set; }
@@ -87,7 +92,7 @@ namespace CircuitDiagram.IO
                 string collection = component.Type.Collection;
 
                 if (String.IsNullOrEmpty(component.Type.Collection))
-                    collection = "special:unknown";
+                    collection = IODocument.UnknownCollection;
 
                 if (!componentTypes.ContainsKey(collection))
                     componentTypes.Add(collection, new List<IOComponentType>());

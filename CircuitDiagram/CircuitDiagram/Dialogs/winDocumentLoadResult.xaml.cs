@@ -40,7 +40,7 @@ namespace CircuitDiagram
                     itemName = item.Name;
                 else if (String.IsNullOrEmpty(item.Item) && item.GUID != Guid.Empty)
                     itemName = item.GUID.ToString();
-                if (String.IsNullOrEmpty(item.Item))
+                else if (String.IsNullOrEmpty(item.Item))
                     itemName = "(unnamed)";
 
                 if (item.Collection == null)

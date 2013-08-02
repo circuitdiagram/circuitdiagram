@@ -146,13 +146,19 @@ namespace CircuitDiagram.IO.CDDX
                 foreach (KeyValuePair<string, List<IOComponentType>> collection in Document.GetComponentTypes())
                 {
                     writer.WriteStartElement("src");
-                    writer.WriteAttributeString("col", collection.Key);
+
+                    // Write the collection name if it is known
+                    if (collection.Key != IODocument.UnknownCollection)
+                        writer.WriteAttributeString("col", collection.Key);
 
                     foreach (IOComponentType item in collection.Value)
                     {
                         writer.WriteStartElement("add");
                         writer.WriteAttributeString("id", idCounter.ToString());
-                        writer.WriteAttributeString("item", item.Item);
+
+                        // Write the collection item if it belongs to a collection
+                        if (collection.Key != IODocument.UnknownCollection)
+                            writer.WriteAttributeString("item", item.Item);
 
                         // Write additional attributes for opening with the same component description
                         if (!String.IsNullOrEmpty(item.Name))
