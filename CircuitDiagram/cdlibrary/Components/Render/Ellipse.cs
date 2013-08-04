@@ -27,7 +27,7 @@ using System.Windows.Media;
 
 namespace CircuitDiagram.Components.Render
 {
-    class Ellipse : IRenderCommand
+    public class Ellipse : IRenderCommand
     {
         public ComponentPoint Centre { get; set; }
         public double RadiusX { get; set; }

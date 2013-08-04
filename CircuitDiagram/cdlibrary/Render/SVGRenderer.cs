@@ -143,13 +143,14 @@ namespace CircuitDiagram.Render
             else if (alignment == TextAlignment.BottomRight || alignment == TextAlignment.CentreRight || alignment == Render.TextAlignment.TopRight)
                 textAnchor = "end";
 
-            string alignmentBaseline = "auto";
+            string dy = "-0.3em";
             if (alignment == TextAlignment.CentreCentre || alignment == TextAlignment.CentreLeft || alignment == TextAlignment.CentreRight)
-                alignmentBaseline = "central";
+                dy = ".3em";
             else if (alignment == TextAlignment.TopCentre || alignment == TextAlignment.TopLeft || alignment == TextAlignment.TopRight)
-                alignmentBaseline = "before-edge";
+                dy = "1em";
 
-            m_writer.WriteAttributeString("style", "font-family:Arial;font-size:" + textRuns.FirstOrDefault().Formatting.Size.ToString() + ";text-anchor:" + textAnchor + ";alignment-baseline:" + alignmentBaseline);
+            m_writer.WriteAttributeString("style", "font-family:Arial;font-size:" + textRuns.FirstOrDefault().Formatting.Size.ToString() + ";text-anchor:" + textAnchor);
+            m_writer.WriteAttributeString("dy", dy);
 
             foreach (TextRun run in textRuns)
             {
