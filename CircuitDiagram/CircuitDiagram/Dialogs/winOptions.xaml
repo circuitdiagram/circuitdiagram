@@ -84,7 +84,7 @@
                         <Grid>
                             <Label Content="Creator" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
                             <CheckBox Name="chbCreatorUseComputerUserName" Content="Use computer user name" HorizontalAlignment="Left" Margin="115,16,0,0" VerticalAlignment="Top"/>
-                            <TextBox Name="tbxCreatorName" HorizontalAlignment="Left" Height="23" Margin="138,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="286" IsEnabled="{Binding ElementName=chbCreatorUseComputerUserName, Path=IsChecked, Converter={StaticResource NotConverter}, Mode=OneWay}" />
+                            <TextBox Name="tbxCreatorName" Height="23" Margin="138,36,10,0" TextWrapping="Wrap" VerticalAlignment="Top" IsEnabled="{Binding ElementName=chbCreatorUseComputerUserName, Path=IsChecked, Converter={StaticResource NotConverter}, Mode=OneWay}" />
                         </Grid>
                     </GroupBox>
                 </Grid>

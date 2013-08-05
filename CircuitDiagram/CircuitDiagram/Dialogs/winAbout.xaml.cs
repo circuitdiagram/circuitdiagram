@@ -58,9 +58,15 @@ namespace CircuitDiagram
 
                 string theVersion = string.Empty;
                 if (_assemblyInfo != null)
-                    theVersion = _assemblyInfo.GetName().Version.ToString();
+                {
+                    Version ver = _assemblyInfo.GetName().Version;
+                    if (ver.Revision == 0 && ver.Build == 0)
+                        theVersion = String.Format("{0}.{1}", ver.Major, ver.Minor);
+                    else
+                        theVersion = _assemblyInfo.GetName().Version.ToString();
+                }
                 BuildChannelAttribute channelAttribute = _assemblyInfo.GetCustomAttributes(typeof(BuildChannelAttribute), false).FirstOrDefault(item => item is BuildChannelAttribute) as BuildChannelAttribute;
-                if (channelAttribute != null && channelAttribute.Type == BuildChannelAttribute.ChannelType.Dev && channelAttribute.DisplayName != null)
+                if (channelAttribute != null && channelAttribute.Type == BuildChannelAttribute.ChannelType.Dev && !String.IsNullOrEmpty(channelAttribute.DisplayName))
                     theVersion += " " + channelAttribute.DisplayName;
 
 #if PORTABLE

@@ -54,4 +54,4 @@ using CircuitDiagram;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("2.0.0.0")]
 [assembly: AssemblyFileVersion("2.0.0.0")]
-[assembly: BuildChannel("Beta 2", BuildChannelAttribute.ChannelType.Dev, 4)]
+[assembly: BuildChannel("", BuildChannelAttribute.ChannelType.Stable, 1)]
