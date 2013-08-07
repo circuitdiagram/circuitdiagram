@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram", "CircuitDi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagramCore", "CircuitDiagramCore\CircuitDiagramCore.csproj", "{445A46BE-19F9-4E30-B476-1D539B024E69}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskDialog", "TaskDialog\TaskDialog.csproj", "{37FD53F7-8A8F-4427-8FF4-6299E2933A7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,12 @@ Global
 		{445A46BE-19F9-4E30-B476-1D539B024E69}.Portable|Any CPU.Build.0 = Release|Any CPU
 		{445A46BE-19F9-4E30-B476-1D539B024E69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{445A46BE-19F9-4E30-B476-1D539B024E69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37FD53F7-8A8F-4427-8FF4-6299E2933A7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37FD53F7-8A8F-4427-8FF4-6299E2933A7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37FD53F7-8A8F-4427-8FF4-6299E2933A7E}.Portable|Any CPU.ActiveCfg = Release|Any CPU
+		{37FD53F7-8A8F-4427-8FF4-6299E2933A7E}.Portable|Any CPU.Build.0 = Release|Any CPU
+		{37FD53F7-8A8F-4427-8FF4-6299E2933A7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37FD53F7-8A8F-4427-8FF4-6299E2933A7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

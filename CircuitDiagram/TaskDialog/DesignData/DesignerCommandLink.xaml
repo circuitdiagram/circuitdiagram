@@ -1,0 +1,9 @@
+﻿<local:TaskDialogButtonData
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:TaskDialogInterop"
+	
+	ID="0"
+	Text="Command _Link 1&#x0a;Line 2&#x0a;Line 3"
+	IsDefault="False"
+	IsCancel="False">
+</local:TaskDialogButtonData>
