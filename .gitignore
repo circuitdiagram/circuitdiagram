@@ -1,0 +1,14 @@
+[Dd]ebug/
+[Rr]elease/
+x64/
+build/
+[Bb]in/
+[Oo]bj/
+
+*.exe
+*.suo
+*.csproj.user
+*.orig
+*.vsp
+*.psess
+*.pfx
