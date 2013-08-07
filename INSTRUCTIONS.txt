@@ -1,7 +1,0 @@
-To compile Circuit Diagram, you must also download the following:
-
-1. CircuitDiagramBinaries
-    - Place the extracted folder "CircuitDiagramBinaries" in this directory
-
-
-visit http://www.circuit-diagram.org/downloads

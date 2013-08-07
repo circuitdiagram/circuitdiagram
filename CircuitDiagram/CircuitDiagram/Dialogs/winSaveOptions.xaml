@@ -7,7 +7,7 @@
                 
         </StackPanel>
         <Grid Height="40">
-            <CheckBox Content="Always use these settings" Height="16" VerticalAlignment="Bottom" Margin="16,0,0,14" Name="chbAlwaysUseSettings" HorizontalAlignment="Left" Width="151" />
+            <CheckBox Content="Always use these settings" Height="16" VerticalAlignment="Bottom" Margin="16,0,0,14" Name="chbAlwaysUseSettings" HorizontalAlignment="Left" />
             <Button Content="OK" Height="23" HorizontalAlignment="Right" Margin="0,0,93,11" Name="btnOK" VerticalAlignment="Bottom" Width="75" Click="btnOK_Click" IsDefault="True" />
             <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,0,12,11" Name="btnCancel" VerticalAlignment="Bottom" Width="75" Click="btnCancel_Click" IsCancel="True" />
         </Grid>

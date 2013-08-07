@@ -216,6 +216,7 @@ namespace CircuitDiagram
             CircuitDiagram.IO.XmlLoader xmlLoader = new CircuitDiagram.IO.XmlLoader();
             CircuitDiagram.IO.BinaryLoader binLoader = new CircuitDiagram.IO.BinaryLoader();
 
+            // Load XML components
             foreach (string location in componentLocations)
             {
                 foreach (string file in System.IO.Directory.GetFiles(location, "*.xml", SearchOption.TopDirectoryOnly))
@@ -243,12 +244,15 @@ namespace CircuitDiagram
                     }
                 }
             }
+
             Stream keyStream = System.Reflection.Assembly.GetAssembly(typeof(CircuitDocument)).GetManifestResourceStream("CircuitDiagram.key.txt");
             System.Security.Cryptography.RSACryptoServiceProvider tempRSA = new System.Security.Cryptography.RSACryptoServiceProvider();
             byte[] data = new byte[keyStream.Length];
             keyStream.Read(data, 0, (int)keyStream.Length);
             string aaa = Encoding.UTF8.GetString(data);
             //tempRSA.FromXmlString(aaa.Trim());
+
+            // Load binary components
             foreach (string location in componentLocations)
             {
                 foreach (string file in System.IO.Directory.GetFiles(location, "*.cdcom", SearchOption.TopDirectoryOnly))

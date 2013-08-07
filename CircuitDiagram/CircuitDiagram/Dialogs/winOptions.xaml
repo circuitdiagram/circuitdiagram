@@ -80,7 +80,7 @@
                             <CheckBox Content="Show Circuit Diagram Document options when saving" Height="16" Margin="6,17,99,0" Name="chbShowCDDXOptions" VerticalAlignment="Top" Width="309" />
                         </Grid>
                     </GroupBox>
-                    <GroupBox Header="Information" Height="101" Margin="6,152,6,0" VerticalAlignment="Top">
+                    <GroupBox Header="Information" Margin="6,152,6,10">
                         <Grid>
                             <Label Content="Creator" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
                             <CheckBox Name="chbCreatorUseComputerUserName" Content="Use computer user name" HorizontalAlignment="Left" Margin="115,16,0,0" VerticalAlignment="Top"/>
