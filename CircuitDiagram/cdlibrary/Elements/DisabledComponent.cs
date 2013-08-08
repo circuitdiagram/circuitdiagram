@@ -23,11 +23,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using CircuitDiagram;
 
 namespace CircuitDiagram.Elements
 {
     /// <summary>
-    /// Represents a component which cannot be shown or modified.
+    /// Represents a component which cannot be shown or modified.This enables the component to be written when the document is saved.
     /// </summary>
     public class DisabledComponent
     {
@@ -35,23 +36,37 @@ namespace CircuitDiagram.Elements
         /// The collection this component belongs to.
         /// </summary>
         public string ImplementationCollection { get; set; }
+
         /// <summary>
         /// The item within the collection this component belongs to.
         /// </summary>
         public string ImplementationItem { get; set; }
 
         /// <summary>
+        /// The name of the component description from which this component was created.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// The GUID of the component description from which this component was created.
+        /// </summary>
+        public Guid? GUID { get; set; }
+
+        /// <summary>
         /// The location of the component within the document.
         /// </summary>
         public Vector? Location { get; set; }
+
         /// <summary>
         /// The size of the component.
         /// </summary>
         public double? Size { get; set; }
         /// <summary>
+        /// 
         /// Whether the component is flipped or not.
         /// </summary>
         public bool? IsFlipped { get; set; }
+
         /// <summary>
         /// Whether the component horizontal.
         /// </summary>
@@ -60,33 +75,16 @@ namespace CircuitDiagram.Elements
         /// <summary>
         /// Component properties.
         /// </summary>
-        public Dictionary<string, object> Properties { get; private set; }
+        public IDictionary<string, object> Properties { get; private set; }
 
+        public event EventHandler Updated;
+
+        /// <summary>
+        /// Creates a new DisabledComponent.
+        /// </summary>
         public DisabledComponent()
         {
             Properties = new Dictionary<string, object>();
-        }
-
-        public DisabledComponent(string implementationCollection, string implmementationItem, Vector location, double size, bool isFlipped, Orientation orientation)
-        {
-            Properties = new Dictionary<string, object>();
-            ImplementationCollection = implementationCollection;
-            ImplementationItem = implmementationItem;
-            Location = location;
-            Size = size;
-            IsFlipped = isFlipped;
-            Orientation = orientation;
-        }
-
-        public DisabledComponent(string implementationCollection, string implmementationItem, Vector location, double size, bool isFlipped, Orientation orientation, Dictionary<string, object> properties)
-        {
-            ImplementationCollection = implementationCollection;
-            ImplementationItem = implmementationItem;
-            Location = location;
-            Size = size;
-            IsFlipped = isFlipped;
-            Orientation = orientation;
-            Properties = properties;
         }
     }
 }

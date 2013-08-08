@@ -108,7 +108,25 @@ namespace CircuitDiagram
                 Point? location = null;
                 if (component.Location.HasValue)
                     location = new Point(component.Location.Value.X, component.Location.Value.Y);
-                IOComponent ioComponent = new IOComponent(idCounter.ToString(), location, component.Size, component.IsFlipped, component.Orientation, new IOComponentType(component.ImplementationCollection, component.ImplementationItem));
+
+                IOComponent ioComponent = new IOComponent();
+                ioComponent.ID = idCounter.ToString();
+                ioComponent.Location = location;
+                ioComponent.Size = component.Size;
+                ioComponent.IsFlipped = component.IsFlipped;
+                ioComponent.Orientation = component.Orientation;
+                
+                IOComponentType ioType = new IOComponentType(component.ImplementationCollection, component.ImplementationItem);
+
+                // Set name
+                if (!String.IsNullOrEmpty(component.Name))
+                    ioType.Name = component.Name;
+
+                // Set GUID
+                if (component.GUID.HasValue)
+                    ioType.GUID = component.GUID.Value;
+
+                ioComponent.Type = ioType;
 
                 // Set properties
                 foreach (var property in component.Properties)
@@ -206,9 +224,26 @@ namespace CircuitDiagram
                 else
                 {
                     // Add disabled component
-                    // TODO
+
                     if (!unavailableComponents.Contains(component.Type))
                         unavailableComponents.Add(component.Type);
+
+                    DisabledComponent addComponent = new DisabledComponent();
+
+                    Dictionary<string, object> properties = new Dictionary<string,object>();
+                    foreach(var property in component.Properties)
+                        addComponent.Properties.Add(property.Key, property.Value);
+
+                    addComponent.ImplementationCollection = component.Type.Collection;
+                    addComponent.ImplementationItem = component.Type.Item;
+                    addComponent.Name = component.Type.Name;
+                    addComponent.GUID = component.Type.GUID;
+                    if (component.Location.HasValue)
+                        addComponent.Location = new Vector(component.Location.Value.X, component.Location.Value.Y);
+                    addComponent.Size = component.Size;
+                    addComponent.Orientation = component.Orientation;
+
+                    circuitDocument.DisabledComponents.Add(addComponent);
                 }
             }
 

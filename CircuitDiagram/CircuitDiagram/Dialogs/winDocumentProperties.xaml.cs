@@ -58,10 +58,14 @@ namespace CircuitDiagram
 
             tbxDimensions.Text = String.Format("{0}x{1}", document.Size.Width, document.Size.Height);
 
+            // Embedded components
             document.UpdateEmbedComponents();
             lbxEmbedComponents.ItemsSource = document.Metadata.EmbedComponents;
 
+            // Components used in document - convert to tree structure
             Dictionary<string, List<ComponentUsageItem>> processed = new Dictionary<string, List<ComponentUsageItem>>();
+
+            // Sort components into collections
             foreach (IComponentElement element in document.Elements.Where(item => item is IComponentElement))
             {
                 if (element is Component && (element as Component).Description == ComponentHelper.WireDescription)
@@ -82,7 +86,7 @@ namespace CircuitDiagram
                     if (element is Component)
                         name = (element as Component).Description.ComponentName;
                     else
-                        name = "unnamed component";
+                        name = "Unnamed component";
                     nonstandard = true;
                 }
 
@@ -91,8 +95,40 @@ namespace CircuitDiagram
 
                 if (!processed.ContainsKey(key))
                     processed.Add(key, new List<ComponentUsageItem>());
-                processed[key].Add(new ComponentUsageItem(name, !(element is DisabledComponent), nonstandard));
+                processed[key].Add(new ComponentUsageItem(name, true, nonstandard));
             }
+
+            // Add disabled components
+            foreach (DisabledComponent component in document.DisabledComponents)
+            {
+                string key = component.ImplementationCollection;
+                if (component.ImplementationCollection == CircuitDiagram.IO.ComponentCollections.Common)
+                    key = "Common";
+                else if (component.ImplementationCollection == CircuitDiagram.IO.ComponentCollections.Misc)
+                    key = "Misc";
+                else if (String.IsNullOrEmpty(component.ImplementationCollection))
+                    key = "(unknown)";
+
+                string name = component.ImplementationItem;
+                bool nonstandard = false;
+                if (String.IsNullOrEmpty(component.ImplementationItem))
+                {
+                    if (!String.IsNullOrEmpty(component.Name))
+                        name = component.Name;
+                    else
+                        name = String.Format("Unnamed component");
+                    nonstandard = true;
+                }
+
+                if (processed.ContainsKey(key) && processed[key].Find(item => item.Name == name) != null)
+                    continue; // Avoid duplicates
+
+                if (!processed.ContainsKey(key))
+                    processed.Add(key, new List<ComponentUsageItem>());
+                processed[key].Add(new ComponentUsageItem(name, false, nonstandard));
+            }
+
+            // Add to treeview
             foreach (KeyValuePair<string, List<ComponentUsageItem>> item in processed)
             {
                 TreeViewItem collectionItem = new TreeViewItem();
