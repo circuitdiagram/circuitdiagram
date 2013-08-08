@@ -202,7 +202,7 @@ namespace CircuitDiagram
 #endif
 
 #if DEBUG
-            string debugComponentsDirectory = Path.GetFullPath("../../Components");
+            string debugComponentsDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\..\\..\\Components";
             if (Directory.Exists(debugComponentsDirectory))
                 componentLocations.Add(debugComponentsDirectory);
 #endif
@@ -1219,7 +1219,7 @@ namespace CircuitDiagram
                 }
                 else
                 {
-                    IDocumentWriter writer = PluginManager.EnabledExportWriters[sfd.FilterIndex - 4];
+                    IDocumentWriter writer = PluginManager.EnabledExportWriters[sfd.FilterIndex - 3];
                     IDictionary<IOComponentType, EmbedComponentData> embedComponents = new Dictionary<IOComponentType, EmbedComponentData>();
                     if (writer is IElementDocumentWriter)
                         (writer as IElementDocumentWriter).Document = circuitDisplay.Document.ToIODocument(out embedComponents);

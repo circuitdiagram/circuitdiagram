@@ -248,18 +248,26 @@ namespace CircuitDiagram
             }
 
             // Add wires
-            foreach (IOWire wire in document.Wires)
+            IOComponentType wireType = new IOComponentType("wire");
+            if (ComponentHelper.WireDescription == null)
             {
-                Dictionary<string, object> properties = new Dictionary<string, object>(4);
-                properties.Add("@x", wire.Location.X);
-                properties.Add("@y", wire.Location.Y);
-                properties.Add("@orientation", wire.Orientation == Orientation.Horizontal);
-                properties.Add("@size", wire.Size);
+                unavailableComponents.Add(wireType);
+            }
+            else
+            {
+                foreach (IOWire wire in document.Wires)
+                {
+                    Dictionary<string, object> properties = new Dictionary<string, object>(4);
+                    properties.Add("@x", wire.Location.X);
+                    properties.Add("@y", wire.Location.Y);
+                    properties.Add("@orientation", wire.Orientation == Orientation.Horizontal);
+                    properties.Add("@size", wire.Size);
 
-                Component wireComponent = Component.Create(ComponentHelper.WireDescription, properties);
-                wireComponent.Layout(wire.Location.X, wire.Location.Y, wire.Size, wire.Orientation, false);
-                wireComponent.ApplyConnections(circuitDocument);
-                circuitDocument.Elements.Add(wireComponent);
+                    Component wireComponent = Component.Create(ComponentHelper.WireDescription, properties);
+                    wireComponent.Layout(wire.Location.X, wire.Location.Y, wire.Size, wire.Orientation, false);
+                    wireComponent.ApplyConnections(circuitDocument);
+                    circuitDocument.Elements.Add(wireComponent);
+                }
             }
 
             // Connections
