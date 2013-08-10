@@ -4,14 +4,14 @@
         Title="About Circuit Diagram" Height="258" Width="478" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" ResizeMode="NoResize">
     <Grid>
 
-        <Button Content="Close" Margin="0,0,12,12" Name="button1" Height="23" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="button1_Click" />
-        <StackPanel Margin="215,69,10,0" Name="stackPanel1" Height="91" VerticalAlignment="Top">
+        <Button Content="Close" Margin="0,0,12,12" Name="btnClose" Height="23" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="button1_Click" />
+        <StackPanel Margin="215,69,10,0" Name="stpInformation" Height="91" VerticalAlignment="Top">
             <StackPanel Orientation="Horizontal">
-                <Label Content="Version:" Height="28" Name="label2" HorizontalAlignment="Left" />
+                <Label Content="Version:" Height="28" Name="lblVersion" HorizontalAlignment="Left" />
                 <Label Content="1.0" Height="28" Name="lblVersionNumber" HorizontalAlignment="Left" />
             </StackPanel>
-            <Label Content="Created by Sam Fisher" Height="28" Name="label3" HorizontalAlignment="Left" />
-            <Label Height="28" HorizontalAlignment="Left">
+            <Label Name="lblCreatedBy" Content="Created by Sam Fisher" Height="28" HorizontalAlignment="Left" />
+            <Label Name="lblWebsite" Height="28" HorizontalAlignment="Left">
                 <Hyperlink NavigateUri="http://www.circuit-diagram.org/" RequestNavigate="Hyperlink_RequestNavigate">http://www.circuit-diagram.org/</Hyperlink>
             </Label>
         </StackPanel>

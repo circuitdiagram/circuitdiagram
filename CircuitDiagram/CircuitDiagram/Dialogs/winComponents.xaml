@@ -27,15 +27,15 @@
                 <RowDefinition Height="27" />
                 <RowDefinition Height="27" />
             </Grid.RowDefinitions>
-            <Label Grid.Column="0" Grid.Row="0">Name</Label>
-            <Label Grid.Column="0" Grid.Row="1">Author</Label>
-            <Label Grid.Column="0" Grid.Row="2">Embed by default</Label>
-            <Label Grid.Column="0" Grid.Row="3">Type</Label>
-            <Label Grid.Column="0" Grid.Row="4" VerticalAlignment="Center">Icon</Label>
-            <Label Grid.Column="0" Grid.Row="5">GUID</Label>
-            <Label Grid.Column="0" Grid.Row="6">Version</Label>
-            <Label Grid.Column="0" Grid.Row="7">Additional information</Label>
-            <Label Grid.Column="0" Grid.Row="8">Location</Label>
+            <Label Name="lblName" Grid.Column="0" Grid.Row="0">Name</Label>
+            <Label Name="lblAuthor" Grid.Column="0" Grid.Row="1">Author</Label>
+            <Label Name="lblEmbedByDefault" Grid.Column="0" Grid.Row="2">Embed by default</Label>
+            <Label Name="lblType" Grid.Column="0" Grid.Row="3">Type</Label>
+            <Label Name="lblIcon" Grid.Column="0" Grid.Row="4" VerticalAlignment="Center">Icon</Label>
+            <Label Name="lblGuid" Grid.Column="0" Grid.Row="5">GUID</Label>
+            <Label Name="lblVersion" Grid.Column="0" Grid.Row="6">Version</Label>
+            <Label Name="lblAdditionalInfo" Grid.Column="0" Grid.Row="7">Additional information</Label>
+            <Label Name="lblLocation" Grid.Column="0" Grid.Row="8">Location</Label>
 
             <Label Grid.Column="1" Grid.Row="0" Content="{Binding Path=ComponentName}" />
             <Label Grid.Column="1" Grid.Row="1" Content="{Binding Path=Metadata.Author}" />
@@ -47,11 +47,11 @@
             <Label Grid.Column="1" Grid.Row="7" Content="{Binding Path=Metadata.AdditionalInformation}" />
             <Label Grid.Column="1" Grid.Row="8" Content="{Binding Path=Metadata.Location}" />
         </Grid>
-        <Label Margin="0,0,93,9" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="136">
-            <Hyperlink Click="hyperlinkGetMoreComponents_Click">Get more components</Hyperlink>
+        <Label Name="lblMoreComponents" Margin="0,0,93,9" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="136">
+            <Hyperlink Name="lnkMoreComponents" Click="hyperlinkGetMoreComponents_Click">Get more components</Hyperlink>
         </Label>
-        <Label Margin="10,0,0,9" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="136">
-            <Hyperlink Click="hyperlinkComponentsFolder_Click">Components folder</Hyperlink>
+        <Label Name="lblComponentsFolder" Margin="10,0,0,9" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="136">
+            <Hyperlink Name="lnkComponentsFolder" Click="hyperlinkComponentsFolder_Click">Components folder</Hyperlink>
         </Label>
     </Grid>
 </Window>

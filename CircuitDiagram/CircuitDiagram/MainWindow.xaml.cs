@@ -1219,7 +1219,9 @@ namespace CircuitDiagram
                 }
                 else
                 {
+                    // Create the document writer
                     IDocumentWriter writer = PluginManager.EnabledExportWriters[sfd.FilterIndex - 3];
+
                     IDictionary<IOComponentType, EmbedComponentData> embedComponents = new Dictionary<IOComponentType, EmbedComponentData>();
                     if (writer is IElementDocumentWriter)
                         (writer as IElementDocumentWriter).Document = circuitDisplay.Document.ToIODocument(out embedComponents);
