@@ -25,6 +25,7 @@ using System.Text;
 using System.Windows;
 using System.Xml;
 using System.IO;
+using CircuitDiagram.Components.Description;
 
 namespace CircuitDiagram.Components
 {

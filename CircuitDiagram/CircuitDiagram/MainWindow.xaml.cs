@@ -38,6 +38,7 @@ using System.Windows.Threading;
 using CircuitDiagram.IO;
 using TaskDialogInterop;
 using System.Diagnostics;
+using CircuitDiagram.Components.Description;
 
 namespace CircuitDiagram
 {
@@ -665,9 +666,9 @@ namespace CircuitDiagram
 
         private void circuitDisplay_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            gridEditor.Children.Clear();
+            gridEditor.Content = null;
             if (e.AddedItems.Count > 0 && (e.AddedItems[0] as Component).Editor != null)
-                gridEditor.Children.Add((e.AddedItems[0] as Component).Editor as ComponentEditor);
+                gridEditor.Content = (e.AddedItems[0] as Component).Editor as ComponentEditor;
         }
 
         private void btnSelect_Click(object sender, RoutedEventArgs e)

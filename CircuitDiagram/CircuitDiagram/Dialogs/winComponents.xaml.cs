@@ -33,6 +33,7 @@ using System.Windows.Shapes;
 using CircuitDiagram.Components;
 using System.Collections;
 using System.Globalization;
+using CircuitDiagram.Components.Description;
 
 namespace CircuitDiagram
 {

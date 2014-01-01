@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using CircuitDiagram.Components;
+using CircuitDiagram.Components.Description;
 
 namespace CircuitDiagram.IO
 {

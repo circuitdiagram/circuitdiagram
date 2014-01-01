@@ -26,7 +26,7 @@ using System.Windows;
 using System.Windows.Media;
 using TextAlignment = CircuitDiagram.Render.TextAlignment;
 using System.Windows.Media.Imaging;
-using CircuitDiagram.Components.Render;
+using CircuitDiagram.Components.Description.Render;
 using System.Windows.Documents;
 using System.Windows.Controls;
 using CircuitDiagram.Render.Path;

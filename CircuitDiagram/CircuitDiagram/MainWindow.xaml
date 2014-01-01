@@ -77,9 +77,9 @@
                 <RowDefinition />
                 <RowDefinition Height="40" />
             </Grid.RowDefinitions>
-            <Grid Name="gridEditor" Grid.Row="0">
-                
-            </Grid>
+            <ScrollViewer Name="gridEditor" Grid.Row="0" VerticalScrollBarVisibility="Auto">
+
+            </ScrollViewer>
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="5" />

@@ -32,6 +32,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using CircuitDiagram.Settings;
 using CircuitDiagram.Components;
+using CircuitDiagram.Components.Description;
 
 namespace CircuitDiagram
 {

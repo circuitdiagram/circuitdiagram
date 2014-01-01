@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using TextAlignment = CircuitDiagram.Render.TextAlignment;
-using CircuitDiagram.Components.Render;
+using CircuitDiagram.Components.Description.Render;
 using CircuitDiagram.Render.Path;
 
 namespace CircuitDiagram.Render

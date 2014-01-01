@@ -26,6 +26,7 @@ using CircuitDiagram.Components;
 using CircuitDiagram.Elements;
 using CircuitDiagram.IO;
 using System.Windows;
+using CircuitDiagram.Components.Description;
 
 namespace CircuitDiagram
 {

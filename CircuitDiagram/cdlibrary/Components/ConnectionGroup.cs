@@ -23,11 +23,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CircuitDiagram.Components
+namespace CircuitDiagram.Components.Description
 {
     public class ConnectionGroup : Conditional<ConnectionDescription[]>
     {
-        public ConnectionGroup(ComponentDescriptionConditionCollection conditions, ConnectionDescription[] connections)
+        public ConnectionGroup(ConditionCollection conditions, ConnectionDescription[] connections)
             : base(connections, conditions)
         {
         }

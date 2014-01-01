@@ -6,7 +6,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Drawing;
 using System.Drawing.Imaging;
-using CircuitDiagram.Components.Render;
+using CircuitDiagram.Components.Description.Render;
 using System.Drawing.Drawing2D;
 using CircuitDiagram.Render.Path;
 

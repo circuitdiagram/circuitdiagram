@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using CircuitDiagram.Elements;
-using CircuitDiagram.Components.Render;
+using CircuitDiagram.Components.Description.Render;
 
 namespace CircuitDiagram
 {

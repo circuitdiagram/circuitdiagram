@@ -18,6 +18,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+using CircuitDiagram.Components.Description;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,17 +28,17 @@ namespace CircuitDiagram.Components
 {
     public class Conditional<T>
     {
-        public ComponentDescriptionConditionCollection Conditions { get; private set; }
+        public ConditionCollection Conditions { get; private set; }
 
         public T Value { get; set; }
 
         public Conditional()
         {
             Value = default(T);
-            Conditions = new ComponentDescriptionConditionCollection();
+            Conditions = new ConditionCollection();
         }
 
-        public Conditional(T value, ComponentDescriptionConditionCollection conditions)
+        public Conditional(T value, ConditionCollection conditions)
         {
             Value = value;
             Conditions = conditions;

@@ -18,6 +18,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+using CircuitDiagram.Components.Description;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -159,10 +160,12 @@ namespace CircuitDiagram.Components
                     label.Content = info.DisplayName;
                     label.SetValue(Grid.RowProperty, i);
                     label.SetValue(Grid.ColumnProperty, 0);
+                    label.Margin = new Thickness(5d);
 
                     mainGrid.Children.Add(label);
 
                     TextBox textbox = new TextBox();
+                    textbox.Margin = new Thickness(5d);
                     textbox.Tag = info;
                     textbox.Text = component.GetProperty(info) as string;
                     textbox.TextChanged += new TextChangedEventHandler(StringChanged);

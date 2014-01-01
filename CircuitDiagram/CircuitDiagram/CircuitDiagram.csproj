@@ -3,6 +3,8 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <UICulture>en-GB</UICulture>
+    <OutputPath>bin\Output\</OutputPath>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{C01CD61A-6DB0-460A-AC1C-1B96A9038AF6}</ProjectGuid>

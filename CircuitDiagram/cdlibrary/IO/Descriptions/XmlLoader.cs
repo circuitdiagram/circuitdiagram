@@ -23,12 +23,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
-using CircuitDiagram.Components.Render;
+using CircuitDiagram.Components.Description.Render;
 using System.Windows.Media;
 using CircuitDiagram.Components;
 using CircuitDiagram.Render.Path;
 using System.Text.RegularExpressions;
 using CircuitDiagram.Render;
+using CircuitDiagram.Components.Description;
 
 namespace CircuitDiagram.IO
 {
@@ -102,13 +103,9 @@ namespace CircuitDiagram.IO
                 XmlNodeList flagNodes = doc.SelectNodes("/cd:component/cd:declaration/cd:flags", namespaceManager);
                 foreach (XmlElement flagGroup in flagNodes)
                 {
-                    ComponentDescriptionConditionCollection conditions = new ComponentDescriptionConditionCollection();
+                    ConditionCollection conditions = new ConditionCollection();
                     if (flagGroup.HasAttribute("conditions"))
-                    {
-                        string[] conditionsString = flagGroup.Attributes["conditions"].InnerText.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                        foreach (string condition in conditionsString)
-                            conditions.Add(ComponentDescriptionCondition.Parse(condition));
-                    }
+                        conditions = ConditionCollection.Parse(flagGroup.Attributes["conditions"].InnerText);
 
                     FlagOptions theOptions = FlagOptions.None;
                     foreach (XmlNode node in flagGroup.ChildNodes)
@@ -164,25 +161,25 @@ namespace CircuitDiagram.IO
 
                     List<ComponentPropertyFormat> formatRules = new List<ComponentPropertyFormat>();
                     if (((XmlElement)propertyElement).HasAttribute("format"))
-                        formatRules.Add(new ComponentPropertyFormat(propertyElement["format"].InnerText, new ComponentDescriptionConditionCollection()));
+                        formatRules.Add(new ComponentPropertyFormat(propertyElement["format"].InnerText, new ConditionCollection()));
                     else
                     {
                         XmlNodeList formatRuleNodes = propertyElement.SelectNodes("cd:formatting/cd:format", namespaceManager);
                         foreach (XmlElement formatNode in formatRuleNodes)
                         {
-                            ComponentDescriptionConditionCollection conditionCollection = new ComponentDescriptionConditionCollection();
+                            ConditionCollection conditionCollection = new ConditionCollection();
                             if (formatNode.HasAttribute("conditions"))
                             {
                                 string[] conditions = formatNode.Attributes["conditions"].InnerText.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                                 foreach (string condition in conditions)
-                                    conditionCollection.Add(ComponentDescriptionCondition.Parse(condition));
+                                    conditionCollection.Add(Condition.Parse(condition));
                             }
 
                             formatRules.Add(new ComponentPropertyFormat(formatNode.Attributes["value"].InnerText, conditionCollection));
                         }
                     }
 
-                    Dictionary<PropertyOtherConditionType, ComponentDescriptionConditionCollection> otherConditions = new Dictionary<PropertyOtherConditionType, ComponentDescriptionConditionCollection>();
+                    Dictionary<PropertyOtherConditionType, ConditionCollection> otherConditions = new Dictionary<PropertyOtherConditionType, ConditionCollection>();
                     XmlNodeList otherConditionsNodes = propertyElement.SelectNodes("cd:other/cd:conditions", namespaceManager);
                     foreach (XmlNode otherConditionNode in otherConditionsNodes)
                     {
@@ -191,7 +188,7 @@ namespace CircuitDiagram.IO
                         {
                             string conditionsFor = element.Attributes["for"].InnerText;
                             string conditionsString = element.Attributes["value"].InnerText;
-                            ComponentDescriptionConditionCollection conditionCollection = ComponentDescriptionConditionCollection.Parse(conditionsString);
+                            ConditionCollection conditionCollection = ConditionCollection.Parse(conditionsString);
 
                             if (Enum.IsDefined(typeof(PropertyOtherConditionType), conditionsFor))
                                 otherConditions.Add((PropertyOtherConditionType)Enum.Parse(typeof(PropertyOtherConditionType), conditionsFor, true), conditionCollection);
@@ -250,14 +247,14 @@ namespace CircuitDiagram.IO
                 XmlNodeList connectionGroupNodes = doc.SelectNodes("/cd:component/cd:connections/cd:group", namespaceManager);
                 foreach (XmlNode connectionGroupNode in connectionGroupNodes)
                 {
-                    ComponentDescriptionConditionCollection conditionCollection = new ComponentDescriptionConditionCollection();
+                    ConditionCollection conditionCollection = new ConditionCollection();
                     List<ConnectionDescription> connections = new List<ConnectionDescription>();
 
                     if ((connectionGroupNode as XmlElement).HasAttribute("conditions"))
                     {
                         string[] conditions = connectionGroupNode.Attributes["conditions"].InnerText.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                         foreach (string condition in conditions)
-                            conditionCollection.Add(ComponentDescriptionCondition.Parse(condition));
+                            conditionCollection.Add(Condition.Parse(condition));
                     }
 
                     foreach (XmlNode connectionNode in connectionGroupNode.ChildNodes)
@@ -290,14 +287,14 @@ namespace CircuitDiagram.IO
                 XmlNodeList renderDescriptions = doc.SelectNodes("/cd:component/cd:render/cd:group", namespaceManager);
                 foreach (XmlNode renderNode in renderDescriptions)
                 {
-                    ComponentDescriptionConditionCollection conditionCollection = new ComponentDescriptionConditionCollection();
+                    ConditionCollection conditionCollection = new ConditionCollection();
                     List<IRenderCommand> commands = new List<IRenderCommand>();
 
                     if ((renderNode as XmlElement).HasAttribute("conditions"))
                     {
                         string[] conditions = renderNode.Attributes["conditions"].InnerText.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                         foreach (string condition in conditions)
-                            conditionCollection.Add(ComponentDescriptionCondition.Parse(condition));
+                            conditionCollection.Add(Condition.Parse(condition));
                     }
 
                     foreach (XmlNode renderCommandNode in renderNode.ChildNodes)

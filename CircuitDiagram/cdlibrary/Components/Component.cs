@@ -27,8 +27,9 @@ using System.Windows.Media;
 using System.Xml;
 using System.Reflection;
 using System.Globalization;
-using CircuitDiagram.Components.Render;
+using CircuitDiagram.Components.Description.Render;
 using CircuitDiagram.Elements;
+using CircuitDiagram.Components.Description;
 
 namespace CircuitDiagram.Components
 {

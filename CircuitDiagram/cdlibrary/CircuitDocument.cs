@@ -88,7 +88,7 @@ namespace CircuitDiagram
             foreach (Component component in Components)
                 foreach (var renderDescription in component.Description.RenderDescriptions)
                     if (renderDescription.Conditions.ConditionsAreMet(component))
-                        foreach (CircuitDiagram.Components.Render.IRenderCommand renderCommand in renderDescription.Value)
+                        foreach (CircuitDiagram.Components.Description.Render.IRenderCommand renderCommand in renderDescription.Value)
                             renderCommand.Render(component, dc, true);
 
             // Determine connections

@@ -24,6 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Text.RegularExpressions;
+using CircuitDiagram.Components.Description;
 
 namespace CircuitDiagram.Components
 {

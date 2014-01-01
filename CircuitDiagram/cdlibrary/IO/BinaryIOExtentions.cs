@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CircuitDiagram.Components;
+using CircuitDiagram.Components.Description;
 
 namespace CircuitDiagram.IO
 {
@@ -128,10 +129,10 @@ namespace CircuitDiagram.IO
                 return BinaryType.Unknown;
         }
 
-        public static void Write(this System.IO.BinaryWriter writer, ComponentDescriptionConditionCollection conditions)
+        public static void Write(this System.IO.BinaryWriter writer, ConditionCollection conditions)
         {
             writer.Write(conditions.Count);
-            foreach (ComponentDescriptionCondition condition in conditions)
+            foreach (Condition condition in conditions)
             {
                 writer.Write((int)condition.Type);
                 writer.Write((int)condition.Comparison);
@@ -140,9 +141,9 @@ namespace CircuitDiagram.IO
             }
         }
 
-        public static ComponentDescriptionConditionCollection ReadConditionCollection(this System.IO.BinaryReader reader)
+        public static ConditionCollection ReadConditionCollection(this System.IO.BinaryReader reader)
         {
-            ComponentDescriptionConditionCollection conditions = new ComponentDescriptionConditionCollection();
+            ConditionCollection conditions = new ConditionCollection();
             int numConditions = reader.ReadInt32();
             for (int l = 0; l < numConditions; l++)
             {
@@ -151,7 +152,7 @@ namespace CircuitDiagram.IO
                 string variableName = reader.ReadString();
                 BinaryType binType;
                 object compareTo = reader.ReadType(out binType);
-                conditions.Add(new ComponentDescriptionCondition(conditionType, variableName, comparison, compareTo));
+                conditions.Add(new Condition(conditionType, variableName, comparison, compareTo));
             }
             return conditions;
         }

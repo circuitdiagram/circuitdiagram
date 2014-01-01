@@ -30,6 +30,7 @@ using CircuitDiagram.Elements;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Collections.ObjectModel;
+using CircuitDiagram.Components.Description;
 
 namespace CircuitDiagram
 {

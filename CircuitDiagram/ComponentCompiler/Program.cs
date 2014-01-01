@@ -27,6 +27,7 @@ using System.Xml;
 using System.IO;
 using CircuitDiagram.Components;
 using CircuitDiagram.IO;
+using CircuitDiagram.Components.Description;
 
 namespace cdcompile
 {

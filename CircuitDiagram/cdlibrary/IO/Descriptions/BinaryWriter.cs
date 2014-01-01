@@ -78,12 +78,13 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using CircuitDiagram.Components;
-using CircuitDiagram.Components.Render;
+using CircuitDiagram.Components.Description.Render;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using CircuitDiagram.Render.Path;
 using BW = System.IO.BinaryWriter;
 using CircuitDiagram.Render;
+using CircuitDiagram.Components.Description;
 
 namespace CircuitDiagram.IO
 {
@@ -285,7 +286,7 @@ namespace CircuitDiagram.IO
                         foreach (Conditional<FlagOptions> flags in description.Flags)
                         {
                             flagsWriter.Write(flags.Conditions.Count); // number of conditions
-                            foreach (ComponentDescriptionCondition condition in flags.Conditions)
+                            foreach (Condition condition in flags.Conditions)
                             {
                                 flagsWriter.Write((uint)condition.Type);
                                 flagsWriter.Write((uint)condition.Comparison);
@@ -327,7 +328,7 @@ namespace CircuitDiagram.IO
                             foreach (ComponentPropertyFormat formatRule in property.FormatRules)
                             {
                                 propertiesWriter.Write(formatRule.Conditions.Count);
-                                foreach (ComponentDescriptionCondition condition in formatRule.Conditions)
+                                foreach (Condition condition in formatRule.Conditions)
                                 {
                                     propertiesWriter.Write((uint)condition.Type);
                                     propertiesWriter.Write((uint)condition.Comparison);
@@ -340,7 +341,7 @@ namespace CircuitDiagram.IO
 
                             // Other conditions
                             propertiesWriter.Write((uint)property.OtherConditions.Count);
-                            foreach (KeyValuePair<PropertyOtherConditionType, ComponentDescriptionConditionCollection> otherCondition in property.OtherConditions)
+                            foreach (KeyValuePair<PropertyOtherConditionType, ConditionCollection> otherCondition in property.OtherConditions)
                             {
                                 propertiesWriter.Write((uint)otherCondition.Key);
                                 propertiesWriter.Write(otherCondition.Value);
@@ -403,7 +404,7 @@ namespace CircuitDiagram.IO
                         foreach (ConnectionGroup connectionGroup in description.Connections)
                         {
                             connectionsWriter.Write((uint)connectionGroup.Conditions.Count);
-                            foreach (ComponentDescriptionCondition condition in connectionGroup.Conditions)
+                            foreach (Condition condition in connectionGroup.Conditions)
                             {
                                 connectionsWriter.Write((uint)condition.Type);
                                 connectionsWriter.Write((uint)condition.Comparison);
@@ -437,7 +438,7 @@ namespace CircuitDiagram.IO
                         foreach (RenderDescription renderDescription in description.RenderDescriptions)
                         {
                             renderWriter.Write(renderDescription.Conditions.Count);
-                            foreach (ComponentDescriptionCondition condition in renderDescription.Conditions)
+                            foreach (Condition condition in renderDescription.Conditions)
                             {
                                 renderWriter.Write((uint)condition.Type);
                                 renderWriter.Write((uint)condition.Comparison);
