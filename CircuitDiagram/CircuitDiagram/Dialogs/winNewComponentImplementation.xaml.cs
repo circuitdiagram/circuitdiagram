@@ -2,7 +2,7 @@
 //
 // Circuit Diagram http://www.circuit-diagram.org/
 //
-// Copyright (C) 2012  Sam Fisher
+// Copyright (C) 2012-2014  Sam Fisher
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,9 +47,24 @@ namespace CircuitDiagram
             btnOK.IsEnabled = false;
 
             // Populate representation combobox
-            foreach (ComponentDescription description in ComponentHelper.ComponentDescriptions)
+            UpdateChoices();
+        }
+
+        private void UpdateChoices()
+        {
+            cbxRepresentation.Items.Clear();
+
+            if (tbxImplementItem.Text.Length == 0)
             {
-                if (description.Metadata.Configurations.Count == 0)
+                cbxRepresentation.IsEnabled = false;
+                return;
+            }
+
+            cbxRepresentation.IsEnabled = true;
+
+            foreach (ComponentDescription description in ComponentHelper.ComponentDescriptions.Where(c => c.Metadata.ImplementSet == this.ImplementationSet))
+            {
+                if (description.Metadata.Configurations.Count == 0 && description.Metadata.ImplementItem == tbxImplementItem.Text)
                 {
                     ImplementationConversion item = new ImplementationConversion();
                     item.ToName = description.ComponentName;
@@ -59,7 +74,7 @@ namespace CircuitDiagram
                 }
                 else
                 {
-                    foreach (ComponentConfiguration configuration in description.Metadata.Configurations)
+                    foreach (ComponentConfiguration configuration in description.Metadata.Configurations.Where(c => c.ImplementationName == tbxImplementItem.Text))
                     {
                         ImplementationConversion item = new ImplementationConversion();
                         item.ToName = description.ComponentName;
@@ -70,6 +85,8 @@ namespace CircuitDiagram
                     }
                 }
             }
+
+            cbxRepresentation.SelectedIndex = 0;
         }
 
         public string ImplementationSet
@@ -99,7 +116,8 @@ namespace CircuitDiagram
 
         private void tbxImplementItem_TextChanged(object sender, TextChangedEventArgs e)
         {
-            btnOK.IsEnabled = tbxImplementItem.Text.Length > 0;
+            UpdateChoices();
+            btnOK.IsEnabled = (tbxImplementItem.Text.Length > 0 && cbxRepresentation.Items.Count > 0);
         }
     }
 }
