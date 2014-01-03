@@ -28,17 +28,17 @@ namespace CircuitDiagram.Components
 {
     public class Conditional<T>
     {
-        public ConditionCollection Conditions { get; private set; }
+        public IConditionTreeItem Conditions { get; private set; }
 
         public T Value { get; set; }
 
         public Conditional()
         {
             Value = default(T);
-            Conditions = new ConditionCollection();
+            Conditions = Condition.Empty;
         }
 
-        public Conditional(T value, ConditionCollection conditions)
+        public Conditional(T value, IConditionTreeItem conditions)
         {
             Value = value;
             Conditions = conditions;

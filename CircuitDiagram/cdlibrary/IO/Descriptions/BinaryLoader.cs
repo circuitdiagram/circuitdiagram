@@ -137,6 +137,7 @@ namespace CircuitDiagram.IO
                                 canResize = reader.ReadBoolean();
                                 canFlip = reader.ReadBoolean();
                                 minSize = reader.ReadDouble();
+                                descriptionMetadata.Type = String.Format("Binary r{0} (*.cdcom)", formatVersion);
                                 descriptionMetadata.GUID = new Guid(reader.ReadBytes(16));
                                 descriptionMetadata.Author = reader.ReadString();
                                 descriptionMetadata.Version = new Version(reader.ReadUInt16(), reader.ReadUInt16());
@@ -155,17 +156,11 @@ namespace CircuitDiagram.IO
                                 uint numFlagGroups = reader.ReadUInt32();
                                 for (uint j = 0; j < numFlagGroups; j++)
                                 {
-                                    ConditionCollection conditions = new ConditionCollection();
-                                    int numConditions = reader.ReadInt32();
-                                    for (int k = 0; k < numConditions; k++)
-                                    {
-                                        ConditionType type = (ConditionType)reader.ReadUInt32();
-                                        ConditionComparison comparison = (ConditionComparison)reader.ReadUInt32();
-                                        string variableName = reader.ReadString();
-                                        BinaryType conditionType;
-                                        object compareTo = reader.ReadType(out conditionType);
-                                        conditions.Add(new Condition(type, variableName, comparison, compareTo));
-                                    }
+                                    IConditionTreeItem conditions;
+                                    if (formatVersion > 1)
+                                        conditions = reader.ReadConditionTree();
+                                    else
+                                        conditions = reader.ReadConditionCollection();
 
                                     FlagOptions value = (FlagOptions)reader.ReadUInt32();
                                     flagOptions.Add(new Conditional<FlagOptions>(value, conditions));
@@ -196,30 +191,26 @@ namespace CircuitDiagram.IO
                                     uint numFormatRules = reader.ReadUInt32();
                                     for (uint k = 0; k < numFormatRules; k++)
                                     {
-                                        ConditionCollection conditions = new ConditionCollection();
-                                        int numConditions = reader.ReadInt32();
-                                        for (int l = 0; l < numConditions; l++)
-                                        {
-                                            ConditionType conditionType = (ConditionType)reader.ReadUInt32();
-                                            ConditionComparison comparison = (ConditionComparison)reader.ReadUInt32();
-                                            string variableName = reader.ReadString();
-                                            BinaryType binType;
-                                            object compareTo = reader.ReadType(out binType);
-                                            conditions.Add(new Condition(conditionType, variableName, comparison, compareTo));
-                                        }
-
+                                        IConditionTreeItem conditions;
+                                        if (formatVersion > 1)
+                                            conditions = reader.ReadConditionTree();
+                                        else
+                                            conditions = reader.ReadConditionCollection();
                                         string formatRule = reader.ReadString();
                                         formatRules.Add(new ComponentPropertyFormat(formatRule, conditions));
                                     }
 
                                     // Other conditions
                                     uint numOtherConditions = reader.ReadUInt32();
-                                    Dictionary<PropertyOtherConditionType, ConditionCollection> otherConditions = new Dictionary<PropertyOtherConditionType, ConditionCollection>((int)numOtherConditions);
+                                    Dictionary<PropertyOtherConditionType, IConditionTreeItem> otherConditions = new Dictionary<PropertyOtherConditionType, IConditionTreeItem>((int)numOtherConditions);
                                     for (uint k = 0; k < numOtherConditions; k++)
                                     {
                                         uint uintConditionType = reader.ReadUInt32();
-                                        ConditionCollection conditions = reader.ReadConditionCollection();
-
+                                        IConditionTreeItem conditions;
+                                        if (formatVersion > 1)
+                                            conditions = reader.ReadConditionTree();
+                                        else
+                                            conditions = reader.ReadConditionCollection();
                                         PropertyOtherConditionType conditionType = (PropertyOtherConditionType)uintConditionType;
                                         otherConditions.Add(conditionType, conditions);
                                     }
@@ -260,17 +251,11 @@ namespace CircuitDiagram.IO
                                 List<ConnectionGroup> connectionGroups = new List<ConnectionGroup>();
                                 for (int j = 0; j < numConnectionGroups; j++)
                                 {
-                                    ConditionCollection conditions = new ConditionCollection();
-                                    uint numConditions = reader.ReadUInt32();
-                                    for (uint l = 0; l < numConditions; l++)
-                                    {
-                                        ConditionType conditionType = (ConditionType)reader.ReadUInt32();
-                                        ConditionComparison comparison = (ConditionComparison)reader.ReadUInt32();
-                                        string variableName = reader.ReadString();
-                                        BinaryType binType;
-                                        object compareTo = reader.ReadType(out binType);
-                                        conditions.Add(new Condition(conditionType, variableName, comparison, compareTo));
-                                    }
+                                    IConditionTreeItem conditions;
+                                    if (formatVersion > 1)
+                                        conditions = reader.ReadConditionTree();
+                                    else
+                                        conditions = reader.ReadConditionCollection();
 
                                     List<ConnectionDescription> tConnections = new List<ConnectionDescription>();
                                     uint numConnections = reader.ReadUInt32();
@@ -289,17 +274,11 @@ namespace CircuitDiagram.IO
                                 uint numRenderGroups = reader.ReadUInt32();
                                 for (uint j = 0; j < numRenderGroups; j++)
                                 {
-                                    ConditionCollection conditions = new ConditionCollection();
-                                    int numConditions = reader.ReadInt32();
-                                    for (int l = 0; l < numConditions; l++)
-                                    {
-                                        ConditionType conditionType = (ConditionType)reader.ReadUInt32();
-                                        ConditionComparison comparison = (ConditionComparison)reader.ReadUInt32();
-                                        string variableName = reader.ReadString();
-                                        BinaryType binType;
-                                        object compareTo = reader.ReadType(out binType);
-                                        conditions.Add(new Condition(conditionType, variableName, comparison, compareTo));
-                                    }
+                                    IConditionTreeItem conditions;
+                                    if (formatVersion > 1)
+                                        conditions = reader.ReadConditionTree();
+                                    else
+                                        conditions = reader.ReadConditionCollection();
 
                                     int numRenderCommands = (int)reader.ReadUInt32();
                                     List<IRenderCommand> renderCommands = new List<IRenderCommand>(numRenderCommands);

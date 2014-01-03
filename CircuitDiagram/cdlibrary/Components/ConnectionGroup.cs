@@ -27,7 +27,7 @@ namespace CircuitDiagram.Components.Description
 {
     public class ConnectionGroup : Conditional<ConnectionDescription[]>
     {
-        public ConnectionGroup(ConditionCollection conditions, ConnectionDescription[] connections)
+        public ConnectionGroup(IConditionTreeItem conditions, ConnectionDescription[] connections)
             : base(connections, conditions)
         {
         }

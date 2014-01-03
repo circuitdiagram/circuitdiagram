@@ -34,9 +34,9 @@ namespace CircuitDiagram.Components.Description
         public string[] EnumOptions { get; private set; }
         public Type Type { get; private set; }
         public ComponentPropertyFormat[] FormatRules { get; private set; }
-        public Dictionary<PropertyOtherConditionType, ConditionCollection> OtherConditions { get; private set; }
+        public Dictionary<PropertyOtherConditionType, IConditionTreeItem> OtherConditions { get; private set; }
 
-        public ComponentProperty(string name, string serializedName, string displayName, Type type, object defaultValue, ComponentPropertyFormat[] formatRules, Dictionary<PropertyOtherConditionType, ConditionCollection> otherConditions, string[] enumOptions = null)
+        public ComponentProperty(string name, string serializedName, string displayName, Type type, object defaultValue, ComponentPropertyFormat[] formatRules, Dictionary<PropertyOtherConditionType, IConditionTreeItem> otherConditions, string[] enumOptions = null)
         {
             Name = name;
             SerializedName = serializedName;
@@ -52,7 +52,7 @@ namespace CircuitDiagram.Components.Description
         {
             foreach (ComponentPropertyFormat formatRule in FormatRules)
             {
-                if (formatRule.Conditions.ConditionsAreMet(component))
+                if (formatRule.Conditions.IsMet(component))
                     return formatRule.Format(component);
             }
             return value.ToString();

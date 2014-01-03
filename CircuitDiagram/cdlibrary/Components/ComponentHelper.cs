@@ -187,7 +187,7 @@ namespace CircuitDiagram.Components
 
             foreach (Conditional<FlagOptions> option in component.Description.Flags)
             {
-                if (option.Conditions.ConditionsAreMet(component))
+                if (option.Conditions.IsMet(component))
                     returnOptions |= option.Value;
             }
 

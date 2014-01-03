@@ -2,7 +2,7 @@
 //
 // Circuit Diagram http://www.circuit-diagram.org/
 //
-// Copyright (C) 2012  Sam Fisher
+// Copyright (C) 2011-2014  Sam Fisher
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -55,6 +55,16 @@ namespace CircuitDiagram.IO
                 XmlNamespaceManager namespaceManager = new XmlNamespaceManager(doc.NameTable);
                 namespaceManager.AddNamespace("cd", "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml");
 
+                // Read format version
+                Version formatVersion = new Version(1, 0);
+                if (doc.DocumentElement.HasAttribute("version"))
+                    formatVersion = new Version(doc.DocumentElement.Attributes["version"].InnerText);
+
+                // Check whether to use updated conditions
+                bool useUpdatedConditions = false;
+                if (formatVersion >= new Version(1, 1))
+                    useUpdatedConditions = true;
+
                 string name = null;
                 bool canResize = true;
                 bool canFlip = false;
@@ -103,9 +113,14 @@ namespace CircuitDiagram.IO
                 XmlNodeList flagNodes = doc.SelectNodes("/cd:component/cd:declaration/cd:flags", namespaceManager);
                 foreach (XmlElement flagGroup in flagNodes)
                 {
-                    ConditionCollection conditions = new ConditionCollection();
+                    IConditionTreeItem conditions = Condition.Empty;
                     if (flagGroup.HasAttribute("conditions"))
-                        conditions = ConditionCollection.Parse(flagGroup.Attributes["conditions"].InnerText);
+                    {
+                        if (useUpdatedConditions)
+                            conditions = ConditionParser.Parse(flagGroup.Attributes["conditions"].InnerText);
+                        else
+                            conditions = ParseV1Conditions(flagGroup.Attributes["conditions"].InnerText);
+                    }
 
                     FlagOptions theOptions = FlagOptions.None;
                     foreach (XmlNode node in flagGroup.ChildNodes)
@@ -161,25 +176,26 @@ namespace CircuitDiagram.IO
 
                     List<ComponentPropertyFormat> formatRules = new List<ComponentPropertyFormat>();
                     if (((XmlElement)propertyElement).HasAttribute("format"))
-                        formatRules.Add(new ComponentPropertyFormat(propertyElement["format"].InnerText, new ConditionCollection()));
+                        formatRules.Add(new ComponentPropertyFormat(propertyElement["format"].InnerText, Condition.Empty));
                     else
                     {
                         XmlNodeList formatRuleNodes = propertyElement.SelectNodes("cd:formatting/cd:format", namespaceManager);
                         foreach (XmlElement formatNode in formatRuleNodes)
                         {
-                            ConditionCollection conditionCollection = new ConditionCollection();
+                            IConditionTreeItem conditionCollection = Condition.Empty;
                             if (formatNode.HasAttribute("conditions"))
                             {
-                                string[] conditions = formatNode.Attributes["conditions"].InnerText.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                                foreach (string condition in conditions)
-                                    conditionCollection.Add(Condition.Parse(condition));
+                                if (useUpdatedConditions)
+                                    conditionCollection = ConditionParser.Parse(formatNode.Attributes["conditions"].InnerText);
+                                else
+                                    conditionCollection = ParseV1Conditions(formatNode.Attributes["conditions"].InnerText);
                             }
 
                             formatRules.Add(new ComponentPropertyFormat(formatNode.Attributes["value"].InnerText, conditionCollection));
                         }
                     }
 
-                    Dictionary<PropertyOtherConditionType, ConditionCollection> otherConditions = new Dictionary<PropertyOtherConditionType, ConditionCollection>();
+                    Dictionary<PropertyOtherConditionType, IConditionTreeItem> otherConditions = new Dictionary<PropertyOtherConditionType, IConditionTreeItem>();
                     XmlNodeList otherConditionsNodes = propertyElement.SelectNodes("cd:other/cd:conditions", namespaceManager);
                     foreach (XmlNode otherConditionNode in otherConditionsNodes)
                     {
@@ -188,7 +204,11 @@ namespace CircuitDiagram.IO
                         {
                             string conditionsFor = element.Attributes["for"].InnerText;
                             string conditionsString = element.Attributes["value"].InnerText;
-                            ConditionCollection conditionCollection = ConditionCollection.Parse(conditionsString);
+                            IConditionTreeItem conditionCollection;
+                            if (useUpdatedConditions)
+                                conditionCollection = ConditionParser.Parse(conditionsString);
+                            else
+                                conditionCollection = ParseV1Conditions(conditionsString);
 
                             if (Enum.IsDefined(typeof(PropertyOtherConditionType), conditionsFor))
                                 otherConditions.Add((PropertyOtherConditionType)Enum.Parse(typeof(PropertyOtherConditionType), conditionsFor, true), conditionCollection);
@@ -247,14 +267,15 @@ namespace CircuitDiagram.IO
                 XmlNodeList connectionGroupNodes = doc.SelectNodes("/cd:component/cd:connections/cd:group", namespaceManager);
                 foreach (XmlNode connectionGroupNode in connectionGroupNodes)
                 {
-                    ConditionCollection conditionCollection = new ConditionCollection();
+                    IConditionTreeItem conditionCollection = Condition.Empty;
                     List<ConnectionDescription> connections = new List<ConnectionDescription>();
 
                     if ((connectionGroupNode as XmlElement).HasAttribute("conditions"))
                     {
-                        string[] conditions = connectionGroupNode.Attributes["conditions"].InnerText.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                        foreach (string condition in conditions)
-                            conditionCollection.Add(Condition.Parse(condition));
+                        if (useUpdatedConditions)
+                            conditionCollection = ConditionParser.Parse(connectionGroupNode.Attributes["conditions"].InnerText);
+                        else
+                            conditionCollection = ParseV1Conditions(connectionGroupNode.Attributes["conditions"].InnerText);
                     }
 
                     foreach (XmlNode connectionNode in connectionGroupNode.ChildNodes)
@@ -287,14 +308,15 @@ namespace CircuitDiagram.IO
                 XmlNodeList renderDescriptions = doc.SelectNodes("/cd:component/cd:render/cd:group", namespaceManager);
                 foreach (XmlNode renderNode in renderDescriptions)
                 {
-                    ConditionCollection conditionCollection = new ConditionCollection();
+                    IConditionTreeItem conditionCollection = Condition.Empty;
                     List<IRenderCommand> commands = new List<IRenderCommand>();
 
                     if ((renderNode as XmlElement).HasAttribute("conditions"))
                     {
-                        string[] conditions = renderNode.Attributes["conditions"].InnerText.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                        foreach (string condition in conditions)
-                            conditionCollection.Add(Condition.Parse(condition));
+                        if (useUpdatedConditions)
+                            conditionCollection = ConditionParser.Parse(renderNode.Attributes["conditions"].InnerText);
+                        else
+                            conditionCollection = ParseV1Conditions(renderNode.Attributes["conditions"].InnerText);
                     }
 
                     foreach (XmlNode renderCommandNode in renderNode.ChildNodes)
@@ -422,7 +444,7 @@ namespace CircuitDiagram.IO
                 
                 m_descriptions = new ComponentDescription[1];
                 ComponentDescriptionMetadata metadata = new ComponentDescriptionMetadata();
-                metadata.Type = "XML (*.xml)";
+                metadata.Type = String.Format("XML {0} (*.xml)", formatVersion.ToString(2));
                 if (version != null)
                     metadata.Version = new Version(version);
                 metadata.Configurations.AddRange(componentConfigurations);
@@ -439,6 +461,17 @@ namespace CircuitDiagram.IO
             {
                 return false;
             }
+        }
+
+        private IConditionTreeItem ParseV1Conditions(string c)
+        {
+            var andList = new Stack<Condition>();
+
+            string[] conditions = c.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string condition in conditions)
+                andList.Push(Condition.Parse(condition));
+
+            return ConditionParser.ConvertLegacyConditions(andList);
         }
     }
 }

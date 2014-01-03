@@ -29,10 +29,10 @@ namespace CircuitDiagram.Components.Description
 {
     public class ComponentPropertyFormat
     {
-        public ConditionCollection Conditions { get; private set; }
+        public IConditionTreeItem Conditions { get; private set; }
         public string Value { get; private set; }
 
-        public ComponentPropertyFormat(string value, ConditionCollection conditions)
+        public ComponentPropertyFormat(string value, IConditionTreeItem conditions)
         {
             Value = value;
             Conditions = conditions;

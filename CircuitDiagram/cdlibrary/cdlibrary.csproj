@@ -53,7 +53,6 @@
     <Compile Include="Components\Description\ComponentConfiguration.cs" />
     <Compile Include="Components\ComponentDataString.cs" />
     <Compile Include="Components\Description\ComponentDescription.cs" />
-    <Compile Include="Components\Description\ConditionCollection.cs" />
     <Compile Include="Components\Description\Condition.cs" />
     <Compile Include="Components\Description\ComponentDescriptionMetadata.cs" />
     <Compile Include="Components\Description\ComponentDescriptionSource.cs" />
@@ -68,8 +67,12 @@
     <Compile Include="Components\Conditional.cs" />
     <Compile Include="Components\Connection.cs" />
     <Compile Include="Components\ConnectionCentre.cs" />
+    <Compile Include="Components\Description\ConditionParser.cs" />
+    <Compile Include="Components\Description\ConditionToken.cs" />
+    <Compile Include="Components\Description\ConditionTree.cs" />
     <Compile Include="Components\Description\ConnectionDescription.cs" />
     <Compile Include="Components\ConnectionGroup.cs" />
+    <Compile Include="Components\Description\IConditionTreeItem.cs" />
     <Compile Include="Components\Description\Render\Ellipse.cs" />
     <Compile Include="Components\Description\Render\IRenderCommand.cs" />
     <Compile Include="Components\Description\Render\Line.cs" />

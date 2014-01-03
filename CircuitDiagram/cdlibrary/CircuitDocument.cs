@@ -87,7 +87,7 @@ namespace CircuitDiagram
             // Render components
             foreach (Component component in Components)
                 foreach (var renderDescription in component.Description.RenderDescriptions)
-                    if (renderDescription.Conditions.ConditionsAreMet(component))
+                    if (renderDescription.Conditions.IsMet(component))
                         foreach (CircuitDiagram.Components.Description.Render.IRenderCommand renderCommand in renderDescription.Value)
                             renderCommand.Render(component, dc, true);
 

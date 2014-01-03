@@ -1,8 +1,8 @@
-﻿// RenderDescription.cs
+﻿// IConditionTreeItem.cs
 //
 // Circuit Diagram http://www.circuit-diagram.org/
 //
-// Copyright (C) 2012  Sam Fisher
+// Copyright (C) 2011-2014  Sam Fisher
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -22,22 +22,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows.Media;
-using CircuitDiagram.Render;
 
-namespace CircuitDiagram.Components.Description.Render
+namespace CircuitDiagram.Components.Description
 {
-    public class RenderDescription : Conditional<IRenderCommand[]>
+    public interface IConditionTreeItem
     {
-        public RenderDescription(IConditionTreeItem conditions, IRenderCommand[] commands)
-            :base(commands, conditions)
-        {
-        }
-
-        public void Render(Component component, IRenderContext dc, bool absolute)
-        {
-            foreach (IRenderCommand command in Value)
-                command.Render(component, dc, absolute);
-        }
+        bool IsMet(Component component);
     }
 }

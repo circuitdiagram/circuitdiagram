@@ -90,7 +90,7 @@ namespace CircuitDiagram.IO
 {
     public static class BinaryConstants
     {
-        public const byte FormatVersion = 1;
+        public const byte FormatVersion = 2;
         public const byte FormattedTextVersion = 1;
 
         public enum ContentItemType : ushort
@@ -285,15 +285,7 @@ namespace CircuitDiagram.IO
                         flagsWriter.Write((uint)description.Flags.Length);
                         foreach (Conditional<FlagOptions> flags in description.Flags)
                         {
-                            flagsWriter.Write(flags.Conditions.Count); // number of conditions
-                            foreach (Condition condition in flags.Conditions)
-                            {
-                                flagsWriter.Write((uint)condition.Type);
-                                flagsWriter.Write((uint)condition.Comparison);
-                                flagsWriter.Write(condition.VariableName);
-                                flagsWriter.WriteType(condition.CompareTo);
-                            }
-
+                            flagsWriter.Write(flags.Conditions);
                             flagsWriter.Write((uint)flags.Value);
                         }
 
@@ -327,21 +319,13 @@ namespace CircuitDiagram.IO
                             propertiesWriter.Write((uint)property.FormatRules.Length);
                             foreach (ComponentPropertyFormat formatRule in property.FormatRules)
                             {
-                                propertiesWriter.Write(formatRule.Conditions.Count);
-                                foreach (Condition condition in formatRule.Conditions)
-                                {
-                                    propertiesWriter.Write((uint)condition.Type);
-                                    propertiesWriter.Write((uint)condition.Comparison);
-                                    propertiesWriter.Write(condition.VariableName);
-                                    propertiesWriter.WriteType(condition.CompareTo);
-                                }
-
+                                propertiesWriter.Write(formatRule.Conditions);
                                 propertiesWriter.Write(formatRule.Value);
                             }
 
                             // Other conditions
                             propertiesWriter.Write((uint)property.OtherConditions.Count);
-                            foreach (KeyValuePair<PropertyOtherConditionType, ConditionCollection> otherCondition in property.OtherConditions)
+                            foreach (KeyValuePair<PropertyOtherConditionType, IConditionTreeItem> otherCondition in property.OtherConditions)
                             {
                                 propertiesWriter.Write((uint)otherCondition.Key);
                                 propertiesWriter.Write(otherCondition.Value);
@@ -403,15 +387,7 @@ namespace CircuitDiagram.IO
                         connectionsWriter.Write((uint)description.Connections.Length);
                         foreach (ConnectionGroup connectionGroup in description.Connections)
                         {
-                            connectionsWriter.Write((uint)connectionGroup.Conditions.Count);
-                            foreach (Condition condition in connectionGroup.Conditions)
-                            {
-                                connectionsWriter.Write((uint)condition.Type);
-                                connectionsWriter.Write((uint)condition.Comparison);
-                                connectionsWriter.Write(condition.VariableName);
-                                connectionsWriter.WriteType(condition.CompareTo);
-                            }
-
+                            connectionsWriter.Write(connectionGroup.Conditions);
                             connectionsWriter.Write((uint)connectionGroup.Value.Length);
                             foreach (ConnectionDescription connection in connectionGroup.Value)
                             {
@@ -437,15 +413,7 @@ namespace CircuitDiagram.IO
                         renderWriter.Write(description.RenderDescriptions.Length);
                         foreach (RenderDescription renderDescription in description.RenderDescriptions)
                         {
-                            renderWriter.Write(renderDescription.Conditions.Count);
-                            foreach (Condition condition in renderDescription.Conditions)
-                            {
-                                renderWriter.Write((uint)condition.Type);
-                                renderWriter.Write((uint)condition.Comparison);
-                                renderWriter.Write(condition.VariableName);
-                                renderWriter.WriteType(condition.CompareTo);
-                            }
-
+                            renderWriter.Write(renderDescription.Conditions);
                             renderWriter.Write(renderDescription.Value.Length); // number of render commands
                             foreach (IRenderCommand command in renderDescription.Value)
                             {

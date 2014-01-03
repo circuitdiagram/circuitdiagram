@@ -215,7 +215,7 @@ namespace CircuitDiagram.Components
             m_connections.Clear();
             foreach (ConnectionGroup group in Description.Connections)
             {
-                if (group.Conditions.ConditionsAreMet(this))
+                if (group.Conditions.IsMet(this))
                 {
                     foreach (ConnectionDescription connectionDescription in group.Value)
                     {
@@ -368,7 +368,7 @@ namespace CircuitDiagram.Components
 
             foreach (KeyValuePair<ComponentProperty, object> property in m_propertyValues)
             {
-                if (property.Key.OtherConditions.ContainsKey(PropertyOtherConditionType.Serialize) && !property.Key.OtherConditions[PropertyOtherConditionType.Serialize].ConditionsAreMet(this))
+                if (property.Key.OtherConditions.ContainsKey(PropertyOtherConditionType.Serialize) && !property.Key.OtherConditions[PropertyOtherConditionType.Serialize].IsMet(this))
                     continue;
                 properties.Add(property.Key.SerializedName, property.Value);
             }
@@ -433,7 +433,7 @@ namespace CircuitDiagram.Components
         {
             foreach (RenderDescription renderDescription in Description.RenderDescriptions)
             {
-                if (renderDescription.Conditions.ConditionsAreMet(this))
+                if (renderDescription.Conditions.IsMet(this))
                     renderDescription.Render(this, dc, true);
             }
         }
@@ -442,7 +442,7 @@ namespace CircuitDiagram.Components
         {
             foreach (RenderDescription renderDescription in Description.RenderDescriptions)
             {
-                if (renderDescription.Conditions.ConditionsAreMet(this))
+                if (renderDescription.Conditions.IsMet(this))
                     renderDescription.Render(this, dc, absolute);
             }
         }

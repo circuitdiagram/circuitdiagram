@@ -399,7 +399,7 @@ namespace CircuitDiagram
             {
                 foreach (Conditional<FlagOptions> flags in m_selectedComponents[0].Description.Flags)
                 {
-                    if (flags.Conditions.ConditionsAreMet(m_selectedComponents[0]))
+                    if (flags.Conditions.IsMet(m_selectedComponents[0]))
                     {
                         if ((flags.Value & FlagOptions.HorizontalOnly) == FlagOptions.HorizontalOnly || (flags.Value & FlagOptions.VerticalOnly) == FlagOptions.VerticalOnly)
                         {
@@ -414,7 +414,7 @@ namespace CircuitDiagram
             {
                 foreach (Conditional<FlagOptions> flags in m_resizingComponent.Description.Flags)
                 {
-                    if (flags.Conditions.ConditionsAreMet(m_resizingComponent))
+                    if (flags.Conditions.IsMet(m_resizingComponent))
                     {
                         if ((flags.Value & FlagOptions.HorizontalOnly) == FlagOptions.HorizontalOnly || (flags.Value & FlagOptions.VerticalOnly) == FlagOptions.VerticalOnly)
                         {

@@ -1,8 +1,8 @@
-﻿// ComponentDescriptionCondition.cs
+﻿// Condition.cs
 //
 // Circuit Diagram http://www.circuit-diagram.org/
 //
-// Copyright (C) 2012  Sam Fisher
+// Copyright (C) 2011-2014 Sam Fisher
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -26,12 +26,20 @@ using System.Text.RegularExpressions;
 
 namespace CircuitDiagram.Components.Description
 {
-    public class Condition
+    public class Condition : IConditionTreeItem
     {
+        private static Condition emptyCondition = new Condition();
+        public static Condition Empty { get { return emptyCondition; } }
+
         public ConditionType Type { get; private set; }
         public ConditionComparison Comparison { get; private set; }
         public string VariableName { get; private set; }
         public object CompareTo { get; private set; }
+
+        private Condition()
+        {
+            Type = ConditionType.Empty;
+        }
 
         public Condition(ConditionType type, string name, ConditionComparison comparison, object compareTo)
         {
@@ -39,6 +47,70 @@ namespace CircuitDiagram.Components.Description
             VariableName = name;
             Comparison = comparison;
             CompareTo = compareTo;
+        }
+
+        public static Condition ParseV1_1(string value)
+        {
+            ConditionType type;
+            if (value.IndexOf("_") <= 1 && value.IndexOf("_") != -1)
+                type = ConditionType.State;
+            else
+                type = ConditionType.Property;
+
+            ConditionComparison comparisonType = ConditionComparison.Equal;
+            object compareTo = true;
+
+            Regex opCheck = new Regex("(==|>|<|<=|>=|!=)");
+            Match opMatch = opCheck.Match(value);
+            if (opMatch.Success)
+            {
+                int compareToIndex = opMatch.Index + opMatch.Length;
+                string compareToStr = value.Substring(compareToIndex);
+
+                switch (opMatch.Value)
+                {
+                    case ">":
+                        comparisonType = ConditionComparison.Greater;
+                        compareTo = double.Parse(compareToStr);
+                        break;
+                    case ">=":
+                        comparisonType = ConditionComparison.GreaterOrEqual;
+                        compareTo = double.Parse(compareToStr);
+                        break;
+                    case "<":
+                        comparisonType = ConditionComparison.Less;
+                        compareTo = double.Parse(compareToStr);
+                        break;
+                    case "<=":
+                        comparisonType = ConditionComparison.LessOrEqual;
+                        compareTo = double.Parse(compareToStr);
+                        break;
+                    case "!=":
+                        comparisonType = ConditionComparison.NotEqual;
+                        compareTo = compareToStr;
+                        break;
+                    case "==":
+                        comparisonType = ConditionComparison.Equal;
+                        compareTo = compareToStr;
+                        break;
+                }
+            } // Else implicit '==true'
+
+            if (value.StartsWith("!"))
+            {
+                if (comparisonType == ConditionComparison.Equal)
+                    comparisonType = ConditionComparison.NotEqual;
+                else if (comparisonType == ConditionComparison.NotEqual)
+                    comparisonType = ConditionComparison.Equal;
+                else if (comparisonType == ConditionComparison.Empty)
+                    comparisonType = ConditionComparison.NotEmpty;
+            }
+
+            string variableName = Regex.Match(value, "\\$[a-zA-Z0-9]+").Value.Replace("$", "");
+            if (type == ConditionType.State)
+                variableName = value.Replace("_", "").Replace("!", "");
+
+            return new Condition(type, variableName, comparisonType, compareTo);
         }
 
         public static Condition Parse(string value)
@@ -113,7 +185,11 @@ namespace CircuitDiagram.Components.Description
 
         public bool IsMet(Component component)
         {
-            if (Type == ConditionType.State)
+            if (Type == ConditionType.Empty)
+            {
+                return true;
+            }
+            else if (Type == ConditionType.State)
             {
                 if (VariableName.ToLower() == "horizontal")
                 {
@@ -182,6 +258,11 @@ namespace CircuitDiagram.Components.Description
             }
 
             return false;
+        }
+
+        public bool ConditionsAreMet(Component component)
+        {
+            return this.IsMet(component);
         }
 
         public bool Compare(object value)
@@ -283,9 +364,10 @@ namespace CircuitDiagram.Components.Description
         NotEmpty = 7
     }
 
-    public enum ConditionType
+    public enum ConditionType : ushort
     {
-        Property,
-        State
+        Empty = 3,
+        Property = 0,
+        State = 1
     }
 }

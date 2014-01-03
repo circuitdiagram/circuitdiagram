@@ -2,7 +2,7 @@
 //
 // Circuit Diagram http://www.circuit-diagram.org/
 //
-// Copyright (C) 2012  Sam Fisher
+// Copyright (C) 2012-2014  Sam Fisher
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -129,11 +129,25 @@ namespace CircuitDiagram.IO
                 return BinaryType.Unknown;
         }
 
-        public static void Write(this System.IO.BinaryWriter writer, ConditionCollection conditions)
+        public static void Write(this System.IO.BinaryWriter writer, IConditionTreeItem value)
         {
-            writer.Write(conditions.Count);
-            foreach (Condition condition in conditions)
+            if (value == Condition.Empty)
             {
+                writer.Write((byte)0); // 0 for empty
+            }
+            else if (value is ConditionTree)
+            {
+                writer.Write((byte)1); // 1 for tree
+             
+                var tree = value as ConditionTree;
+                writer.Write((ushort)tree.Operator);
+                writer.Write(tree.Left);
+                writer.Write(tree.Right);
+            }
+            else if (value is Condition)
+            {
+                var condition = value as Condition;
+                writer.Write((byte)2); // 0 for condition
                 writer.Write((int)condition.Type);
                 writer.Write((int)condition.Comparison);
                 writer.Write(condition.VariableName);
@@ -141,9 +155,38 @@ namespace CircuitDiagram.IO
             }
         }
 
-        public static ConditionCollection ReadConditionCollection(this System.IO.BinaryReader reader)
+        public static IConditionTreeItem ReadConditionTree(this System.IO.BinaryReader reader)
         {
-            ConditionCollection conditions = new ConditionCollection();
+            byte type = reader.ReadByte();
+            if (type == 0)
+            {
+                // Empty
+                return Condition.Empty;
+            }
+            else if (type == 1)
+            {
+                // Tree
+                ConditionTree.ConditionOperator op = (ConditionTree.ConditionOperator)reader.ReadUInt16();
+                IConditionTreeItem left = reader.ReadConditionTree();
+                IConditionTreeItem right = reader.ReadConditionTree();
+                return new ConditionTree(op, left, right);
+            }
+            else if (type == 2)
+            {
+                ConditionType conditionType = (ConditionType)reader.ReadInt32();
+                ConditionComparison comparison = (ConditionComparison)reader.ReadInt32();
+                string variableName = reader.ReadString();
+                BinaryType binType;
+                object compareTo = reader.ReadType(out binType);
+                return new Condition(conditionType, variableName, comparison, compareTo);
+            }
+            else
+                throw new System.IO.InvalidDataException();
+        }
+
+        public static IConditionTreeItem ReadConditionCollection(this System.IO.BinaryReader reader)
+        {
+            Stack<Condition> andList = new Stack<Condition>();
             int numConditions = reader.ReadInt32();
             for (int l = 0; l < numConditions; l++)
             {
@@ -152,9 +195,9 @@ namespace CircuitDiagram.IO
                 string variableName = reader.ReadString();
                 BinaryType binType;
                 object compareTo = reader.ReadType(out binType);
-                conditions.Add(new Condition(conditionType, variableName, comparison, compareTo));
+                andList.Push(new Condition(conditionType, variableName, comparison, compareTo));
             }
-            return conditions;
+            return ConditionParser.ConvertLegacyConditions(andList);
         }
 
         public static void Write(this System.IO.BinaryWriter writer, System.Windows.Point value)
