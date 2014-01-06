@@ -189,23 +189,30 @@ namespace CircuitDiagram.IO
 
                 // calculate signature
                 byte[] sha1signature = new byte[128];
-                if (Settings.Key.HasValue)
+                byte[] certData = null;
+                if (Settings.Certificate != null)
                 {
-                    RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-                    rsa.ImportParameters(Settings.Key.Value);
-                    sha1signature = rsa.SignData(allContentStream, new SHA1CryptoServiceProvider());
+                    certData = Settings.Certificate.Export(System.Security.Cryptography.X509Certificates.X509ContentType.Cert);
+
+                    var dsa = Settings.Certificate.PrivateKey as RSACryptoServiceProvider;
+                    sha1signature = dsa.SignData(allContentStream.ToArray(), new SHA1CryptoServiceProvider());
                 }
 
                 writer.Write(new byte[] { 184, 67, 68, 67, 79, 77, 13, 10 }); // magic number ( 184, c, d, c, o, m, \r, \n )
                 writer.Write(BinaryConstants.FormatVersion); // format version
                 writer.Write(md5hash); // MD5 hash of content (16-bytes)
                 writer.Write(0u); // flags/reserved
-                writer.Write((uint)((Settings.Key.HasValue ? 170u : 42u) + m_contentStream.Length + m_resourcesStream.Length)); // length of file including header
-                writer.Write((Settings.Key.HasValue ? 170u : 42u)); // offset to data from start of file (in bytes)
+                writer.Write((uint)((Settings.Certificate != null ? 8u + sha1signature.Length + certData.Length : 0) + 42u + m_contentStream.Length + m_resourcesStream.Length)); // length of file including header
+                writer.Write((uint)(Settings.Certificate != null ? 8u + + sha1signature.Length + certData.Length : 0) + 42u); // offset to data from start of file (in bytes)
                 writer.Write((uint)(Descriptions.Count + Resources.Count)); // number of content items
-                writer.Write(Settings.Key.HasValue); // is signed
-                if (Settings.Key.HasValue)
+                writer.Write(Settings.Certificate != null); // is signed
+                if (Settings.Certificate != null)
+                {
+                    writer.Write(sha1signature.Length);
                     writer.Write(sha1signature); // SHA-1 (RSA) signature of content (128-bytes)
+                    writer.Write(certData.Length);
+                    writer.Write(certData);
+                }
             }
         }
 
@@ -548,7 +555,7 @@ namespace CircuitDiagram.IO
             /// Don't embed icons.
             /// </summary>
             public bool IgnoreIcons { get; set; }
-            public RSAParameters? Key { get; set; }
+            public System.Security.Cryptography.X509Certificates.X509Certificate2 Certificate { get; set; }
         }
     }
 }

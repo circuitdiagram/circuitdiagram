@@ -81,6 +81,7 @@
     <Compile Include="Components\Description\Render\RenderDescription.cs" />
     <Compile Include="Components\Description\Render\Text.cs" />
     <Compile Include="Components\Description\FlagOptions.cs" />
+    <Compile Include="Components\Description\SignatureStatus.cs" />
     <Compile Include="Components\PropertyOtherConditionType.cs" />
     <Compile Include="Elements\DisabledComponent.cs" />
     <Compile Include="Elements\ICircuitElement.cs" />

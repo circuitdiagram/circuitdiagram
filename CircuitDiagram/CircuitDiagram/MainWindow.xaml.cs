@@ -2,7 +2,7 @@
 //
 // Circuit Diagram http://www.circuit-diagram.org/
 //
-// Copyright (C) 2012  Sam Fisher
+// Copyright (C) 2012-2014  Sam Fisher
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,7 @@ using CircuitDiagram.IO;
 using TaskDialogInterop;
 using System.Diagnostics;
 using CircuitDiagram.Components.Description;
+using System.Security.Cryptography.X509Certificates;
 
 namespace CircuitDiagram
 {
@@ -246,12 +247,7 @@ namespace CircuitDiagram
                 }
             }
 
-            Stream keyStream = System.Reflection.Assembly.GetAssembly(typeof(CircuitDocument)).GetManifestResourceStream("CircuitDiagram.key.txt");
-            System.Security.Cryptography.RSACryptoServiceProvider tempRSA = new System.Security.Cryptography.RSACryptoServiceProvider();
-            byte[] data = new byte[keyStream.Length];
-            keyStream.Read(data, 0, (int)keyStream.Length);
-            string aaa = Encoding.UTF8.GetString(data);
-            //tempRSA.FromXmlString(aaa.Trim());
+            X509Chain certChain = new X509Chain();
 
             // Load binary components
             foreach (string location in componentLocations)
@@ -260,7 +256,7 @@ namespace CircuitDiagram
                 {
                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
-                        if (binLoader.Load(fs, tempRSA.ExportParameters(false)))
+                        if (binLoader.Load(fs, certChain))
                         {
                             ComponentDescription[] descriptions = binLoader.GetDescriptions();
                             ComponentDescriptionSource source = new ComponentDescriptionSource(file, new System.Collections.ObjectModel.ReadOnlyCollection<ComponentDescription>(descriptions));

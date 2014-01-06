@@ -63,6 +63,7 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -80,6 +81,8 @@
     <Compile Include="BuildChannelAttribute.cs" />
     <Compile Include="ComponentEditor.cs" />
     <Compile Include="Converters\NotConverter.cs" />
+    <Compile Include="Converters\SignatureStatusConverter.cs" />
+    <Compile Include="Converters\SignatureToFontWeightConverter.cs" />
     <Compile Include="Dialogs\CDDXSaveOptionsEditor.xaml.cs">
       <DependentUpon>CDDXSaveOptionsEditor.xaml</DependentUpon>
     </Compile>
@@ -101,7 +104,7 @@
     <Compile Include="Render\CircuitElementDrawingVisual.cs" />
     <Compile Include="Converters\BoolToYesNoConverter.cs" />
     <Compile Include="Converters\KeyTextConverter.cs" />
-    <Compile Include="Converters\SignedColourConverter.cs" />
+    <Compile Include="Converters\SignatureToColourConverter.cs" />
     <Compile Include="CustomCommands.cs" />
     <Compile Include="Render\DrawingRenderer.cs" />
     <Compile Include="Render\RenderHelper.cs" />

@@ -34,15 +34,15 @@ namespace CircuitDiagram.Components.Description
         public int RuntimeID { get; set; }
 
         public string ID { get; set; }
-        public string ComponentName { get; private set; }
-        public bool CanResize { get; private set; }
-        public bool CanFlip { get; private set; }
-        public double MinSize { get; private set; }
-        public ComponentProperty[] Properties { get; private set; }
-        public ConnectionGroup[] Connections { get; private set; }
-        public RenderDescription[] RenderDescriptions { get; private set; }
-        public Conditional<FlagOptions>[] Flags { get; private set; }
-        public ComponentDescriptionMetadata Metadata { get; private set; }
+        public string ComponentName { get; set; }
+        public bool CanResize { get; set; }
+        public bool CanFlip { get; set; }
+        public double MinSize { get; set; }
+        public ComponentProperty[] Properties { get; set; }
+        public ConnectionGroup[] Connections { get; set; }
+        public RenderDescription[] RenderDescriptions { get; set; }
+        public Conditional<FlagOptions>[] Flags { get; set; }
+        public ComponentDescriptionMetadata Metadata { get; set; }
         public ComponentDescriptionSource Source { get; set; }
 
         public ComponentDescription(string id, string componentName, bool canResize, bool canFlip, double minSize, ComponentProperty[] properties, ConnectionGroup[] connections, RenderDescription[] renderDescriptions, Conditional<FlagOptions>[] flags, ComponentDescriptionMetadata metadata)

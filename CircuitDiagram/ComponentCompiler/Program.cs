@@ -28,6 +28,7 @@ using System.IO;
 using CircuitDiagram.Components;
 using CircuitDiagram.IO;
 using CircuitDiagram.Components.Description;
+using System.Security.Cryptography.X509Certificates;
 
 namespace cdcompile
 {
@@ -95,151 +96,6 @@ namespace cdcompile
 
                     componentDescriptions.Add(description);
                 }
-
-                #region old
-                /*XmlNodeList resourceNodes = doc.SelectNodes("/cdcom/resource");
-                foreach (XmlNode resourceNode in resourceNodes)
-                {
-                    string resourceId = resourceNode.Attributes["id"].InnerText;
-                    string type = resourceNode.Attributes["type"].InnerText;
-                    XmlElement resourceElement = resourceNode as XmlElement;
-                    string target = (resourceElement.HasAttribute("target") ? resourceElement.Attributes["target"].InnerText : null);
-                    string componentId = (resourceElement.HasAttribute("componentid") ? resourceElement.Attributes["componentid"].InnerText : null);
-                    string path = (resourceElement.HasAttribute("path") ? resourceElement.Attributes["path"].InnerText : null);
-                    string use = (resourceElement.HasAttribute("target") ? resourceElement.Attributes["target"].InnerText : null);
-                    BinaryResourceUse rUse = BinaryResourceUse.None;
-                    if (use.ToLowerInvariant() == "icon")
-                        rUse = BinaryResourceUse.Icon;
-                    else if (use.ToLowerInvariant() == "metadata")
-                        rUse = BinaryResourceUse.Metadata;
-                    else if (use.ToLowerInvariant() == "configurations")
-                        rUse = BinaryResourceUse.Configurations;
-
-                    if (type == "application/x-metadata" && path == null)
-                    {
-                        string author = resourceNode.SelectSingleNode("author").InnerText;
-                        string version = resourceNode.SelectSingleNode("version").InnerText;
-                        string additionalInformation = resourceNode.SelectSingleNode("additionalinformation").InnerText;
-                        string guid = resourceNode.SelectSingleNode("guid").InnerText;
-
-                        MemoryStream metadataStream = new MemoryStream();
-                        System.IO.BinaryWriter metadataWriter = new System.IO.BinaryWriter(metadataStream);
-                        metadataWriter.Write("Circuit Diagram");
-                        metadataWriter.Write("http://www.circuit-diagram.org/");
-                        if (String.IsNullOrEmpty(guid))
-                            metadataWriter.Write(Guid.NewGuid().ToByteArray());
-                        else
-                            metadataWriter.Write(new Guid(guid).ToByteArray());
-                        metadataWriter.Write(version);
-
-                        binaryResources.Add(new BinaryResource(resourceId, componentId, type, rUse, metadataStream.ToArray()));
-                    }
-                    else if (rUse == BinaryResourceUse.Icon)
-                    {
-                        MemoryStream tempStream = new MemoryStream();
-                        System.IO.BinaryWriter tempWriter = new System.IO.BinaryWriter(tempStream);
-
-                        byte[] data = System.IO.File.ReadAllBytes(path);
-                        if (Path.GetExtension(path) != ".svg")
-                            tempWriter.Write("image/png");
-                        else
-                            tempWriter.Write("image/svg+xml");
-                        tempWriter.Write(data.Length);
-                        tempWriter.Write(data);
-                        
-                        int numAdditional = 0;
-                        foreach (XmlElement node in resourceNode.ChildNodes)
-                            if (node.Name == "icon" && node.HasAttribute("path"))
-                                numAdditional++;
-                        tempWriter.Write(numAdditional);
-
-                        foreach (XmlElement node in resourceNode.ChildNodes)
-                        {
-                            if (node.Name == "icon" && node.HasAttribute("path"))
-                            {
-                                byte[] data2 = System.IO.File.ReadAllBytes(node.Attributes["path"].InnerText);
-                                ComponentDescriptionConditionCollection conditions = new ComponentDescriptionConditionCollection();
-                                if (node.HasAttribute("conditions"))
-                                    conditions = ComponentDescriptionConditionCollection.Parse(node.Attributes["conditions"].InnerText);
-                                CircuitDiagram.IO.BinaryIOExtentions.Write(tempWriter, conditions);
-                                if (Path.GetExtension(node.Attributes["path"].InnerText) != ".svg")
-                                    tempWriter.Write("image/png");
-                                else
-                                    tempWriter.Write("image/svg+xml");
-                                tempWriter.Write(data2.Length);
-                                tempWriter.Write(data2);
-                            }
-                        }
-
-                        binaryResources.Add(new BinaryResource(resourceId, componentId, type, rUse, tempStream.ToArray()));
-                    }
-                    else if (rUse == BinaryResourceUse.Configurations)
-                    {
-                        MemoryStream tempStream = new MemoryStream();
-                        System.IO.BinaryWriter tempWriter = new System.IO.BinaryWriter(tempStream);
-
-                        int numConfigurations = 0;
-                        foreach (XmlElement node in resourceNode.ChildNodes)
-                            if (node.Name == "configuration" && node.HasAttribute("name"))
-                                numConfigurations++;
-                        tempWriter.Write(numConfigurations);
-
-                        foreach (XmlElement node in resourceNode.ChildNodes)
-                        {
-                            if (node.Name == "configuration" && node.HasAttribute("name"))
-                            {
-                                tempWriter.Write(node.Attributes["name"].InnerText);
-                                if (node.HasAttribute("value"))
-                                {
-                                    string settersString = node.Attributes["value"].InnerText;
-                                    string[] setters = settersString.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                                    tempWriter.Write(setters.Length); // number of setters
-                                    foreach (string setter in setters)
-                                    {
-                                        string[] tempSplit = setter.Split(':');
-                                        string propertyName = tempSplit[0];
-                                        string value = tempSplit[1];
-                                        
-                                        // convert from string to proper type
-                                        ComponentDescription component = null;
-                                        foreach (ComponentDescription description in componentDescriptions)
-                                            if (description.ID == componentId)
-                                                component = description;
-                                        if (component != null)
-                                        {
-                                            foreach (ComponentProperty property in component.Properties)
-                                            {
-                                                if (property.SerializedName == propertyName || propertyName == "$" + property.Name)
-                                                {
-                                                    object setterValue = value;
-                                                    if (property.Type == typeof(double))
-                                                        setterValue = double.Parse(value);
-                                                    else if (property.Type == typeof(int))
-                                                        setterValue = int.Parse(value);
-                                                    else if (property.Type == typeof(bool))
-                                                        setterValue = bool.Parse(value);
-
-                                                    // write
-                                                    tempWriter.Write(property.SerializedName);
-                                                    tempWriter.WriteType(setterValue, property.EnumOptions != null);
-
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        binaryResources.Add(new BinaryResource(resourceId, componentId, type, rUse, tempStream.ToArray()));
-                    }
-                    else
-                    {
-                        binaryResources.Add(new BinaryResource(resourceId, componentId, type, rUse, System.IO.File.ReadAllBytes(path)));
-                    }
-                }*/
-                #endregion
             }
 
             FileStream stream = new FileStream(output, FileMode.Create, FileAccess.Write);
@@ -247,16 +103,22 @@ namespace cdcompile
             string keyString = null;
             if (keyPath != null && File.Exists(keyPath))
                 keyString = File.ReadAllText(keyPath);
-            System.Security.Cryptography.RSAParameters? key = null;
+
+            X509Certificate2 certificate = null;
             if (keyString != null)
             {
-                System.Security.Cryptography.RSACryptoServiceProvider RSAalg = new System.Security.Cryptography.RSACryptoServiceProvider();
-                RSAalg.FromXmlString(keyString);
-                key = RSAalg.ExportParameters(true);
+                X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
+		        store.Open(OpenFlags.OpenExistingOnly);
+	
+		        //Put certificates from the store into a collection so user can select one.
+		        X509Certificate2Collection fcollection = (X509Certificate2Collection)store.Certificates;
+
+		        X509Certificate2Collection collection = X509Certificate2UI.SelectFromCollection(fcollection, "Select an X509 Certificate", "Choose a certificate to examine.", X509SelectionFlag.SingleSelection);
+                certificate = collection[0];
             }
 
             CircuitDiagram.IO.BinaryWriter.BinaryWriterSettings settings = new CircuitDiagram.IO.BinaryWriter.BinaryWriterSettings();
-            settings.Key = key;
+            settings.Certificate = certificate;
             CircuitDiagram.IO.BinaryWriter writer = new CircuitDiagram.IO.BinaryWriter(stream, settings);
             writer.Descriptions.AddRange(componentDescriptions);
             writer.Resources.AddRange(binaryResources);

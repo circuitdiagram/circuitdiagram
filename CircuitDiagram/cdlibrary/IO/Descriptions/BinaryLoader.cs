@@ -30,6 +30,7 @@ using System.Security.Cryptography;
 using CircuitDiagram.Render.Path;
 using CircuitDiagram.Render;
 using CircuitDiagram.Components.Description;
+using System.Security.Cryptography.X509Certificates;
 
 namespace CircuitDiagram.IO
 {
@@ -61,7 +62,7 @@ namespace CircuitDiagram.IO
             return Load(stream, null);
         }
 
-        public bool Load(Stream stream, RSAParameters? key)
+        public bool Load(Stream stream, X509Chain chain)
         {
             try
             {
@@ -75,22 +76,35 @@ namespace CircuitDiagram.IO
                 uint fileLength = reader.ReadUInt32();
                 uint offsetToContent = reader.ReadUInt32();
                 uint numContentItems = reader.ReadUInt32();
+
+                // Signing
                 bool isSigned = reader.ReadBoolean();
                 byte[] sha1Sig = null;
+                byte[] certData = null;
                 if (isSigned)
-                    sha1Sig = reader.ReadBytes(128);
+                {
+                    int sigLength = reader.ReadInt32();
+                    sha1Sig = reader.ReadBytes(sigLength);
+                    int certLength = reader.ReadInt32();
+                    certData = reader.ReadBytes(certLength);
+                }
 
                 if (reader.BaseStream.Position != offsetToContent)
                     reader.BaseStream.Seek(offsetToContent, SeekOrigin.Begin);
 
                 bool validSignature = false;
-                if (isSigned && key.HasValue)
+                bool certificateTrusted = false;
+                X509Certificate2 certificate = null;
+                if (isSigned)
                 {
-                    RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-                    rsa.ImportParameters(key.Value);
+                    certificate = new X509Certificate2(certData);
+                    certificateTrusted = chain.Build(certificate);
+
                     byte[] buffer = new byte[stream.Length - stream.Position];
                     stream.Read(buffer, 0, buffer.Length);
-                    validSignature = rsa.VerifyData(buffer, new SHA1CryptoServiceProvider(), sha1Sig);
+
+                    var dsa = certificate.PublicKey.Key as RSACryptoServiceProvider;
+                    validSignature = dsa.VerifyData(buffer, new SHA1CryptoServiceProvider(), sha1Sig);
 
                     reader.BaseStream.Seek(offsetToContent, SeekOrigin.Begin);
                 }
@@ -140,10 +154,15 @@ namespace CircuitDiagram.IO
                                 descriptionMetadata.Type = String.Format("Binary r{0} (*.cdcom)", formatVersion);
                                 descriptionMetadata.GUID = new Guid(reader.ReadBytes(16));
                                 descriptionMetadata.Author = reader.ReadString();
+                                if (validSignature && certificate != null && certificateTrusted)
+                                    descriptionMetadata.Author = certificate.GetNameInfo(X509NameType.EmailName, false);
                                 descriptionMetadata.Version = new Version(reader.ReadUInt16(), reader.ReadUInt16());
                                 descriptionMetadata.AdditionalInformation = reader.ReadString();
                                 descriptionMetadata.ImplementSet = reader.ReadString();
                                 descriptionMetadata.ImplementItem = reader.ReadString();
+                                descriptionMetadata.Signature.IsHashValid = validSignature;
+                                descriptionMetadata.Signature.Certificate = certificate;
+                                descriptionMetadata.Signature.IsCertificateTrusted = certificateTrusted;
                                 int iconResource = reader.ReadInt32();
                                 if (iconResource != -1)
                                     descriptionMetadata.IconData = BitConverter.GetBytes(iconResource);

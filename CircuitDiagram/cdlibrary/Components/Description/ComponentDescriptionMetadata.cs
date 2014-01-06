@@ -30,7 +30,6 @@ namespace CircuitDiagram.Components.Description
     {
         public Guid GUID { get; set; }
         public Version Version { get; set; }
-        public bool Signed { get; set; }
         public string Author { get; set; }
         public string AdditionalInformation { get; set; }
         public string Type { get; set; }
@@ -41,17 +40,18 @@ namespace CircuitDiagram.Components.Description
         public List<ComponentConfiguration> Configurations { get; private set; }
         public string ImplementSet { get; set; }
         public string ImplementItem { get; set; }
+        public SignatureStatus Signature { get; set; }
 
         public ComponentDescriptionMetadata()
         {
             GUID = Guid.Empty;
             Version = new System.Version(1, 0);
-            Signed = false;
             Author = "Unknown";
             AdditionalInformation = "";
             Type = "Binary (*.cdcom)";
             Location = LocationType.None;
             Configurations = new List<ComponentConfiguration>();
+            Signature = new SignatureStatus();
         }
 
         public enum LocationType
