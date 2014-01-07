@@ -44,8 +44,6 @@ namespace ComponentCompiler
         public MainWindow()
         {
             InitializeComponent();
-
-            chbSign_Checked(this, null);
         }
 
         private void button2_Click(object sender, RoutedEventArgs e)
@@ -70,22 +68,6 @@ namespace ComponentCompiler
             }
         }
 
-        private void chbSign_Checked(object sender, RoutedEventArgs e)
-        {
-            if (chbSign.IsChecked == true)
-            {
-                lblKey.IsEnabled = true;
-                tbxKeyPath.IsEnabled = true;
-                btnKeyBrowse.IsEnabled = true;
-            }
-            else
-            {
-                lblKey.IsEnabled = false;
-                tbxKeyPath.IsEnabled = false;
-                btnKeyBrowse.IsEnabled = false;
-            }
-        }
-
         private void btnCompile_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog sfd = new SaveFileDialog();
@@ -102,104 +84,15 @@ namespace ComponentCompiler
 
                 if (!String.IsNullOrEmpty(tbxInputPath.Text))
                 {
-                    string xmlPath = System.IO.Path.GetDirectoryName(sfd.FileName) + "\\" + System.IO.Path.GetFileNameWithoutExtension(sfd.FileName) + ".temp.xml";
+                    StringBuilder command = new StringBuilder();
+                    command.AppendFormat("--input \"{0}\" ", tbxInputPath.Text);
+                    command.AppendFormat("--output \"{0}\" ", sfd.FileName);
+                    command.AppendFormat("--icon \"{0}\" ", tbxIconPath.Text);
+                    if (chbSign.IsChecked == true)
+                        command.AppendFormat("--sign");
 
-                    SaveConfiguration(xmlPath);
-                    
-                    string one = path + "\\" + String.Format("cdcompile.exe -o \"{0}\" --config \"{1}\"", sfd.FileName, xmlPath);
-                    System.Diagnostics.Process.Start(path + "\\cdcompile.exe", String.Format("-o \"{0}\" --config \"{1}\"", sfd.FileName, xmlPath));
-
-                    // Wait for process to complete
-                    System.Threading.Thread.Sleep(700);
-                    System.IO.File.Delete(xmlPath);
+                    System.Diagnostics.Process.Start(path + "\\cdcompile.exe", command.ToString());
                 }
-            }
-        }
-
-        private void SaveConfiguration(string xmlPath)
-        {
-            System.IO.FileStream fs = new System.IO.FileStream(xmlPath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.Read);
-            XmlTextWriter writer = new XmlTextWriter(fs, Encoding.UTF8);
-            writer.Formatting = Formatting.Indented;
-            writer.WriteStartDocument();
-            writer.WriteStartElement("cdcom");
-            writer.WriteAttributeString("markupversion", "1.0");
-            writer.WriteAttributeString("x-uiapp", "Component Compiler 1.0 (Windows)");
-            if (chbSign.IsChecked == true && !String.IsNullOrEmpty(tbxKeyPath.Text))
-                writer.WriteAttributeString("key", tbxKeyPath.Text);
-
-            // Component
-            writer.WriteStartElement("component");
-            writer.WriteAttributeString("id", "C0");
-            writer.WriteAttributeString("path", tbxInputPath.Text);
-
-            // Icon
-            if (!String.IsNullOrEmpty(tbxIconPath.Text))
-            {
-                writer.WriteStartElement("icon");
-                writer.WriteValue(tbxIconPath.Text);
-                writer.WriteEndElement();
-            }
-
-            writer.WriteEndElement();
-
-            writer.Flush();
-            writer.Close();
-
-            fs.Close();
-        }
-
-        private void btnSaveAs_Click(object sender, RoutedEventArgs e)
-        {
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Title = "Save As";
-            sfd.Filter = "XML Files (*.xml)|*.xml";
-            if (sfd.ShowDialog() == true)
-            {
-                SaveConfiguration(sfd.FileName);
-            }
-        }
-
-        private void btnOpen_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Title = "Open";
-            ofd.Filter = "XML Files (*.xml)|*.xml";
-            if (ofd.ShowDialog() == true)
-            {
-                XmlDocument doc = new XmlDocument();
-                doc.Load(ofd.FileName);
-
-                if ((doc.SelectSingleNode("/cdcom") as XmlElement).HasAttribute("key"))
-                {
-                    chbSign.IsChecked = true;
-                    tbxKeyPath.Text = (doc.SelectSingleNode("/cdcom") as XmlElement).Attributes["key"].InnerText;
-                }
-
-                XmlNode componentNode = doc.SelectSingleNode("/cdcom/component");
-                if (componentNode != null)
-                {
-                    tbxInputPath.Text = componentNode.Attributes["path"].InnerText;
-
-                    foreach (XmlNode childNode in componentNode.ChildNodes)
-                    {
-                        if (childNode.Name == "icon" && !(childNode as XmlElement).HasAttribute("configuration"))
-                        {
-                            tbxInputPath.Text = childNode.InnerText;
-                        }
-                    }
-                }
-            }
-        }
-
-        private void btnKeyBrowse_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Title = "Open Key";
-            ofd.Filter = "Key Files (*.xml;*.txt)|*.xml;*.txt";
-            if (ofd.ShowDialog() == true)
-            {
-                tbxKeyPath.Text = ofd.FileName;
             }
         }
     }
