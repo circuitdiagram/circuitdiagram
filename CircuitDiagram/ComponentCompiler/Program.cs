@@ -38,71 +38,58 @@ namespace cdcompile
         static void Main(string[] args)
         {
             string output = null;
-            string config = null;
+            string input = null;
+            List<string> iconPaths = new List<string>();
             bool sign = false;
+            string certThumb = null;
             bool help = false;
             var p = new OptionSet() {
-                { "o|output=", v => output = v },
-                { "i|input|config=", v => config = v },
-                { "sign", v => sign = v != null },
-   	            { "h|?|help",   v => help = v != null },
+                { "i|input=", "Path to input XML component.", v => input = v },
+                { "o|output=", "Path to write compiled component to.", v => output = v },
+                { "icon=", "Path to PNG icon.", v => iconPaths.Add(v)},
+                { "sign", "If present, presents a dialog for choosing a certificate for component signing.", v => sign = v != null },
+                { "certificate=", "Thumbprint of certificate to use for signing.", v => certThumb = v},
+   	            { "h|?|help", "Display help and options.",   v => help = v != null },
             };
             List<string> extra = p.Parse(args);
 
             List<ComponentDescription> componentDescriptions = new List<ComponentDescription>();
             List<BinaryResource> binaryResources = new List<BinaryResource>();
 
-            if (config != null && File.Exists(config))
+            if (input == null || output == null || help)
             {
-                XmlDocument doc = new XmlDocument();
-                doc.Load(config);
+                p.WriteOptionDescriptions(Console.Out);
+                return;
+            }
 
-                XmlElement root = doc.SelectSingleNode("/cdcom") as XmlElement;
-                string markupVersion = (root.HasAttribute("markupversion") ? root.Attributes["markupversion"].InnerText : null);
-                string xUiApp = (root.HasAttribute("x-uiapp") ? root.Attributes["x-uiapp"].InnerText : null);
+            XmlLoader loader = new CircuitDiagram.IO.XmlLoader();
+            loader.Load(new FileStream(input, FileMode.Open));
 
-                XmlNodeList componentNodes = doc.SelectNodes("/cdcom/component");
-                foreach (XmlNode component in componentNodes)
-                {
-                    string internalId = "C0";
-                    if ((component as XmlElement).HasAttribute("id"))
-                        internalId = component.Attributes["id"].InnerText;
-                    string path = component.Attributes["path"].InnerText;
+            ComponentDescription description = loader.GetDescriptions()[0];
+            description.ID = "C0";
+            componentDescriptions.Add(description);
 
-                    XmlLoader loader = new CircuitDiagram.IO.XmlLoader();
-                    loader.Load(new FileStream(path, FileMode.Open));
+            // First icon is default
+            if (iconPaths.Count > 0)
+            {
+                byte[] iconData = File.ReadAllBytes(iconPaths[0]);
+                description.Metadata.IconData = iconData;
+                description.Metadata.IconMimeType = "image/png";
+            }
 
-                    ComponentDescription description = loader.GetDescriptions()[0];
-                    description.ID = internalId;
-
-                    foreach (XmlNode iconNode in component.SelectNodes("icon"))
-                    {
-                        if ((iconNode as XmlElement).HasAttribute("configuration"))
-                        {
-                            ComponentConfiguration matchedConfiguration = description.Metadata.Configurations.FirstOrDefault(configuration => configuration.Name == iconNode.Attributes["configuration"].InnerText);
-                            if (matchedConfiguration != null)
-                            {
-                                byte[] iconData = File.ReadAllBytes(iconNode.InnerText);
-                                matchedConfiguration.IconData = iconData;
-                                matchedConfiguration.IconMimeType = "image/png";
-                            }
-                        }
-                        else
-                        {
-                            byte[] iconData = File.ReadAllBytes(iconNode.InnerText);
-                            description.Metadata.IconData = iconData;
-                            description.Metadata.IconMimeType = "image/png";
-                        }
-                    }
-
-                    componentDescriptions.Add(description);
-                }
+            // Map remaining icons to configurations
+            for (int i = 1; i < iconPaths.Count && i < description.Metadata.Configurations.Count; i++)
+            {
+                ComponentConfiguration matchedConfiguration = description.Metadata.Configurations[i];
+                byte[] iconData = File.ReadAllBytes(iconPaths[i]);
+                matchedConfiguration.IconData = iconData;
+                matchedConfiguration.IconMimeType = "image/png";
             }
 
             FileStream stream = new FileStream(output, FileMode.Create, FileAccess.Write);
 
             X509Certificate2 certificate = null;
-            if (sign)
+            if (sign && certThumb == null)
             {
                 X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
 		        store.Open(OpenFlags.OpenExistingOnly);
@@ -114,6 +101,13 @@ namespace cdcompile
 		        X509Certificate2Collection collection = X509Certificate2UI.SelectFromCollection(fcollection, "Select an X509 Certificate",
                     "Choose a certificate to sign your component with.", X509SelectionFlag.SingleSelection, handle);
                 certificate = collection[0];
+            }
+            else if (sign)
+            {
+                X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
+                store.Open(OpenFlags.OpenExistingOnly);
+                X509Certificate2Collection fcollection = (X509Certificate2Collection)store.Certificates;
+                certificate = fcollection.Find(X509FindType.FindByThumbprint, certThumb, false)[0];
             }
 
             CircuitDiagram.IO.BinaryWriter.BinaryWriterSettings settings = new CircuitDiagram.IO.BinaryWriter.BinaryWriterSettings();

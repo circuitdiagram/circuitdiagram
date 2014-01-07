@@ -80,6 +80,8 @@ namespace CircuitDiagram
                         item.ToName = description.ComponentName;
                         item.ToGUID = description.Metadata.GUID;
                         item.ToIcon = configuration.Icon as ImageSource;
+                        if (configuration.Icon == null)
+                            item.ToIcon = description.Metadata.Icon as ImageSource;
                         item.ToConfiguration = configuration.Name;
                         cbxRepresentation.Items.Add(item);
                     }
