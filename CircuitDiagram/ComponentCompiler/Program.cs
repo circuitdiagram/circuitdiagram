@@ -29,6 +29,7 @@ using CircuitDiagram.Components;
 using CircuitDiagram.IO;
 using CircuitDiagram.Components.Description;
 using System.Security.Cryptography.X509Certificates;
+using System.Diagnostics;
 
 namespace cdcompile
 {
@@ -38,10 +39,12 @@ namespace cdcompile
         {
             string output = null;
             string config = null;
+            bool sign = false;
             bool help = false;
             var p = new OptionSet() {
                 { "o|output=", v => output = v },
                 { "i|input|config=", v => config = v },
+                { "sign", v => sign = v != null },
    	            { "h|?|help",   v => help = v != null },
             };
             List<string> extra = p.Parse(args);
@@ -49,7 +52,6 @@ namespace cdcompile
             List<ComponentDescription> componentDescriptions = new List<ComponentDescription>();
             List<BinaryResource> binaryResources = new List<BinaryResource>();
 
-            string keyPath = null;
             if (config != null && File.Exists(config))
             {
                 XmlDocument doc = new XmlDocument();
@@ -58,7 +60,6 @@ namespace cdcompile
                 XmlElement root = doc.SelectSingleNode("/cdcom") as XmlElement;
                 string markupVersion = (root.HasAttribute("markupversion") ? root.Attributes["markupversion"].InnerText : null);
                 string xUiApp = (root.HasAttribute("x-uiapp") ? root.Attributes["x-uiapp"].InnerText : null);
-                keyPath = (root.HasAttribute("key") ? root.Attributes["key"].InnerText : null);
 
                 XmlNodeList componentNodes = doc.SelectNodes("/cdcom/component");
                 foreach (XmlNode component in componentNodes)
@@ -100,12 +101,8 @@ namespace cdcompile
 
             FileStream stream = new FileStream(output, FileMode.Create, FileAccess.Write);
 
-            string keyString = null;
-            if (keyPath != null && File.Exists(keyPath))
-                keyString = File.ReadAllText(keyPath);
-
             X509Certificate2 certificate = null;
-            if (keyString != null)
+            if (sign)
             {
                 X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
 		        store.Open(OpenFlags.OpenExistingOnly);
@@ -113,7 +110,9 @@ namespace cdcompile
 		        //Put certificates from the store into a collection so user can select one.
 		        X509Certificate2Collection fcollection = (X509Certificate2Collection)store.Certificates;
 
-		        X509Certificate2Collection collection = X509Certificate2UI.SelectFromCollection(fcollection, "Select an X509 Certificate", "Choose a certificate to examine.", X509SelectionFlag.SingleSelection);
+                IntPtr handle = Process.GetCurrentProcess().MainWindowHandle;
+		        X509Certificate2Collection collection = X509Certificate2UI.SelectFromCollection(fcollection, "Select an X509 Certificate",
+                    "Choose a certificate to sign your component with.", X509SelectionFlag.SingleSelection, handle);
                 certificate = collection[0];
             }
 
