@@ -2,11 +2,19 @@
 <component xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml" version="1.0" target="1.2">
   <declaration>
     <meta name="name" value="Capacitor" />
+    <meta name="version" value="2.0" />
     <meta name="minsize" value="50" />
     <meta name="author" value="Circuit Diagram" />
     <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
     <meta name="guid" value="154b7831-58e6-4126-b582-8c1cc2bdeb13" />
     <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+
+    <property name="Show" type="enum" default="Capacitance" serialize="show" display="Show">
+      <option>Text</option>
+      <option>Capacitance</option>
+    </property>
+
+    <property name="Text" type="string" default="C1" serialize="text" display="Text" />
 
     <property name="Capacitance" type="double" default="0.00047" serialize="capacitance" display="Capacitance">
       <formatting>
@@ -90,11 +98,19 @@
     </group>
 
     <!-- Capacitance -->
-    <group conditions="_Horizontal,!$Type(eq_Variable),!$Type(eq_Trimmer)">
+    <group conditions="_Horizontal,!$Type(eq_Variable),!$Type(eq_Trimmer),$Show(eq_Capacitance)">
       <text value="$Capacitance" x="_Middle" y="_Middle-18" align="BottomCentre" />
     </group>
-    <group conditions="!_Horizontal,!$Type(eq_Variable),!$Type(eq_Trimmer)">
+    <group conditions="!_Horizontal,!$Type(eq_Variable),!$Type(eq_Trimmer),$Show(eq_Capacitance)">
       <text value="$Capacitance" x="_Middle-20" y="_Middle" align="CentreRight" />
+    </group>
+    
+    <!-- Text -->
+    <group conditions="_Horizontal,!$Type(eq_Variable),!$Type(eq_Trimmer),$Show(eq_Text)">
+      <text value="$Text" x="_Middle" y="_Middle-18" align="BottomCentre" />
+    </group>
+    <group conditions="!_Horizontal,!$Type(eq_Variable),!$Type(eq_Trimmer),$Show(eq_Text)">
+      <text value="$Text" x="_Middle-20" y="_Middle" align="CentreRight" />
     </group>
   </render>
 </component>
