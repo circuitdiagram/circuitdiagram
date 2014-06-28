@@ -13,7 +13,7 @@
     </Window.Resources>
     <Grid>
         <ListBox HorizontalAlignment="Left" Margin="12,12,0,41" Name="lbxComponents" Width="163" DisplayMemberPath="ComponentName" ItemsSource="{Binding}" IsSynchronizedWithCurrentItem="True" />
-        <Button Content="Close" Height="23" HorizontalAlignment="Right" Margin="0,0,12,12" Name="btnClose" VerticalAlignment="Bottom" Width="75" Click="btnClose_Click" />
+        <Button Content="Close" Height="23" HorizontalAlignment="Right" Margin="0,0,12,12" Name="btnClose" VerticalAlignment="Bottom" Width="75" Click="btnClose_Click" IsCancel="True" />
         <Grid Margin="181,12,12,41">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="120*" />

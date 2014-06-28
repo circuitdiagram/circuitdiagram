@@ -4,7 +4,7 @@
         Title="About Circuit Diagram" Height="258" Width="478" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" ResizeMode="NoResize">
     <Grid>
 
-        <Button Content="Close" Margin="0,0,12,12" Name="btnClose" Height="23" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="button1_Click" />
+        <Button Content="Close" Margin="0,0,12,12" Name="btnClose" Height="23" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="button1_Click" IsCancel="True" />
         <StackPanel Margin="215,69,10,0" Name="stpInformation" Height="91" VerticalAlignment="Top">
             <StackPanel Orientation="Horizontal">
                 <Label Content="Version:" Height="28" Name="lblVersion" HorizontalAlignment="Left" />
