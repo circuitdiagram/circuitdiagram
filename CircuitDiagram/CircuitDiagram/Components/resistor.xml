@@ -2,12 +2,20 @@
 <component xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml" version="1.0" target="1.2">
   <declaration>
     <meta name="name" value="Resistor" />
+    <meta name="version" value="2.0" />
     <meta name="minsize" value="50" />
     <meta name="author" value="Circuit Diagram" />
     <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
     <meta name="guid" value="dab6d52b-51a0-49b0-bc40-3cda966148aa" />
     <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
-    
+
+    <property name="Show" type="enum" default="Resistance" serialize="show" display="Show">
+      <option>Text</option>
+      <option>Resistance</option>
+    </property>
+
+    <property name="Text" type="string" default="R1" serialize="text" display="Text" />
+
     <property name="Resistance" type="double" default="4700" serialize="resistance" display="Resistance">
       <formatting>
         <format conditions="$Resistance(lt_1000)" value="$Resistance  \u2126" />
@@ -15,7 +23,7 @@
         <format value="$Resistance(div_1000000)(round_1)  M\u2126" />
       </formatting>
     </property>
-    
+
     <property name="Type" type="enum" default="Standard" serialize="t" display="Type">
       <option>Standard</option>
       <option>Potentiometer</option>
@@ -23,11 +31,11 @@
       <option>Thermistor</option>
       <option>Variable</option>
     </property>
-    
+
     <flags conditions="$Type(eq_Potentiometer)">
       <option>MiddleMustAlign</option>
     </flags>
-    
+
     <configurations>
       <configuration name="Resistor" value="Type:Standard" implements="resistor" />
       <configuration name="Variable Resistor" value="Type:Variable" implements="variableresistor" />
@@ -35,7 +43,7 @@
       <configuration name="Thermistor" value="Type:Thermistor" implements="thermistor" />
       <configuration name="LDR" value="Type:LDR" implements="ldr" />
     </configurations>
-    
+
   </declaration>
   <connections>
     <group conditions="_Horizontal">
@@ -54,7 +62,7 @@
       <rect x="_Middle-20x" y="_Start-8y" width="40" height="16" />
       <line start="_Middle+20x" end="_End" />
     </group>
-    <group conditions="_Horizontal,!$Type(eq_Variable),!$Type(eq_Thermistor),!$Type(eq_LDR)">
+    <group conditions="_Horizontal,!$Type(eq_Variable),!$Type(eq_Thermistor),!$Type(eq_LDR),$Show(eq_Resistance)">
       <text value="$Resistance" x="_Middle" y="_Start-17" align="CentreCentre" />
     </group>
     <group conditions="!_Horizontal">
@@ -62,10 +70,24 @@
       <rect x="_Start-8x" y="_Middle-20y" width="16" height="40" />
       <line start="_Middle+20y" end="_End" />
     </group>
-    <group conditions="!_Horizontal,!$Type(eq_Variable),!$Type(eq_Thermistor),!$Type(eq_LDR)">
+    <group conditions="!_Horizontal,!$Type(eq_Variable),!$Type(eq_Thermistor),!$Type(eq_LDR),$Show(eq_Resistance)">
       <text value="$Resistance" x="_Start-14" y="_Middle" align="CentreRight" />
     </group>
-    
+
+    <!-- Text -->
+    <group conditions="_Horizontal,$Show(eq_Text),!$Type(eq_LDR)">
+      <text value="$Text" x="_Middle" y="_Start-17" align="CentreCentre" />
+    </group>
+    <group conditions="!_Horizontal,$Show(eq_Text),!$Type(eq_LDR)">
+      <text value="$Text" x="_Start-14" y="_Middle" align="CentreRight" />
+    </group>
+    <group conditions="_Horizontal,$Show(eq_Text),$Type(eq_LDR)">
+      <text value="$Text" x="_Middle" y="_Start-33" align="CentreCentre" />
+    </group>
+    <group conditions="!_Horizontal,$Show(eq_Text),$Type(eq_LDR)">
+      <text value="$Text" x="_Start-30" y="_Middle" align="CentreRight" />
+    </group>
+
     <!-- Potentiometer -->
     <group conditions="_Horizontal,$Type(eq_Potentiometer)">
       <path start="_Middle-20x" data="m 14,16 l 6,-6 l 6,6 m -6,-5 l 0,18" />
@@ -73,7 +95,7 @@
     <group conditions="!_Horizontal,$Type(eq_Potentiometer)">
       <path start="_Middle-20y" data="m 16,14 l -6,6 l 6,6 m -5,-6 l 18,0" />
     </group>
-    
+
     <!-- Variable -->
     <group conditions="_Horizontal,$Type(eq_Variable)">
       <path start="_Middle-20x" data="m 3,17 l 32,-35 m -6,0 l 6,0 l 0,6" />
@@ -81,7 +103,7 @@
     <group conditions="!_Horizontal,$Type(eq_Variable)">
       <path start="_Middle" data="m -17,17 l 35,-32 m 0,6 l 0,-6 l -6,0" />
     </group>
-    
+
     <!-- Thermistor -->
     <group conditions="_Horizontal,$Type(eq_Thermistor)">
       <path start="_Middle" data="m -20,17 l 10,0 l 32,-35" />
@@ -89,7 +111,7 @@
     <group conditions="!_Horizontal,$Type(eq_Thermistor)">
       <path start="_Middle" data="m -17,-20 l 0,10 l 35,32" />
     </group>
-    
+
     <!-- LDR -->
     <group conditions="_Horizontal,$Type(eq_LDR)">
       <ellipse centre="_Middle" radiusx="26" radiusy="26" />

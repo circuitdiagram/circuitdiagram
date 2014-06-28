@@ -2,6 +2,7 @@
 <component version="1.0" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
   <declaration>
     <meta name="name" value="External Connection" />
+    <meta name="version" value="2.0" />
     <meta name="minsize" value="10" />
     <meta name="author" value="Circuit Diagram" />
     <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
@@ -9,8 +10,13 @@
     <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/misc" />
     <meta name="implementitem" value="extconnection" />
 
-    <property name="Text" type="string" default="Input" serialize="text" display="Text" />
+    <property name="Text" type="string" default="" serialize="text" display="Text" />
     <property name="TextPosition" type="bool" default="false" serialize="textpos" display="Reverse text position" />
+
+    <configurations>
+      <configuration name="External Input" value="TextPosition:false" implements="extconnection" />
+      <configuration name="External Output" value="TextPosition:true" implements="extconnection" />
+    </configurations>
   </declaration>
   <connections>
     <group>

@@ -1,0 +1,293 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component version="1.1" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
+  <declaration>
+    <meta name="name" value="Integrated Circuit" />
+    <meta name="version" value="2.0" />
+    <meta name="minsize" value="120" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="E5F38005-4715-44A2-B746-A25D3B6C1980" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+    <meta name="implementitem" value="microcontroller" />
+
+    <property name="size" type="enum" default="8" serialize="sz" display="Size">
+      <option>4</option>
+      <option>6</option>
+      <option>8</option>
+      <option>10</option>
+      <option>12</option>
+      <option>14</option>
+      <option>16</option>
+      <option>18</option>
+      <option>20</option>
+      <option>22</option>
+      <option>24</option>
+      <option>26</option>
+      <option>28</option>
+    </property>
+
+    <property name="pin0" type="string" default="" serialize="p0" display="Pin 0" />
+    <property name="pin1" type="string" default="" serialize="p1" display="Pin 1" />
+    <property name="pin2" type="string" default="" serialize="p2" display="Pin 2" />
+    <property name="pin3" type="string" default="" serialize="p3" display="Pin 3" />
+    <property name="pin4" type="string" default="" serialize="p4" display="Pin 4" />
+    <property name="pin5" type="string" default="" serialize="p5" display="Pin 5" />
+    <property name="pin6" type="string" default="" serialize="p6" display="Pin 6" />
+    <property name="pin7" type="string" default="" serialize="p7" display="Pin 7" />
+    <property name="pin8" type="string" default="" serialize="p8" display="Pin 8" />
+    <property name="pin9" type="string" default="" serialize="p9" display="Pin 9" />
+    <property name="pin10" type="string" default="" serialize="p10" display="Pin 10" />
+    <property name="pin11" type="string" default="" serialize="p11" display="Pin 11" />
+    <property name="pin12" type="string" default="" serialize="p12" display="Pin 12" />
+    <property name="pin13" type="string" default="" serialize="p13" display="Pin 13" />
+    <property name="pin14" type="string" default="" serialize="p14" display="Pin 14" />
+    <property name="pin15" type="string" default="" serialize="p15" display="Pin 15" />
+    <property name="pin16" type="string" default="" serialize="p16" display="Pin 16" />
+    <property name="pin17" type="string" default="" serialize="p17" display="Pin 17" />
+    <property name="pin18" type="string" default="" serialize="p18" display="Pin 18" />
+    <property name="pin19" type="string" default="" serialize="p19" display="Pin 19" />
+    <property name="pin20" type="string" default="" serialize="p20" display="Pin 20" />
+    <property name="pin21" type="string" default="" serialize="p21" display="Pin 21" />
+    <property name="pin22" type="string" default="" serialize="p22" display="Pin 22" />
+    <property name="pin23" type="string" default="" serialize="p23" display="Pin 23" />
+    <property name="pin24" type="string" default="" serialize="p24" display="Pin 24" />
+    <property name="pin25" type="string" default="" serialize="p25" display="Pin 25" />
+    <property name="pin26" type="string" default="" serialize="p26" display="Pin 26" />
+    <property name="pin27" type="string" default="" serialize="p27" display="Pin 27" />
+
+    <flags>
+      <option>horizontalonly</option>
+    </flags>
+  </declaration>
+  <connections>
+    <group>
+      <connection start="_Start-80y" end="_Middle-48x-80y" edge="Start" />
+      <connection start="_Start-60y" end="_Middle-48x-60y" edge="Start" />
+
+      <connection start="_Middle+48x-80y" end="_End-80y" edge="End" />
+      <connection start="_Middle+48x-60y" end="_End-60y" edge="End" />
+    </group>
+
+    <group conditions="$size==6||$size==8||$size==10||$size==12||$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+      <connection start="_Start-40y" end="_Middle-48x-40y" edge="Start" />
+      <connection start="_Middle+48x-40y" end="_End-40y" edge="End" />
+    </group>
+
+    <group conditions="$size==8||$size==10||$size==12||$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+      <connection start="_Start-20y" end="_Middle-48x-20y" edge="Start" />
+      <connection start="_Middle+48x-20y" end="_End-20y" edge="End" />
+    </group>
+
+    <group conditions="$size==10||$size==12||$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+      <connection start="_Start" end="_Middle-48x" edge="Start" />
+      <connection start="_Middle+48x" end="_End" edge="End" />
+    </group>
+
+    <group conditions="$size==12||$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+      <connection start="_Start+20y" end="_Middle-48x+20y" edge="Start" />
+      <connection start="_Middle+48x+20y" end="_End+20y" edge="End" />
+    </group>
+
+    <group conditions="$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+      <connection start="_Start+40y" end="_Middle-48x+40y" edge="Start" />
+      <connection start="_Middle+48x+40y" end="_End+40y" edge="End" />
+    </group>
+
+    <group conditions="$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+      <connection start="_Start+60y" end="_Middle-48x+60y" edge="Start" />
+      <connection start="_Middle+48x+60y" end="_End+60y" edge="End" />
+    </group>
+
+    <group conditions="$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+      <connection start="_Start+80y" end="_Middle-48x+80y" edge="Start" />
+      <connection start="_Middle+48x+80y" end="_End+80y" edge="End" />
+    </group>
+
+    <group conditions="$size==20||$size==22||$size==24||$size==26||$size==28">
+      <connection start="_Start+100y" end="_Middle-48x+100y" edge="Start" />
+      <connection start="_Middle+48x+100y" end="_End+100y" edge="End" />
+    </group>
+
+    <group conditions="$size==22||$size==24||$size==26||$size==28">
+      <connection start="_Start+120y" end="_Middle-48x+120y" edge="Start" />
+      <connection start="_Middle+48x+120y" end="_End+120y" edge="End" />
+    </group>
+
+    <group conditions="$size==24||$size==26||$size==28">
+      <connection start="_Start+140y" end="_Middle-48x+140y" edge="Start" />
+      <connection start="_Middle+48x+140y" end="_End+140y" edge="End" />
+    </group>
+
+    <group conditions="$size==26||$size==28">
+      <connection start="_Start+160y" end="_Middle-48x+160y" edge="Start" />
+      <connection start="_Middle+48x+160y" end="_End+160y" edge="End" />
+    </group>
+
+    <group conditions="$size==28">
+      <connection start="_Start+180y" end="_Middle-48x+180y" edge="Start" />
+      <connection start="_Middle+48x+180y" end="_End+180y" edge="End" />
+    </group>
+  </connections>
+  <render>
+    <group conditions="$size==4">
+      <rect x="_Middle-50" y="_Middle-90" width="100" height="40" />
+    </group>
+    <group conditions="$size==6">
+      <rect x="_Middle-50" y="_Middle-90" width="100" height="60" />
+    </group>
+    <group conditions="$size==8">
+      <rect x="_Middle-50" y="_Middle-90" width="100" height="80" />
+    </group>
+    <group conditions="$size==10">
+      <rect x="_Middle-50" y="_Middle-90" width="100" height="100" />
+    </group>
+    <group conditions="$size==12">
+      <rect x="_Middle-50" y="_Middle-90" width="100" height="120" />
+    </group>
+    <group conditions="$size==14">
+      <rect x="_Middle-50" y="_Middle-90" width="100" height="140" />
+    </group>
+    <group conditions="$size==16">
+      <rect x="_Middle-50" y="_Middle-90" width="100" height="160" />
+    </group>
+    <group conditions="$size==18">
+      <rect x="_Middle-50" y="_Middle-90" width="100" height="180" />
+    </group>
+    <group conditions="$size==20">
+      <rect x="_Middle-50" y="_Middle-90" width="100" height="200" />
+    </group>
+    <group conditions="$size==22">
+      <rect x="_Middle-50" y="_Middle-90" width="100" height="220" />
+    </group>
+    <group conditions="$size==24">
+      <rect x="_Middle-50" y="_Middle-90" width="100" height="240" />
+    </group>
+    <group conditions="$size==26">
+      <rect x="_Middle-50" y="_Middle-90" width="100" height="260" />
+    </group>
+    <group conditions="$size==28">
+      <rect x="_Middle-50" y="_Middle-90" width="100" height="280" />
+    </group>
+
+    <group>
+      <line start="_Start-80y" end="_Middle-50x-80y" />
+      <line start="_Start-60y" end="_Middle-50x-60y" />
+      <line start="_Middle+50x-80y" end="_End-80y" />
+      <line start="_Middle+50x-60y" end="_End-60y" />
+
+      <text x="_Middle-46" y="_Middle-80" align="CentreLeft" size="large" value="$pin0" />
+      <text x="_Middle-46" y="_Middle-60" align="CentreLeft" size="large" value="$pin2" />
+
+      <text x="_Middle+46" y="_Middle-80" align="CentreRight" size="large" value="$pin1" />
+      <text x="_Middle+46" y="_Middle-60" align="CentreRight" size="large" value="$pin3" />
+    </group>
+
+    <group conditions="$size==6||$size==8||$size==10||$size==12||$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+      <line start="_Start-40y" end="_Middle-50x-40y" />
+      <line start="_Middle+50x-40y" end="_End-40y" />
+
+      <text x="_Middle-46" y="_Middle-40" align="CentreLeft" size="large" value="$pin4" />
+
+      <text x="_Middle+46" y="_Middle-40" align="CentreRight" size="large" value="$pin5" />
+    </group>
+
+    <group conditions="$size==8||$size==10||$size==12||$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+      <line start="_Start-20y" end="_Middle-50x-20y" />
+      <line start="_Middle+50x-20y" end="_End-20y" />
+
+      <text x="_Middle-46" y="_Middle-20" align="CentreLeft" size="large" value="$pin6" />
+
+      <text x="_Middle+46" y="_Middle-20" align="CentreRight" size="large" value="$pin7" />
+    </group>
+
+    <group conditions="$size==10||$size==12||$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+      <line start="_Start" end="_Middle-50x" />
+      <line start="_Middle+50x" end="_End" />
+
+      <text x="_Middle-46" y="_Middle" align="CentreLeft" size="large" value="$pin8" />
+
+      <text x="_Middle+46" y="_Middle" align="CentreRight" size="large" value="$pin9" />
+    </group>
+
+    <group conditions="$size==12||$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+      <line start="_Start+20y" end="_Middle-50x+20y" />
+      <line start="_Middle+50x+20y" end="_End+20y" />
+
+      <text x="_Middle-46" y="_Middle+20" align="CentreLeft" size="large" value="$pin10" />
+
+      <text x="_Middle+46" y="_Middle+20" align="CentreRight" size="large" value="$pin11" />
+    </group>
+
+    <group conditions="$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+      <line start="_Start+40y" end="_Middle-50x+40y" />
+      <line start="_Middle+50x+40y" end="_End+40y" />
+
+      <text x="_Middle-46" y="_Middle+40" align="CentreLeft" size="large" value="$pin12" />
+
+      <text x="_Middle+46" y="_Middle+40" align="CentreRight" size="large" value="$pin13" />
+    </group>
+
+    <group conditions="$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+      <line start="_Start+60y" end="_Middle-50x+60y" />
+      <line start="_Middle+50x+60y" end="_End+60y" />
+
+      <text x="_Middle-46" y="_Middle+60" align="CentreLeft" size="large" value="$pin14" />
+
+      <text x="_Middle+46" y="_Middle+60" align="CentreRight" size="large" value="$pin15" />
+    </group>
+
+    <group conditions="$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+      <line start="_Start+80y" end="_Middle-50x+80y" />
+      <line start="_Middle+50x+80y" end="_End+80y" />
+
+      <text x="_Middle-46" y="_Middle+80" align="CentreLeft" size="large" value="$pin16" />
+
+      <text x="_Middle+46" y="_Middle+80" align="CentreRight" size="large" value="$pin17" />
+    </group>
+
+    <group conditions="$size==20||$size==22||$size==24||$size==26||$size==28">
+      <line start="_Start+100y" end="_Middle-50x+100y" />
+      <line start="_Middle+50x+100y" end="_End+100y" />
+
+      <text x="_Middle-46" y="_Middle+100" align="CentreLeft" size="large" value="$pin18" />
+
+      <text x="_Middle+46" y="_Middle+100" align="CentreRight" size="large" value="$pin19" />
+    </group>
+
+    <group conditions="$size==22||$size==24||$size==26||$size==28">
+      <line start="_Start+120y" end="_Middle-50x+120y" />
+      <line start="_Middle+50x+120y" end="_End+120y" />
+
+      <text x="_Middle-46" y="_Middle+120" align="CentreLeft" size="large" value="$pin20" />
+
+      <text x="_Middle+46" y="_Middle+120" align="CentreRight" size="large" value="$pin21" />
+    </group>
+
+    <group conditions="$size==24||$size==26||$size==28">
+      <line start="_Start+140y" end="_Middle-50x+140y" />
+      <line start="_Middle+50x+140y" end="_End+140y" />
+
+      <text x="_Middle-46" y="_Middle+140" align="CentreLeft" size="large" value="$pin22" />
+
+      <text x="_Middle+46" y="_Middle+140" align="CentreRight" size="large" value="$pin23" />
+    </group>
+
+    <group conditions="$size==26||$size==28">
+      <line start="_Start+160y" end="_Middle-50x+160y" />
+      <line start="_Middle+50x+160y" end="_End+160y" />
+
+      <text x="_Middle-46" y="_Middle+160" align="CentreLeft" size="large" value="$pin24" />
+
+      <text x="_Middle+46" y="_Middle+160" align="CentreRight" size="large" value="$pin25" />
+    </group>
+
+    <group conditions="$size==28">
+      <line start="_Start+180y" end="_Middle-50x+180y" />
+      <line start="_Middle+50x+180y" end="_End+180y" />
+
+      <text x="_Middle-46" y="_Middle+180" align="CentreLeft" size="large" value="$pin26" />
+
+      <text x="_Middle+46" y="_Middle+180" align="CentreRight" size="large" value="$pin27" />
+    </group>
+  </render>
+</component>
