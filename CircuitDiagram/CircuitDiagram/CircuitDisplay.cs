@@ -154,17 +154,7 @@ namespace CircuitDiagram
             this.Width = Document.Size.Width;
             this.Height = Document.Size.Height;
 
-            using (DrawingContext dc = m_backgroundVisual.RenderOpen())
-            {
-                GuidelineSet guidelines = new GuidelineSet();
-                guidelines.GuidelinesX.Add(0d);
-                guidelines.GuidelinesY.Add(0d);
-                dc.PushGuidelineSet(guidelines);
-
-                dc.DrawRectangle(Brushes.White, null, new Rect(Document.Size));
-
-                dc.Pop();
-            }
+            RenderBackground();
 
             DrawConnections();
         }
