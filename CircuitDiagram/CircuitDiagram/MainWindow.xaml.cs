@@ -40,6 +40,9 @@ using TaskDialogInterop;
 using System.Diagnostics;
 using CircuitDiagram.Components.Description;
 using System.Security.Cryptography.X509Certificates;
+using System.Windows.Xps;
+using System.IO.Packaging;
+using System.Windows.Xps.Packaging;
 
 namespace CircuitDiagram
 {
@@ -1164,7 +1167,7 @@ namespace CircuitDiagram
             Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog();
             sfd.Title = "Export";
 
-            string filter = "PNG (*.png)|*.png|Scalable Vector Graphics (*.svg)|*.svg";
+            string filter = "PNG (*.png)|*.png|Scalable Vector Graphics (*.svg)|*.svg|XPS (*.xps)|*.xps";
             // Add plugin exporters
             foreach (IDocumentWriter pluginWriter in PluginManager.EnabledExportWriters)
                 filter += String.Format("|{0} (*{1})|*{1}", pluginWriter.FileTypeName, pluginWriter.FileTypeExtension);
@@ -1201,6 +1204,20 @@ namespace CircuitDiagram
                             memoryStream.WriteTo(fileStream);
                             fileStream.Close();
                         }
+                    }
+                }
+                else if (extension == ".xps")
+                {
+                    WPFRenderer renderer = new WPFRenderer();
+                    renderer.Begin();
+                    circuitDisplay.Document.Render(renderer);
+                    renderer.End();
+                    FixedDocument doc = renderer.GetDocument(new Size(circuitDisplay.Document.Size.Width, circuitDisplay.Document.Size.Height));
+
+                    using (XpsDocument xdoc = new XpsDocument(sfd.FileName, FileAccess.Write))
+                    {
+                        XpsDocumentWriter writer = XpsDocument.CreateXpsDocumentWriter(xdoc);
+                        writer.Write(doc.DocumentPaginator);
                     }
                 }
                 else if (extension == ".emf") // Disabled
