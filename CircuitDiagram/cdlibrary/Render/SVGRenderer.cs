@@ -56,7 +56,7 @@ namespace CircuitDiagram.Render
 
         public void Begin()
         {
-            string cdlibraryVersion = System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
+            string cdlibraryVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             Writer.WriteStartDocument();
             Writer.WriteComment(" Generator: " + (IO.ApplicationInfo.FullName != null ? IO.ApplicationInfo.FullName : "") + ", cdlibrary.dll " + cdlibraryVersion + " ");

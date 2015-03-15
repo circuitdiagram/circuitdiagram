@@ -65,6 +65,11 @@ namespace CircuitDiagram.IO.CDDX
         public IODocument Document { get; private set; }
 
         /// <summary>
+        /// Gets the thumbnail for this circuit.
+        /// </summary>
+        public Stream Thumbnail { get; private set; }
+
+        /// <summary>
         /// Gets details of the load result.
         /// </summary>
         public DocumentLoadResult LoadResult { get; private set; }
@@ -101,6 +106,9 @@ namespace CircuitDiagram.IO.CDDX
 
                 // Load metadata
                 ReadMetadata();
+
+                // Load thumbnail
+                ReadThumbnail();
 
                 return success;
             }
@@ -443,6 +451,25 @@ namespace CircuitDiagram.IO.CDDX
                     }
                 }
                 catch { }
+            }
+        }
+
+        /// <summary>
+        /// Reads the thumbnail part of a CDDX file.
+        /// </summary>
+        void ReadThumbnail()
+        {
+            PackageRelationship coreRelationship = m_package.GetRelationshipsByType(RelationshipTypes.Thumbnail).FirstOrDefault();
+            if (coreRelationship != null)
+            {
+                PackagePart corePart = m_package.GetPart(coreRelationship.TargetUri);
+                try
+                {
+                    Thumbnail = corePart.GetStream();
+                }
+                catch
+                {
+                }
             }
         }
     }
