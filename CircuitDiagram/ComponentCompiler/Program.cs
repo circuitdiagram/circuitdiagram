@@ -73,8 +73,23 @@ namespace cdcompile
             if (iconPaths.Count > 0)
             {
                 byte[] iconData = File.ReadAllBytes(iconPaths[0]);
-                description.Metadata.IconData = iconData;
-                description.Metadata.IconMimeType = "image/png";
+
+
+                description.Metadata.Icon = new MultiResolutionImage();
+                description.Metadata.Icon.Add(new SingleResolutionImage() { Data = iconData, MimeType = "image/png" });
+
+                // Icons with same base name are different resolutions
+                string baseName = GetIconBaseName(iconPaths[0]);
+                if (baseName != null)
+                {
+                    var otherResolutions = iconPaths.Where(ic => ic != iconPaths[0] && GetIconBaseName(ic) == baseName);
+
+                    foreach(var otherResolution in otherResolutions)
+                    {
+                        iconData = File.ReadAllBytes(otherResolution);
+                        description.Metadata.Icon.Add(new SingleResolutionImage() { Data = iconData, MimeType = "image/png" });
+                    }
+                }
             }
 
             // Map remaining icons to configurations
@@ -82,8 +97,8 @@ namespace cdcompile
             {
                 ComponentConfiguration matchedConfiguration = description.Metadata.Configurations[i];
                 byte[] iconData = File.ReadAllBytes(iconPaths[i]);
-                matchedConfiguration.IconData = iconData;
-                matchedConfiguration.IconMimeType = "image/png";
+                matchedConfiguration.Icon = new MultiResolutionImage();
+                matchedConfiguration.Icon.Add(new SingleResolutionImage() { Data = iconData, MimeType = "image/png" });
             }
 
             FileStream stream = new FileStream(output, FileMode.Create, FileAccess.Write);
@@ -117,6 +132,16 @@ namespace cdcompile
             writer.Resources.AddRange(binaryResources);
             writer.Write();
             stream.Flush();
+        }
+
+        private static string GetIconBaseName(string path)
+        {
+            string fileName = Path.GetFileNameWithoutExtension(path);
+            int pos = fileName.LastIndexOf("_");
+            if (pos > 0)
+                return fileName.Substring(0, pos);
+            else
+                return null;
         }
     }
 }

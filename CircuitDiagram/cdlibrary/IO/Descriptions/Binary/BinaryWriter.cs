@@ -268,14 +268,22 @@ namespace CircuitDiagram.IO
                         metadataWriter.WriteNullString(description.Metadata.AdditionalInformation);
                         metadataWriter.WriteNullString(description.Metadata.ImplementSet);
                         metadataWriter.WriteNullString(description.Metadata.ImplementItem);
-                        //if (description.Metadata.IconData != null)
-                        //{
-                        //    uint iconResourceID = NewResourceID();
-                        //    Resources.Add(new BinaryResource(iconResourceID, description.Metadata.IconMimeType, description.Metadata.IconData));
-                        //    metadataWriter.Write((int)iconResourceID);
-                        //}
-                        //else
-                        //    metadataWriter.Write(-1);
+                        if (description.Metadata.Icon != null)
+                        {
+                            uint iconResourceID = NewResourceID();
+                            foreach(var icon in description.Metadata.Icon)
+                            {
+                                BinaryResource iconResource = new BinaryResource();
+                                iconResource.ID = iconResourceID;
+                                // Only PNG images can be written at the moment
+                                iconResource.ResourceType = IO.Descriptions.BinaryResourceType.PNGImage;
+                                iconResource.Buffer = icon.Data;
+                                Resources.Add(iconResource);
+                            }
+                            metadataWriter.Write((int)iconResourceID);
+                        }
+                        else
+                            metadataWriter.Write(-1);
                         metadataWriter.Write(DateTime.Now.ToBinary());
 
                         writer.Write((ushort)BinaryConstants.ComponentSectionType.Metadata);
@@ -369,14 +377,22 @@ namespace CircuitDiagram.IO
                                 configurationWriter.WriteType(setter.Value);
                             }
 
-                            //if (!Settings.IgnoreIcons && configuration.IconData != null && configuration.IconMimeType != null)
-                            //{
-                            //    uint resourceID = NewResourceID();
-                                //Resources.Add(new BinaryResource(resourceID, configuration.IconMimeType, configuration.IconData));
-                            //    configurationWriter.Write((int)resourceID);
-                            //}
-                            //else
-                            //    configurationWriter.Write(-1);
+                            if (!Settings.IgnoreIcons && configuration.Icon != null)
+                            {
+                                uint iconResourceID = NewResourceID();
+                                foreach (var icon in configuration.Icon)
+                                {
+                                    BinaryResource iconResource = new BinaryResource();
+                                    iconResource.ID = iconResourceID;
+                                    // Only PNG images can be written at the moment
+                                    iconResource.ResourceType = IO.Descriptions.BinaryResourceType.PNGImage;
+                                    iconResource.Buffer = icon.Data;
+                                    Resources.Add(iconResource);
+                                }
+                                configurationWriter.Write((int)iconResourceID);
+                            }
+                            else
+                                configurationWriter.Write(-1);
                         }
 
                         writer.Write((ushort)BinaryConstants.ComponentSectionType.Configurations);
