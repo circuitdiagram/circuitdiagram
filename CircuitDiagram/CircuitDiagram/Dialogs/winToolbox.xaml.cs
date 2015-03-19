@@ -34,13 +34,14 @@ using System.Xml;
 using CircuitDiagram.Components;
 using System.Collections.ObjectModel;
 using CircuitDiagram.Components.Description;
+using MahApps.Metro.Controls;
 
 namespace CircuitDiagram
 {
     /// <summary>
     /// Interaction logic for winToolbox.xaml
     /// </summary>
-    public partial class winToolbox : Window
+    public partial class winToolbox : MetroWindow
     {
         private int CategoryCounter { get; set; }
 
@@ -62,7 +63,7 @@ namespace CircuitDiagram
             public ComponentConfiguration Configuration { get; set; }
             public bool NoConfiguration { get { return Configuration == null; } }
             public bool HasConfiguration { get { return Configuration != null; } }
-            public ImageSource Icon { get; private set; }
+            public MultiResolutionImage Icon { get; private set; }
             public Key ShortcutKey { get; set; }
             public string SortText
             {
@@ -76,9 +77,9 @@ namespace CircuitDiagram
                 ShortcutKey = shortcutKey;
                 
                 if (configuration != null && configuration.Icon != null)
-                    Icon = configuration.Icon as ImageSource;
+                    Icon = configuration.Icon;
                 else
-                    Icon = description.Metadata.Icon as ImageSource;
+                    Icon = description.Metadata.Icon;
 
                 if (description == ComponentHelper.WireDescription)
                     this.ShortcutKey = Key.W;

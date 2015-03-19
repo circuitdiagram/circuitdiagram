@@ -43,13 +43,15 @@ using System.Security.Cryptography.X509Certificates;
 using System.Windows.Xps;
 using System.IO.Packaging;
 using System.Windows.Xps.Packaging;
+using NativeHelpers;
+using MahApps.Metro.Controls;
 
 namespace CircuitDiagram
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : MetroWindow
     {
         #region Variables
         string m_documentTitle;
@@ -86,16 +88,6 @@ namespace CircuitDiagram
 
             ComponentHelper.ComponentUpdatedDelegate = new ComponentUpdatedDelegate(Editor_ComponentUpdated);
             ComponentHelper.CreateEditor = new CreateComponentEditorDelegate(ComponentEditorHelper.CreateEditor);
-            ComponentHelper.LoadIcon = new LoadIconDelegate(
-                (buffer, type) =>
-                {
-                    MemoryStream tempStream = new MemoryStream(buffer);
-                    var tempIcon = new System.Windows.Media.Imaging.BitmapImage();
-                    tempIcon.BeginInit();
-                    tempIcon.StreamSource = tempStream;
-                    tempIcon.EndInit();
-                    return tempIcon;
-                });
 
             circuitDisplay.Document = new CircuitDocument();
             InitializeMetadata(circuitDisplay.Document);
@@ -125,6 +117,32 @@ namespace CircuitDiagram
                 if (System.IO.File.Exists(App.AppArgs[0]))
                     m_docToLoad = App.AppArgs[0];
             }
+
+            DPIChanged += MainWindow_DPIChanged;
+        }
+
+        void MainWindow_DPIChanged(object sender, EventArgs e)
+        {
+            if (CurrentDPI > 96)
+            {
+                BitmapImage img = new BitmapImage();
+                img.BeginInit();
+                img.UriSource = new Uri("pack://application:,,,/Circuit Diagram;component/Images/Select64.png");
+                img.EndInit();
+
+                SelectImageBrush.ImageSource = img;
+            }
+            else
+            {
+                BitmapImage img = new BitmapImage();
+                img.BeginInit();
+                img.UriSource = new Uri("pack://application:,,,/Circuit Diagram;component/Images/Select32.png");
+                img.EndInit();
+
+                SelectImageBrush.ImageSource = img;
+            }
+
+            LoadToolbox();
         }
 
         void MainWindow_ContentRendered(object sender, EventArgs e)
@@ -138,6 +156,8 @@ namespace CircuitDiagram
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            LoadToolbox();
+
             // check for updates
             if (!Settings.Settings.HasSetting("CheckForUpdatesOnStartup"))
                 Settings.Settings.Write("CheckForUpdatesOnStartup", true);
@@ -207,7 +227,7 @@ namespace CircuitDiagram
 #endif
 
 #if DEBUG
-            string debugComponentsDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\..\\..\\Components";
+            string debugComponentsDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\..\\..\\..\\Components";
             if (Directory.Exists(debugComponentsDirectory))
                 componentLocations.Add(debugComponentsDirectory);
 #endif
@@ -219,7 +239,6 @@ namespace CircuitDiagram
 #endif
 
             CircuitDiagram.IO.XmlLoader xmlLoader = new CircuitDiagram.IO.XmlLoader();
-            CircuitDiagram.IO.BinaryLoader binLoader = new CircuitDiagram.IO.BinaryLoader();
 
             // Load XML components
             foreach (string location in componentLocations)
@@ -257,11 +276,14 @@ namespace CircuitDiagram
             {
                 foreach (string file in System.IO.Directory.GetFiles(location, "*.cdcom", SearchOption.TopDirectoryOnly))
                 {
+                    var binLoader = new CircuitDiagram.IO.Descriptions.BinaryDescriptionReader();
+                    binLoader.CertificateChain = certChain;
+
                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
-                        if (binLoader.Load(fs, certChain))
+                        if (binLoader.Read(fs))
                         {
-                            ComponentDescription[] descriptions = binLoader.GetDescriptions();
+                            var descriptions = binLoader.ComponentDescriptions;
                             ComponentDescriptionSource source = new ComponentDescriptionSource(file, new System.Collections.ObjectModel.ReadOnlyCollection<ComponentDescription>(descriptions));
                             foreach (ComponentDescription description in descriptions)
                             {
@@ -288,8 +310,6 @@ namespace CircuitDiagram
             if (conflictingGuid)
                 SetStatusText("Two or more components have the same GUID.");
             #endregion
-
-            LoadToolbox();
 
             #region Load Component Implementation Conversions
 #if PORTABLE
@@ -343,13 +363,13 @@ namespace CircuitDiagram
                                     if (theConfiguration != null)
                                     {
                                         newConversion.ToConfiguration = theConfiguration.Name;
-                                        newConversion.ToIcon = theConfiguration.Icon as ImageSource;
+                                        newConversion.ToIcon = theConfiguration.Icon.LoadedIcon as ImageSource;
                                     }
                                     else
-                                        newConversion.ToIcon = description.Metadata.Icon as ImageSource;
+                                        newConversion.ToIcon = description.Metadata.Icon.LoadedIcon as ImageSource;
                                 }
                                 else
-                                    newConversion.ToIcon = description.Metadata.Icon as ImageSource;
+                                    newConversion.ToIcon = description.Metadata.Icon.LoadedIcon as ImageSource;
 
                                 newCollection.Items.Add(newConversion);
                                 ComponentHelper.SetStandardComponent(newCollection.ImplementationSet, newConversion.ImplementationName, description, theConfiguration);
@@ -447,25 +467,19 @@ namespace CircuitDiagram
                                         newItem.Content = contentBlock;
                                         if (configuration.Icon != null)
                                         {
-                                            Canvas contentCanvas = new Canvas();
-                                            contentCanvas.Width = 45;
-                                            contentCanvas.Height = 45;
-                                            var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = configuration.Icon as ImageSource };
-                                            newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
-                                            newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
-                                            contentCanvas.Children.Add(newImage);
-                                            newItem.Content = contentCanvas;
+                                            var contentIcon = new ToolboxComponent();
+                                            contentIcon.Width = 45;
+                                            contentIcon.Height = 45;
+                                            contentIcon.SetIcon(description.Metadata.Icon.GetBestIcon(CurrentDPI));
+                                            newItem.Content = contentIcon;
                                         }
                                         else if (description.Metadata.Icon != null)
                                         {
-                                            Canvas contentCanvas = new Canvas();
-                                            contentCanvas.Width = 45;
-                                            contentCanvas.Height = 45;
-                                            var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = description.Metadata.Icon as ImageSource };
-                                            newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
-                                            newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
-                                            contentCanvas.Children.Add(newImage);
-                                            newItem.Content = contentCanvas;
+                                            var contentIcon = new ToolboxComponent();
+                                            contentIcon.Width = 45;
+                                            contentIcon.Height = 45;
+                                            contentIcon.SetIcon(description.Metadata.Icon.GetBestIcon(CurrentDPI));
+                                            newItem.Content = contentIcon;
                                         }
 
                                         // Shortcut
@@ -502,14 +516,11 @@ namespace CircuitDiagram
                                     newItem.Content = contentBlock;
                                     if (description.Metadata.Icon != null)
                                     {
-                                        Canvas contentCanvas = new Canvas();
-                                        contentCanvas.Width = 45;
-                                        contentCanvas.Height = 45;
-                                        var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = description.Metadata.Icon as ImageSource };
-                                        newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
-                                        newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
-                                        contentCanvas.Children.Add(newImage);
-                                        newItem.Content = contentCanvas;
+                                        var contentIcon = new ToolboxComponent();
+                                        contentIcon.Width = 45;
+                                        contentIcon.Height = 45;
+                                        contentIcon.SetIcon(description.Metadata.Icon.GetBestIcon(CurrentDPI));
+                                        newItem.Content = contentIcon;
                                     }
 
                                     // Shortcut
@@ -548,25 +559,19 @@ namespace CircuitDiagram
                                         newItem.Content = contentBlock;
                                         if (configuration.Icon != null)
                                         {
-                                            Canvas contentCanvas = new Canvas();
-                                            contentCanvas.Width = 45;
-                                            contentCanvas.Height = 45;
-                                            var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = configuration.Icon as ImageSource };
-                                            newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
-                                            newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
-                                            contentCanvas.Children.Add(newImage);
-                                            newItem.Content = contentCanvas;
+                                            var contentIcon = new ToolboxComponent();
+                                            contentIcon.Width = 45;
+                                            contentIcon.Height = 45;
+                                            contentIcon.SetIcon(configuration.Icon.GetBestIcon(CurrentDPI));
+                                            newItem.Content = contentIcon;
                                         }
                                         else if (description.Metadata.Icon != null)
                                         {
-                                            Canvas contentCanvas = new Canvas();
-                                            contentCanvas.Width = 45;
-                                            contentCanvas.Height = 45;
-                                            var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = description.Metadata.Icon as ImageSource };
-                                            newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
-                                            newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
-                                            contentCanvas.Children.Add(newImage);
-                                            newItem.Content = contentCanvas;
+                                            var contentIcon = new ToolboxComponent();
+                                            contentIcon.Width = 45;
+                                            contentIcon.Height = 45;
+                                            contentIcon.SetIcon(description.Metadata.Icon.GetBestIcon(CurrentDPI));
+                                            newItem.Content = contentIcon;
                                         }
 
                                         // Shortcut
@@ -603,14 +608,11 @@ namespace CircuitDiagram
                                     newItem.Content = contentBlock;
                                     if (description.Metadata.Icon != null)
                                     {
-                                        Canvas contentCanvas = new Canvas();
-                                        contentCanvas.Width = 45;
-                                        contentCanvas.Height = 45;
-                                        var newImage = new Image() { Width = 45, Height = 45, Stretch = System.Windows.Media.Stretch.Uniform, VerticalAlignment = System.Windows.VerticalAlignment.Center, Source = description.Metadata.Icon as ImageSource };
-                                        newImage.Effect = new System.Windows.Media.Effects.DropShadowEffect();
-                                        newImage.SetValue(System.Windows.Media.RenderOptions.BitmapScalingModeProperty, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
-                                        contentCanvas.Children.Add(newImage);
-                                        newItem.Content = contentCanvas;
+                                        var contentIcon = new ToolboxComponent();
+                                        contentIcon.Width = 45;
+                                        contentIcon.Height = 45;
+                                        contentIcon.SetIcon(description.Metadata.Icon.GetBestIcon(CurrentDPI));
+                                        newItem.Content = contentIcon;
                                     }
 
                                     // Shortcut
@@ -645,7 +647,7 @@ namespace CircuitDiagram
                 tdOptions.Content = "New items can be added to the toolbox under Tools->Toolbox."; // Toolbox missing
                 tdOptions.CommonButtons = TaskDialogCommonButtons.Close;
                 tdOptions.Owner = this;
-                TaskDialogResult result = TaskDialog.Show(tdOptions);
+                //TaskDialogResult result = TaskDialog.Show(tdOptions);
 
                 // Create new toolbox file
                 if (!Directory.Exists(Path.GetDirectoryName(toolboxSettingsPath)))

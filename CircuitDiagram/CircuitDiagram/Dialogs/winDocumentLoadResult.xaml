@@ -1,7 +1,17 @@
-﻿<Window x:Class="CircuitDiagram.winDocumentLoadResult"
+﻿<controls:MetroWindow x:Class="CircuitDiagram.winDocumentLoadResult"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Problem Opening Document" Width="560" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" SizeToContent="Height">
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        Title="Problem Opening Document" Width="560" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        SizeToContent="Height" TitleCaps="False" WindowTransitionsEnabled="False" EnableDWMDropShadow="True">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
         <StackPanel Orientation="Vertical" Margin="12">
             <TextBlock Text="The document could not be loaded successfully." Name="lblMessage" />
@@ -11,4 +21,4 @@
             <Button Content="OK" Height="23" HorizontalAlignment="Right" Name="btnOK" Width="75" IsDefault="True" Click="btnOK_Click" Margin="12,12,0,0" />
         </StackPanel>
     </Grid>
-</Window>
+</controls:MetroWindow>

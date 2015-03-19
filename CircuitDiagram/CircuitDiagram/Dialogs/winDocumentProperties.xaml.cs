@@ -35,13 +35,14 @@ using System.IO;
 using TaskDialogInterop;
 using CircuitDiagram.Elements;
 using CircuitDiagram.IO;
+using MahApps.Metro.Controls;
 
 namespace CircuitDiagram
 {
     /// <summary>
     /// Interaction logic for winDocument.xaml
     /// </summary>
-    public partial class winDocumentProperties : Window
+    public partial class winDocumentProperties : MetroWindow
     {
         private CircuitDocument m_document;
 

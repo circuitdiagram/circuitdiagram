@@ -32,13 +32,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using CircuitDiagram.Components;
 using CircuitDiagram.Components.Description;
+using MahApps.Metro.Controls;
 
 namespace CircuitDiagram
 {
     /// <summary>
     /// Interaction logic for winNewComponentImplementation.xaml
     /// </summary>
-    public partial class winNewComponentImplementation : Window
+    public partial class winNewComponentImplementation : MetroWindow
     {
         public winNewComponentImplementation()
         {
@@ -69,7 +70,7 @@ namespace CircuitDiagram
                     ImplementationConversion item = new ImplementationConversion();
                     item.ToName = description.ComponentName;
                     item.ToGUID = description.Metadata.GUID;
-                    item.ToIcon = description.Metadata.Icon as ImageSource;
+                    item.ToIcon = description.Metadata.Icon.LoadedIcon as ImageSource;
                     cbxRepresentation.Items.Add(item);
                 }
                 else
@@ -79,9 +80,9 @@ namespace CircuitDiagram
                         ImplementationConversion item = new ImplementationConversion();
                         item.ToName = description.ComponentName;
                         item.ToGUID = description.Metadata.GUID;
-                        item.ToIcon = configuration.Icon as ImageSource;
+                        item.ToIcon = configuration.Icon.LoadedIcon as ImageSource;
                         if (configuration.Icon == null)
-                            item.ToIcon = description.Metadata.Icon as ImageSource;
+                            item.ToIcon = description.Metadata.Icon.LoadedIcon as ImageSource;
                         item.ToConfiguration = configuration.Name;
                         cbxRepresentation.Items.Add(item);
                     }

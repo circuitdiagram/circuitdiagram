@@ -1,10 +1,18 @@
-﻿<Window x:Class="CircuitDiagram.winOptions"
+﻿<controls:MetroWindow x:Class="CircuitDiagram.winOptions"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:cd="clr-namespace:CircuitDiagram"
-        Title="Options" Height="373" Width="490" ShowInTaskbar="False" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        Title="Options" Height="460" Width="490" ShowInTaskbar="False" ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
+        TitleCaps="False" WindowTransitionsEnabled="False" EnableDWMDropShadow="True">
     <Window.Resources>
-        <cd:NotConverter x:Key="NotConverter" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <cd:NotConverter x:Key="NotConverter" />
+        </ResourceDictionary>
     </Window.Resources>
     <Grid>
         <TabControl Margin="12,12,12,41" Name="tbctlMain">
@@ -13,13 +21,13 @@
                     <StackPanel Orientation="Vertical">
                         <GroupBox Name="gbxAppearance" Header="Appearance" Margin="12,10,12,0">
                             <StackPanel>
-                                <CheckBox Content="Show toolbox scroll bar" Height="16" Margin="6,6,6,6" Name="chbShowToolboxScrollBar" />
-                                <CheckBox Content="Show grid" Height="16" Margin="6,0,6,6" Name="chbShowGrid" />
+                                <CheckBox Content="Show toolbox scroll bar" Margin="6,6,6,6" Name="chbShowToolboxScrollBar" />
+                                <CheckBox Content="Show grid" Margin="6,0,6,6" Name="chbShowGrid" />
                             </StackPanel>
                         </GroupBox>
                         <GroupBox Name="gbxDeveloper" Header="Developer" Margin="12,4,12,0">
                             <StackPanel>
-                                <CheckBox Content="Show connection points" Height="16" Margin="6,6,6,6" Name="chbShowConnectionPoints" />
+                                <CheckBox Content="Show connection points"  Margin="6,6,6,6" Name="chbShowConnectionPoints" />
                             </StackPanel>
                         </GroupBox>
                         <GroupBox Name="gbxRecentFiles" Header="Recent Files" Margin="12,4,12,0">
@@ -30,7 +38,7 @@
                         </GroupBox>
                         <GroupBox Name="gbxOther" Header="Other" Margin="12,4,12,0">
                             <StackPanel>
-                                <CheckBox Content="Check for updates automatically" Height="16" Margin="6,6,6,6" Name="chbCheckForUpdatesAutomatically" />
+                                <CheckBox Content="Check for updates automatically" Margin="6,6,6,6" Name="chbCheckForUpdatesAutomatically" />
                             </StackPanel>
                         </GroupBox>
                     </StackPanel>
@@ -64,30 +72,30 @@
                 </Grid>
             </TabItem>
             <TabItem Header="CDDX">
-                <Grid>
-                    <GroupBox Header="Embed" Height="67" Margin="6,6,6,0" VerticalAlignment="Top">
+                <StackPanel>
+                    <GroupBox Header="Embed" Margin="12,10,12,0" VerticalAlignment="Top">
                         <Grid>
                             <Label Content="Embed components" Height="28" HorizontalAlignment="Left" Margin="6,9,0,0" Name="label4" VerticalAlignment="Top" />
-                            <ComboBox Height="23" Margin="193,12,6,0" Name="cbxEmbedComponents" VerticalAlignment="Top">
+                            <ComboBox Margin="193,12,6,0" Name="cbxEmbedComponents" VerticalAlignment="Top">
                                 <ComboBoxItem>All</ComboBoxItem>
                                 <ComboBoxItem>Automatic</ComboBoxItem>
                                 <ComboBoxItem>None</ComboBoxItem>
                             </ComboBox>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Header="Display" Height="68" Margin="6,79,6,0" VerticalAlignment="Top">
-                        <Grid>
-                            <CheckBox Content="Show Circuit Diagram Document options when saving" Height="16" Margin="6,17,99,0" Name="chbShowCDDXOptions" VerticalAlignment="Top" Width="309" />
-                        </Grid>
+                    <GroupBox Header="Display" Margin="12,4,12,0" VerticalAlignment="Top">
+                        <StackPanel>
+                            <CheckBox Content="Show Circuit Diagram Document options when saving" Margin="6,17,99,0" Name="chbShowCDDXOptions" VerticalAlignment="Top" Width="309" />
+                        </StackPanel>
                     </GroupBox>
-                    <GroupBox Header="Information" Margin="6,152,6,10">
+                    <GroupBox Header="Information" Margin="12,4,12,0">
                         <Grid>
                             <Label Content="Creator" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
                             <CheckBox Name="chbCreatorUseComputerUserName" Content="Use computer user name" HorizontalAlignment="Left" Margin="115,16,0,0" VerticalAlignment="Top"/>
                             <TextBox Name="tbxCreatorName" Height="23" Margin="138,36,10,0" TextWrapping="Wrap" VerticalAlignment="Top" IsEnabled="{Binding ElementName=chbCreatorUseComputerUserName, Path=IsChecked, Converter={StaticResource NotConverter}, Mode=OneWay}" />
                         </Grid>
                     </GroupBox>
-                </Grid>
+                </StackPanel>
             </TabItem>
             <TabItem Header="Plugins">
                 <Grid>
@@ -115,4 +123,4 @@
         <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,0,12,12" Name="btnCancel" VerticalAlignment="Bottom" Width="75" Click="btnCancel_Click" />
         <Button Content="OK" Height="23" HorizontalAlignment="Right" Margin="0,0,93,12" Name="btnOK" VerticalAlignment="Bottom" Width="75" Click="button2_Click" />
     </Grid>
-</Window>
+</controls:MetroWindow>

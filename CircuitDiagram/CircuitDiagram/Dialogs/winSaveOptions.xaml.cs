@@ -11,13 +11,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using CircuitDiagram.IO;
+using MahApps.Metro.Controls;
 
 namespace CircuitDiagram
 {
     /// <summary>
     /// Interaction logic for winSaveOptions.xaml
     /// </summary>
-    public partial class winSaveOptions : Window
+    public partial class winSaveOptions : MetroWindow
     {
         private SaveOptionsEditor m_editor;
 

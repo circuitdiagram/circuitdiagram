@@ -11,13 +11,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using CircuitDiagram.IO;
+using MahApps.Metro.Controls;
 
 namespace CircuitDiagram
 {
     /// <summary>
     /// Interaction logic for winDocumentLoadResult.xaml
     /// </summary>
-    public partial class winDocumentLoadResult : Window
+    public partial class winDocumentLoadResult : MetroWindow
     {
         public winDocumentLoadResult()
         {

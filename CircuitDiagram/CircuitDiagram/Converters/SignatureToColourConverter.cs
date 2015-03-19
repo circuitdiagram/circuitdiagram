@@ -16,10 +16,10 @@ namespace CircuitDiagram
         {
             SignatureStatus status = value as SignatureStatus;
             if (status == null)
-                return Brushes.Black;
+                return Brushes.White;
 
             if (!status.IsSigned)
-                return Brushes.Black;
+                return Brushes.White;
             else if (status.IsSignatureValid)
                 return Brushes.LimeGreen;
             else

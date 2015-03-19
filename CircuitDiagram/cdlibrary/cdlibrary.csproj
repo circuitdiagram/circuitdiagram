@@ -73,6 +73,7 @@
     <Compile Include="Components\Description\ConnectionDescription.cs" />
     <Compile Include="Components\ConnectionGroup.cs" />
     <Compile Include="Components\Description\IConditionTreeItem.cs" />
+    <Compile Include="Components\Description\MultiResolutionImage.cs" />
     <Compile Include="Components\Description\Render\Ellipse.cs" />
     <Compile Include="Components\Description\Render\IRenderCommand.cs" />
     <Compile Include="Components\Description\Render\Line.cs" />
@@ -91,9 +92,11 @@
     <Compile Include="IO\ApplicationInfo.cs" />
     <Compile Include="IO\BinaryIOExtentions.cs" />
     <Compile Include="IO\CDDX\LegacyCDDXReader.cs" />
-    <Compile Include="IO\Descriptions\BinaryLoader.cs" />
-    <Compile Include="IO\Descriptions\BinaryResource.cs" />
-    <Compile Include="IO\Descriptions\BinaryWriter.cs" />
+    <Compile Include="IO\Descriptions\Binary\BinaryDescriptionReader.cs" />
+    <Compile Include="IO\Descriptions\Binary\BinaryReadInfo.cs" />
+    <Compile Include="IO\Descriptions\Binary\BinaryResource.cs" />
+    <Compile Include="IO\Descriptions\Binary\BinaryResourceType.cs" />
+    <Compile Include="IO\Descriptions\Binary\BinaryWriter.cs" />
     <Compile Include="IO\CDDX\CDDXReader.cs" />
     <Compile Include="IO\CDDX\CDDXSaveOptions.cs" />
     <Compile Include="IO\CDDX\CDDXWriter.cs" />
@@ -106,6 +109,8 @@
     </Compile>
     <Compile Include="IO\CircuitDocumentIO.cs" />
     <Compile Include="IO\ConnectionBuilder.cs" />
+    <Compile Include="IO\Descriptions\Binary\BinaryDescriptionContentItem.cs" />
+    <Compile Include="IO\Descriptions\Binary\ComponentResource.cs" />
     <Compile Include="IO\IComponentDescriptionLoader.cs" />
     <Compile Include="IO\Descriptions\XmlLoader.cs" />
     <Compile Include="IO\PathExtensions.cs" />

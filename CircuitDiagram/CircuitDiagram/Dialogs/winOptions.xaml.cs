@@ -33,13 +33,14 @@ using System.Windows.Shapes;
 using CircuitDiagram.Settings;
 using CircuitDiagram.Components;
 using CircuitDiagram.Components.Description;
+using MahApps.Metro.Controls;
 
 namespace CircuitDiagram
 {
     /// <summary>
     /// Interaction logic for winOptions.xaml
     /// </summary>
-    public partial class winOptions : Window
+    public partial class winOptions : MetroWindow
     {
         public winOptions()
         {

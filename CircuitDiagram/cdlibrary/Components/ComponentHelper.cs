@@ -246,8 +246,6 @@ namespace CircuitDiagram.Components
             return ComponentDataString.ConvertToString(properties);
         }
 
-        public static LoadIconDelegate LoadIcon;
-
         public static ComponentUpdatedDelegate ComponentUpdatedDelegate { get; set; }
 
         public static void SetStandardComponent(string collection, string item, ComponentDescription description, ComponentConfiguration configuration)

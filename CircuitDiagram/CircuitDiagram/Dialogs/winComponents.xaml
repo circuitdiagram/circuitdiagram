@@ -1,15 +1,24 @@
-﻿<Window x:Class="CircuitDiagram.winComponents"
+﻿<controls:MetroWindow x:Class="CircuitDiagram.winComponents"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:my="clr-namespace:CircuitDiagram"
-        Title="Components" Height="385" Width="594" ShowInTaskbar="False" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        Title="Components" Height="385" Width="600" ShowInTaskbar="False" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" TitleCaps="False" WindowTransitionsEnabled="False" EnableDWMDropShadow="True">
     <Window.Resources>
-        <my:BoolToYesNoConverter x:Key="YesNoConverter" />
-        <my:EmbedByDefaultConverter x:Key="EmbedByDefaultConverter" />
-        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <my:SignatureToColourConverter x:Key="SignatureToColourConverter" />
-        <my:SignatureToFontWeightConverter x:Key="SignatureToFontWeightConverter" />
-        <my:SignatureStatusConverter x:Key="SignatureStatusConverter" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <my:BoolToYesNoConverter x:Key="YesNoConverter" />
+            <my:EmbedByDefaultConverter x:Key="EmbedByDefaultConverter" />
+            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <my:SignatureToColourConverter x:Key="SignatureToColourConverter" />
+            <my:SignatureToFontWeightConverter x:Key="SignatureToFontWeightConverter" />
+            <my:SignatureStatusConverter x:Key="SignatureStatusConverter" />
+            <my:MultiResolutionImageToImageSourceConverter x:Key="MultiResolutionImageToImageSourceConverter" />
+        </ResourceDictionary>
     </Window.Resources>
     <Grid>
         <ListBox HorizontalAlignment="Left" Margin="12,12,0,41" Name="lbxComponents" Width="163" DisplayMemberPath="ComponentName" ItemsSource="{Binding}" IsSynchronizedWithCurrentItem="True" />
@@ -47,8 +56,17 @@
                    Foreground="{Binding Path=Metadata.Signature, Converter={StaticResource SignatureToColourConverter}}"
                    FontWeight="{Binding Path=Metadata.Signature, Converter={StaticResource SignatureToFontWeightConverter}}" />
             <Label Grid.Column="1" Grid.Row="2" Content="{Binding ElementName=lbxComponents, Path=SelectedItem, Converter={StaticResource EmbedByDefaultConverter}}" />
-            <Label Grid.Column="1" Grid.Row="3" Content="{Binding Path=Metadata.Type}" />
-            <Image Grid.Column="1" Grid.Row="4" Source="{Binding Path=Metadata.Icon}" Stretch="Uniform" HorizontalAlignment="Left" />
+            <Grid Grid.Column="1" Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" Content="{Binding Path=Metadata.Type}" />
+                <Label Name="lblComponentDetails" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                    <Hyperlink Name="lnkComponentDetails" Click="hyperlinkComponentDetails_Click">Details</Hyperlink>
+                </Label>
+            </Grid>
+            <Image Grid.Column="1" Grid.Row="4" Source="{Binding Path=Metadata.Icon, Converter={StaticResource MultiResolutionImageToImageSourceConverter}}" Stretch="Uniform" HorizontalAlignment="Left" />
             <Label Grid.Column="1" Grid.Row="5" Content="{Binding Path=Metadata.GUID}" />
             <Label Grid.Column="1" Grid.Row="6" Content="{Binding Path=Metadata.Version}" />
             <Label Grid.Column="1" Grid.Row="7" Content="{Binding Path=Metadata.AdditionalInformation}" />
@@ -70,4 +88,4 @@
             <Hyperlink Name="lnkComponentsFolder" Click="hyperlinkComponentsFolder_Click">Components folder</Hyperlink>
         </Label>
     </Grid>
-</Window>
+</controls:MetroWindow>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MahApps.Metro.Controls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,7 @@ namespace CircuitDiagram
     /// <summary>
     /// Interaction logic for winExportPNG.xaml
     /// </summary>
-    public partial class winExportPNG : Window
+    public partial class winExportPNG : MetroWindow
     {
         public winExportPNG()
         {

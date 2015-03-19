@@ -289,11 +289,11 @@ namespace CircuitDiagram
             if (data.ContentType == IO.CDDX.ContentTypeNames.BinaryComponent)
             {
                 // Binary component
-                BinaryLoader loader = new BinaryLoader();
-                if (loader.Load(data.Stream))
+                var reader = new CircuitDiagram.IO.Descriptions.BinaryDescriptionReader();
+                if (reader.Read(data.Stream))
                 {
-                    var descriptions = loader.GetDescriptions();
-                    if (descriptions.Length > 0)
+                    var descriptions = reader.ComponentDescriptions;
+                    if (descriptions.Count > 0)
                         return FindIdentifier(type, descriptions[0]);
                     else
                         return null;

@@ -33,14 +33,21 @@ namespace CircuitDiagram.Components.Description
         public string Author { get; set; }
         public string AdditionalInformation { get; set; }
         public string Type { get; set; }
-        public object Icon { get; set; }
-        public string IconMimeType { get; set; }
-        public byte[] IconData { get; set; }
+
+        //public object Icon { get; set; }
+        //public string IconMimeType { get; set; }
+        //public byte[] IconData { get; set; }
+
         public LocationType Location { get; set; }
         public List<ComponentConfiguration> Configurations { get; private set; }
         public string ImplementSet { get; set; }
         public string ImplementItem { get; set; }
         public SignatureStatus Signature { get; set; }
+
+        /// <summary>
+        /// Gets or sets the icon for this component.
+        /// </summary>
+        public MultiResolutionImage Icon { get; set; }
 
         public ComponentDescriptionMetadata()
         {

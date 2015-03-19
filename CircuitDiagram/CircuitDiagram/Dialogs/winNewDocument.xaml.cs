@@ -11,13 +11,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Text.RegularExpressions;
+using MahApps.Metro.Controls;
 
 namespace CircuitDiagram
 {
     /// <summary>
     /// Interaction logic for winNewDocument.xaml
     /// </summary>
-    public partial class winNewDocument : Window
+    public partial class winNewDocument : MetroWindow
     {
         Regex numMatch;
 

@@ -2,7 +2,7 @@
 //
 // Circuit Diagram http://www.circuit-diagram.org/
 //
-// Copyright (C) 2012  Sam Fisher
+// Copyright (C) 2015  Sam Fisher
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,18 +34,28 @@ using CircuitDiagram.Components;
 using System.Collections;
 using System.Globalization;
 using CircuitDiagram.Components.Description;
+using NativeHelpers;
+using MahApps.Metro.Controls;
 
 namespace CircuitDiagram
 {
     /// <summary>
     /// Interaction logic for winComponents.xaml
     /// </summary>
-    public partial class winComponents : Window
+    public partial class winComponents : MetroWindow
     {
         public winComponents()
         {
             InitializeComponent();
             lbxComponents.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription("ComponentName", System.ComponentModel.ListSortDirection.Ascending));
+
+            this.DPIChanged += winComponents_DPIChanged;
+        }
+
+        void winComponents_DPIChanged(object sender, EventArgs e)
+        {
+            var imageConverter = this.Resources["MultiResolutionImageToIMageSourceConverter"] as MultiResolutionImageToImageSourceConverter;
+            imageConverter.DPI = CurrentDPI;
         }
 
         public object Components
@@ -88,6 +98,13 @@ namespace CircuitDiagram
                 System.Windows.Interop.WindowInteropHelper helper = new System.Windows.Interop.WindowInteropHelper(this);
                 System.Security.Cryptography.X509Certificates.X509Certificate2UI.DisplayCertificate(selected.Metadata.Signature.Certificate, helper.Handle);
             }
+        }
+
+        private void hyperlinkComponentDetails_Click(object sender, RoutedEventArgs e)
+        {
+            winComponentDetails componentDetailsWindow = new winComponentDetails(lbxComponents.SelectedItem as ComponentDescription);
+            componentDetailsWindow.Owner = this;
+            componentDetailsWindow.ShowDialog();
         }
     }
 

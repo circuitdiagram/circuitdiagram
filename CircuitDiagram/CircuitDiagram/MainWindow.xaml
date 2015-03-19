@@ -1,11 +1,21 @@
-﻿<Window x:Class="CircuitDiagram.MainWindow"
+﻿<controls:MetroWindow x:Class="CircuitDiagram.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:cd="clr-namespace:CircuitDiagram"
         xmlns:tb="clr-namespace:Toolbox;assembly=Toolbox"
-        Title="Circuit Diagram" Height="565" Width="800" KeyDown="Window_KeyDown" Icon="Logo32.png" Closing="Window_Closing">
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        Title="Circuit Diagram" Height="565" Width="800" KeyDown="Window_KeyDown" Icon="Logo32.png" Closing="Window_Closing"
+        TitleCaps="False" WindowTransitionsEnabled="False" EnableDWMDropShadow="True">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <DockPanel>
-        <Menu DockPanel.Dock="Top" Height="23" Style="{StaticResource MenuStyle}">
+        <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
                 <MenuItem Command="New" Header="_New" />
                 <MenuItem Command="Open" Header="_Open" />
@@ -50,29 +60,19 @@
             <TextBlock Name="lblStatus" Text="Ready" />
         </StatusBar>
         <ScrollViewer Style="{StaticResource ToolboxScrollViewer}" DockPanel.Dock="Left" Name="toolboxScroll" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto">
-            <tb:Toolbox x:Name="mainToolbox" DockPanel.Dock="Left" Width="60">
-                <tb:Toolbox.Background>
-                    <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
-                        <LinearGradientBrush.GradientStops>
-                            <GradientStop Color="#FF4E4E4E" Offset="0"/>
-                            <GradientStop Color="#FF4E4E4E" Offset="0.851163"/>
-                            <GradientStop Color="#FF3D3D3D" Offset="0.930233"/>
-                            <GradientStop Color="#FF2D2D2D" Offset="1"/>
-                        </LinearGradientBrush.GradientStops>
-                    </LinearGradientBrush>
-                </tb:Toolbox.Background>
+            <tb:Toolbox x:Name="mainToolbox" DockPanel.Dock="Left" Width="60" Style="{StaticResource ToolboxStyle}">
                 <tb:ToolboxCategory x:Name="tbxcatSelect">
                     <tb:ToolboxItem ToolTip="Select (v)" Click="btnSelect_Click">
-                        <Image Source="select icon.png" Width="45" Height="45" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor">
-                            <Image.Effect>
-                                <DropShadowEffect />
-                            </Image.Effect>
-                        </Image>
+                        <Rectangle Width="32" Height="32" Fill="White">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush x:Name="SelectImageBrush" ImageSource="Images/Select64.png" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
                     </tb:ToolboxItem>
                 </tb:ToolboxCategory>
             </tb:Toolbox>
         </ScrollViewer>
-        <Grid DockPanel.Dock="Right" Width="175" Background="{DynamicResource WindowBackground}">
+        <Grid DockPanel.Dock="Right" Width="175">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition Height="40" />
@@ -123,4 +123,4 @@
         <CommandBinding Command="cd:CustomCommands.FlipComponent" CanExecute="FlipComponentCommand_CanExecute" Executed="FlipComponentCommand_Executed" />
         <CommandBinding Command="cd:CustomCommands.RotateComponent" CanExecute="RotateComponentCommand_CanExecute" Executed="RotateComponentCommand_Executed" />
     </Window.CommandBindings>
-</Window>
+</controls:MetroWindow>

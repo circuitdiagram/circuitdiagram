@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 using CircuitDiagram;
+using System.Windows.Media;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -52,6 +53,9 @@ using CircuitDiagram;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.1.0.0")]
-[assembly: AssemblyFileVersion("2.1.0.0")]
-[assembly: BuildChannel("", BuildChannelAttribute.ChannelType.Stable, 1)]
+[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyFileVersion("3.0.0.0")]
+[assembly: BuildChannel("Alpha 1", BuildChannelAttribute.ChannelType.Dev, 1)]
+
+// Per-monitor DPI scaling
+[assembly: DisableDpiAwareness]

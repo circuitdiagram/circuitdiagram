@@ -1,0 +1,38 @@
+﻿<controls:MetroWindow x:Class="CircuitDiagram.winComponentDetails"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:my="clr-namespace:CircuitDiagram"
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        Title="Component Details" Height="400" Width="600" ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
+        TitleCaps="False" WindowTransitionsEnabled="False" EnableDWMDropShadow="True">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <my:BinaryResourceToImageSourceConverter x:Key="BinaryResourceToImageSourceConverter" />
+        </ResourceDictionary>
+    </Window.Resources>
+    <ListBox Name="lbxResources">
+        <ListBox.ItemTemplate>
+            <DataTemplate>
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="ID: " />
+                        <TextBlock Text="{Binding ID}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Item type: " />
+                        <TextBlock Text="{Binding ItemType}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Resource type: " />
+                        <TextBlock Text="{Binding ResourceType}" />
+                    </StackPanel>
+                    <Image HorizontalAlignment="Left" Stretch="None" Source="{Binding Converter={StaticResource BinaryResourceToImageSourceConverter}}" />
+                </StackPanel>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
+</controls:MetroWindow>
