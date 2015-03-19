@@ -18,8 +18,14 @@ namespace CircuitDiagram
             rect.Height = 32;
             rect.UseLayoutRounding = true;
             rect.Fill = Brushes.White;
-            rect.OpacityMask = new ImageBrush(imageSource);
-            this.Content = rect;
+            rect.OpacityMask = new ImageBrush(imageSource) { Stretch = Stretch.None };
+            rect.SetValue(Canvas.LeftProperty, 6.5);
+            rect.SetValue(Canvas.TopProperty, 6.5);
+
+            Canvas c = new Canvas();
+            c.Children.Add(rect);
+
+            this.Content = c;
         }
     }
 }

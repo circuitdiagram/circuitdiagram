@@ -7,7 +7,6 @@
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
-
     </ResourceDictionary.MergedDictionaries>
     
     <!-- Colours -->
@@ -156,5 +155,49 @@
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Padding" Value="4" />
+    </Style>
+
+    <SolidColorBrush x:Key="CDContextMenuBackground" Color="#1B1B1C" />
+    <Style x:Key="ContextMenuStyle" TargetType="ContextMenu">        
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid Margin="0,0,5,5">
+                        <!--Border 2-->
+                        <Border x:Name="SubMenuBorder"
+                                            BorderBrush="{StaticResource CDContextMenuBackground}"
+                                            BorderThickness="1"
+                                            Background="{StaticResource CDContextMenuBackground}"
+                                            SnapsToDevicePixels="True">
+                            <Grid x:Name="SubMenu"
+                                              Grid.IsSharedSizeScope="True"
+                                              Margin="2">
+                                <StackPanel IsItemsHost="True"
+                                                        KeyboardNavigation.DirectionalNavigation="Cycle" />
+                            </Grid>
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="2"
+                                                              Color="Black" />
+                            </Border.Effect>
+                        </Border>
+                        <!--Border 3-->
+                        <Border Margin="1,0,0,0"
+                                            x:Name="TransitionBorder"
+                                            Width="0"
+                                            Height="2"
+                                            VerticalAlignment="Top"
+                                            HorizontalAlignment="Left"
+                                            Background="{StaticResource CDContextMenuBackground}"
+                                            SnapsToDevicePixels="False"
+                                            BorderThickness="1"
+                                            BorderBrush="{StaticResource CDContextMenuBackground}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ContextMenuItemStyle" TargetType="MenuItem">
+        <Setter Property="Padding" Value="3" />
     </Style>
 </ResourceDictionary>

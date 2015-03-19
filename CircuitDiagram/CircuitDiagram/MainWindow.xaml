@@ -101,10 +101,10 @@
         <ScrollViewer Background="LightGray" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <cd:CircuitDisplay x:Name="circuitDisplay" SelectionChanged="circuitDisplay_SelectionChanged" SnapsToDevicePixels="True" MouseWheel="circuitDisplay_MouseWheel">
                 <cd:CircuitDisplay.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Command="cd:CustomCommands.DeleteComponent" />
-                        <MenuItem Command="cd:CustomCommands.FlipComponent" />
-                        <MenuItem Command="cd:CustomCommands.RotateComponent" />
+                    <ContextMenu Style="{StaticResource ContextMenuStyle}">
+                        <MenuItem Command="cd:CustomCommands.DeleteComponent" Style="{StaticResource ContextMenuItemStyle}" />
+                        <MenuItem Command="cd:CustomCommands.FlipComponent" Style="{StaticResource ContextMenuItemStyle}" />
+                        <MenuItem Command="cd:CustomCommands.RotateComponent" Style="{StaticResource ContextMenuItemStyle}" />
                     </ContextMenu>
                 </cd:CircuitDisplay.ContextMenu>
             </cd:CircuitDisplay>
