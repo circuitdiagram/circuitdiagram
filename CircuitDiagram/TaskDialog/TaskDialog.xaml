@@ -43,7 +43,7 @@
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
-		<Border x:Name="ContentArea" Padding="7,3,7,7">
+		<Border x:Name="ContentArea" Padding="7,3,7,7" Background="White">
 			<Grid>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="Auto" />
@@ -218,7 +218,9 @@
 									CommandParameter="{Binding ID, Mode=OneWay}"
 									IsCancel="{Binding IsCancel, Mode=OneWay}"
 									IsDefault="{Binding IsDefault, Mode=OneWay}"
-									Click="NormalButton_Click"/>
+									Click="NormalButton_Click"
+                                    Foreground="Black"
+                                    Style="{x:Null}"/>
 						</DataTemplate>
 					</ItemsControl.Resources>
 				</ItemsControl>
