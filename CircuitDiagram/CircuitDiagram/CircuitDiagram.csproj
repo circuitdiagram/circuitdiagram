@@ -125,6 +125,12 @@
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)' == 'x86'">
+    <NativeLibsPath>..\Libs\x86</NativeLibsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)' == 'x64'">
+    <NativeLibsPath>..\Libs\x64</NativeLibsPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ReachFramework" />
     <Reference Include="System" />
@@ -144,35 +150,18 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Platform)' == 'x86'">
-    <Reference Include="MahApps.Metro, Version=1.1.3.0, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="MahApps.Metro">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libs\x86\MahApps.Metro.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>$(NativeLibsPath)\MahApps.Metro.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="MahApps.Metro.Resources, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="MahApps.Metro.Resources">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libs\x86\MahApps.Metro.Resources.dll</HintPath>
+      <HintPath>$(NativeLibsPath)\MahApps.Metro.Resources.dll</HintPath>
     </Reference>
-    <Reference Include="NativeHelpers, Version=1.0.5553.28387, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="NativeHelpers">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libs\x86\NativeHelpers.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Platform)' == 'x64'">
-    <Reference Include="MahApps.Metro, Version=1.1.3.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libs\x64\MahApps.Metro.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MahApps.Metro.Resources, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libs\x64\MahApps.Metro.Resources.dll</HintPath>
-    </Reference>
-    <Reference Include="NativeHelpers, Version=1.0.5553.28387, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libs\x64\NativeHelpers.dll</HintPath>
+      <HintPath>$(NativeLibsPath)\NativeHelpers.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
