@@ -14,7 +14,12 @@ namespace CircuitDiagram.Components.Description
         /// <summary>
         /// Gets the loaded icon data for display in the program UI.
         /// </summary>
-        public object LoadedIcon { get; set; }
+        public List<object> LoadedIcons { get; set; }
+
+        public MultiResolutionImage()
+        {
+            LoadedIcons = new List<object>();
+        }
     }
 
     public class SingleResolutionImage

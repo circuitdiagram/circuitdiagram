@@ -368,13 +368,14 @@ namespace CircuitDiagram
                                     if (theConfiguration != null)
                                     {
                                         newConversion.ToConfiguration = theConfiguration.Name;
-                                        newConversion.ToIcon = theConfiguration.Icon.LoadedIcon as ImageSource;
+                                        if (theConfiguration.Icon != null)
+                                            newConversion.ToIcon = theConfiguration.Icon.GetBestIcon(CurrentDPI);
                                     }
-                                    else
-                                        newConversion.ToIcon = description.Metadata.Icon.LoadedIcon as ImageSource;
+                                    else if (description.Metadata.Icon != null)
+                                        newConversion.ToIcon = description.Metadata.Icon.GetBestIcon(CurrentDPI);
                                 }
-                                else
-                                    newConversion.ToIcon = description.Metadata.Icon.LoadedIcon as ImageSource;
+                                else if (description.Metadata.Icon != null)
+                                    newConversion.ToIcon = description.Metadata.Icon.GetBestIcon(CurrentDPI);
 
                                 newCollection.Items.Add(newConversion);
                                 ComponentHelper.SetStandardComponent(newCollection.ImplementationSet, newConversion.ImplementationName, description, theConfiguration);
