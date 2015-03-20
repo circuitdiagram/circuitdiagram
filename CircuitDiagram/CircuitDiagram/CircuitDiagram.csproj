@@ -359,9 +359,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="select icon.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Logo32.png" />
   </ItemGroup>
   <ItemGroup>
