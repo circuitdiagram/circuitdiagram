@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component version="1.0" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
+  <declaration>
+    <meta name="name" value="Logic Gate" />
+    <meta name="minsize" value="70" />
+    <meta name="canflip" value="true" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="4eaeba15-24b6-4a28-bba5-d25e52ada278" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+
+    <property name="Type" type="enum" default="NAND" serialize="t" display="Type">
+      <option>AND</option>
+      <option>NAND</option>
+      <option>OR</option>
+      <option>NOR</option>
+      <option>XOR</option>
+      <option>NOT</option>
+      <option>Schmitt</option>
+    </property>
+
+    <configurations>
+      <configuration name="AND Gate" value="Type:AND" implements="and2" />
+      <configuration name="NAND Gate" value="Type:NAND" implements="nand2" />
+      <configuration name="OR Gate" value="Type:OR" implements="or2" />
+      <configuration name="NOR Gate" value="Type:NOR" implements="nor2" />
+      <configuration name="XOR Gate" value="Type:XOR" implements="xor2" />
+      <configuration name="NOT Gate" value="Type:NOT" implements="not" />
+      <configuration name="Schmitt Trigger NOT Gate" value="Type:Schmitt" implements="schmittnot" />
+    </configurations>
+  </declaration>
+  <connections>
+    <group conditions="_Horizontal,!$Type(eq_NOT),!$Type(eq_Schmitt)">
+      <connection name="in0" start="_Start-10y" end="_Middle-20x-10y" edge="Start" />
+      <connection name="in1" start="_Start+10y" end="_Middle-20x+10y" edge="Start" />
+      <connection name="out" start="_Middle+24x" end="_End" edge="End" />
+    </group>
+    <group conditions="!_Horizontal,!$Type(eq_NOT),!$Type(eq_Schmitt)">
+      <connection name="in0" start="_Start+10x" end="_Middle+10x-20y" edge="Start" />
+      <connection name="in1" start="_Start-10x" end="_Middle-10x-20y" edge="Start" />
+      <connection name="out" start="_Middle+24y" end="_End" edge="End" />
+    </group>
+    <group conditions="_Horizontal,$Type(eq_NOT)">
+      <connection name="in" start="_Start" end="_Middle-28x" edge="Start" />
+      <connection name="out" start="_Middle+10x" end="_End" edge="End" />
+    </group>
+    <group conditions="_Horizontal,$Type(eq_Schmitt)">
+      <connection name="in" start="_Start" end="_Middle-28x" edge="Start" />
+      <connection name="out" start="_Middle+10x" end="_End" edge="End" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_NOT)">
+      <connection name="in" start="_Start" end="_Middle-28y" edge="Start" />
+      <connection name="out" start="_Middle+10y" end="_End" edge="End" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_Schmitt)">
+      <connection name="in" start="_Start" end="_Middle-28y" edge="Start" />
+      <connection name="out" start="_Middle+10y" end="_End" edge="End" />
+    </group>
+  </connections>
+  <render>
+    <!-- Common -->
+    <group conditions="_Horizontal,!$Type(eq_NOT),!$Type(eq_Schmitt)">
+      <line start="_Start-10y" end="_Middle-20x-10y" />
+      <line start="_Start+10y" end="_Middle-20x+10y" />
+    </group>
+    <group conditions="!_Horizontal,!$Type(eq_NOT),!$Type(eq_Schmitt)">
+      <line start="_Start-10x" end="_Middle-10x-20y" />
+      <line start="_Start+10x" end="_Middle+10x-20y" />
+    </group>
+
+    <!-- AND -->
+    <group conditions="_Horizontal,$Type(eq_AND)">
+      <path start="_Middle-20x-10y" data="m 0,-10 l 0,40 l 24,0 m -24,-40 l 24,0 m 0,40 a 5,5 90 1 0 0,-40" />
+      <line start="_Middle+26x" end="_End" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_AND)">
+      <path start="_Middle-10x-20y" data="m -10,0 l 40,0 l 0,24 m -40,-24 l 0,24 a 5,5 90 1 0 40,0" />
+      <line start="_Middle+25y" end="_End" />
+    </group>
+
+    <!-- NAND -->
+    <group conditions="_Horizontal,$Type(eq_NAND)">
+      <path start="_Middle-20x-10y" data="m 0,-10 l 0,40 l 24,0 m -24,-40 l 24,0 m 0,40 a 5,5 90 1 0 0,-40 m 21,20 a 2,2 -5 0,1 6,0 a 2,2 -5 0,1 -6,0" />
+      <line start="_Middle+31x" end="_End" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_NAND)">
+      <path start="_Middle-10x-20y" data="m -10,0 l 40,0 l 0,24 m -40,-24 l 0,24 a 5,5 90 1 0 40,0 m -20,20 a 2,2 5 1,0 0,6 a 2,2 5 1,0 0,-6" />
+      <line start="_Middle+30y" end="_End" />
+    </group>
+
+    <!-- OR -->
+    <group conditions="_Horizontal,$Type(eq_OR)">
+      <path start="_Middle-26x-10y" data="m 0,-10 q 20,20 0,40 m -1,0 q 35,-5 50,-20 q -15,-15 -50,-20" />
+      <line start="_Middle+25x" end="_End" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_OR)">
+      <path start="_Middle-10x-26y" data="m -10,0 q 20,20 40,0 m 0,-1 q -5,35 -20,50 q -15,-15 -20,-50" />
+      <line start="_Middle+25y" end="_End" />
+    </group>
+
+    <!-- NOR -->
+    <group conditions="_Horizontal,$Type(eq_NOR)">
+      <path start="_Middle-26x-10y" data="m 0,-10 q 20,20 0,40 m -1,0 q 35,-5 50,-20 q -15,-15 -50,-20 m 51,20 a 2,2 -5 0,1 6,0 a 2,2 -5 0,1 -6,0" />
+      <line start="_Middle+30x" end="_End" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_NOR)">
+      <path start="_Middle-10x-26y" data="m -10,0 q 20,20 40,0 m 0,-1 q -5,35 -20,50 q -15,-15 -20,-50 m 20,51 a 2,2 5 1,0 0,6 a 2,2 5 1,0 0,-6" />
+      <line start="_Middle+30y" end="_End" />
+    </group>
+
+    <!-- XOR -->
+    <group conditions="_Horizontal,$Type(eq_XOR)">
+      <path start="_Middle-26x-10y" data="m 0,-10 q 20,20 0,40 m 8,-40 q 20,20 0,40 m -1,0 q 35,-5 50,-20 q -15,-15 -50,-20" />
+      <line start="_Middle+30x" end="_End" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_XOR)">
+      <path start="_Middle-10x-26y" data="m -10,0 q 20,20 40,0 m -40,8 q 20,20 40,0 m 0,-1 q -5,35 -20,50 q -15,-15 -20,-50" />
+      <line start="_Middle+30y" end="_End" />
+    </group>
+
+    <!-- NOT -->
+    <group conditions="_Horizontal,$Type(eq_NOT)">
+      <line start="_Start" end="_Middle-28x" />
+      <path start="_Middle-26x-10y" data="m 0,10 l 0,18 l 28,-18 l -28,-18 l 0,18 m 28,0 a 2,2 -5 0,1 6,0 a 2,2 -5 0,1 -6,0" />
+      <line start="_Middle+10x" end="_End" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_NOT)">
+      <line start="_Start" end="_Middle-28y" />
+      <path start="_Middle-10x-26y" data="m 10,0 l 18,0 l -18,28 l -18,-28 l 18,0 m 0,28 a 2,2 5 1,0 0,6 a 2,2 5 1,0 0,-6 m 0,6" />
+      <line start="_Middle+10y" end="_End" />
+    </group>
+
+    <!-- Schmitt -->
+    <group conditions="_Horizontal,$Type(eq_Schmitt)">
+      <line start="_Start" end="_Middle-28x" />
+      <path start="_Middle-26x-10y" data="m 0,10 l 0,18 l 28,-18 l -28,-18 l 0,18 m 3,2.5 l 10,0 l 0,-5 m 5,0 l -10,0 l 0,5 m 0,-2.5 m 20,0 a 2,2 -5 0,1 6,0 a 2,2 -5 0,1 -6,0" />
+      <line start="_Middle+10x" end="_End" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_Schmitt)">
+      <line start="_Start" end="_Middle-28y" />
+      <path start="_Middle-10x-26y" data="m 10,0 l 18,0 l -18,28 l -18,-28 l 18,0 m 2.5,3 l 0,10 l -5,0 m 0,5 l 0,-10 l 5,0 m -2.5,0 m 0,20 a 2,2 5 1,0 0,6 a 2,2 5 1,0 0,-6 m 0,6" />
+      <line start="_Middle+10y" end="_End" />
+    </group>
+  </render>
+</component>

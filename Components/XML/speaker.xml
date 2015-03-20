@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component version="1.0" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
+  <declaration>
+    <meta name="name" value="Speaker" />
+    <meta name="minsize" value="60" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="d126275e-8243-42e0-ad83-a80db9764e97" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+    <meta name="implementitem" value="speaker" />
+  </declaration>
+  <connections>
+    <group conditions="_Horizontal">
+      <connection name="a" start="_Start" end="_Middle-18x" edge="start" />
+      <connection name="b" start="_Middle+22x" end="_End" edge="end" />
+    </group>
+    <group conditions="!_Horizontal">
+      <connection name="a" start="_Start" end="_Middle-18y" edge="start" />
+      <connection name="b" start="_Middle+22y" end="_End" edge="end" />
+    </group>
+  </connections>
+  <render>
+    <group conditions="_Horizontal">
+      <line start="_Start" end="_Middle-20x" thickness="2" />
+      <line start="_Middle+20x" end="_End" thickness="2" />
+      <path start="_Middle-20x" data="l 0,8 l -15,15 l 70,0 l -15,-15 l -40,0 l 0,-16 l 40,0 l 0,16" />
+    </group>
+    <group conditions="!_Horizontal">
+      <line start="_Start" end="_Middle-20y" thickness="2" />
+      <line start="_Middle+20y" end="_End" thickness="2" />
+      <path start="_Middle-20y" data="l 8,0 l 15,-15 l 0,70 l -15,-15 l 0,-40 l -16,0 l 0,40 l 16,0" />
+    </group>
+  </render>
+</component>

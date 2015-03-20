@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component version="1.0" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
+  <declaration>
+    <meta name="name" value="Inductor" />
+    <meta name="minsize" value="50" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="e6ebc838-fb6a-4078-8d03-7fed04cc6938" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+    <meta name="implementitem" value="inductor" />
+
+    <property name="Inductance" type="double" default="0.1" serialize="inductance" display="Inductance">
+      <formatting>
+        <format conditions="$Inductance(gt_1)" value="$Inductance  H" />
+        <format conditions="$Inductance(gteq_0.001)" value="$Inductance(mul_1000)(round_1)  mH" />
+        <format conditions="$Inductance(gteq_0.000001)" value="$Inductance(mul_1000000)(round_1)  \u00B5H" />
+        <format value="$Inductance(mul_1000000000)(round_1)  nH" />
+      </formatting>
+    </property>
+    
+  </declaration>
+  <connections>
+    <group conditions="_Horizontal">
+      <connection name="a" start="_Start" end="_Middle-26x" edge="start" />
+      <connection name="b" start="_Middle+26x" end="_End" edge="end" />
+    </group>
+    <group conditions="!_Horizontal">
+      <connection name="a" start="_Start" end="_Middle-26y" edge="start" />
+      <connection name="b" start="_Middle+26y" end="_End" edge="end" />
+    </group>
+  </connections>
+  <render>
+    <group conditions="_Horizontal">
+      <line start="_Start" end="_Middle-24x" />
+      <line start="_Middle+24x" end="_End" />
+      <path start="_Middle-24x" data="a 2,1.5 90 0 1 12,0 m 0,0 a 2,1.5 90 0 1 12,0 m 0,0 a 2,1.5 90 0 1 12,0 m 0,0 a 2,1.5 90 0 1 12,0" />
+      <text value="$Inductance" x="_Middle" y="_Start-17" align="CentreCentre" />
+    </group>
+    <group conditions="!_Horizontal">
+      <line start="_Start" end="_Middle-24y" />
+      <line start="_Middle+24y" end="_End" />
+      <path start="_Middle-24y" data="a 1.5,2 90 0 1 0,12 m 0,0 a 1.5,2 90 0 1 0,12 m 0,0 a 1.5,2 90 0 1 0,12 m 0,0 a 1.5,2 90 0 1 0,12" />
+      <text value="$Inductance" x="_Start-14" y="_Middle" align="CentreRight" />
+    </group>
+  </render>
+</component>

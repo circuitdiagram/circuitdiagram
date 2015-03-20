@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component version="1.0" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
+  <declaration>
+    <meta name="name" value="Op Amp" />
+    <meta name="minsize" value="60" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="f13fcce0-ce24-4698-a7b7-31f4ee86e999" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+    <meta name="implementitem" value="opamp" />
+    
+    <property name="FlipInputs" type="bool" default="false" serialize="flipinputs" display="Flip inputs" />
+  </declaration>
+  <connections>
+    <group conditions="_Horizontal">
+      <connection name="ninv" start="_Start-10y" end="_Middle-20x-10y" edge="Start" />
+      <connection name="inv" start="_Start+10y" end="_Middle-20x+10y" edge="Start" />
+      <connection name="out" start="_Middle+24x" end="_End" edge="End" />
+    </group>
+    <group conditions="!_Horizontal">
+      <connection name="ninv" start="_Start+10x" end="_Middle+10x-20y" edge="Start" />
+      <connection name="inv" start="_Start-10x" end="_Middle-10x-20y" edge="Start" />
+      <connection name="out" start="_Middle+24y" end="_End" edge="End" />
+    </group>
+  </connections>
+  <render>
+    <!-- Horizontal -->
+    <group conditions="_Horizontal">
+      <line start="_Start-10y" end="_Middle-20x-10y" />
+      <line start="_Start+10y" end="_Middle-20x+10y" />
+      <line start="_Middle+24x" end="_End" />
+    </group>
+    <group conditions="_Horizontal,!$FlipInputs">
+      <path start="_Middle-20x" data="l 0,30 l 44,-30 l -44,-30 l 0,30 m 5,-10 l 10,0 m -5,-5 l 0,10 m -5,15 l 10,0 m 28,-10" />
+    </group>
+    <group conditions="_Horizontal,$FlipInputs">
+      <path start="_Middle-20x" data="l 0,30 l 44,-30 l -44,-30 l 0,30 m 5,-10 l 10,0 m -5,15 l 0,10 m -5,-5 l 10,0 m 28,-10" />
+    </group>
+    
+    <!-- Vertical -->
+    <group conditions="!_Horizontal">
+      <line start="_Start+10x" end="_Middle+10x-20y" />
+      <line start="_Start-10x" end="_Middle-10x-20y" />
+      <line start="_Middle+24y" end="_End" />
+    </group>
+    <group conditions="!_Horizontal,!$FlipInputs">
+      <path start="_Middle-20y" data="l 30,0 l -30,44 l -30,-44 l 30,0 m -10,5 l 0,10 m -5,-5 l 10,0 m 15,-5 l 0,10 m -10,28" />
+    </group>
+    <group conditions="!_Horizontal,$FlipInputs">
+      <path start="_Middle-20y" data="l 30,0 l -30,44 l -30,-44 l 30,0 m -10,5 l 0,10 m 15,-5 l 10,0 m -5,-5 l 0,10 m -10,28" />
+    </group>
+  </render>
+</component>

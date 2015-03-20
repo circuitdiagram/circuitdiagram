@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component version="1.0" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
+  <declaration>
+    <meta name="name" value="Switch" />
+    <meta name="minsize" value="30" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="421694bf-755a-4d50-b2ca-7273216ca17d" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+
+    <property name="Type" type="enum" default="Push" serialize="t" display="Type">
+      <option>Push</option>
+      <option>Toggle</option>
+      <option>Analogue</option>
+      <option>PushToBreak</option>
+      <option>Changeover</option>
+    </property>
+
+    <flags conditions="$Type(eq_Analogue)">
+      <option>MiddleMustAlign</option>
+    </flags>
+
+    <configurations>
+      <configuration name="Push Switch" value="Type:Push" implements="pushswitch" />
+      <configuration name="Toggle Switch" value="Type:Toggle" implements="toggleswitch" />
+      <configuration name="Analogue Switch" value="Type:Analogue" implements="analogueswitch" />
+      <configuration name="Push to Break Switch" value="Type:PushToBreak" implements="ptbswitch" />
+      <configuration name="Changeover Switch" value="Type:Changeover" implements="changeoverswitch" />
+    </configurations>
+  </declaration>
+  <connections>
+    <group conditions="_Horizontal,!$Type(eq_Changeover)">
+      <connection name="a" start="_Start" end="_Middle-16x" edge="Start" />
+      <connection name="b" start="_Middle+16x" end="_End" edge="End" />
+    </group>
+    <group conditions="!_Horizontal,!$Type(eq_Changeover)">
+      <connection name="a" start="_Start" end="_Middle-16y" edge="Start" />
+      <connection name="a" start="_Middle+16y" end="_End" edge="End" />
+    </group>
+    <group conditions="_Horizontal,$Type(eq_Analogue)">
+      <connection name="c" start="_Middle-30y" end="_Middle-14y" edge="Start" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_Analogue)">
+      <connection name="c" start="_Middle+14x" end="_Middle+30x" edge="End" />
+    </group>
+    <group conditions="_Horizontal,$Type(eq_Changeover)">
+      <connection name="a" start="_Start" end="_Middle-16x" edge="Start" />
+      <connection name="b" start="_Middle+16x-10y" end="_End-10y" edge="End" />
+      <connection name="c" start="_Middle+16x+10y" end="_End+10y" edge="End" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_Changeover)">
+      <connection name="a" start="_Start" end="_Middle-16y" edge="Start" />
+      <connection name="b" start="_Middle-10x+16y" end="_End-10x" edge="End" />
+      <connection name="c" start="_Middle+10x+16y" end="_End+10x" edge="End" />
+    </group>
+  </connections>
+  <render>
+    <!-- Common -->
+    <group conditions="_Horizontal,!$Type(eq_Analogue),!$Type(eq_Changeover)">
+      <line start="_Start" end="_Middle-14x" />
+      <line start="_Middle+14x" end="_End" />
+      <ellipse centre="_Middle-11x" radiusx="3" radiusy="3" />
+      <ellipse centre="_Middle+11x" radiusx="3" radiusy="3" />
+    </group>
+    <group conditions="!_Horizontal,!$Type(eq_Analogue),!$Type(eq_Changeover)">
+      <line start="_Start" end="_Middle-14y" />
+      <line start="_Middle+14y" end="_End" />
+      <ellipse centre="_Middle-11y" radiusx="3" radiusy="3" />
+      <ellipse centre="_Middle+11y" radiusx="3" radiusy="3" />
+    </group>
+    
+    <!-- Push -->
+    <group conditions="_Horizontal,$Type(eq_Push)">
+      <line start="_Middle-12x-8y" end="_Middle+12x-8y" />
+      <line start="_Middle-6x-14y" end="_Middle+6x-14y" />
+      <line start="_Middle-14y" end="_Middle-8y" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_Push)">
+      <line start="_Middle-8x-12y" end="_Middle-8x+12y" />
+      <line start="_Middle-14x-6y" end="_Middle-14x+6y" />
+      <line start="_Middle-14x" end="_Middle-8x" />
+    </group>
+    
+    <!-- Toggle -->
+    <group conditions="_Horizontal,$Type(eq_Toggle)">
+      <line start="_Middle-8x-2y" end="_Middle+9x-8y" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_Toggle)">
+      <line start="_Middle-2x-8y" end="_Middle-8x+9y" />
+    </group>
+    
+    <!-- Analogue -->
+    <group conditions="_Horizontal,$Type(eq_Analogue)">
+      <line start="_Start" end="_Middle-11x" />
+      <line start="_Middle+11x" end="_End" />
+      <ellipse centre="_Middle-8x" radiusx="3" radiusy="3" />
+      <ellipse centre="_Middle+8x" radiusx="3" radiusy="3" />
+      <rect x="_Middle-14" y="_Middle-14" width="28" height="28" />
+      <line start="_Middle-6x+8.5y" end="_Middle+6x+8.5y" thickness="3" />
+      <line start="_Middle-30y" end="_Middle-14y" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_Analogue)">
+      <line start="_Start" end="_Middle-11y" />
+      <line start="_Middle+11y" end="_End" />
+      <ellipse centre="_Middle-8y" radiusx="3" radiusy="3" />
+      <ellipse centre="_Middle+8y" radiusx="3" radiusy="3" />
+      <rect x="_Middle-14" y="_Middle-14" width="28" height="28" />
+      <line start="_Middle-8.5x-6y" end="_Middle-8.5x+6y" thickness="3" />
+      <line start="_Middle+14x" end="_Middle+30x" />
+    </group>
+    
+    <!-- Push to Break-->
+    <group conditions="_Horizontal,$Type(eq_PushToBreak)">
+      <line start="_Middle-12x+5y" end="_Middle+12x+5y" />
+      <line start="_Middle-5x-1y" end="_Middle+5x-1y" />
+      <line start="_Middle-1y" end="_Middle+5y" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_PushToBreak)">
+      <line start="_Middle+5x-12y" end="_Middle+5x+12y" />
+      <line start="_Middle-1x-5y" end="_Middle-1x+5y" />
+      <line start="_Middle-1x" end="_Middle+5x" />
+    </group>
+    
+    <!-- Changeover -->
+    <group conditions="_Horizontal,$Type(eq_Changeover)">
+      <line start="_Start" end="_Middle-14x" />
+      <line start="_Middle+14x-10y" end="_End-10y" />
+      <line start="_Middle+14x+10y" end="_End+10y" />
+      <line start="_Middle-8x-2y" end="_Middle+8x-9y" />
+      <ellipse centre="_Middle-11x" radiusx="3" radiusy="3" />
+      <ellipse centre="_Middle+11x-10y" radiusx="3" radiusy="3" />
+      <ellipse centre="_Middle+11x+10y" radiusx="3" radiusy="3" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_Changeover)">
+      <line start="_Start" end="_Middle-14y" />
+      <line start="_Middle-10x+14y" end="_End-10x" />
+      <line start="_Middle+10x+14y" end="_End+10x" />
+      <line start="_Middle+2x-8y" end="_Middle+9x+8y" />
+      <ellipse centre="_Middle-11y" radiusx="3" radiusy="3" />
+      <ellipse centre="_Middle-10x+11y" radiusx="3" radiusy="3" />
+      <ellipse centre="_Middle+10x+11y" radiusx="3" radiusy="3" />
+    </group>
+  </render>
+</component>

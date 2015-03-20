@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component version="1.0" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
+  <declaration>
+    <meta name="name" value="Microphone" />
+    <meta name="minsize" value="60" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="044fa854-3617-4e3e-ae37-af664bb436b9" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+    <meta name="implementitem" value="microphone" />
+  </declaration>
+  <connections>
+    <group conditions="_Horizontal">
+      <connection name="a" start="_Start" end="_Middle-13x" edge="Start" />
+      <connection name="b" start="_Middle+13x" end="_End" edge="End" />
+    </group>
+    <group conditions="!_Horizontal">
+      <connection name="a" start="_Start" end="_Middle-13y" edge="Start" />
+      <connection name="b" start="_Middle+13y" end="_End" edge="End" />
+    </group>
+  </connections>
+  <render>
+    <!-- Horizontal -->
+    <group conditions="_Horizontal">
+      <line start="_Start" end="_Middle-13x" />
+      <line start="_Middle+13x" end="_End" />
+      <ellipse centre="_Middle+6y" radiusx="14" radiusy="14" />
+      <rect x="_Middle-12" y="_Middle+20" width="24" height="4" fill="true" />
+    </group>
+
+    <!-- Vertical -->
+    <group conditions="!_Horizontal">
+      <line start="_Start" end="_Middle-13y" />
+      <line start="_Middle+13y" end="_End" />
+      <ellipse centre="_Middle-6x" radiusx="14" radiusy="14" />
+      <rect x="_Middle-24" y="_Middle-12" width="4" height="24" fill="true" />
+    </group>
+  </render>
+</component>

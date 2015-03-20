@@ -5,6 +5,7 @@ build/
 [Bb]in/
 [Oo]bj/
 packages/
+/Components/Output/
 
 *.exe
 *.suo

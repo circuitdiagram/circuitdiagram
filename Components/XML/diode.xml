@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component version="1.0" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
+  <declaration>
+    <meta name="name" value="Diode" />
+    <meta name="minsize" value="30" />
+    <meta name="canflip" value="true" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="50cc071a-0abc-4276-a7a0-a5bff9cc0374" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+    
+    <property name="Type" type="enum" default="Standard" serialize="t" display="Type">
+      <option>Standard</option>
+      <option>Zener</option>
+      <option>LED</option>
+      <option>Photo</option>
+    </property>
+
+    <configurations>
+      <configuration name="Diode" value="Type:Standard" implements="diode" />
+      <configuration name="Zener Diode" value="Type:Zener" implements="zenerdiode" />
+      <configuration name="LED" value="Type:LED" implements="led" />
+      <configuration name="Photodiode" value="Type:Photo" implements="photodiode" />
+    </configurations>
+  </declaration>
+  <connections>
+    <group conditions="_Horizontal">
+      <connection name="an" start="_Start" end="_Middle-8x" edge="Start" />
+      <connection name="cat" start="_Middle+8x" end="_End" edge="End" />
+    </group>
+    <group conditions="!_Horizontal">
+      <connection name="an" start="_Start" end="_Middle-8y" edge="Start" />
+      <connection name="cat" start="_Middle+8y" end="_End" edge="End" />
+    </group>
+  </connections>
+  <render>
+    <!-- Standard -->
+    <group>
+      <line start="_Start" end="_End" />
+    </group>
+    <group conditions="_Horizontal">
+      <path start="_Middle+7x" data="m 0,-8 l 0,16 m 0,-8 l -15,8 l 0,-16 l 15,8" />
+    </group>
+    <group conditions="!_Horizontal">
+      <path start="_Middle+7y" data="m -8,0 l 16,0 m-8,0 l 8,-15 l-16,0 l 8,15" />
+    </group>
+    
+    <!-- Zener -->
+    <group conditions="_Horizontal,$Type(eq_Zener)">
+      <line start="_Middle+7x+9y" end="_Middle+2x+9y" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_Zener)">
+      <line start="_Middle+9x+7y" end="_Middle+9x+2y" />
+    </group>
+    
+    <!-- LED -->
+    <group conditions="_Horizontal,$Type(eq_LED)">
+      <path start="_Middle+5x" data="m -2,-11 l 8,-8 m 1,-1 l -4,2 l 2,2 l 2,-4 l -4,2" />
+      <path start="_Middle+5x" data="m 4,-4 l 8,-8 m 1,-1 l -4,2 l 2,2 l 2,-4 l -4,2" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_LED)">
+      <path start="_Middle+5y" data="m 11,-2 l 8,8 m 1,1 l -2,-4 l -2,2 l 4,2 l -2,-4" />
+      <path start="_Middle+5y" data="m 4,4 l 8,8 m 1,1 l -2,-4 l -2,2 l 4,2 l -2,-4" />
+    </group>
+    
+    <!-- Photo -->
+    <group conditions="_Horizontal,$Type(eq_Photo)">
+      <path start="_Middle+5x" data="m -26,17 l 8,-8 m 1,-1 l -4,2 l 2,2 l 2,-4 l -4,2" />
+      <path start="_Middle+5x" data="m -22,22 l 8,-8 m 1,-1 l -4,2 l 2,2 l 2,-4 l -4,2" />
+    </group>
+    <group conditions="!_Horizontal,$Type(eq_Photo)">
+      <path start="_Middle+5y" data="m -22,-22 l 8,8 m 1,1 l -2,-4 l -2,2 l 4,2 l -2,-4" />
+      <path start="_Middle+5y" data="m -26,-17 l 8,8 m 1,1 l -2,-4 l -2,2 l 4,2 l -2,-4" />
+    </group>
+  </render>
+</component>

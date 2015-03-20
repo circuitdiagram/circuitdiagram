@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component version="1.0" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
+  <declaration>
+    <meta name="name" value="Motor" />
+    <meta name="minsize" value="30" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="BE9BAF1F-61E9-4463-8A18-17B5E021087F" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+    <meta name="implementitem" value="motor" />
+  </declaration>
+  <connections>
+    <group conditions="_Horizontal">
+      <connection name="a" start="_Start" end="_Middle-13x" edge="Start" />
+      <connection name="b" start="_Middle+13x" end="_End" edge="End" />
+    </group>
+    <group conditions="!_Horizontal">
+      <connection name="a" start="_Start" end="_Middle-13y" edge="Start" />
+      <connection name="b" start="_Middle+13y" end="_End" edge="End" />
+    </group>
+  </connections>
+  <render>
+    <!-- Commmon -->
+    <group conditions="_Horizontal">
+      <line start="_Start" end="_Middle-13x" />
+      <line start="_Middle+13x" end="_End" />
+    </group>
+    <group conditions="!_Horizontal">
+      <line start="_Start" end="_Middle-13y" />
+      <line start="_Middle+13y" end="_End" />
+    </group>
+    <group>
+      <ellipse x="_Middle" y="_Middle" radiusx="12" radiusy="12" />
+      <text x="_Middle" y="_Middle" value="M" align="CentreCentre" size="large" />
+    </group>
+  </render>
+</component>

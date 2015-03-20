@@ -373,84 +373,16 @@
     <Resource Include="select icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Components\diode.xml" />
-    <None Include="Components\flipflop.xml" />
-    <None Include="Components\fuse.xml" />
-    <None Include="Components\label.xml" />
-    <None Include="Components\opamp.xml" />
-    <None Include="Components\wire.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Components\logicgate.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Components\resistor.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Logo32.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Components\capacitor.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Components\switch.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Components\source.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Components\microcontroller.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Components\counter4.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Components\inductor.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Components\meter.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Components\transistor.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Components\lamp.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Components\heater.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Components\motor.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Components\buzzer.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Components\speaker.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Components\externalconnection.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Components\microphone.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Components\transformer.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Components\crystal.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <SplashScreen Include="SplashScreen.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Logo200.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Components\integratedcircuit.xml" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Select64.png" />

@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component version="1.0" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
+  <declaration>
+    <meta name="name" value="Counter (4-bit)" />
+    <meta name="minsize" value="140" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="c73b2bac-cb8e-4153-8454-3dfdc30c4d7d" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+    <meta name="implementitem" value="counter4" />
+    <flags>
+      <option>horizontalonly</option>
+      <option>middlemustalign</option>
+    </flags>
+  </declaration>
+  <connections>
+    <group>
+      <connection name="ck" start="_Start" end="_Middle-67x" edge="start" />
+      <connection name="a" start="_Middle-50x+25y" end="_Middle-50x+30y" edge="end" />
+      <connection name="b" start="_Middle-20x+25y" end="_Middle-20x+30y" edge="end" />
+      <connection name="c" start="_Middle+10x+25y" end="_Middle+10x+30y" edge="end" />
+      <connection name="d" start="_Middle+40x+25y" end="_Middle+40x+30y" edge="end" />
+      <connection name="r" start="_Middle+60x" end="_End" edge="end" />
+    </group>
+  </connections>
+  <render>
+    <group>
+      <rect x="_Middle-60" y="_Middle-25" width="120" height="50" />
+      <ellipse centre="_Middle-64x" radiusx="3" radiusy="3" />
+      <path start="_Middle-60x-6y" data="l 6,6 l -6,6" thickness="1" />
+      <line start="_Start" end="_Middle-67x" />
+      <line start="_Middle-50x+25y" end="_Middle-50x+30y" />
+      <line start="_Middle-20x+25y" end="_Middle-20x+30y" />
+      <line start="_Middle+10x+25y" end="_Middle+10x+30y" />
+      <line start="_Middle+40x+25y" end="_Middle+40x+30y" />
+      <line start="_Middle+60x" end="_End" />
+
+      <!-- Labels -->
+      <text value="A" x="_Middle-50" y="_Middle+10" align="TopCentre" size="large" />
+      <text value="B" x="_Middle-20" y="_Middle+10" align="TopCentre" size="large" />
+      <text value="C" x="_Middle+10" y="_Middle+10" align="TopCentre" size="large" />
+      <text value="D" x="_Middle+40" y="_Middle+10" align="TopCentre" size="large" />
+      <text value="R" x="_Middle+48" y="_Middle" align="CentreLeft" size="large" />
+    </group>
+  </render>
+</component>

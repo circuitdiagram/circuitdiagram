@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component version="1.0" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
+  <declaration>
+    <meta name="name" value="Microcontroller" />
+    <meta name="minsize" value="120" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="b7586b7a-5963-4c62-a3c7-5e2967f9601e" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+    <meta name="implementitem" value="microcontroller" />
+    <flags>
+      <option>horizontalonly</option>
+    </flags>
+  </declaration>
+  <connections>
+    <group>
+      <connection start="_Start-80y" end="_Middle-48x-80y" edge="Start" />
+      <connection start="_Start-60y" end="_Middle-48x-60y" edge="Start" />
+      <connection start="_Start-40y" end="_Middle-48x-40y" edge="Start" />
+      <connection start="_Start-20y" end="_Middle-48x-20y" edge="Start" />
+      <connection start="_Start" end="_Middle-48x" edge="Start" />
+      <connection start="_Start+20y" end="_Middle-48x+20y" edge="Start" />
+      <connection start="_Start+40y" end="_Middle-48x+40y" edge="Start" />
+      <connection start="_Start+60y" end="_Middle-48x+60y" edge="Start" />
+      <connection start="_Start+80y" end="_Middle-48x+80y" edge="Start" />
+      <connection start="_Start+100y" end="_Middle-48x+100y" edge="Start" />
+
+      <connection start="_Middle+48x-80y" end="_End-80y" edge="End" />
+      <connection start="_Middle+48x-60y" end="_End-60y" edge="End" />
+      <connection start="_Middle+48x-40y" end="_End-40y" edge="End" />
+      <connection start="_Middle+48x-20y" end="_End-20y" edge="End" />
+      <connection start="_Middle+48x" end="_End" edge="End" />
+      <connection start="_Middle+48x+20y" end="_End+20y" edge="End" />
+      <connection start="_Middle+48x+40y" end="_End+40y" edge="End" />
+      <connection start="_Middle+48x+60y" end="_End+60y" edge="End" />
+    </group>
+  </connections>
+  <render>
+    <group>
+      <!-- Container -->
+      <rect x="_Middle-50" y="_Middle-90" width="100" height="200" />
+      
+      <!-- IO Wires -->
+      <line start="_Start-80y" end="_Middle-50x-80y" />
+      <line start="_Start-60y" end="_Middle-50x-60y" />
+      <line start="_Start-40y" end="_Middle-50x-40y" />
+      <line start="_Start-20y" end="_Middle-50x-20y" />
+      <line start="_Start" end="_Middle-50x" />
+      <line start="_Start+20y" end="_Middle-50x+20y" />
+      <line start="_Start+40y" end="_Middle-50x+40y" />
+      <line start="_Start+60y" end="_Middle-50x+60y" />
+      <line start="_Start+80y" end="_Middle-50x+80y" />
+      <line start="_Start+100y" end="_Middle-50x+100y" />
+
+      <line start="_Middle+50x-80y" end="_End-80y" />
+      <line start="_Middle+50x-60y" end="_End-60y" />
+      <line start="_Middle+50x-40y" end="_End-40y" />
+      <line start="_Middle+50x-20y" end="_End-20y" />
+      <line start="_Middle+50x" end="_End" />
+      <line start="_Middle+50x+20y" end="_End+20y" />
+      <line start="_Middle+50x+40y" end="_End+40y" />
+      <line start="_Middle+50x+60y" end="_End+60y" />
+
+      <!-- IO Labels -->
+      <text value="I7" x="_Middle-46" y="_Middle-80" align="CentreLeft" size="large">
+        <value>
+          <span>I</span>
+          <sub>7</sub>
+        </value>
+      </text>
+      <text value="I6" x="_Middle-46" y="_Middle-60" align="CentreLeft" size="large">
+        <value>
+          <span>I</span>
+          <sub>6</sub>
+        </value>
+      </text>
+      <text value="I5" x="_Middle-46" y="_Middle-40" align="CentreLeft" size="large">
+        <value>
+          <span>I</span>
+          <sub>5</sub>
+        </value>
+      </text>
+      <text value="I4" x="_Middle-46" y="_Middle-20" align="CentreLeft" size="large">
+        <value>
+          <span>I</span>
+          <sub>4</sub>
+        </value>
+      </text>
+      <text value="I3" x="_Middle-46" y="_Middle" align="CentreLeft" size="large">
+        <value>
+          <span>I</span>
+          <sub>3</sub>
+        </value>
+      </text>
+      <text value="I2" x="_Middle-46" y="_Middle+20" align="CentreLeft" size="large">
+        <value>
+          <span>I</span>
+          <sub>2</sub>
+        </value>
+      </text>
+      <text value="I1" x="_Middle-46" y="_Middle+40" align="CentreLeft" size="large">
+        <value>
+          <span>I</span>
+          <sub>1</sub>
+        </value>
+      </text>
+      <text value="I0" x="_Middle-46" y="_Middle+60" align="CentreLeft" size="large">
+        <value>
+          <span>I</span>
+          <sub>0</sub>
+        </value>
+      </text>
+      <text value="adc" x="_Middle-46" y="_Middle+80" align="CentreLeft" size="large" />
+      <text value="R" x="_Middle-46" y="_Middle+100" align="CentreLeft" size="large" />
+
+      <text value="Q7" x="_Middle+46" y="_Middle-80" align="CentreRight" size="large">
+        <value>
+          <span>Q</span>
+          <sub>7</sub>
+        </value>
+      </text>
+      <text value="Q6" x="_Middle+46" y="_Middle-60" align="CentreRight" size="large">
+        <value>
+          <span>Q</span>
+          <sub>6</sub>
+        </value>
+      </text>
+      <text value="Q5" x="_Middle+46" y="_Middle-40" align="CentreRight" size="large">
+        <value>
+          <span>Q</span>
+          <sub>5</sub>
+        </value>
+      </text>
+      <text value="Q4" x="_Middle+46" y="_Middle-20" align="CentreRight" size="large">
+        <value>
+          <span>Q</span>
+          <sub>4</sub>
+        </value>
+      </text>
+      <text value="Q3" x="_Middle+46" y="_Middle" align="CentreRight" size="large">
+        <value>
+          <span>Q</span>
+          <sub>3</sub>
+        </value>
+      </text>
+      <text value="Q2" x="_Middle+46" y="_Middle+20" align="CentreRight" size="large">
+        <value>
+          <span>Q</span>
+          <sub>2</sub>
+        </value>
+      </text>
+      <text value="Q1" x="_Middle+46" y="_Middle+40" align="CentreRight" size="large">
+        <value>
+          <span>Q</span>
+          <sub>1</sub>
+        </value>
+      </text>
+      <text value="Q0" x="_Middle+46" y="_Middle+60" align="CentreRight" size="large">
+        <value>
+          <span>Q</span>
+          <sub>0</sub>
+        </value>
+      </text>
+
+      <!-- Other -->
+      <line start="_Middle-46x+92.5y" end="_Middle-38x+92.5y" thickness="1" />
+      <text value="\u00B5Controller" x="_Middle+46x" y="_Middle+100" align="CentreRight" size="large" />
+    </group>
+  </render>
+</component>

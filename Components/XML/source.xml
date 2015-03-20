@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component version="1.0" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
+  <declaration>
+    <meta name="name" value="Source" />
+    <meta name="minsize" value="10" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="8979c617-b041-4069-8769-0b76dc0e6c52" />
+    <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
+
+    <property name="Voltage" type="double" default="5" serialize="voltage" display="Voltage">
+      <formatting>
+        <format conditions="$Voltage(gt_0)" value="+$Voltage V" />
+        <format value="$Voltage V" />
+      </formatting>
+    </property>
+
+    <property name="Frequency" type="double" default="50" serialize="frequency" display="Frequency">
+      <formatting>
+        <format value="$Frequency Hz" />
+      </formatting>
+      <other>
+        <conditions for="Display" value="$Type(eq_AC)" />
+        <conditions for="Serialize" value="$Type(eq_AC)" />
+      </other>
+    </property>
+
+    <property name="Type" type="enum" default="Rail2" serialize="t" display="Type">
+      <option>Rail</option>
+      <option>Rail2</option>
+      <option>Ground</option>
+      <option>Earth</option>
+      <option>Cell</option>
+      <option>AC</option>
+      <option>DC</option>
+    </property>
+
+    <configurations>
+      <configuration name="Rail" value="Type:Rail" implements="rail" />
+      <configuration name="Rail2" value="Type:Rail2" implements="rail" />
+      <configuration name="Ground" value="Type:Ground,Voltage:0" implements="ground" />
+      <configuration name="Earth" value="Type:Earth,Voltage:0" implements="rail" />
+      <configuration name="Cell" value="Type:Cell" implements="cell" />
+      <configuration name="AC Source" value="Type:AC" implements="acsource" />
+      <configuration name="DC Source" value="Type:DC" implements="cell" />
+    </configurations>
+    
+  </declaration>
+  <connections>
+    <group conditions="$Type(eq_Rail)">
+      <connection name="com" start="_Start" end="_End" edge="both" />
+    </group>
+    <group conditions="$Type(eq_Rail2)">
+      <connection name="com" start="_Start" end="_End" edge="both" />
+    </group>
+    <group conditions="$Type(eq_Ground),_Horizontal">
+      <connection start="_Start+10x" end="_End" edge="both" />
+    </group>
+    <group conditions="$Type(eq_Ground),!_Horizontal">
+      <connection start="_Start" end="_End-8y" edge="both" />
+    </group>
+    <group conditions="$Type(eq_Earth),_Horizontal">
+      <connection start="_Start+10x" end="_End" edge="both" />
+    </group>
+    <group conditions="$Type(eq_Earth),!_Horizontal">
+      <connection start="_Start" end="_End-12y" edge="both" />
+    </group>
+    <group conditions="$Type(eq_AC),_Horizontal">
+      <connection start="_Start" end="_Middle-12x" edge="start" />
+      <connection start="_Middle+12x" end="_End" edge="end" />
+    </group>
+    <group conditions="$Type(eq_AC),!_Horizontal">
+      <connection start="_Start" end="_Middle-12y" edge="start" />
+      <connection start="_Middle+12y" end="_End" edge="end" />
+    </group>
+    <group conditions="$Type(eq_DC),_Horizontal">
+      <connection start="_Start" end="_Middle-16x" edge="start" />
+      <connection start="_Middle+16x" end="_End" edge="end" />
+    </group>
+    <group conditions="$Type(eq_DC),!_Horizontal">
+      <connection start="_Start" end="_Middle-16y" edge="start" />
+      <connection start="_Middle+16y" end="_End" edge="end" />
+    </group>
+    <group conditions="$Type(eq_Cell),_Horizontal">
+      <connection start="_Start" end="_Middle-6x" edge="start" />
+      <connection start="_Middle+6x" end="_End" edge="end" />
+    </group>
+    <group conditions="$Type(eq_Cell),!_Horizontal">
+      <connection start="_Start" end="_Middle-6y" edge="start" />
+      <connection start="_Middle+6y" end="_End" edge="end" />
+    </group>
+  </connections>
+  <render>
+    <!-- Rail -->
+    <group conditions="$Type(eq_Rail),_Horizontal">
+      <text value="$Voltage" x="_Start-5" y="_Start" align="CentreRight" size="large" />
+    </group>
+    <group conditions="$Type(eq_Rail),!_Horizontal">
+      <text value="$Voltage" x="_Start" y="_Start-5" align="BottomCentre" size="large" />
+    </group>
+    <group conditions="$Type(eq_Rail)">
+      <line start="_Start" end="_End" />
+    </group>
+
+    <!-- Rail 2 -->
+    <group conditions="$Type(eq_Rail2),_Horizontal">
+      <path start="_Start-5x-6y" data="l 10,0 l -5,-10, l -5,10" />
+      <line start="_Start-6y" end="_Start" />
+      <text value="$Voltage" x="_Start-6" y="_Start-12" align="CentreRight" size="large" />
+    </group>
+    <group conditions="$Type(eq_Rail2),!_Horizontal">
+      <path start="_Start-5x" data="l 10,0 l -5,-10, l -5,10" />
+      <text value="$Voltage" x="_Start-6" y="_Start-6" align="CentreRight" size="large" />
+    </group>
+    <group conditions="$Type(eq_Rail2)">
+      <line start="_Start" end="_End" />
+    </group>
+    
+    <!-- Ground -->
+    <group conditions="$Type(eq_Ground),_Horizontal">
+      <line start="_Start+10x" end="_End" />
+      <line start="_Start+10x" end="_Start+10x+8y" />
+      <path start="_Start+2x+8y" data="l 16,0 l -8,8, l -8,-8" />
+    </group>
+    <group conditions="$Type(eq_Ground),!_Horizontal">
+      <line start="_Start" end="_End-8y" />
+      <path start="_End-8x-8y" data="l 16,0 l -8,8, l -8,-8" />
+    </group>
+
+    <!-- Earth -->
+    <group conditions="$Type(eq_Earth),_Horizontal">
+      <line start="_Start+10x" end="_End" />
+      <line start="_Start+8x" end="_Start+8x+6y" />
+      <line start="_Start+6y" end="_Start+16x+6y" />
+      <line start="_Start+3x+12y" end="_Start+13x+12y" />
+      <line start="_Start+6x+18y" end="_Start+10x+18y" />
+    </group>
+    <group conditions="$Type(eq_Earth),!_Horizontal">
+      <line start="_Start" end="_End-12y" />
+      <line start="_End-8x-12y" end="_End+8x-12y" />
+      <line start="_End-5x-6y" end="_End+5x-6y" />
+      <line start="_End-2x" end="_End+2x" />
+    </group>
+
+    <!-- AC Source -->
+    <group conditions="$Type(eq_AC),_Horizontal">
+      <line start="_Start" end="_Middle-12x" />
+      <ellipse centre="_Middle" radiusx="12" radiusy="12" />
+      <line start="_Middle+12x" end="_End" />
+      <path start="_Middle" data="m -8,0 a 4 4 180 0 1 8 0 a 4 4 180 0 0 8 0" />
+    </group>
+    <group conditions="$Type(eq_AC),!_Horizontal">
+      <line start="_Start" end="_Middle-12y" />
+      <ellipse centre="_Middle" radiusx="12" radiusy="12" />
+      <line start="_Middle+12y" end="_End" />
+      <path start="_Middle" data="m -8,0 a 4 4 180 0 1 8 0 a 4 4 180 0 0 8 0" />
+    </group>
+
+    <!-- DC Source -->
+    <group conditions="$Type(eq_DC),_Horizontal">
+      <line start="_Start" end="_Middle-16x" />
+      <ellipse centre="_Middle" radiusx="16" radiusy="16" />
+      <line start="_Middle+16x" end="_End" />
+      <path start="_Middle" data="m -10,0 l 8,0 m -4,-4 l 0,8 m 10,-4 l 8,0" />
+    </group>
+    <group conditions="$Type(eq_DC),!_Horizontal">
+      <line start="_Start" end="_Middle-16y" />
+      <ellipse centre="_Middle" radiusx="16" radiusy="16" />
+      <line start="_Middle+16y" end="_End" />
+      <path start="_Middle" data="m 0,-10 l 0,8 m -4,-4 l 8,0 m -8,14 l 8,0" />
+    </group>
+    
+    <!-- Cell -->
+    <group conditions="$Type(eq_Cell),_Horizontal">
+      <line start="_Start" end="_Middle-3x" />
+      <line start="_Middle-3x-10y" end="_Middle-3x+10y" />
+      <line start="_Middle+3x-5y" end="_Middle+3x+5y" thickness="3" />
+      <line start="_Middle+3x" end="_End" />
+      <text value="$Voltage" x="_Middle" y="_Middle-12" align="BottomCentre" size="large" />
+    </group>
+    <group conditions="$Type(eq_Cell),!_Horizontal">
+      <line start="_Start" end="_Middle-3y" />
+      <line start="_Middle-10x-3y" end="_Middle+10x-3y" />
+      <line start="_Middle-5x+3y" end="_Middle+5x+3y" thickness="3" />
+      <line start="_Middle+3y" end="_End" />
+      <text value="$Voltage" x="_Middle-14" y="_Middle" align="CentreRight" size="large" />
+    </group>
+  </render>
+</component>
