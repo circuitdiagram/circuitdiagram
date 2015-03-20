@@ -38,7 +38,11 @@
                             </StackPanel>
                         </ToolTip>
                     </StackPanel.ToolTip>
-                    <Image Source="{Binding Path=Icon, Converter={StaticResource MultiResolutionImageToImageSourceConverter}}" Width="45" Height="45" />
+                    <Rectangle Fill="White" Width="32" Height="32">
+                        <Rectangle.OpacityMask>
+                            <ImageBrush ImageSource="{Binding Path=Icon, Converter={StaticResource MultiResolutionImageToImageSourceConverter}}" Stretch="None" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
                     <TextBlock Text="{Binding Description.ComponentName}" VerticalAlignment="Center" Margin="5,0,0,0" Visibility="{Binding Converter={StaticResource BoolToVisConverter}, Path=NoConfiguration}" />
                     <TextBlock Text="{Binding Configuration.Name}" VerticalAlignment="Center" Margin="5,0,0,0" Visibility="{Binding Converter={StaticResource BoolToVisConverter}, Path=HasConfiguration}" />
                 </StackPanel>

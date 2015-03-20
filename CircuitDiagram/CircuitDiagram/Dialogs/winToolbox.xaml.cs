@@ -94,6 +94,8 @@ namespace CircuitDiagram
 
 #if PORTABLE
             string toolboxSettingsPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\toolbox.xml";
+#elif DEBUG
+            string toolboxSettingsPath = System.IO.Path.Combine(MainWindow.ProjectDirectory, "Components\\toolbox.xml");
 #else
             string toolboxSettingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml";
 #endif
@@ -210,6 +212,8 @@ namespace CircuitDiagram
         {
 #if PORTABLE
             string toolboxSettingsPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\toolbox.xml";
+#elif DEBUG
+            string toolboxSettingsPath = System.IO.Path.Combine(MainWindow.ProjectDirectory, "Components\\toolbox.xml");
 #else
             string toolboxSettingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml";
 #endif

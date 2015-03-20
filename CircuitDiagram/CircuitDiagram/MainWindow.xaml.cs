@@ -64,8 +64,16 @@ namespace CircuitDiagram
         public System.Collections.ObjectModel.ObservableCollection<string> RecentFiles = new System.Collections.ObjectModel.ObservableCollection<string>();
         List<ImplementationConversionCollection> m_componentRepresentations = new List<ImplementationConversionCollection>();
         string m_docToLoad = null;
-        readonly string projectDirectory;
         #endregion
+
+        public static readonly string ProjectDirectory;
+
+#if DEBUG
+        static MainWindow()
+        {
+            ProjectDirectory = Path.GetFullPath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\..\\..\\..\\..\\..\\");
+        }
+#endif
 
         public MainWindow()
         {
@@ -75,10 +83,6 @@ namespace CircuitDiagram
                 {
                     m_statusTimer.Stop(); lblStatus.Text = "Ready";
                 }), lblStatus.Dispatcher);
-
-#if DEBUG
-            projectDirectory = Path.GetFullPath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\..\\..\\..\\..\\..\\");
-#endif
 
             // Initialize cdlibrary
             ConfigureCdLibrary();
@@ -232,7 +236,7 @@ namespace CircuitDiagram
 #endif
 
 #if DEBUG
-            string debugComponentsDirectory = Path.Combine(projectDirectory, "Components\\Output");
+            string debugComponentsDirectory = Path.Combine(ProjectDirectory, "Components\\Output");
             if (Directory.Exists(debugComponentsDirectory))
                 componentLocations.Add(debugComponentsDirectory);
 #endif
@@ -437,7 +441,7 @@ namespace CircuitDiagram
 #if PORTABLE
             string toolboxSettingsPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\toolbox.xml";
 #elif DEBUG
-            string toolboxSettingsPath = Path.Combine(projectDirectory, "Components\\toolbox.xml");
+            string toolboxSettingsPath = Path.Combine(ProjectDirectory, "Components\\toolbox.xml");
 #else
             string toolboxSettingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml";
 #endif
