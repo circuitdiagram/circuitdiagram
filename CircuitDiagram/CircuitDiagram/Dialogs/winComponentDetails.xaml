@@ -30,7 +30,9 @@
                         <TextBlock Text="Resource type: " />
                         <TextBlock Text="{Binding ResourceType}" />
                     </StackPanel>
-                    <Image Name="image" HorizontalAlignment="Left" Source="{Binding Converter={StaticResource BinaryResourceToImageSourceConverter}}" />
+                    <Border Background="White" HorizontalAlignment="Left">
+                        <Image Name="image" Source="{Binding Converter={StaticResource BinaryResourceToImageSourceConverter}}" />
+                    </Border>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="DPI: " />
                         <TextBlock Text="{Binding Path=Source.DpiX,ElementName=image}" />

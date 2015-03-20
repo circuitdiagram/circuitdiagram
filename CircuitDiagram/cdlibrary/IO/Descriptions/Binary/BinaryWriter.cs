@@ -524,17 +524,8 @@ namespace CircuitDiagram.IO
             System.IO.BinaryWriter writer = new System.IO.BinaryWriter(m_resourcesStream);
             foreach (BinaryResource resource in Resources)
             {
-                using (MemoryStream resourceStream = new MemoryStream())
-                {
-                    BW resourceWriter = new BW(resourceStream);
-                    resourceWriter.Write(resource.ID);
-                    resourceWriter.Write(0u);
-                    resourceWriter.Write(resource.Buffer);
-
-                    writer.Write((ushort)BinaryConstants.ContentItemType.Resource);
-                    writer.Write((uint)resourceStream.Length);
-                    writer.Write(resourceStream.ToArray());
-                }
+                writer.Write((ushort)BinaryConstants.ContentItemType.Resource);
+                resource.Write(writer);
             }
         }
 
