@@ -30,6 +30,7 @@ using CircuitDiagram.IO;
 using CircuitDiagram.Components.Description;
 using System.Security.Cryptography.X509Certificates;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace cdcompile
 {
@@ -209,6 +210,7 @@ namespace cdcompile
         {
             componentName = componentName.ToLowerInvariant();
             componentName = componentName.Replace(" ", "_");
+            componentName = Regex.Replace(componentName, @"[\(\)-]", "");
             return componentName;
         }
 

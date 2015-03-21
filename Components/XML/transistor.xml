@@ -24,7 +24,7 @@
       <configuration name="NPN Transistor" value="Type:NPN" implements="transnpn" />
       <configuration name="PNP Transistor" value="Type:PNP" implements="transpnp" />
       <configuration name="N-Channel MOSFET" value="Type:NChannelMosfet" implements="mosfetn" />
-      <configuration name="P-ChannelMOSFET" value="Type:PChannelMosfet" implements="mosfetp" />
+      <configuration name="P-Channel MOSFET" value="Type:PChannelMosfet" implements="mosfetp" />
     </configurations>
 
   </declaration>
