@@ -15,7 +15,7 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
-        <TabControl Margin="12,12,12,41" Name="tbctlMain">
+        <TabControl Margin="12,12,12,41" Name="tbctlMain" Style="{StaticResource CDTabControl}">
             <TabItem Header="General" Name="tabGeneral">
                 <Grid>
                     <StackPanel Orientation="Vertical">

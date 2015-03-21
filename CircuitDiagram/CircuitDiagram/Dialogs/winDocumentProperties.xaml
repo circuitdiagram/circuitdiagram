@@ -13,7 +13,7 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
-        <TabControl Margin="12,12,12,47">
+        <TabControl Margin="12,12,12,47" Style="{StaticResource CDTabControl}">
             <TabItem Name="tabInformation" Header="Information">
                 <Grid>
                     <Grid.RowDefinitions>

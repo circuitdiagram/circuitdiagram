@@ -200,4 +200,78 @@
     <Style x:Key="ContextMenuItemStyle" TargetType="MenuItem">
         <Setter Property="Padding" Value="3" />
     </Style>
+
+    <Style x:Key="CDTabControl" TargetType="{x:Type TabControl}">
+        <Style.Resources>
+            <Style TargetType="{x:Type TabItem}">
+                <Setter Property="FocusVisualStyle"
+                        Value="{x:Null}" />
+                <Setter Property="Background"
+                        Value="Transparent" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type TabItem}">
+                            <Grid Height="30"
+                                  Background="{TemplateBinding Background}"
+                                  SnapsToDevicePixels="true">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter Grid.Column="0"
+                                                  Margin="10,0,10,0"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  ContentSource="Header" />
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected"
+                                         Value="false">
+                                    <Setter Property="Background"
+                                            Value="Transparent" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver"
+                                         Value="true">
+                                    <Setter Property="Background"
+                                            Value="{DynamicResource BorderBrushSelected}" />
+                                </Trigger>
+                                <Trigger Property="IsSelected"
+                                         Value="true">
+                                    <Setter Property="Background"
+                                            Value="{DynamicResource BackgroundSelected}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Style.Resources>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabControl}">
+                    <Grid KeyboardNavigation.TabNavigation="Local">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Border Background="Transparent"
+                                BorderBrush="{DynamicResource BackgroundSelected}"
+                                BorderThickness="0,0,0,3">
+                            <TabPanel Name="HeaderPanel"
+                                      Margin="0,0,4,-1"
+                                      Panel.ZIndex="1"
+                                      IsItemsHost="True"
+                                      KeyboardNavigation.TabIndex="1" />
+                        </Border>
+                        <Border Grid.Row="1"
+                                Background="{DynamicResource Background}" />
+                        <ContentPresenter Name="PART_SelectedContentHost"
+                                          Grid.Row="1"
+                                          ContentSource="SelectedContent" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>
