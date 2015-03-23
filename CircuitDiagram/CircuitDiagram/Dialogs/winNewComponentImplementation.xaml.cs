@@ -70,7 +70,8 @@ namespace CircuitDiagram
                     ImplementationConversion item = new ImplementationConversion();
                     item.ToName = description.ComponentName;
                     item.ToGUID = description.Metadata.GUID;
-                    item.ToIcon = description.Metadata.Icon.GetBestIcon(CurrentDPI);
+                    if (description.Metadata.Icon != null)
+                        item.ToIcon = description.Metadata.Icon.GetBestIcon(CurrentDPI);
                     cbxRepresentation.Items.Add(item);
                 }
                 else
@@ -80,9 +81,10 @@ namespace CircuitDiagram
                         ImplementationConversion item = new ImplementationConversion();
                         item.ToName = description.ComponentName;
                         item.ToGUID = description.Metadata.GUID;
-                        item.ToIcon = configuration.Icon.GetBestIcon(CurrentDPI);
-                        if (configuration.Icon == null)
+                        if (configuration.Icon == null && description.Metadata.Icon != null)
                             item.ToIcon = description.Metadata.Icon.GetBestIcon(CurrentDPI);
+                        else
+                            item.ToIcon = configuration.Icon.GetBestIcon(CurrentDPI);
                         item.ToConfiguration = configuration.Name;
                         cbxRepresentation.Items.Add(item);
                     }

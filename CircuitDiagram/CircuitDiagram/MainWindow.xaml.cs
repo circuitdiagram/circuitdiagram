@@ -64,6 +64,13 @@ namespace CircuitDiagram
         public System.Collections.ObjectModel.ObservableCollection<string> RecentFiles = new System.Collections.ObjectModel.ObservableCollection<string>();
         List<ImplementationConversionCollection> m_componentRepresentations = new List<ImplementationConversionCollection>();
         string m_docToLoad = null;
+
+#if PORTABLE
+            string implementationsFileLocation = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\implementations.xml";
+#else
+        string implementationsFileLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\implementations.xml";
+#endif
+
         #endregion
 
         public static readonly string ProjectDirectory;
@@ -321,12 +328,6 @@ namespace CircuitDiagram
             #endregion
 
             #region Load Component Implementation Conversions
-#if PORTABLE
-            string implementationsFileLocation = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\implementations.xml";
-#else
-            string implementationsFileLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\implementations.xml";
-#endif
-
             if (File.Exists(implementationsFileLocation))
             {
                 try
@@ -1331,11 +1332,7 @@ namespace CircuitDiagram
                 circuitDisplay.DrawConnections();
 
                 // Save implementation representations
-#if PORTABLE
-                XmlTextWriter writer = new XmlTextWriter(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\implementations.xml", Encoding.UTF8);
-#else
-                XmlTextWriter writer = new XmlTextWriter(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\implementations.xml", Encoding.UTF8);
-#endif
+                XmlTextWriter writer = new XmlTextWriter(implementationsFileLocation, Encoding.UTF8);
                 writer.Formatting = Formatting.Indented;
                 writer.WriteStartDocument();
                 writer.WriteStartElement("implementations");
