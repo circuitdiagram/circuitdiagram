@@ -143,8 +143,12 @@ namespace cdcompile
             }
 
             string output = compileOptions.Output;
-            if (Directory.Exists(output))
+            if (!Path.HasExtension(output))
+            {
+                if (!Directory.Exists(output))
+                    Directory.CreateDirectory(output);
                 output += "\\" + description.ComponentName.ToLowerInvariant() + ".cdcom";
+            }
             FileStream stream = new FileStream(output, FileMode.Create, FileAccess.Write);
 
             X509Certificate2 certificate = null;
