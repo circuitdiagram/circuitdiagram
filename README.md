@@ -1,4 +1,6 @@
-# [Circuit Diagram](http://www.circuit-diagram.org/): Create Electronic Circuit Diagrams
+# [Circuit Diagram](http://www.circuit-diagram.org/): Draw Circuit Diagrams
+
+[![Build status](https://ci.appveyor.com/api/projects/status/8xt15xqjat9ime9f/branch/master?svg=true)](https://ci.appveyor.com/project/CircuitDiagram/circuitdiagram/branch/master)
 
 Circuit Diagram makes it easy to design and share diagrams using a wide range of components. Once created, you can export your diagram unsing one of the built-in image exporters, or even download new export plugins.
 

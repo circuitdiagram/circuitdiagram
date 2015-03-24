@@ -60,7 +60,6 @@ namespace CircuitDiagram.IO
                 case CommandType.SmoothCurveTo:
                     {
                         SmoothCurveTo pCommand = command as SmoothCurveTo;
-                        writer.Write(pCommand.ControlStart);
                         writer.Write(pCommand.ControlEnd);
                         writer.Write(pCommand.End);
                     }
@@ -86,8 +85,6 @@ namespace CircuitDiagram.IO
                 case CommandType.SmoothQuadraticBeizerCurveTo:
                     {
                         SmoothQuadraticBeizerCurveTo pCommand = command as SmoothQuadraticBeizerCurveTo;
-                        writer.Write(pCommand.ControlStart);
-                        writer.Write(pCommand.ControlEnd);
                         writer.Write(pCommand.End);
                     }
                     break;
@@ -128,7 +125,6 @@ namespace CircuitDiagram.IO
                 case CommandType.SmoothCurveTo:
                     {
                         SmoothCurveTo pCommand = command as SmoothCurveTo;
-                        pCommand.ControlStart = reader.ReadPoint();
                         pCommand.ControlEnd = reader.ReadPoint();
                         pCommand.End = reader.ReadPoint();
                     }
@@ -153,8 +149,6 @@ namespace CircuitDiagram.IO
                 case CommandType.SmoothQuadraticBeizerCurveTo:
                     {
                         SmoothQuadraticBeizerCurveTo pCommand = command as SmoothQuadraticBeizerCurveTo;
-                        pCommand.ControlStart = reader.ReadPoint();
-                        pCommand.ControlEnd = reader.ReadPoint();
                         pCommand.End = reader.ReadPoint();
                     }
                     break;

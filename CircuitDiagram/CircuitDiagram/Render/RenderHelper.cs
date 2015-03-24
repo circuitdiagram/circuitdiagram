@@ -17,16 +17,18 @@ namespace CircuitDiagram.Render
             {
                 dc.BeginFigure(start, fill, false);
                 Vector startOffset = new Vector(start.X, start.Y);
+                IPathCommand previous = null;
                 foreach (IPathCommand command in commands)
                 {
-                    command.Draw(dc, startOffset);
+                    Draw(dc, command, previous, startOffset);
+                    previous = command;
                 }
                 dc.Close();
             }
             return geometry;
         }
 
-        public static void Draw(this IPathCommand element, StreamGeometryContext dc, Vector startOffset)
+        private static void Draw(StreamGeometryContext dc, IPathCommand element, IPathCommand previous, Vector startOffset)
         {
             if (element is LineTo)
                 dc.LineTo(new System.Windows.Point((element as LineTo).X + startOffset.X, (element as LineTo).Y + startOffset.Y), true, true);
@@ -46,12 +48,35 @@ namespace CircuitDiagram.Render
             else if (element is SmoothCurveTo)
             {
                 SmoothCurveTo item = element as SmoothCurveTo;
-                dc.BezierTo(Point.Add(item.ControlStart, startOffset), Point.Add(item.ControlEnd, startOffset), Point.Add(item.End, startOffset), true, true);
+
+                // If previous command is not S or C, then control points are the same
+                Point controlStart = item.ControlEnd;
+
+                // Else reflect ControlEnd of previous command in StartPoint
+                if (previous is SmoothCurveTo)
+                    controlStart = ReflectPointIn((previous as SmoothCurveTo).ControlEnd, (previous as SmoothCurveTo).End);
+                else if (previous is CurveTo)
+                    controlStart = ReflectPointIn((previous as CurveTo).ControlEnd, (previous as CurveTo).End);
+
+                dc.BezierTo(Point.Add(controlStart, startOffset), Point.Add(item.ControlEnd, startOffset), Point.Add(item.End, startOffset), true, true);
             }
             else if (element is SmoothQuadraticBeizerCurveTo)
             {
                 SmoothQuadraticBeizerCurveTo item = element as SmoothQuadraticBeizerCurveTo;
-                dc.BezierTo(Point.Add(item.ControlStart, startOffset), Point.Add(item.ControlEnd, startOffset), Point.Add(item.End, startOffset), true, true);
+
+                if (previous is SmoothQuadraticBeizerCurveTo)
+                {
+                    throw new NotSupportedException();
+                }
+                else if (previous is QuadraticBeizerCurveTo)
+                {
+                    throw new NotSupportedException();
+                }
+                else
+                {
+                    // If previous command is not Q or T, then draw a line
+                    dc.LineTo(item.End, true, true);
+                }
             }
             else if (element is QuadraticBeizerCurveTo)
             {
@@ -63,6 +88,16 @@ namespace CircuitDiagram.Render
         public static string CircuitFont()
         {
             return "Arial";
+        }
+
+        private static Point ReflectPointIn(Point point, Point anchor)
+        {
+            Vector magnitude = Point.Subtract(point, anchor);
+
+            // Reflect
+            magnitude.Negate();
+
+            return Point.Add(anchor, magnitude);
         }
     }
 }
