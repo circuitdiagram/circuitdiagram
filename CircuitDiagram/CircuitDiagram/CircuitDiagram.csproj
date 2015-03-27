@@ -164,7 +164,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BuildChannelAttribute.cs" />
-    <Compile Include="ComponentEditor.cs" />
+    <Compile Include="Controls\ComponentEditor.cs" />
     <Compile Include="Controls\ToolboxComponent.cs" />
     <Compile Include="Converters\MultiResolutionImageToImageSourceConverter.cs" />
     <Compile Include="Converters\BinaryResourceToImageSourceConverter.cs" />
@@ -189,7 +189,6 @@
     <Compile Include="Dialogs\winSaveOptions.xaml.cs">
       <DependentUpon>winSaveOptions.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EmbedComponentOptions.cs" />
     <Compile Include="ImplementationConversion.cs" />
     <Compile Include="MultiResolutionImageExtensions.cs" />
     <Compile Include="PluginManager.cs" />
@@ -264,8 +263,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CircuitDisplay.cs" />
-    <Compile Include="DisplayComponent.cs" />
+    <Compile Include="Controls\CircuitDisplay.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -353,13 +351,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Logo32.png" />
+    <Resource Include="Images\Logo32.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <SplashScreen Include="SplashScreen.png" />
+    <SplashScreen Include="Images\SplashScreen.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Logo200.png" />

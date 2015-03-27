@@ -4,7 +4,7 @@
         xmlns:cd="clr-namespace:CircuitDiagram"
         xmlns:tb="clr-namespace:Toolbox;assembly=Toolbox"
         xmlns:window="clr-namespace:CircuitDiagram.DPIWindow;assembly=CircuitDiagram.DPIWindow"
-        Title="Circuit Diagram" Height="565" Width="800" KeyDown="Window_KeyDown" Icon="Logo32.png" Closing="Window_Closing"
+        Title="Circuit Diagram" Height="565" Width="800" KeyDown="Window_KeyDown" Icon="Images/Logo32.png" Closing="Window_Closing"
         TitleCaps="False" WindowTransitionsEnabled="False" EnableDWMDropShadow="True">
     <Window.Resources>
         <ResourceDictionary>
