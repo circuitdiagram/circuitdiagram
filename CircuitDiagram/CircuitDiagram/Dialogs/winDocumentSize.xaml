@@ -1,7 +1,7 @@
-﻿<controls:MetroWindow x:Class="CircuitDiagram.winDocumentSize"
+﻿<window:MetroDPIWindow x:Class="CircuitDiagram.winDocumentSize"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:window="clr-namespace:CircuitDiagram.DPIWindow;assembly=CircuitDiagram.DPIWindow"
         Title="Document Size" Height="150" Width="330" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         TitleCaps="False" WindowTransitionsEnabled="False" EnableDWMDropShadow="True">
     <Window.Resources>
@@ -30,4 +30,4 @@
         <Button Content="OK" Height="23" HorizontalAlignment="Right" Margin="0,0,93,12" Name="btnOK" VerticalAlignment="Bottom" Width="75" IsDefault="True" Click="btnOK_Click" />
         <Button Content="Cancel" Height="23" HorizontalAlignment="Right" Margin="0,0,12,12" Name="btnCancel" VerticalAlignment="Bottom" Width="75" IsCancel="True" Click="btnCancel_Click" />
     </Grid>
-</controls:MetroWindow>
+</window:MetroDPIWindow>

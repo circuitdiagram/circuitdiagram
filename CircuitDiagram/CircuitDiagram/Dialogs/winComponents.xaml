@@ -1,8 +1,8 @@
-﻿<controls:MetroWindow x:Class="CircuitDiagram.winComponents"
+﻿<window:MetroDPIWindow x:Class="CircuitDiagram.winComponents"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:my="clr-namespace:CircuitDiagram"
-        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:window="clr-namespace:CircuitDiagram.DPIWindow;assembly=CircuitDiagram.DPIWindow"
         Title="Components" Height="385" Width="600" ShowInTaskbar="False" ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner" TitleCaps="False" WindowTransitionsEnabled="False" EnableDWMDropShadow="True">
     <Window.Resources>
@@ -88,4 +88,4 @@
             <Hyperlink Name="lnkComponentsFolder" Click="hyperlinkComponentsFolder_Click">Components folder</Hyperlink>
         </Label>
     </Grid>
-</controls:MetroWindow>
+</window:MetroDPIWindow>

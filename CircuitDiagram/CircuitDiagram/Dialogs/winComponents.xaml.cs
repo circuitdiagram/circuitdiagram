@@ -18,31 +18,20 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using CircuitDiagram.Components;
-using System.Collections;
-using System.Globalization;
 using CircuitDiagram.Components.Description;
-using NativeHelpers;
-using MahApps.Metro.Controls;
+using CircuitDiagram.DPIWindow;
+using System;
+using System.Globalization;
+using System.Windows;
+using System.Windows.Data;
 
 namespace CircuitDiagram
 {
     /// <summary>
     /// Interaction logic for winComponents.xaml
     /// </summary>
-    public partial class winComponents : MetroWindow
+    public partial class winComponents : MetroDPIWindow
     {
         public winComponents()
         {

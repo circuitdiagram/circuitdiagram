@@ -18,30 +18,24 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+using CircuitDiagram.Components;
+using CircuitDiagram.Components.Description;
+using CircuitDiagram.DPIWindow;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Xml;
-using CircuitDiagram.Components;
-using System.Collections.ObjectModel;
-using CircuitDiagram.Components.Description;
-using MahApps.Metro.Controls;
 
 namespace CircuitDiagram
 {
     /// <summary>
     /// Interaction logic for winToolbox.xaml
     /// </summary>
-    public partial class winToolbox : MetroWindow
+    public partial class winToolbox : MetroDPIWindow
     {
         private int CategoryCounter { get; set; }
 

@@ -1,24 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using CircuitDiagram.DPIWindow;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Text.RegularExpressions;
-using MahApps.Metro.Controls;
 
 namespace CircuitDiagram
 {
     /// <summary>
     /// Interaction logic for winDocumentSize.xaml
     /// </summary>
-    public partial class winDocumentSize : MetroWindow
+    public partial class winDocumentSize : MetroDPIWindow
     {
         Regex numMatch;
 

@@ -1,7 +1,7 @@
-﻿<controls:MetroWindow x:Class="CircuitDiagram.winAbout"
+﻿<window:MetroDPIWindow x:Class="CircuitDiagram.winAbout"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:window="clr-namespace:CircuitDiagram.DPIWindow;assembly=CircuitDiagram.DPIWindow"
         Title="About Circuit Diagram" Height="258" Width="478" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" ResizeMode="NoResize"
         TitleCaps="False" WindowTransitionsEnabled="False" EnableDWMDropShadow="True">
     <Window.Resources>
@@ -26,4 +26,4 @@
         </StackPanel>
         <Image HorizontalAlignment="Left" Height="200" Margin="10,10,0,0" VerticalAlignment="Top" Width="200" Source="../Logo200.png" />
     </Grid>
-</controls:MetroWindow>
+</window:MetroDPIWindow>

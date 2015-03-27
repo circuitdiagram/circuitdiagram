@@ -1,7 +1,7 @@
-﻿<controls:MetroWindow x:Class="CircuitDiagram.winDocumentLoadResult"
+﻿<window:MetroDPIWindow x:Class="CircuitDiagram.winDocumentLoadResult"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:window="clr-namespace:CircuitDiagram.DPIWindow;assembly=CircuitDiagram.DPIWindow"
         Title="Problem Opening Document" Width="560" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         SizeToContent="Height" TitleCaps="False" WindowTransitionsEnabled="False" EnableDWMDropShadow="True">
     <Window.Resources>
@@ -21,4 +21,4 @@
             <Button Content="OK" Height="23" HorizontalAlignment="Right" Name="btnOK" Width="75" IsDefault="True" Click="btnOK_Click" Margin="12,12,0,0" />
         </StackPanel>
     </Grid>
-</controls:MetroWindow>
+</window:MetroDPIWindow>

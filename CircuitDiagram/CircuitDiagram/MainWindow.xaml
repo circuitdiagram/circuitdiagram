@@ -1,9 +1,9 @@
-﻿<controls:MetroWindow x:Class="CircuitDiagram.MainWindow"
+﻿<window:MetroDPIWindow x:Class="CircuitDiagram.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:cd="clr-namespace:CircuitDiagram"
         xmlns:tb="clr-namespace:Toolbox;assembly=Toolbox"
-        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:window="clr-namespace:CircuitDiagram.DPIWindow;assembly=CircuitDiagram.DPIWindow"
         Title="Circuit Diagram" Height="565" Width="800" KeyDown="Window_KeyDown" Icon="Logo32.png" Closing="Window_Closing"
         TitleCaps="False" WindowTransitionsEnabled="False" EnableDWMDropShadow="True">
     <Window.Resources>
@@ -123,4 +123,4 @@
         <CommandBinding Command="cd:CustomCommands.FlipComponent" CanExecute="FlipComponentCommand_CanExecute" Executed="FlipComponentCommand_Executed" />
         <CommandBinding Command="cd:CustomCommands.RotateComponent" CanExecute="RotateComponentCommand_CanExecute" Executed="RotateComponentCommand_Executed" />
     </Window.CommandBindings>
-</controls:MetroWindow>
+</window:MetroDPIWindow>

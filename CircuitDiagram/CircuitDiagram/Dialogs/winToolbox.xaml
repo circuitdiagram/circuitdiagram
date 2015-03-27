@@ -1,8 +1,8 @@
-﻿<controls:MetroWindow x:Class="CircuitDiagram.winToolbox"
+﻿<window:MetroDPIWindow x:Class="CircuitDiagram.winToolbox"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:my="clr-namespace:CircuitDiagram"
-        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:window="clr-namespace:CircuitDiagram.DPIWindow;assembly=CircuitDiagram.DPIWindow"
         Title="Customise Toolbox" Height="494" Width="784" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         TitleCaps="False" WindowTransitionsEnabled="False" EnableDWMDropShadow="True">
     <Window.Resources>
@@ -77,4 +77,4 @@
         <TextBox Height="23" Margin="524,46,12,0" Name="tbxAvailableFilter" VerticalAlignment="Top" TextChanged="tbxAvailableFilter_TextChanged" />
         <Label Content="Filter" Height="28" HorizontalAlignment="Left" Margin="482,44,0,0" Name="label4" VerticalAlignment="Top" />
     </Grid>
-</controls:MetroWindow>
+</window:MetroDPIWindow>

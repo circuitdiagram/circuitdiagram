@@ -18,11 +18,17 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+using CircuitDiagram.Components;
+using CircuitDiagram.Components.Description;
+using CircuitDiagram.DPIWindow;
+using CircuitDiagram.IO;
+using CircuitDiagram.Render;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,28 +36,18 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Xml;
-using CircuitDiagram.Components;
-using CircuitDiagram.Render;
-using Microsoft.Win32;
 using System.Windows.Threading;
-using CircuitDiagram.IO;
-using TaskDialogInterop;
-using System.Diagnostics;
-using CircuitDiagram.Components.Description;
-using System.Security.Cryptography.X509Certificates;
 using System.Windows.Xps;
-using System.IO.Packaging;
 using System.Windows.Xps.Packaging;
-using NativeHelpers;
-using MahApps.Metro.Controls;
+using System.Xml;
+using TaskDialogInterop;
 
 namespace CircuitDiagram
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : MetroWindow
+    public partial class MainWindow : MetroDPIWindow
     {
         #region Variables
         string m_documentTitle;
