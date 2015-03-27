@@ -36,16 +36,18 @@ namespace CircuitDiagram
         {
             icon.LoadedIcons.Clear();
 
-            foreach (var res in icon)
+            Parallel.ForEach(icon, res =>
             {
                 MemoryStream tempStream = new MemoryStream(res.Data);
                 var tempIcon = new System.Windows.Media.Imaging.BitmapImage();
                 tempIcon.BeginInit();
+                tempIcon.CacheOption = BitmapCacheOption.OnLoad;
                 tempIcon.StreamSource = tempStream;
                 tempIcon.EndInit();
+                tempIcon.Freeze();
 
                 icon.LoadedIcons.Add(tempIcon);
-            }
+            });
         }
     }
 }

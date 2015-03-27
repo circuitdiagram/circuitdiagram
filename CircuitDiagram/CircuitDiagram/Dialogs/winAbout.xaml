@@ -24,6 +24,6 @@
                 <Hyperlink NavigateUri="http://www.circuit-diagram.org/" RequestNavigate="Hyperlink_RequestNavigate">http://www.circuit-diagram.org/</Hyperlink>
             </Label>
         </StackPanel>
-        <Image HorizontalAlignment="Left" Height="200" Margin="10,10,0,0" VerticalAlignment="Top" Width="200" Source="../Logo200.png" />
+        <Image HorizontalAlignment="Left" Height="200" Margin="10,10,0,0" VerticalAlignment="Top" Width="200" Source="../Images/Logo200.png" />
     </Grid>
 </window:MetroDPIWindow>

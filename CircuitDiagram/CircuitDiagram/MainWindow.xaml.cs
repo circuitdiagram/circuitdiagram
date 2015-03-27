@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -74,7 +75,7 @@ namespace CircuitDiagram
 #if DEBUG
         static MainWindow()
         {
-            ProjectDirectory = Path.GetFullPath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\..\\..\\..\\..\\..\\");
+            ProjectDirectory = Path.GetFullPath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\..\\..\\..\\..\\");
         }
 #endif
 
@@ -84,8 +85,10 @@ namespace CircuitDiagram
 
             m_statusTimer = new DispatcherTimer(new TimeSpan(0, 0, 5), DispatcherPriority.Normal, new EventHandler((sender, e) =>
                 {
-                    m_statusTimer.Stop(); lblStatus.Text = "Ready";
+                    m_statusTimer.Stop();
+                    lblStatus.Text = "Ready";
                 }), lblStatus.Dispatcher);
+            m_statusTimer.IsEnabled = false;
 
             // Initialize cdlibrary
             ConfigureCdLibrary();
@@ -466,30 +469,7 @@ namespace CircuitDiagram
                                     ComponentConfiguration configuration = description.Metadata.Configurations.FirstOrDefault(configItem => configItem.Name == element.Attributes["configuration"].InnerText);
                                     if (configuration != null)
                                     {
-                                        Toolbox.ToolboxItem newItem = new Toolbox.ToolboxItem();
-                                        newItem.Tag = "@rid:" + description.RuntimeID + ", @config: " + configuration.Name;
-                                        newItem.ToolTip = configuration.Name;
-                                        TextBlock contentBlock = new TextBlock();
-                                        contentBlock.Text = configuration.Name;
-                                        contentBlock.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-                                        contentBlock.VerticalAlignment = System.Windows.VerticalAlignment.Center;
-                                        newItem.Content = contentBlock;
-                                        if (configuration.Icon != null)
-                                        {
-                                            var contentIcon = new ToolboxComponent();
-                                            contentIcon.Width = 45;
-                                            contentIcon.Height = 45;
-                                            contentIcon.SetIcon(configuration.Icon.GetBestIcon(CurrentDPI));
-                                            newItem.Content = contentIcon;
-                                        }
-                                        else if (description.Metadata.Icon != null)
-                                        {
-                                            var contentIcon = new ToolboxComponent();
-                                            contentIcon.Width = 45;
-                                            contentIcon.Height = 45;
-                                            contentIcon.SetIcon(description.Metadata.Icon.GetBestIcon(CurrentDPI));
-                                            newItem.Content = contentIcon;
-                                        }
+                                        var newItem = CreateToolboxItem(description, configuration);
 
                                         // Shortcut
                                         if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
@@ -515,22 +495,7 @@ namespace CircuitDiagram
                                 ComponentDescription description = ComponentHelper.FindDescription(new Guid(element.Attributes["guid"].InnerText));
                                 if (description != null)
                                 {
-                                    Toolbox.ToolboxItem newItem = new Toolbox.ToolboxItem();
-                                    newItem.Tag = "@rid:" + description.RuntimeID;
-                                    newItem.ToolTip = description.ComponentName;
-                                    TextBlock contentBlock = new TextBlock();
-                                    contentBlock.Text = description.ComponentName;
-                                    contentBlock.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-                                    contentBlock.VerticalAlignment = System.Windows.VerticalAlignment.Center;
-                                    newItem.Content = contentBlock;
-                                    if (description.Metadata.Icon != null)
-                                    {
-                                        var contentIcon = new ToolboxComponent();
-                                        contentIcon.Width = 45;
-                                        contentIcon.Height = 45;
-                                        contentIcon.SetIcon(description.Metadata.Icon.GetBestIcon(CurrentDPI));
-                                        newItem.Content = contentIcon;
-                                    }
+                                    var newItem = CreateToolboxItem(description, null);
 
                                     // Shortcut
                                     if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
@@ -558,30 +523,7 @@ namespace CircuitDiagram
                                     ComponentConfiguration configuration = description.Metadata.Configurations.FirstOrDefault(configItem => configItem.Name == element.Attributes["configuration"].InnerText);
                                     if (configuration != null)
                                     {
-                                        Toolbox.ToolboxItem newItem = new Toolbox.ToolboxItem();
-                                        newItem.Tag = "@rid:" + description.RuntimeID + ", @config: " + configuration.Name;
-                                        newItem.ToolTip = configuration.Name;
-                                        TextBlock contentBlock = new TextBlock();
-                                        contentBlock.Text = configuration.Name;
-                                        contentBlock.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-                                        contentBlock.VerticalAlignment = System.Windows.VerticalAlignment.Center;
-                                        newItem.Content = contentBlock;
-                                        if (configuration.Icon != null)
-                                        {
-                                            var contentIcon = new ToolboxComponent();
-                                            contentIcon.Width = 45;
-                                            contentIcon.Height = 45;
-                                            contentIcon.SetIcon(configuration.Icon.GetBestIcon(CurrentDPI));
-                                            newItem.Content = contentIcon;
-                                        }
-                                        else if (description.Metadata.Icon != null)
-                                        {
-                                            var contentIcon = new ToolboxComponent();
-                                            contentIcon.Width = 45;
-                                            contentIcon.Height = 45;
-                                            contentIcon.SetIcon(description.Metadata.Icon.GetBestIcon(CurrentDPI));
-                                            newItem.Content = contentIcon;
-                                        }
+                                        var newItem = CreateToolboxItem(description, configuration);
 
                                         // Shortcut
                                         if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
@@ -607,22 +549,7 @@ namespace CircuitDiagram
                                 ComponentDescription description = ComponentHelper.FindDescription(element.Attributes["type"].InnerText);
                                 if (description != null)
                                 {
-                                    Toolbox.ToolboxItem newItem = new Toolbox.ToolboxItem();
-                                    newItem.Tag = "@rid:" + description.RuntimeID;
-                                    newItem.ToolTip = description.ComponentName;
-                                    TextBlock contentBlock = new TextBlock();
-                                    contentBlock.Text = description.ComponentName;
-                                    contentBlock.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-                                    contentBlock.VerticalAlignment = System.Windows.VerticalAlignment.Center;
-                                    newItem.Content = contentBlock;
-                                    if (description.Metadata.Icon != null)
-                                    {
-                                        var contentIcon = new ToolboxComponent();
-                                        contentIcon.Width = 45;
-                                        contentIcon.Height = 45;
-                                        contentIcon.SetIcon(description.Metadata.Icon.GetBestIcon(CurrentDPI));
-                                        newItem.Content = contentIcon;
-                                    }
+                                    var newItem = CreateToolboxItem(description, null);
 
                                     // Shortcut
                                     if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
@@ -667,6 +594,49 @@ namespace CircuitDiagram
             // Set select as current tool
             mainToolbox.SetSelected(tbxcatSelect);
             circuitDisplay.NewComponentData = null;
+        }
+
+        private Toolbox.ToolboxItem CreateToolboxItem(ComponentDescription description, ComponentConfiguration configuration)
+        {
+            Toolbox.ToolboxItem newItem = new Toolbox.ToolboxItem();
+
+            TextBlock contentBlock = new TextBlock();
+            string tag = "@rid:" + description.RuntimeID;
+            if (configuration != null)
+            {
+                tag += ", @config: " + configuration.Name;
+                newItem.ToolTip = configuration.Name;
+                contentBlock.Text = configuration.Name;
+            }
+            else
+            {
+                newItem.ToolTip = description.ComponentName;
+                contentBlock.Text = description.ComponentName;
+            }
+            newItem.Tag = tag;
+                        
+            contentBlock.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+            contentBlock.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+            newItem.Content = contentBlock;
+            if (configuration != null && configuration.Icon != null)
+            {
+                var contentIcon = new ToolboxComponent();
+                contentIcon.Width = 45;
+                contentIcon.Height = 45;
+                var icon = configuration.Icon.GetBestIcon(CurrentDPI);
+                contentIcon.SetIcon(icon);
+                newItem.Content = contentIcon;
+            }
+            else if (description.Metadata.Icon != null)
+            {
+                var contentIcon = new ToolboxComponent();
+                contentIcon.Width = 45;
+                contentIcon.Height = 45;
+                var icon = description.Metadata.Icon.GetBestIcon(CurrentDPI);
+                contentIcon.SetIcon(icon);
+                newItem.Content = contentIcon;
+            }
+            return newItem;
         }
 
         void toolboxButton_Click(object sender, RoutedEventArgs e)

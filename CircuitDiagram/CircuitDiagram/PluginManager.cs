@@ -23,37 +23,6 @@ namespace CircuitDiagram
 
         public static List<IDocumentReader> EnabledImportReaders { get; private set; }
 
-        /*
-        [ImportMany(typeof(IDocumentWriter))]
-        IList<IDocumentWriter> m_exportWriters;
-
-        [ImportMany(typeof(IDocumentReader))]
-        IList<IDocumentReader> m_importReaders;
-
-        Dictionary<Guid, bool> m_pluginsEnabled;
-
-        public static IList<IDocumentWriter> ExportWriters { get { return m_manager.m_exportWriters; } }
-
-        public static IList<IDocumentReader> ImportReaders { get { return m_manager.m_importReaders; } }
-
-        public static Dictionary<Guid, bool> PluginsEnabled { get { return m_manager.m_pluginsEnabled; } }
-
-        public static IEnumerable<IDocumentWriter> EnabledExportWriters
-        {
-            get
-            {
-                return m_manager.m_exportWriters.Where(writer => PluginsEnabled[writer.GUID] == true);
-            }
-        }
-
-        public static IEnumerable<IDocumentReader> EnabledImportReaders
-        {
-            get
-            {
-                return m_manager.m_importReaders.Where(reader => PluginsEnabled[reader.GUID] == true);
-            }
-        }*/
-
         public static void Initialize()
         {
             m_manager = new PluginManager();
