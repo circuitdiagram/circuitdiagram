@@ -228,6 +228,12 @@ namespace CircuitDiagram.Settings
             return (bool)value;
         }
 
+        public static void RemoveSetting(string key)
+        {
+            if (m_values.ContainsKey(key))
+                m_values.Remove(key);
+        }
+
         public static bool HasSetting(string key)
         {
             return m_values.ContainsKey(key);

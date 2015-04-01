@@ -192,6 +192,7 @@
     <Compile Include="ImplementationConversion.cs" />
     <Compile Include="Managers\UpdateDetails.cs" />
     <Compile Include="Managers\UpdateManager.cs" />
+    <Compile Include="Managers\UpdateChannelType.cs" />
     <Compile Include="Toolbox\CustomToolboxItem.cs" />
     <Compile Include="Toolbox\IdentifierWithShortcut.cs" />
     <Compile Include="Toolbox\IToolboxItem.cs" />

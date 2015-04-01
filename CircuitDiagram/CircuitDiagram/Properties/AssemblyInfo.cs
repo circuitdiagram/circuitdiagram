@@ -55,7 +55,7 @@ using System.Windows.Media;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("3.0.0.0")]
 [assembly: AssemblyFileVersion("3.0.0.0")]
-[assembly: BuildChannel("Alpha 1", BuildChannelAttribute.ChannelType.Dev, 1)]
+[assembly: BuildChannel("Alpha 1", UpdateChannelType.Dev, 1)]
 
 // Per-monitor DPI scaling
 [assembly: DisableDpiAwareness]

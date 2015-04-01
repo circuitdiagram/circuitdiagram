@@ -10,19 +10,13 @@ namespace CircuitDiagram
     {
         public int Increment { get; set; }
         public string DisplayName { get; set; }
-        public ChannelType Type { get; set; }
+        public UpdateChannelType UpdateChannel { get; set; }
 
-        public BuildChannelAttribute(string displayName, ChannelType channelType, int increment)
+        public BuildChannelAttribute(string displayName, UpdateChannelType channelType, int increment)
         {
             DisplayName = displayName;
-            Type = channelType;
+            UpdateChannel = channelType;
             Increment = increment;
-        }
-
-        public enum ChannelType
-        {
-            Stable,
-            Dev
         }
     }
 }

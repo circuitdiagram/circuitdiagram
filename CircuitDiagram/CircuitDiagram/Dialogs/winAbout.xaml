@@ -14,7 +14,7 @@
     </Window.Resources>
     <Grid>
         <Button Content="Close" Margin="0,0,12,12" Name="btnClose" Height="23" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="button1_Click" IsCancel="True" />
-        <StackPanel Margin="215,69,10,0" Name="stpInformation" Height="91" VerticalAlignment="Top">
+        <StackPanel Margin="215,45,10,0" Name="stpInformation" Height="144" VerticalAlignment="Top">
             <StackPanel Orientation="Horizontal">
                 <Label Content="Version:" Height="28" Name="lblVersion" HorizontalAlignment="Left" />
                 <Label Content="1.0" Height="28" Name="lblVersionNumber" HorizontalAlignment="Left" />
@@ -23,6 +23,14 @@
             <Label Name="lblWebsite" Height="28" HorizontalAlignment="Left">
                 <Hyperlink NavigateUri="http://www.circuit-diagram.org/" RequestNavigate="Hyperlink_RequestNavigate">http://www.circuit-diagram.org/</Hyperlink>
             </Label>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Label Content="Release channel:" Grid.Column="0" />
+                <ComboBox Name="cbxReleaseChannel" Grid.Column="1" Width="100" />
+            </Grid>
         </StackPanel>
         <Image HorizontalAlignment="Left" Height="200" Margin="10,10,0,0" VerticalAlignment="Top" Width="200" Source="../Images/Logo200.png" />
     </Grid>

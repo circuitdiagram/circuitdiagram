@@ -34,7 +34,11 @@ namespace CircuitDiagram
         {
             InitializeComponent();
 
-            lblVersionNumber.Content = AppVersion;
+            lblVersionNumber.Content = UpdateManager.AppDisplayVersion;
+
+            cbxReleaseChannel.ItemsSource = Enum.GetNames(typeof(UpdateChannelType));
+            cbxReleaseChannel.SelectedItem = UpdateManager.UpdateChannel.ToString();
+            cbxReleaseChannel.SelectionChanged += cbxReleaseChannel_SelectionChanged;
         }
 
         private void button1_Click(object sender, RoutedEventArgs e)
@@ -42,36 +46,24 @@ namespace CircuitDiagram
             this.Close();
         }
 
-        public static string AppVersion
-        {
-            get
-            {
-                System.Reflection.Assembly _assemblyInfo = System.Reflection.Assembly.GetExecutingAssembly();
-
-                string theVersion = string.Empty;
-                if (_assemblyInfo != null)
-                {
-                    Version ver = _assemblyInfo.GetName().Version;
-                    if (ver.Revision == 0 && ver.Build == 0)
-                        theVersion = String.Format("{0}.{1}", ver.Major, ver.Minor);
-                    else
-                        theVersion = _assemblyInfo.GetName().Version.ToString();
-                }
-                BuildChannelAttribute channelAttribute = _assemblyInfo.GetCustomAttributes(typeof(BuildChannelAttribute), false).FirstOrDefault(item => item is BuildChannelAttribute) as BuildChannelAttribute;
-                if (channelAttribute != null && channelAttribute.Type == BuildChannelAttribute.ChannelType.Dev && !String.IsNullOrEmpty(channelAttribute.DisplayName))
-                    theVersion += " " + channelAttribute.DisplayName;
-
-#if PORTABLE
-                theVersion += " Portable";
-#endif
-
-                return theVersion;
-            }
-        }
-
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
             System.Diagnostics.Process.Start(e.Uri.ToString());
+        }
+
+        private void cbxReleaseChannel_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (cbxReleaseChannel.SelectedItem.ToString() != UpdateManager.BuildChannelVersion.UpdateChannel.ToString())
+            {
+                UpdateManager.UpdateChannel = (UpdateChannelType)Enum.Parse(typeof(UpdateChannelType), cbxReleaseChannel.SelectedItem.ToString());
+                Settings.Settings.Write("updateChannel", cbxReleaseChannel.SelectedItem.ToString());
+                Settings.Settings.Save();
+            }
+            else
+            {
+                UpdateManager.UpdateChannel = UpdateManager.BuildChannelVersion.UpdateChannel;
+                Settings.Settings.RemoveSetting("updateChannel");
+            }
         }
     }
 }

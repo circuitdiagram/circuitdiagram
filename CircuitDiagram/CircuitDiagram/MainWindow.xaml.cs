@@ -94,11 +94,6 @@ namespace CircuitDiagram
             ConfigureCdLibrary();
 
             // Initialize settings
-#if PORTABLE
-            CircuitDiagram.Settings.Settings.Initialize(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\settings.xml");
-#else
-            CircuitDiagram.Settings.Settings.Initialize(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\settings.xml");
-#endif
             ApplySettings();
 
             ComponentHelper.ComponentUpdatedDelegate = new ComponentUpdatedDelegate(Editor_ComponentUpdated);
@@ -207,16 +202,9 @@ namespace CircuitDiagram
         private void ConfigureCdLibrary()
         {
             // Set application version
-            System.Reflection.Assembly _assemblyInfo = System.Reflection.Assembly.GetExecutingAssembly();
-            string theVersion = string.Empty;
-            if (_assemblyInfo != null)
-                theVersion = _assemblyInfo.GetName().Version.ToString();
-            BuildChannelAttribute channelAttribute = _assemblyInfo.GetCustomAttributes(typeof(BuildChannelAttribute), false).FirstOrDefault(item => item is BuildChannelAttribute) as BuildChannelAttribute;
-            if (channelAttribute != null && channelAttribute.Type == BuildChannelAttribute.ChannelType.Dev && channelAttribute.DisplayName != null)
-                theVersion += " " + channelAttribute.DisplayName;
-            CircuitDiagram.IO.ApplicationInfo.FullName = "Circuit Diagram " + theVersion;
+            CircuitDiagram.IO.ApplicationInfo.FullName = "Circuit Diagram " + UpdateManager.AppDisplayVersion;
             CircuitDiagram.IO.ApplicationInfo.Name = "Circuit Diagram";
-            CircuitDiagram.IO.ApplicationInfo.Version = theVersion;
+            CircuitDiagram.IO.ApplicationInfo.Version = UpdateManager.BuildVersion.ToString();
         }
 
         /// <summary>
