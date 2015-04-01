@@ -56,7 +56,7 @@ namespace CircuitDiagram
         IO.CDDX.CDDXSaveOptions m_lastSaveOptions;
         DispatcherTimer m_statusTimer;
         UndoManager m_undoManager;
-        Dictionary<Key, FrameworkElement> m_toolboxShortcuts = new Dictionary<Key, FrameworkElement>();
+        Dictionary<Key, IdentifierWithShortcut> m_toolboxShortcuts = new Dictionary<Key, IdentifierWithShortcut>();
         UndoManager UndoManager { get { return m_undoManager; } }
         public System.Collections.ObjectModel.ObservableCollection<string> RecentFiles = new System.Collections.ObjectModel.ObservableCollection<string>();
         List<ImplementationConversionCollection> m_componentRepresentations = new List<ImplementationConversionCollection>();
@@ -144,8 +144,6 @@ namespace CircuitDiagram
                 img.BeginInit();
                 img.UriSource = new Uri("pack://application:,,,/Circuit Diagram;component/Images/Select64.png");
                 img.EndInit();
-
-                SelectImageBrush.ImageSource = img;
             }
             else
             {
@@ -153,8 +151,6 @@ namespace CircuitDiagram
                 img.BeginInit();
                 img.UriSource = new Uri("pack://application:,,,/Circuit Diagram;component/Images/Select32.png");
                 img.EndInit();
-
-                SelectImageBrush.ImageSource = img;
             }
 
             LoadToolbox();
@@ -432,150 +428,41 @@ namespace CircuitDiagram
         /// </summary>
         private void LoadToolbox()
         {
-            object selectCategory = mainToolbox.Items[0];
-            mainToolbox.Items.Clear();
-            mainToolbox.Items.Add(selectCategory);
-
-            m_toolboxShortcuts.Clear();
-
-#if PORTABLE
-            string toolboxSettingsPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\toolbox.xml";
-#elif DEBUG
-            string toolboxSettingsPath = Path.Combine(ProjectDirectory, "Components\\toolbox.xml");
-#else
-            string toolboxSettingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml";
-#endif
-
             try
             {
-                XmlDocument toolboxSettings = new XmlDocument();
-                toolboxSettings.Load(toolboxSettingsPath);
+                mainToolbox.Items.Clear();
 
-                XmlNodeList categoryNodes = toolboxSettings.SelectNodes("/display/category");
-                foreach (XmlNode categoryNode in categoryNodes)
+                var toolboxData = ToolboxManager.LoadToolbox();
+
+                // Add shortcuts
+                foreach(var cat in toolboxData)
                 {
-                    var newCategory = new Toolbox.ToolboxCategory();
-                    foreach (XmlNode node in categoryNode.ChildNodes)
+                    foreach(IdentifierWithShortcut component in cat)
                     {
-                        if (node.Name == "component")
-                        {
-                            XmlElement element = node as XmlElement;
-
-                            if (element.HasAttribute("guid") && element.HasAttribute("configuration"))
-                            {
-                                ComponentDescription description = ComponentHelper.FindDescription(new Guid(element.Attributes["guid"].InnerText));
-                                if (description != null)
-                                {
-                                    ComponentConfiguration configuration = description.Metadata.Configurations.FirstOrDefault(configItem => configItem.Name == element.Attributes["configuration"].InnerText);
-                                    if (configuration != null)
-                                    {
-                                        var newItem = CreateToolboxItem(description, configuration);
-
-                                        // Shortcut
-                                        if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
-                                        {
-                                            Key key = (Key)Enum.Parse(typeof(Key), element.Attributes["key"].InnerText);
-
-                                            if (!m_toolboxShortcuts.ContainsKey(key))
-                                            {
-                                                m_toolboxShortcuts.Add(key, newItem);
-
-                                                // Add key to tooltip
-                                                newItem.ToolTip = configuration.Name + " (" + key.ToString().ToLowerInvariant() + ")";
-                                            }
-                                        }
-
-                                        newItem.Click += new RoutedEventHandler(toolboxButton_Click);
-                                        newCategory.Items.Add(newItem);
-                                    }
-                                }
-                            }
-                            else if (element.HasAttribute("guid"))
-                            {
-                                ComponentDescription description = ComponentHelper.FindDescription(new Guid(element.Attributes["guid"].InnerText));
-                                if (description != null)
-                                {
-                                    var newItem = CreateToolboxItem(description, null);
-
-                                    // Shortcut
-                                    if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
-                                    {
-                                        Key key = (Key)Enum.Parse(typeof(Key), element.Attributes["key"].InnerText);
-
-                                        if (!m_toolboxShortcuts.ContainsKey(key))
-                                        {
-                                            m_toolboxShortcuts.Add(key, newItem);
-
-                                            // Add key to tooltip
-                                            newItem.ToolTip = description.ComponentName + " (" + key.ToString().ToLowerInvariant() + ")";
-                                        }
-                                    }
-                                    
-                                    newItem.Click += new RoutedEventHandler(toolboxButton_Click);
-                                    newCategory.Items.Add(newItem);
-                                }
-                            }
-                            else if (element.HasAttribute("type") && element.HasAttribute("configuration"))
-                            {
-                                ComponentDescription description = ComponentHelper.FindDescription(element.Attributes["type"].InnerText);
-                                if (description != null)
-                                {
-                                    ComponentConfiguration configuration = description.Metadata.Configurations.FirstOrDefault(configItem => configItem.Name == element.Attributes["configuration"].InnerText);
-                                    if (configuration != null)
-                                    {
-                                        var newItem = CreateToolboxItem(description, configuration);
-
-                                        // Shortcut
-                                        if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
-                                        {
-                                            Key key = (Key)Enum.Parse(typeof(Key), element.Attributes["key"].InnerText);
-
-                                            if (!m_toolboxShortcuts.ContainsKey(key))
-                                            {
-                                                m_toolboxShortcuts.Add(key, newItem);
-
-                                                // Add key to tooltip
-                                                newItem.ToolTip = configuration.Name + " (" + key.ToString().ToLowerInvariant() + ")";
-                                            }
-                                        }
-
-                                        newItem.Click += new RoutedEventHandler(toolboxButton_Click);
-                                        newCategory.Items.Add(newItem);
-                                    }
-                                }
-                            }
-                            else if (element.HasAttribute("type"))
-                            {
-                                ComponentDescription description = ComponentHelper.FindDescription(element.Attributes["type"].InnerText);
-                                if (description != null)
-                                {
-                                    var newItem = CreateToolboxItem(description, null);
-
-                                    // Shortcut
-                                    if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
-                                    {
-                                        Key key = (Key)Enum.Parse(typeof(Key), element.Attributes["key"].InnerText);
-
-                                        if (!m_toolboxShortcuts.ContainsKey(key))
-                                        {
-                                            m_toolboxShortcuts.Add(key, newItem);
-
-                                            // Add key to tooltip
-                                            newItem.ToolTip = description.ComponentName + " (" + key.ToString().ToLowerInvariant() + ")";
-                                        }
-                                    }
-
-                                    newItem.Click += new RoutedEventHandler(toolboxButton_Click);
-                                    newCategory.Items.Add(newItem);
-                                }
-                            }
-                        }
+                        if (component.ShortcutKey != Key.None)
+                            m_toolboxShortcuts.Add(component.ShortcutKey, component);
                     }
-                    if (newCategory.Items.Count > 0)
-                        mainToolbox.Items.Add(newCategory);
                 }
+
+                // Add "select" tool
+                var selectIcon = new MultiResolutionImage();
+                selectIcon.LoadedIcons.Add(new BitmapImage(new Uri("pack://application:,,,/Images/Select32.png")));
+                selectIcon.LoadedIcons.Add(new BitmapImage(new Uri("pack://application:,,,/Images/Select64.png")));
+                var selectItem = new CustomToolboxItem()
+                {
+                    DisplayName = "Select",
+                    Icon = selectIcon
+                };
+                var selectCategory = new List<IToolboxItem>();
+                selectCategory.Add(selectItem);
+                toolboxData.Insert(0, selectCategory);
+
+                mainToolbox.ItemsSource = toolboxData;
+
+                // Set "select" as the current tool in the toolbox
+                ToolboxSelectSelectTool();
             }
-            catch (Exception)
+            catch
             {
                 TaskDialogOptions tdOptions = new TaskDialogOptions();
                 tdOptions.Title = "Circuit Diagram";
@@ -583,60 +470,45 @@ namespace CircuitDiagram
                 tdOptions.Content = "New items can be added to the toolbox under Tools->Toolbox."; // Toolbox missing
                 tdOptions.CommonButtons = TaskDialogCommonButtons.Close;
                 tdOptions.Owner = this;
-                //TaskDialogResult result = TaskDialog.Show(tdOptions);
+                this.Dispatcher.BeginInvoke(new Action(() => TaskDialog.Show(tdOptions)));
 
                 // Create new toolbox file
-                if (!Directory.Exists(Path.GetDirectoryName(toolboxSettingsPath)))
-                    Directory.CreateDirectory(Path.GetDirectoryName(toolboxSettingsPath));
-                File.WriteAllText(toolboxSettingsPath, "<?xml version=\"1.0\" encoding=\"utf-8\"?><display></display>");
+                ToolboxManager.OverwriteToolbox();
             }
+        }
 
-            // Set select as current tool
-            mainToolbox.SetSelected(tbxcatSelect);
+        private void ToolboxSelectSelectTool()
+        {
+            mainToolbox.SetSelectedCategoryItem((mainToolbox.Items[0] as IEnumerable<IToolboxItem>).First());
             circuitDisplay.NewComponentData = null;
         }
 
-        private Toolbox.ToolboxItem CreateToolboxItem(ComponentDescription description, ComponentConfiguration configuration)
+        private void ToolboxSelectWire()
         {
-            Toolbox.ToolboxItem newItem = new Toolbox.ToolboxItem();
+            foreach(List<IToolboxItem> item in mainToolbox.Items)
+            {
+                var component = item.First() as IdentifierWithShortcut;
+                if (component != null && component.Identifier.Description == ComponentHelper.WireDescription)
+                {
+                    mainToolbox.SetSelectedCategoryItem(component);
+                    break;
+                }
+            }
+            circuitDisplay.NewComponentData = String.Format("@rid:{0}", ComponentHelper.WireDescription.RuntimeID);
+        }
 
-            TextBlock contentBlock = new TextBlock();
-            string tag = "@rid:" + description.RuntimeID;
-            if (configuration != null)
+        private void mainToolbox_SelectionChanged(object sender, EventArgs e)
+        {
+            var selectedItem = mainToolbox.SelectedCategoryItem as IdentifierWithShortcut;
+
+            if (selectedItem == null)
             {
-                tag += ", @config: " + configuration.Name;
-                newItem.ToolTip = configuration.Name;
-                contentBlock.Text = configuration.Name;
+                // "Select" tool
+                circuitDisplay.NewComponentData = null;
+                return;
             }
-            else
-            {
-                newItem.ToolTip = description.ComponentName;
-                contentBlock.Text = description.ComponentName;
-            }
-            newItem.Tag = tag;
-                        
-            contentBlock.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-            contentBlock.VerticalAlignment = System.Windows.VerticalAlignment.Center;
-            newItem.Content = contentBlock;
-            if (configuration != null && configuration.Icon != null)
-            {
-                var contentIcon = new ToolboxComponent();
-                contentIcon.Width = 45;
-                contentIcon.Height = 45;
-                var icon = configuration.Icon.GetBestIcon(CurrentDPI);
-                contentIcon.SetIcon(icon);
-                newItem.Content = contentIcon;
-            }
-            else if (description.Metadata.Icon != null)
-            {
-                var contentIcon = new ToolboxComponent();
-                contentIcon.Width = 45;
-                contentIcon.Height = 45;
-                var icon = description.Metadata.Icon.GetBestIcon(CurrentDPI);
-                contentIcon.SetIcon(icon);
-                newItem.Content = contentIcon;
-            }
-            return newItem;
+
+            circuitDisplay.NewComponentData = selectedItem.ToString();
         }
 
         void toolboxButton_Click(object sender, RoutedEventArgs e)
@@ -674,96 +546,22 @@ namespace CircuitDiagram
         /// <param name="notifyIfNoUpdate">Show a dialog even if no updates are available.</param>
         private void CheckForUpdates(bool notifyIfNoUpdate)
         {
-            // Check for new version
-            System.Reflection.Assembly _assemblyInfo = System.Reflection.Assembly.GetExecutingAssembly();
-            Version thisVersion = _assemblyInfo.GetName().Version;
-            BuildChannelAttribute channelAttribute = _assemblyInfo.GetCustomAttributes(typeof(BuildChannelAttribute), false).FirstOrDefault(item => item is BuildChannelAttribute) as BuildChannelAttribute;
-            if (channelAttribute == null)
-                channelAttribute = new BuildChannelAttribute("", BuildChannelAttribute.ChannelType.Stable, 0);
-
             try
             {
-                System.Net.WebRequest updateDocStream = System.Net.WebRequest.Create("http://www.circuit-diagram.org/app/appversion.xml");
-                XmlDocument updateDoc = new XmlDocument();
-                updateDoc.Load(updateDocStream.GetResponse().GetResponseStream());
+                var newVersion = UpdateManager.CheckForUpdates();
 
-                bool foundUpdate = false;
-                if (channelAttribute.Type == BuildChannelAttribute.ChannelType.Dev)
+                if (newVersion != null)
                 {
-                    // Check for latest dev build
-                    XmlNode devChannel = updateDoc.SelectSingleNode("/version/application[@name='CircuitDiagram']/channel[@name='Dev']");
-                    if (devChannel != null)
-                    {
-                        Version serverVersion = null;
-                        string serverVersionName = null;
-                        int serverIncrement = 0;
-                        string serverDownloadUrl = null;
-
-                        foreach (XmlNode childNode in devChannel.ChildNodes)
-                        {
-                            switch (childNode.Name)
-                            {
-                                case "version":
-                                    serverVersion = new Version(childNode.InnerText);
-                                    break;
-                                case "name":
-                                    serverVersionName = childNode.InnerText;
-                                    break;
-                                case "increment":
-                                    serverIncrement = int.Parse(childNode.InnerText);
-                                    break;
-                                case "url":
-                                    serverDownloadUrl = childNode.InnerText;
-                                    break;
-                            }
-                        }
-
-                        if (serverVersion != null && thisVersion.CompareTo(serverVersion) < 0 || (thisVersion.CompareTo(serverVersion) == 0 && channelAttribute.Increment < serverIncrement))
-                        {
-                            this.Dispatcher.Invoke(new Action(() => winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverVersionName, serverDownloadUrl)));
-                            foundUpdate = true;
-                        }
-                    }
+                    // New version available
+                    this.Dispatcher.Invoke(new Action(() => winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, newVersion.Version, newVersion.DownloadUrl)));
                 }
-
-                if (!foundUpdate)
+                else if (notifyIfNoUpdate)
                 {
-                    // Check for latest stable build
-                    XmlNode stableChannel = updateDoc.SelectSingleNode("/version/application[@name='CircuitDiagram']/channel[@name='Stable']");
-                    if (stableChannel != null)
-                    {
-                        Version serverVersion = null;
-                        string serverVersionName = null;
-                        string serverDownloadUrl = null;
-
-                        foreach (XmlNode childNode in stableChannel.ChildNodes)
-                        {
-                            switch (childNode.Name)
-                            {
-                                case "version":
-                                    serverVersion = new Version(childNode.InnerText);
-                                    break;
-                                case "name":
-                                    serverVersionName = childNode.InnerText;
-                                    break;
-                                case "url":
-                                    serverDownloadUrl = childNode.InnerText;
-                                    break;
-                            }
-                        }
-
-                        if (serverVersion != null && thisVersion.CompareTo(serverVersion) < 0)
-                        {
-                            this.Dispatcher.Invoke(new Action(() => winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, serverVersionName, serverDownloadUrl)));
-                            foundUpdate = true;
-                        }
-                    }
-                }
-
-                if (!foundUpdate && notifyIfNoUpdate)
+                    // Notify that no new versions are available
                     this.Dispatcher.Invoke(new Action(() => winNewVersion.Show(this, NewVersionWindowType.NoNewVersionAvailable, null, null)));
+                }
             }
-            catch (Exception)
+            catch
             {
                 if (notifyIfNoUpdate)
                     this.Dispatcher.Invoke(new Action(() => winNewVersion.Show(this, NewVersionWindowType.Error, null, "http://www.circuit-diagram.org/")));
@@ -1614,28 +1412,15 @@ namespace CircuitDiagram
                 // Check component shortcuts
                 if (e.Key == Key.V) // Move/select
                 {
-                    circuitDisplay.NewComponentData = null;
-
-                    mainToolbox.SetSelected(tbxcatSelect);
-                    SetStatusText("Select tool.");
+                    ToolboxSelectSelectTool();
+                    SetStatusText("Select tool");
 
                     e.Handled = true;
                 }
                 else if (e.Key == Key.W) // Wire
                 {
-                    circuitDisplay.NewComponentData = "@rid: " + ComponentHelper.WireDescription.RuntimeID;
-
-                    foreach (object category in mainToolbox.Items)
-                    {
-                        if (category is Toolbox.ToolboxCategory && (category as Toolbox.ToolboxCategory).Items.Count == 1 && (category as Toolbox.ToolboxCategory).Items[0] is Toolbox.ToolboxItem &&
-                            String.Equals(((category as Toolbox.ToolboxCategory).Items[0] as Toolbox.ToolboxItem).Tag as string, "@rid:" + ComponentHelper.WireDescription.RuntimeID))
-                        {
-                            mainToolbox.SetSelected(category as Toolbox.ToolboxCategory);
-                            break;
-                        }
-                    }
-
-                    SetStatusText("Placing wire.");
+                    ToolboxSelectWire();
+                    SetStatusText("Placing wire");
 
                     e.Handled = true;
                 }
@@ -1650,28 +1435,14 @@ namespace CircuitDiagram
                     // Check custom toolbox entries
                     if (m_toolboxShortcuts.ContainsKey(e.Key))
                     {
-                        circuitDisplay.NewComponentData = m_toolboxShortcuts[e.Key].Tag.ToString();
-                        if (m_toolboxShortcuts[e.Key] is Toolbox.ToolboxCategory)
-                            mainToolbox.SetSelected(m_toolboxShortcuts[e.Key] as Toolbox.ToolboxCategory);
-                        else if (m_toolboxShortcuts[e.Key].Parent is Toolbox.ToolboxCategory)
-                            mainToolbox.SetSelected(m_toolboxShortcuts[e.Key].Parent as Toolbox.ToolboxCategory);
+                        var identifier = m_toolboxShortcuts[e.Key];
 
-                        string rid = circuitDisplay.NewComponentData.Substring(circuitDisplay.NewComponentData.IndexOf("@rid:") + 5);
-                        string configuration = null;
-                        if (rid.Contains(" "))
-                        {
-                            configuration = rid.Substring(rid.IndexOf("@config:") + 8);
-                            rid = rid.Substring(0, rid.IndexOf(" "));
-                        }
-                        if (rid.Contains(","))
-                            rid = rid.Substring(0, rid.IndexOf(","));
+                        // Set selected component
+                        mainToolbox.SetSelectedCategoryItem(identifier);
+                        circuitDisplay.NewComponentData = identifier.ToString();
 
-                        ComponentDescription description = ComponentHelper.FindDescriptionByRuntimeID(int.Parse(rid));
-
-                        // TODO: add configuration to status text
-
-                        if (description != null)
-                            SetStatusText(String.Format("Placing component: {0}", description.ComponentName));
+                        // Set status text
+                        SetStatusText(String.Format("Placing {0}", identifier.DisplayName));
 
                         e.Handled = true;
                     }

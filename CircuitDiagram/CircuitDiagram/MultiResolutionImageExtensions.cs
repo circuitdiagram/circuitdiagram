@@ -16,7 +16,7 @@ namespace CircuitDiagram
             // Load icons if not already loaded
             if (icon.LoadedIcons.Count == 0)
                 LoadIcons(icon);
-            
+
             BitmapImage chosenImage = null;
             foreach (var res in icon.LoadedIcons)
             {
@@ -32,22 +32,20 @@ namespace CircuitDiagram
             return chosenImage;
         }
 
-        private static void LoadIcons(MultiResolutionImage icon)
+        public static void LoadIcons(this MultiResolutionImage icon)
         {
             icon.LoadedIcons.Clear();
 
-            Parallel.ForEach(icon, res =>
+            foreach (var res in icon)
             {
                 MemoryStream tempStream = new MemoryStream(res.Data);
                 var tempIcon = new System.Windows.Media.Imaging.BitmapImage();
                 tempIcon.BeginInit();
-                tempIcon.CacheOption = BitmapCacheOption.OnLoad;
                 tempIcon.StreamSource = tempStream;
                 tempIcon.EndInit();
-                tempIcon.Freeze();
 
                 icon.LoadedIcons.Add(tempIcon);
-            });
+            }
         }
     }
 }

@@ -45,7 +45,34 @@
 
     <BorderGapMaskConverter x:Key="BorderGapMaskConverter"/>
 
-    <Style TargetType="{x:Type tb:ToolboxCategory}">
+    <Style x:Key="ToolboxItemStyle" TargetType="{x:Type tb:ToolboxItem}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type tb:ToolboxItem}">
+                    <Grid Width="45" Height="45">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter ContentTemplate="{TemplateBinding ToolboxItemContentTemplate}" />
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Width" Value="45" />
+        <Setter Property="Height" Value="45" />
+        <Setter Property="Background" Value="{StaticResource UIBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource UIMiddleForegroundBrush}" />
+        <Setter Property="Margin" Value="3,0,0,0" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource UISelectedBackgroundBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
+    <Style x:Key="ToolboxCategoryStyle" TargetType="{x:Type tb:ToolboxCategory}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type tb:ToolboxCategory}">
@@ -54,7 +81,7 @@
                         <Border Name="MainBorder" Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-                            <ContentPresenter Content="{TemplateBinding MainItem}" Width="45" />
+                            <ContentPresenter Content="{TemplateBinding MainItem}" Width="45" ContentTemplate="{TemplateBinding MainItemTemplate}" />
                         </Border>
                         <Canvas Name="ExpanderCanvas" Visibility="Collapsed">
                             <Path Width="5.57359" Height="8.70267" Canvas.Right="6" Canvas.Bottom="4" Stretch="Fill" Fill="#FF5E5E5E" Data="F1 M 44.1443,39.0107L 38.5707,34.6594L 38.5707,43.362L 44.1443,39.0107 Z "/>
@@ -83,33 +110,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Margin" Value="0,5,0,0" />
-    </Style>
-
-    <Style TargetType="{x:Type tb:ToolboxItem}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type tb:ToolboxItem}">
-                    <Grid Width="45" Height="45">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
-                            <ContentPresenter />
-                        </Border>
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Width" Value="45" />
-        <Setter Property="Height" Value="45" />
-        <Setter Property="Background" Value="{StaticResource UIBackgroundBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource UIMiddleForegroundBrush}" />
-        <Setter Property="Margin" Value="3,0,0,0" />
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{StaticResource UISelectedBackgroundBrush}" />
-            </Trigger>
-        </Style.Triggers>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource ToolboxItemStyle}" />
     </Style>
 
     <Style x:Key="ToolboxScrollViewer" TargetType="{x:Type ScrollViewer}">

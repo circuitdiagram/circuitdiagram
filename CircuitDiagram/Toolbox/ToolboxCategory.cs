@@ -48,6 +48,8 @@ namespace Toolbox
         public static readonly DependencyProperty IsExpanderVisibleProperty;
         public static readonly DependencyProperty IsSelectedCategoryProperty;
         public static readonly DependencyProperty MainItemProperty;
+        public static readonly DependencyProperty MainItemTemplateProperty;
+        public static readonly DependencyProperty ItemDisplayTemplateProperty;
         public static readonly RoutedEvent LongPressEvent;
 
         DispatcherTimer m_longPressTimer = new DispatcherTimer();
@@ -65,6 +67,8 @@ namespace Toolbox
             ToolboxCategory.IsExpanderVisibleProperty = DependencyProperty.Register("IsExpanderVisible", typeof(bool), typeof(ToolboxCategory));
             ToolboxCategory.IsSelectedCategoryProperty = DependencyProperty.Register("IsSelectedCategory", typeof(bool), typeof(ToolboxCategory));
             ToolboxCategory.MainItemProperty = DependencyProperty.Register("MainItem", typeof(object), typeof(ToolboxCategory));
+            ToolboxCategory.MainItemTemplateProperty = DependencyProperty.Register("MainItemTemplate", typeof(object), typeof(ToolboxCategory));
+            ToolboxCategory.ItemDisplayTemplateProperty = DependencyProperty.Register("ItemDisplayTemplate", typeof(DataTemplate), typeof(ToolboxCategory));
             ToolboxCategory.IsPressedProperty = DependencyProperty.Register("IsPressed", typeof(bool), typeof(ToolboxCategory));
         }
 
@@ -77,6 +81,17 @@ namespace Toolbox
             m_longPressTimer.Interval = new TimeSpan(0, 0, 0, 0, 300);
             m_longPressTimer.Tick += new EventHandler(LongPressTimer_Tick);
             SelectedIndex = 0;
+        }
+
+        /// <summary>
+        /// Gets or sets the Toolbox that owns this ToolboxCategory.
+        /// </summary>
+        public Toolbox ToolboxOwner { get; set; }
+
+        public DataTemplate ItemDisplayTemplate
+        {
+            get { return (DataTemplate)GetValue(ToolboxCategory.ItemDisplayTemplateProperty); }
+            set { SetValue(ToolboxCategory.ItemDisplayTemplateProperty, value); }
         }
 
         protected override void OnItemsChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -104,67 +119,24 @@ namespace Toolbox
             SelectedItemUpdated();
         }
 
+        void GenerateItemContainers()
+        {
+            IItemContainerGenerator generator = ItemContainerGenerator;
+            GeneratorPosition position = generator.GeneratorPositionFromIndex(0);
+            using (generator.StartAt(position, GeneratorDirection.Forward, true))
+            {
+                foreach (object o in Items)
+                {
+                    DependencyObject dp = generator.GenerateNext();
+                    generator.PrepareItemContainer(dp);
+                }
+            }
+        }
+
         void SelectedItemUpdated()
         {
-            // Raise chosen event
-            (SelectedItem as ToolboxItem).RaiseEvent(new RoutedEventArgs(Button.ClickEvent, this));
-
-            // Change the item which is visible when not expanded
-
-            // if Items contains an explicit ContentControl, use its content instead 
-            // (this handles the case of ToolboxItem)
-            ContentControl contentControl = SelectedItem as ContentControl;
-            UIElement visualContent = contentControl.Content as UIElement;
-
-            // TODO: use a string otherwise
-
-            if (visualContent != null)
-            {
-                //visualContent.Measure(visualContent.RenderSize);
-                visualContent.Arrange(new Rect(visualContent.RenderSize));
-
-                VisualBrush visualBrush = new VisualBrush(visualContent);
-                visualBrush.Stretch = Stretch.None;
-
-                //Scale the brush properly
-                visualBrush.ViewboxUnits = BrushMappingMode.Absolute;
-                visualBrush.Viewbox = new Rect(visualContent.RenderSize);
-                visualBrush.ViewportUnits = BrushMappingMode.Absolute;
-                visualBrush.Viewport = new Rect(visualContent.RenderSize);
-
-                // If the FlowDirection on cloned element doesn't match the combobox's apply a mirror
-                // If the FlowDirection on cloned element doesn't match its parent's apply a mirror
-                // If both are true, they cancel out so no mirror should be applied 
-                FlowDirection elementFD = (FlowDirection)visualContent.GetValue(FlowDirectionProperty);
-                DependencyObject parent = VisualTreeHelper.GetParent(visualContent);
-                FlowDirection parentFD = parent == null ? FlowDirection : (FlowDirection)parent.GetValue(FlowDirectionProperty);
-                if ((elementFD != this.FlowDirection) != (elementFD != parentFD))
-                {
-                    visualBrush.Transform = new MatrixTransform(new Matrix(-1.0, 0.0, 0.0, 1.0, visualContent.RenderSize.Width, 0.0));
-                }
-
-                // Apply visual brush to a rectangle 
-                Rectangle rect = new Rectangle();
-                rect.Fill = visualBrush;
-                rect.Width = visualContent.RenderSize.Width;
-                rect.Height = visualContent.RenderSize.Height;
-
-                MainItem = rect;
-
-                this.ToolTip = contentControl.ToolTip;
-            }
-            else if (contentControl != null && contentControl.Content != null)
-            {
-                // use a content string
-                MainItem = contentControl.Content.ToString();
-
-                this.ToolTip = contentControl.ToolTip;
-            }
-            else
-            {
-                // use a string
-                MainItem = SelectedItem.ToString();
-            }
+            MainItem = SelectedItem;
+            return;
         }
 
         public bool IsPressed
@@ -173,10 +145,16 @@ namespace Toolbox
             set { SetValue(IsPressedProperty, value); }
         }
 
-        internal object MainItem
+        public object MainItem
         {
             get { return GetValue(ToolboxCategory.MainItemProperty); }
             set { SetValue(ToolboxCategory.MainItemProperty, value); }
+        }
+
+        public object MainItemTemplate
+        {
+            get { return GetValue(ToolboxCategory.MainItemTemplateProperty); }
+            set { SetValue(ToolboxCategory.MainItemTemplateProperty, value); }
         }
 
         public bool IsExpanderVisible
@@ -233,8 +211,9 @@ namespace Toolbox
                 SelectItem(SelectedItem);
                 IsExpanded = false;
 
-                if (Parent is Toolbox)
-                    (Parent as Toolbox).SetSelected(this);
+                var toolboxParent = VisualTreeHelperExtensions.FindParent<Toolbox>(this);
+                if (toolboxParent != null)
+                    toolboxParent.SetSelected(this);
             }
             m_mouseDownCausedExpand = false;
         }
@@ -266,7 +245,6 @@ namespace Toolbox
                 }
             }
         }
-
 
         void ToolboxCategory_RightMouseButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -321,7 +299,7 @@ namespace Toolbox
         /// </returns>
         protected override DependencyObject GetContainerForItemOverride()
         {
-            return new ToolboxItem();
+            return new ToolboxItem() { ToolboxItemContentTemplate = ItemDisplayTemplate };
         }
 
         void SelectItem(object item)
@@ -346,9 +324,11 @@ namespace Toolbox
 
             if (SelectedItem != toolboxItem || m_lastMouseUp == toolboxItem)
             {
-                SelectItem(toolboxItem);
-                if (Parent is Toolbox)
-                    (Parent as Toolbox).SetSelected(this);
+                var item = ItemContainerGenerator.ItemFromContainer(toolboxItem);
+                SelectItem(item);
+
+                if (ToolboxOwner != null)
+                    ToolboxOwner.SetSelected(this);
             }
 
             IsExpanded = false; // close expander

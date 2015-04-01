@@ -190,8 +190,14 @@
       <DependentUpon>winSaveOptions.xaml</DependentUpon>
     </Compile>
     <Compile Include="ImplementationConversion.cs" />
+    <Compile Include="Managers\UpdateDetails.cs" />
+    <Compile Include="Managers\UpdateManager.cs" />
+    <Compile Include="Toolbox\CustomToolboxItem.cs" />
+    <Compile Include="Toolbox\IdentifierWithShortcut.cs" />
+    <Compile Include="Toolbox\IToolboxItem.cs" />
+    <Compile Include="Toolbox\ToolboxManager.cs" />
     <Compile Include="MultiResolutionImageExtensions.cs" />
-    <Compile Include="PluginManager.cs" />
+    <Compile Include="Managers\PluginManager.cs" />
     <Compile Include="Render\CircuitElementDrawingVisual.cs" />
     <Compile Include="Converters\BoolToYesNoConverter.cs" />
     <Compile Include="Converters\KeyTextConverter.cs" />
@@ -202,7 +208,7 @@
     <Compile Include="Render\WPFRenderer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="UndoManager.cs" />
+    <Compile Include="Managers\UndoManager.cs" />
     <Compile Include="Dialogs\winAbout.xaml.cs">
       <DependentUpon>winAbout.xaml</DependentUpon>
     </Compile>

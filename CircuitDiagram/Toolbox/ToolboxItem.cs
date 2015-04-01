@@ -40,16 +40,24 @@ namespace Toolbox
     {
         public static readonly DependencyProperty IsPressedProperty;
         public static readonly RoutedEvent ClickEvent;
+        public static readonly DependencyProperty ToolboxItemContentTemplateProperty;
 
         static ToolboxItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ToolboxItem), new FrameworkPropertyMetadata(typeof(ToolboxItem)));
             IsPressedProperty = DependencyProperty.Register("IsPressed", typeof(bool), typeof(ToolboxItem));
+            ToolboxItem.ToolboxItemContentTemplateProperty = DependencyProperty.Register("ToolboxItemContentTemplate", typeof(DataTemplate), typeof(ToolboxItem));
             ClickEvent = Button.ClickEvent;
         }
 
         public ToolboxItem()
         {
+        }
+
+        public DataTemplate ToolboxItemContentTemplate
+        {
+            get { return (DataTemplate)GetValue(ToolboxItem.ToolboxItemContentTemplateProperty); }
+            set { SetValue(ToolboxItem.ToolboxItemContentTemplateProperty, value); }
         }
 
         public bool IsPressed
@@ -77,6 +85,11 @@ namespace Toolbox
             IsPressed = false;
 
             base.OnMouseLeave(e);
+        }
+
+        protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            base.OnPreviewMouseLeftButtonDown(e);
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)

@@ -12,6 +12,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Colors.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <cd:MultiResolutionImageToImageSourceConverter x:Key="MultiResolutionImageToImageSourceConverter" />
         </ResourceDictionary>
     </Window.Resources>
     <DockPanel>
@@ -60,16 +61,26 @@
             <TextBlock Name="lblStatus" Text="Ready" />
         </StatusBar>
         <ScrollViewer Style="{StaticResource ToolboxScrollViewer}" DockPanel.Dock="Left" Name="toolboxScroll" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto">
-            <tb:Toolbox x:Name="mainToolbox" DockPanel.Dock="Left" Width="60" Style="{StaticResource ToolboxStyle}">
-                <tb:ToolboxCategory x:Name="tbxcatSelect">
-                    <tb:ToolboxItem ToolTip="Select (v)" Click="btnSelect_Click">
-                        <Rectangle Width="32" Height="32" Fill="White">
+            <tb:Toolbox x:Name="mainToolbox" DockPanel.Dock="Left" Width="60" Style="{StaticResource ToolboxStyle}"
+                        ItemContainerStyle="{StaticResource ToolboxCategoryStyle}" SelectionChanged="mainToolbox_SelectionChanged">
+                <tb:Toolbox.CategoryItemTemplate>
+                    <DataTemplate>
+                        <Rectangle Fill="White" Width="32" Height="32" ToolTip="{Binding DisplayName}">
                             <Rectangle.OpacityMask>
-                                <ImageBrush x:Name="SelectImageBrush" ImageSource="Images/Select64.png" />
+                                <ImageBrush ImageSource="{Binding Path=Icon, Converter={StaticResource MultiResolutionImageToImageSourceConverter}}" Stretch="None" />
                             </Rectangle.OpacityMask>
                         </Rectangle>
-                    </tb:ToolboxItem>
-                </tb:ToolboxCategory>
+                    </DataTemplate>
+                </tb:Toolbox.CategoryItemTemplate>
+                <tb:Toolbox.CategoryMainItemTemplate>
+                    <DataTemplate>
+                        <Rectangle Fill="White" Width="32" Height="32" ToolTip="{Binding DisplayName}">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="{Binding Path=Icon, Converter={StaticResource MultiResolutionImageToImageSourceConverter}}" Stretch="None" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </DataTemplate>
+                </tb:Toolbox.CategoryMainItemTemplate>
             </tb:Toolbox>
         </ScrollViewer>
         <Grid DockPanel.Dock="Right" Width="175">

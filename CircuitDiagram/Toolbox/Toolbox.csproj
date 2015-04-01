@@ -52,6 +52,7 @@
     <Compile Include="Toolbox.cs" />
     <Compile Include="ToolboxCategory.cs" />
     <Compile Include="ToolboxItem.cs" />
+    <Compile Include="VisualTreeHelperExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
