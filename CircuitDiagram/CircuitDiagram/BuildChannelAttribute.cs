@@ -8,15 +8,13 @@ namespace CircuitDiagram
     [AttributeUsage(AttributeTargets.Assembly)]
     class BuildChannelAttribute : Attribute
     {
-        public int Increment { get; set; }
         public string DisplayName { get; set; }
         public UpdateChannelType UpdateChannel { get; set; }
 
-        public BuildChannelAttribute(string displayName, UpdateChannelType channelType, int increment)
+        public BuildChannelAttribute(string displayName, UpdateChannelType channelType)
         {
             DisplayName = displayName;
             UpdateChannel = channelType;
-            Increment = increment;
         }
     }
 }

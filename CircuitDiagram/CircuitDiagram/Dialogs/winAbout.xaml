@@ -16,7 +16,7 @@
         <Button Content="Close" Margin="0,0,12,12" Name="btnClose" Height="23" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="button1_Click" IsCancel="True" />
         <StackPanel Margin="215,45,10,0" Name="stpInformation" Height="144" VerticalAlignment="Top">
             <StackPanel Orientation="Horizontal">
-                <Label Content="Version:" Height="28" Name="lblVersion" HorizontalAlignment="Left" />
+                <Label Content="Version" Height="28" Name="lblVersion" HorizontalAlignment="Left" />
                 <Label Content="1.0" Height="28" Name="lblVersionNumber" HorizontalAlignment="Left" />
             </StackPanel>
             <Label Name="lblCreatedBy" Content="Created by Sam Fisher" Height="28" HorizontalAlignment="Left" />
@@ -28,7 +28,7 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Label Content="Release channel:" Grid.Column="0" />
+                <Label Content="Release channel" Grid.Column="0" />
                 <ComboBox Name="cbxReleaseChannel" Grid.Column="1" Width="100" />
             </Grid>
         </StackPanel>

@@ -32,7 +32,6 @@ using System.Windows.Media;
 
 [assembly: NeutralResourcesLanguage("en-GB", UltimateResourceFallbackLocation.Satellite)]
 
-
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located
     //(used if a resource is not found in the page, 
@@ -53,9 +52,8 @@ using System.Windows.Media;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.0.0.0")]
-[assembly: AssemblyFileVersion("3.0.0.0")]
-[assembly: BuildChannel("Alpha 1", UpdateChannelType.Dev, 1)]
+[assembly: AssemblyVersion("3.0.0.*")]
+[assembly: BuildChannel("Alpha 1", UpdateChannelType.Dev)]
 
 // Per-monitor DPI scaling
 [assembly: DisableDpiAwareness]

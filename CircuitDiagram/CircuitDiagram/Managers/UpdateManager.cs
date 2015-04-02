@@ -25,7 +25,7 @@ namespace CircuitDiagram
             BuildVersion = _assemblyInfo.GetName().Version;
             BuildChannelVersion = _assemblyInfo.GetCustomAttributes(typeof(BuildChannelAttribute), false).FirstOrDefault(item => item is BuildChannelAttribute) as BuildChannelAttribute;
             if (BuildChannelVersion == null)
-                BuildChannelVersion = new BuildChannelAttribute("", UpdateChannelType.Stable, 0);
+                BuildChannelVersion = new BuildChannelAttribute("", UpdateChannelType.Stable);
 
             // Check if the update channel has been overridden by the user
             if (Settings.Settings.HasSetting("updateChannel"))
@@ -38,13 +38,15 @@ namespace CircuitDiagram
             {
                 UpdateChannel = BuildChannelVersion.UpdateChannel;
             }
-
+            
             // Set app display version
-            AppDisplayVersion = String.Format("{0} {1}", BuildVersion, BuildChannelVersion.DisplayName);
+            AppDisplayVersion = String.Format("{0}.{1}.{2} {3} ", BuildVersion.Major, BuildVersion.Minor, BuildVersion.Build, BuildChannelVersion.DisplayName);
 #if PORTABLE
-            AppDisplayVersion += " (portable)";
+            AppDisplayVersion += String.Format("(Portable, Build {0})", BuildVersion.Revision);
 #elif DEBUG
-            AppDisplayVersion += " (debug)";
+            AppDisplayVersion += String.Format("(Debug, Build {0})", BuildVersion.Revision);
+#else
+            AppDisplayVersion += String.Format("(Build {0})", BuildVersion.Revision);
 #endif
         }
 
@@ -94,8 +96,7 @@ namespace CircuitDiagram
                 }
             }
 
-            if (serverVersion != null && BuildVersion.CompareTo(serverVersion) < 0 || (BuildVersion.CompareTo(serverVersion) == 0
-                && BuildChannelVersion.Increment < serverIncrement))
+            if (serverVersion != null && BuildVersion.CompareTo(serverVersion) < 0)
             {
                 return new UpdateDetails() { Version = serverVersionName, DownloadUrl = serverDownloadUrl };
             }
