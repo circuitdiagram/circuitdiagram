@@ -87,7 +87,8 @@ namespace ComponentCompiler
                     StringBuilder command = new StringBuilder();
                     command.AppendFormat("--input \"{0}\" ", tbxInputPath.Text);
                     command.AppendFormat("--output \"{0}\" ", sfd.FileName);
-                    command.AppendFormat("--icon \"{0}\" ", tbxIconPath.Text);
+                    if (!String.IsNullOrEmpty(tbxIconPath.Text))
+                        command.AppendFormat("--icon \"{0}\" ", tbxIconPath.Text);
                     if (chbSign.IsChecked == true)
                         command.AppendFormat("--sign");
 

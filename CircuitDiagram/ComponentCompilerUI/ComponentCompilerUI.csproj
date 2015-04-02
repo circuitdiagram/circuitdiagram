@@ -92,9 +92,9 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\cdlibrary\cdlibrary.csproj">
-      <Project>{D5FD5F79-6BCE-40FB-B556-209758C612EC}</Project>
-      <Name>cdlibrary</Name>
+    <ProjectReference Include="..\ComponentCompiler\ComponentCompiler.csproj">
+      <Project>{8119d219-d756-4b4e-b8a0-70209190d441}</Project>
+      <Name>ComponentCompiler</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
