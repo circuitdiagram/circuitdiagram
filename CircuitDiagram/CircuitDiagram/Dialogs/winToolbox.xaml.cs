@@ -22,6 +22,7 @@ using CircuitDiagram.Components;
 using CircuitDiagram.Components.Description;
 using CircuitDiagram.DPIWindow;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
@@ -84,76 +85,24 @@ namespace CircuitDiagram
         {
             InitializeComponent();
 
-            XmlDocument toolboxSettings = new XmlDocument();
+            // Load toolbox
+            var toolboxItems = ToolboxManager.LoadToolbox();
 
-#if PORTABLE
-            string toolboxSettingsPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\toolbox.xml";
-#elif DEBUG
-            string toolboxSettingsPath = System.IO.Path.Combine(MainWindow.ProjectDirectory, "Components\\toolbox.xml");
-#else
-            string toolboxSettingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml";
-#endif
-
-            toolboxSettings.Load(toolboxSettingsPath);
-
-            #region Populate current items
-            XmlNodeList categoryNodes = toolboxSettings.SelectNodes("/display/category");
-            foreach (XmlNode categoryNode in categoryNodes)
+            // Convert toolbox items for display
+            foreach(var cat in toolboxItems)
             {
-                ObservableCollection<CategoryItem> categoryItems = new ObservableCollection<CategoryItem>();
-                foreach (XmlNode node in categoryNode.ChildNodes)
-                {
-                    if (node.Name == "component")
-                    {
-                        XmlElement element = node as XmlElement;
+                var categoryItems = new ObservableCollection<CategoryItem>();
 
-                        Key shortcutKey = Key.None;
-                        if (element.HasAttribute("key") && KeyTextConverter.IsValidLetterKey(element.Attributes["key"].InnerText))
-                            shortcutKey = (Key)Enum.Parse(typeof(Key), element.Attributes["key"].InnerText);
-
-                        if (element.HasAttribute("guid") && element.HasAttribute("configuration"))
-                        {
-                            ComponentDescription description = ComponentHelper.FindDescription(new Guid(element.Attributes["guid"].InnerText));
-                            if (description != null)
-                            {
-                                ComponentConfiguration configuration = description.Metadata.Configurations.FirstOrDefault(configItem => configItem.Name == element.Attributes["configuration"].InnerText);
-                                if (configuration != null)
-                                    categoryItems.Add(new CategoryItem(description, configuration, shortcutKey));
-                            }
-                        }
-                        else if (element.HasAttribute("guid"))
-                        {
-                            ComponentDescription description = ComponentHelper.FindDescription(new Guid(element.Attributes["guid"].InnerText));
-                            if (description != null)
-                                categoryItems.Add(new CategoryItem(description, null, shortcutKey));
-                        }
-                        else if (element.HasAttribute("type") && element.HasAttribute("configuration"))
-                        {
-                            ComponentDescription description = ComponentHelper.FindDescription(element.Attributes["type"].InnerText);
-                            if (description != null)
-                            {
-                                ComponentConfiguration configuration = description.Metadata.Configurations.FirstOrDefault(configItem => configItem.Name == element.Attributes["configuration"].InnerText);
-                                if (configuration != null)
-                                    categoryItems.Add(new CategoryItem(description, configuration, shortcutKey));
-                            }
-                        }
-                        else if (element.HasAttribute("type"))
-                        {
-                            ComponentDescription description = ComponentHelper.FindDescription(element.Attributes["type"].InnerText);
-                            if (description != null)
-                                categoryItems.Add(new CategoryItem(description, null, shortcutKey));
-                        }
-                    }
-                }
-                if (categoryItems.Count > 0)
+                foreach(IdentifierWithShortcut item in cat)
                 {
-                    lbxCategories.Items.Add(new Category("Category " + CategoryCounter.ToString()) { Items = categoryItems });
-                    CategoryCounter++;
+                    categoryItems.Add(new CategoryItem(item.Identifier.Description, item.Identifier.Configuration, item.ShortcutKey));
                 }
+
+                lbxCategories.Items.Add(new Category("Category " + CategoryCounter.ToString()) { Items = categoryItems });
+                CategoryCounter++;
             }
-            #endregion
 
-            #region Populate available items
+            // Available (not in toolbox) items
             foreach (ComponentDescription description in ComponentHelper.ComponentDescriptions)
             {
                 if (!IsItemUsed(description, null) && description.Metadata.Configurations.Count == 0)
@@ -166,7 +115,6 @@ namespace CircuitDiagram
                     }
                 }
             }
-            #endregion
 
             lbxAvailableItems.Items.Filter = FilterItem;
             lbxAvailableItems.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription("SortText", System.ComponentModel.ListSortDirection.Ascending));
@@ -204,54 +152,25 @@ namespace CircuitDiagram
 
         private void SaveConfiguration()
         {
-#if PORTABLE
-            string toolboxSettingsPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\toolbox.xml";
-#elif DEBUG
-            string toolboxSettingsPath = System.IO.Path.Combine(MainWindow.ProjectDirectory, "Components\\toolbox.xml");
-#else
-            string toolboxSettingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml";
-#endif
-
-            using (System.IO.FileStream stream = new System.IO.FileStream(toolboxSettingsPath, System.IO.FileMode.Create, System.IO.FileAccess.Write))
+            var items = new List<List<IdentifierWithShortcut>>();
+            foreach (Category category in lbxCategories.Items)
             {
-                XmlTextWriter writer = new XmlTextWriter(stream, Encoding.UTF8);
-                writer.Formatting = Formatting.Indented;
-                writer.WriteStartDocument();
-                writer.WriteStartElement("display");
+                var cat = new List<IdentifierWithShortcut>();
 
-                foreach (Category category in lbxCategories.Items)
+                foreach (CategoryItem item in category.Items)
                 {
-                    if (category.Items.Count == 0)
-                        continue;
-
-                    writer.WriteStartElement("category");
-
-                    foreach (CategoryItem item in category.Items)
+                    cat.Add(new IdentifierWithShortcut()
                     {
-                        writer.WriteStartElement("component");
-
-                        if (item.Description.Metadata.GUID != Guid.Empty)
-                            writer.WriteAttributeString("guid", item.Description.Metadata.GUID.ToString());
-                        else
-                            writer.WriteAttributeString("type", item.Description.ComponentName);
-
-                        if (item.Configuration != null)
-                            writer.WriteAttributeString("configuration", item.Configuration.Name);
-
-                        if (item.ShortcutKey != Key.None)
-                            writer.WriteAttributeString("key", item.ShortcutKey.ToString());
-
-                        writer.WriteEndElement();
-                    }
-
-                    writer.WriteEndElement();
+                        Identifier = new ComponentIdentifier(item.Description, item.Configuration),
+                        ShortcutKey = item.ShortcutKey
+                    });
                 }
 
-                writer.WriteEndElement();
-                writer.WriteEndDocument();
-
-                writer.Flush();
+                if (cat.Count > 0)
+                    items.Add(cat);
             }
+
+            ToolboxManager.WriteToolbox(items);
         }
 
         private void button5_Click(object sender, RoutedEventArgs e)

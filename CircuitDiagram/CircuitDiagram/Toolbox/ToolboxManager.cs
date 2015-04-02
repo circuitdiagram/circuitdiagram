@@ -84,5 +84,49 @@ namespace CircuitDiagram
                 Directory.CreateDirectory(Path.GetDirectoryName(toolboxSettingsPath));
             File.WriteAllText(toolboxSettingsPath, "<?xml version=\"1.0\" encoding=\"utf-8\"?><display></display>");
         }
+
+        public static void WriteToolbox(IEnumerable<IEnumerable<IdentifierWithShortcut>> items)
+        {
+            using (System.IO.FileStream stream = new System.IO.FileStream(toolboxSettingsPath, System.IO.FileMode.Create, System.IO.FileAccess.Write))
+            {
+                XmlTextWriter writer = new XmlTextWriter(stream, Encoding.UTF8);
+                writer.Formatting = Formatting.Indented;
+                writer.WriteStartDocument();
+                writer.WriteStartElement("display");
+
+                foreach (var category in items)
+                {
+                    if (category.Count() == 0)
+                        continue;
+
+                    writer.WriteStartElement("category");
+
+                    foreach (var item in category)
+                    {
+                        writer.WriteStartElement("component");
+
+                        if (item.Identifier.Description.Metadata.GUID != Guid.Empty)
+                            writer.WriteAttributeString("guid", item.Identifier.Description.Metadata.GUID.ToString());
+                        else
+                            writer.WriteAttributeString("type", item.Identifier.Description.ComponentName);
+
+                        if (item.Identifier.Configuration != null)
+                            writer.WriteAttributeString("configuration", item.Identifier.Configuration.Name);
+
+                        if (item.ShortcutKey != Key.None)
+                            writer.WriteAttributeString("key", item.ShortcutKey.ToString());
+
+                        writer.WriteEndElement();
+                    }
+
+                    writer.WriteEndElement();
+                }
+
+                writer.WriteEndElement();
+                writer.WriteEndDocument();
+
+                writer.Flush();
+            }
+        }
     }
 }

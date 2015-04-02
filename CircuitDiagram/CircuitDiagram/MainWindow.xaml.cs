@@ -418,11 +418,10 @@ namespace CircuitDiagram
         {
             try
             {
-                mainToolbox.Items.Clear();
-
                 var toolboxData = ToolboxManager.LoadToolbox();
 
                 // Add shortcuts
+                m_toolboxShortcuts.Clear();
                 foreach(var cat in toolboxData)
                 {
                     foreach(IdentifierWithShortcut component in cat)
