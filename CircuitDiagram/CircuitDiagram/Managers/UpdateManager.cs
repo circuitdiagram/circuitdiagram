@@ -74,7 +74,6 @@ namespace CircuitDiagram
 
             Version serverVersion = null;
             string serverVersionName = null;
-            int serverIncrement = 0;
             string serverDownloadUrl = null;
 
             foreach (XmlNode childNode in channel.ChildNodes)
@@ -86,9 +85,6 @@ namespace CircuitDiagram
                         break;
                     case "name":
                         serverVersionName = childNode.InnerText;
-                        break;
-                    case "increment":
-                        serverIncrement = int.Parse(childNode.InnerText);
                         break;
                     case "url":
                         serverDownloadUrl = childNode.InnerText;

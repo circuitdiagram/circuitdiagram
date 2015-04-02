@@ -1,6 +1,7 @@
 ﻿using CircuitDiagram.Components.Description;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -41,6 +42,7 @@ namespace CircuitDiagram
                 MemoryStream tempStream = new MemoryStream(res.Data);
                 var tempIcon = new System.Windows.Media.Imaging.BitmapImage();
                 tempIcon.BeginInit();
+                tempIcon.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
                 tempIcon.StreamSource = tempStream;
                 tempIcon.EndInit();
 

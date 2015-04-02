@@ -62,16 +62,21 @@ namespace cdcompile
             {
                 // Compile a single component
                 CompileComponent(compileOptions.Input, compileOptions);
+
+                Console.WriteLine("Compiled {0}", Path.GetFileName(compileOptions.Input));
             }
             else if (Directory.Exists(compileOptions.Input))
             {
                 // Compile a directory of components
+                Console.WriteLine("Compiling components");
+
                 string[] inputPaths = Directory.GetFiles(compileOptions.Input, "*.xml");
                 foreach (string input in inputPaths)
                 {
-                    Console.WriteLine("Compiling {0}", Path.GetFileName(input));
                     CompileComponent(input, compileOptions);
                 }
+
+                Console.WriteLine("Compiled {0} components", inputPaths.Length);
             }
         }
 

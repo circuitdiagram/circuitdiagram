@@ -33,8 +33,14 @@ namespace CircuitDiagram
 
             try
             {
+                string pluginDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\plugins";
+
+                // Check if plugin directory exists
+                if (!System.IO.Directory.Exists(pluginDirectory))
+                    return;
+
                 AggregateCatalog catalogue = new AggregateCatalog();
-                catalogue.Catalogs.Add(new DirectoryCatalog(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\plugins"));
+                catalogue.Catalogs.Add(new DirectoryCatalog(pluginDirectory));
                 CompositionContainer container = new CompositionContainer(catalogue);
                 container.ComposeParts(m_manager);
 
