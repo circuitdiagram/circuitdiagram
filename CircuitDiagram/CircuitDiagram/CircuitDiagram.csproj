@@ -192,6 +192,7 @@
     <Compile Include="ImplementationConversion.cs" />
     <Compile Include="Managers\ComponentsManager\ComponentDescriptionLoadException.cs" />
     <Compile Include="Managers\ComponentsManager\ComponentsManager.cs" />
+    <Compile Include="Managers\ImplementationConversionManager.cs" />
     <Compile Include="Managers\UpdateDetails.cs" />
     <Compile Include="Managers\UpdateManager.cs" />
     <Compile Include="Managers\UpdateChannelType.cs" />

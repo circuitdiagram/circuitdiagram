@@ -28,10 +28,10 @@ namespace CircuitDiagram
                 BuildChannelVersion = new BuildChannelAttribute("", UpdateChannelType.Stable);
 
             // Check if the update channel has been overridden by the user
-            if (Settings.Settings.HasSetting("updateChannel"))
+            if (SettingsManager.Settings.HasSetting("updateChannel"))
             {
                 UpdateChannelType updateChannel;
-                if (Enum.TryParse<UpdateChannelType>(Settings.Settings.Read("updateChannel") as string, out updateChannel))
+                if (Enum.TryParse<UpdateChannelType>(SettingsManager.Settings.Read("updateChannel") as string, out updateChannel))
                     UpdateChannel = updateChannel;
             }
             else

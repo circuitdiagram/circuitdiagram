@@ -56,13 +56,13 @@ namespace CircuitDiagram
             if (cbxReleaseChannel.SelectedItem.ToString() != UpdateManager.BuildChannelVersion.UpdateChannel.ToString())
             {
                 UpdateManager.UpdateChannel = (UpdateChannelType)Enum.Parse(typeof(UpdateChannelType), cbxReleaseChannel.SelectedItem.ToString());
-                Settings.Settings.Write("updateChannel", cbxReleaseChannel.SelectedItem.ToString());
-                Settings.Settings.Save();
+                SettingsManager.Settings.Write("updateChannel", cbxReleaseChannel.SelectedItem.ToString());
+                SettingsManager.Settings.Save();
             }
             else
             {
                 UpdateManager.UpdateChannel = UpdateManager.BuildChannelVersion.UpdateChannel;
-                Settings.Settings.RemoveSetting("updateChannel");
+                SettingsManager.Settings.RemoveSetting("updateChannel");
             }
         }
     }

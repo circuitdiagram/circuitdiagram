@@ -1,22 +1,16 @@
-﻿// MainWindow.xaml.cs
-//
-// Circuit Diagram http://www.circuit-diagram.org/
-//
-// Copyright (C) 2012-2014  Sam Fisher
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+﻿#region Copyright & License Information
+/*
+ * Copyright 2012-2015 Sam Fisher
+ *
+ * This file is part of Circuit Diagram
+ * http://www.circuit-diagram.org/
+ * 
+ * Circuit Diagram is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or (at
+ * your option) any later version.
+ */
+#endregion
 
 using CircuitDiagram.Components;
 using CircuitDiagram.Components.Description;
@@ -61,23 +55,7 @@ namespace CircuitDiagram
         public System.Collections.ObjectModel.ObservableCollection<string> RecentFiles = new System.Collections.ObjectModel.ObservableCollection<string>();
         List<ImplementationConversionCollection> m_componentRepresentations = new List<ImplementationConversionCollection>();
         string m_docToLoad = null;
-
-#if PORTABLE
-            string implementationsFileLocation = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\implementations.xml";
-#else
-        string implementationsFileLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\implementations.xml";
-#endif
-
         #endregion
-
-        public static readonly string ProjectDirectory;
-
-#if DEBUG
-        static MainWindow()
-        {
-            ProjectDirectory = Path.GetFullPath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\..\\..\\..\\..\\");
-        }
-#endif
 
         public MainWindow()
         {
@@ -154,20 +132,25 @@ namespace CircuitDiagram
         {
             LoadToolbox();
 
-            // check for updates
-            if (!Settings.Settings.HasSetting("CheckForUpdatesOnStartup"))
-                Settings.Settings.Write("CheckForUpdatesOnStartup", true);
-            if (!Settings.Settings.ReadBool("CheckForUpdatesOnStartup"))
-                return;
-            if (DateTime.Now.Subtract(Settings.Settings.HasSetting("LastCheckForUpdates") ? (DateTime)Settings.Settings.Read("LastCheckForUpdates") : new DateTime(2000, 1, 1)).TotalDays < 1.0)
-                return;
-            System.Threading.Thread T = new System.Threading.Thread((O => CheckForUpdates(false)));
-            T.Start();
+            // Check for updates
+            if (!SettingsManager.Settings.HasSetting("CheckForUpdatesOnStartup"))
+                SettingsManager.Settings.Write("CheckForUpdatesOnStartup", true);
+
+            var lastCheckForUpdates = SettingsManager.Settings.HasSetting("LastCheckForUpdates") ?
+                (DateTime)SettingsManager.Settings.Read("LastCheckForUpdates") : new DateTime(2000, 1, 1);
+            var timeSinceLastUpdateCheck = DateTime.Now.Subtract(lastCheckForUpdates);
+
+            if (SettingsManager.Settings.ReadBool("CheckForUpdatesOnStartup") &&
+                timeSinceLastUpdateCheck.TotalDays >= 1.0)
+            {
+                // Checking for updates is enabled, and last check was at least one day ago
+                CheckForUpdates(false);
+            }
         }
 
         void MainWindow_Closed(object sender, EventArgs e)
         {
-            Settings.Settings.Save();
+            SettingsManager.Settings.Save();
         }
 
         /// <summary>
@@ -175,15 +158,15 @@ namespace CircuitDiagram
         /// </summary>
         private void ApplySettings()
         {
-            toolboxScroll.VerticalScrollBarVisibility = (CircuitDiagram.Settings.Settings.ReadBool("showToolboxScrollBar") ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden);
-            circuitDisplay.ShowConnectionPoints = Settings.Settings.ReadBool("showConnectionPoints");
-            circuitDisplay.ShowGrid = Settings.Settings.ReadBool("showEditorGrid");
-            if (Settings.Settings.HasSetting("EmbedComponents"))
-                ComponentHelper.EmbedOptions = (ComponentEmbedOptions)Settings.Settings.Read("EmbedComponents");
+            toolboxScroll.VerticalScrollBarVisibility = (CircuitDiagram.SettingsManager.Settings.ReadBool("showToolboxScrollBar") ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden);
+            circuitDisplay.ShowConnectionPoints = SettingsManager.Settings.ReadBool("showConnectionPoints");
+            circuitDisplay.ShowGrid = SettingsManager.Settings.ReadBool("showEditorGrid");
+            if (SettingsManager.Settings.HasSetting("EmbedComponents"))
+                ComponentHelper.EmbedOptions = (ComponentEmbedOptions)SettingsManager.Settings.Read("EmbedComponents");
 
             // Load user name
-            if (!Settings.Settings.HasSetting("ComputerUserName"))
-                Settings.Settings.Write("ComputerUserName", System.DirectoryServices.AccountManagement.UserPrincipal.Current.DisplayName);
+            if (!SettingsManager.Settings.HasSetting("ComputerUserName"))
+                SettingsManager.Settings.Write("ComputerUserName", System.DirectoryServices.AccountManagement.UserPrincipal.Current.DisplayName);
         }
 
         /// <summary>
@@ -202,6 +185,7 @@ namespace CircuitDiagram
         /// </summary>
         private void Load()
         {
+            // Load component descriptions
             try
             {
                 ComponentsManager.LoadComponents();
@@ -211,76 +195,10 @@ namespace CircuitDiagram
                 SetStatusText(ex.Message);
             }
 
-            #region Load Component Implementation Conversions
-            if (File.Exists(implementationsFileLocation))
-            {
-                try
-                {
-                    XmlDocument implDoc = new XmlDocument();
-                    implDoc.Load(implementationsFileLocation);
+            // Load implementation conversions
+            m_componentRepresentations = ImplementationConversionManager.LoadImplementationConversions();
 
-                    XmlNodeList sourceNodes = implDoc.SelectNodes("/implementations/source");
-                    foreach (XmlNode sourceNode in sourceNodes)
-                    {
-                        string collection = sourceNode.Attributes["definitions"].InnerText;
-
-                        ImplementationConversionCollection newCollection = new ImplementationConversionCollection();
-                        newCollection.ImplementationSet = collection;
-
-                        foreach (XmlNode childNode in sourceNode.ChildNodes)
-                        {
-                            if (childNode.Name != "add")
-                                continue;
-
-                            string item = childNode.Attributes["item"].InnerText;
-                            Guid guid = Guid.Empty;
-                            XmlNode guidNode = childNode.SelectSingleNode("guid");
-                            if (guidNode != null)
-                                guid = new Guid(guidNode.InnerText);
-                            string configuration = null;
-                            XmlNode configurationNode = childNode.SelectSingleNode("configuration");
-                            if (configurationNode != null)
-                                configuration = configurationNode.InnerText;
-
-                            ComponentDescription description = ComponentHelper.FindDescription(guid);
-                            if (description != null)
-                            {
-                                ImplementationConversion newConversion = new ImplementationConversion();
-                                newConversion.ImplementationName = item;
-                                newConversion.ToName = description.ComponentName;
-                                newConversion.ToGUID = description.Metadata.GUID;
-
-                                ComponentConfiguration theConfiguration = null;
-                                if (configuration != null)
-                                {
-                                    theConfiguration = description.Metadata.Configurations.FirstOrDefault(check => check.Name == configuration);
-                                    if (theConfiguration != null)
-                                    {
-                                        newConversion.ToConfiguration = theConfiguration.Name;
-                                        if (theConfiguration.Icon != null)
-                                            newConversion.ToIcon = theConfiguration.Icon.GetBestIcon(CurrentDPI);
-                                    }
-                                    else if (description.Metadata.Icon != null)
-                                        newConversion.ToIcon = description.Metadata.Icon.GetBestIcon(CurrentDPI);
-                                }
-                                else if (description.Metadata.Icon != null)
-                                    newConversion.ToIcon = description.Metadata.Icon.GetBestIcon(CurrentDPI);
-
-                                newCollection.Items.Add(newConversion);
-                                ComponentHelper.SetStandardComponent(newCollection.ImplementationSet, newConversion.ImplementationName, description, theConfiguration);
-                            }
-                        }
-
-                        m_componentRepresentations.Add(newCollection);
-                    }
-                }
-                catch (Exception)
-                {
-                    // Invalid XML file
-                }
-            }
-            #endregion
-
+            // Load plugins
             PluginManager.Initialize();
             try
             {
@@ -434,29 +352,33 @@ namespace CircuitDiagram
         /// <param name="notifyIfNoUpdate">Show a dialog even if no updates are available.</param>
         private void CheckForUpdates(bool notifyIfNoUpdate)
         {
-            try
+            Task.Factory.StartNew(() =>
             {
-                var newVersion = UpdateManager.CheckForUpdates();
-
-                if (newVersion != null)
+                try
                 {
-                    // New version available
-                    this.Dispatcher.Invoke(new Action(() => winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, newVersion.Version, newVersion.DownloadUrl)));
-                }
-                else if (notifyIfNoUpdate)
-                {
-                    // Notify that no new versions are available
-                    this.Dispatcher.Invoke(new Action(() => winNewVersion.Show(this, NewVersionWindowType.NoNewVersionAvailable, null, null)));
-                }
-            }
-            catch
-            {
-                if (notifyIfNoUpdate)
-                    this.Dispatcher.Invoke(new Action(() => winNewVersion.Show(this, NewVersionWindowType.Error, null, "http://www.circuit-diagram.org/")));
-            }
+                    var newVersion = UpdateManager.CheckForUpdates();
 
-            Settings.Settings.Write("LastCheckForUpdates", DateTime.Now);
-            Settings.Settings.Save();
+                    if (newVersion != null)
+                    {
+                        // New version available
+                        this.Dispatcher.Invoke(new Action(() =>
+                            winNewVersion.Show(this, NewVersionWindowType.NewVersionAvailable, newVersion.Version, newVersion.DownloadUrl)));
+                    }
+                    else if (notifyIfNoUpdate)
+                    {
+                        // Notify that no new versions are available
+                        this.Dispatcher.Invoke(new Action(() => winNewVersion.Show(this, NewVersionWindowType.NoNewVersionAvailable, null, null)));
+                    }
+                }
+                catch
+                {
+                    if (notifyIfNoUpdate)
+                        this.Dispatcher.Invoke(new Action(() => winNewVersion.Show(this, NewVersionWindowType.Error, null, "http://www.circuit-diagram.org/")));
+                }
+
+                SettingsManager.Settings.Write("LastCheckForUpdates", DateTime.Now);
+                SettingsManager.Settings.Save();
+            });
         }
 
         void Editor_ComponentUpdated(object sender, ComponentUpdatedEventArgs e)
@@ -630,7 +552,7 @@ namespace CircuitDiagram
                 if (extension == ".cddx")
                 {
                     // Load default save options if no previous options (e.g. if file opened)
-                    Settings.SettingsSerializer serializer = new Settings.SettingsSerializer();
+                    SettingsManager.SettingsSerializer serializer = new SettingsManager.SettingsSerializer();
                     serializer.Category = "CDDX";
                     m_lastSaveOptions = new IO.CDDX.CDDXSaveOptions();
                     m_lastSaveOptions.Deserialize(serializer);
@@ -697,12 +619,12 @@ namespace CircuitDiagram
                     bool doSave = false;
 
                     // Load default save options
-                    Settings.SettingsSerializer serializer = new Settings.SettingsSerializer();
+                    SettingsManager.SettingsSerializer serializer = new SettingsManager.SettingsSerializer();
                     serializer.Category = "CDDX";
                     CircuitDiagram.IO.CDDX.CDDXSaveOptions saveOptions = new CircuitDiagram.IO.CDDX.CDDXSaveOptions();
                     saveOptions.Deserialize(serializer);
 
-                    if (!Settings.Settings.ReadBool("CDDX.AlwaysUseSettings"))
+                    if (!SettingsManager.Settings.ReadBool("CDDX.AlwaysUseSettings"))
                     {
                         winSaveOptions saveOptionsWindow = new winSaveOptions(new CDDXSaveOptionsEditor(), saveOptions);
                         saveOptionsWindow.Owner = this;
@@ -713,7 +635,7 @@ namespace CircuitDiagram
                             if (saveOptionsWindow.AlwaysUseSettings)
                             {
                                 saveOptions.Serialize(serializer);
-                                Settings.Settings.Write("CDDX.AlwaysUseSettings", true);
+                                SettingsManager.Settings.Write("CDDX.AlwaysUseSettings", true);
                             }
 
                             doSave = true;
@@ -977,50 +899,19 @@ namespace CircuitDiagram
             options.ComponentRepresentations = m_componentRepresentations;
             if (options.ShowDialog() == true)
             {
-                CircuitDiagram.Settings.Settings.Save();
+                CircuitDiagram.SettingsManager.Settings.Save();
 
                 ApplySettings();
 
                 circuitDisplay.DrawConnections();
 
                 // Save implementation representations
-                XmlTextWriter writer = new XmlTextWriter(implementationsFileLocation, Encoding.UTF8);
-                writer.Formatting = Formatting.Indented;
-                writer.WriteStartDocument();
-                writer.WriteStartElement("implementations");
-                foreach (var source in m_componentRepresentations)
-                {
-                    if (source.Items.Count == 0)
-                        continue;
+                ImplementationConversionManager.SaveImplementationConversions(m_componentRepresentations);
 
-                    writer.WriteStartElement("source");
-
-                    writer.WriteAttributeString("definitions", source.ImplementationSet);
-
-                    foreach (var item in source.Items)
-                    {
-                        writer.WriteStartElement("add");
-
-                        writer.WriteAttributeString("item", item.ImplementationName);
-                        writer.WriteStartElement("guid");
-                        writer.WriteValue(item.ToGUID.ToString());
-                        writer.WriteEndElement();
-                        if (!String.IsNullOrEmpty(item.ToConfiguration))
-                        {
-                            writer.WriteStartElement("configuration");
-                            writer.WriteValue(item.ToConfiguration);
-                            writer.WriteEndElement();
-                        }
-
-                        writer.WriteEndElement();
-                    }
-
-                    writer.WriteEndElement();
-                }
-                writer.Flush();
-                writer.Close();
-
+                // Some importers may have been enabled/disabled
                 LoadImportMenu();
+
+                // Grid may have been enabled/disabled
                 circuitDisplay.RenderBackground();
             }
         }
@@ -1123,7 +1014,7 @@ namespace CircuitDiagram
         /// </summary>
         private void LoadRecentFiles()
         {
-            string[] files = CircuitDiagram.Settings.Settings.Read("recentfiles") as string[];
+            string[] files = CircuitDiagram.SettingsManager.Settings.Read("recentfiles") as string[];
             if (files == null || (files.Length == 1 && String.IsNullOrEmpty(files[0])))
             {
                 RecentFiles.Add("(empty)");
@@ -1139,8 +1030,8 @@ namespace CircuitDiagram
         private void SaveRecentFiles()
         {
             if (!(RecentFiles.Count == 1 && RecentFiles[0] == "(empty)"))
-                CircuitDiagram.Settings.Settings.Write("recentfiles", RecentFiles.ToArray());
-            CircuitDiagram.Settings.Settings.Save();
+                CircuitDiagram.SettingsManager.Settings.Write("recentfiles", RecentFiles.ToArray());
+            CircuitDiagram.SettingsManager.Settings.Save();
         }
         #endregion
 
@@ -1190,9 +1081,9 @@ namespace CircuitDiagram
 
         private static void InitializeMetadata(CircuitDocument newDocument)
         {
-            newDocument.Metadata.Creator = Settings.Settings.Read("ComputerUserName") as string;
-            if (!Settings.Settings.ReadBool("CreatorUseComputerUserName") && Settings.Settings.HasSetting("CreatorName"))
-                newDocument.Metadata.Creator = Settings.Settings.Read("CreatorName") as string;
+            newDocument.Metadata.Creator = SettingsManager.Settings.Read("ComputerUserName") as string;
+            if (!SettingsManager.Settings.ReadBool("CreatorUseComputerUserName") && SettingsManager.Settings.HasSetting("CreatorName"))
+                newDocument.Metadata.Creator = SettingsManager.Settings.Read("CreatorName") as string;
             newDocument.Metadata.Created = DateTime.Now;
             newDocument.Metadata.Application = ApplicationInfo.Name;
             newDocument.Metadata.AppVersion = ApplicationInfo.Version;

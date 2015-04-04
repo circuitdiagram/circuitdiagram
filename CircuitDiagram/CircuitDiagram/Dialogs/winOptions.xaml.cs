@@ -21,6 +21,7 @@
 using CircuitDiagram.Components;
 using CircuitDiagram.Components.Description;
 using CircuitDiagram.DPIWindow;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -37,26 +38,34 @@ namespace CircuitDiagram
             InitializeComponent();
 
             // General
-            chbShowConnectionPoints.IsChecked = Settings.Settings.ReadBool("showConnectionPoints");
-            chbShowGrid.IsChecked = Settings.Settings.ReadBool("showEditorGrid");
-            chbShowToolboxScrollBar.IsChecked = Settings.Settings.ReadBool("showToolboxScrollBar");
-            chbCheckForUpdatesAutomatically.IsChecked = Settings.Settings.ReadBool("CheckForUpdatesOnStartup");
+            chbShowConnectionPoints.IsChecked = SettingsManager.Settings.ReadBool("showConnectionPoints");
+            chbShowGrid.IsChecked = SettingsManager.Settings.ReadBool("showEditorGrid");
+            chbShowToolboxScrollBar.IsChecked = SettingsManager.Settings.ReadBool("showToolboxScrollBar");
+            chbCheckForUpdatesAutomatically.IsChecked = SettingsManager.Settings.ReadBool("CheckForUpdatesOnStartup");
 
             // CDDX
             cbxEmbedComponents.SelectedIndex = 0;
-            if (Settings.Settings.HasSetting("EmbedComponents"))
-                cbxEmbedComponents.SelectedIndex = (int)Settings.Settings.Read("EmbedComponents");
-            chbShowCDDXOptions.IsChecked = !Settings.Settings.ReadBool("CDDX.AlwaysUseSettings");
+            if (SettingsManager.Settings.HasSetting("EmbedComponents"))
+                cbxEmbedComponents.SelectedIndex = (int)SettingsManager.Settings.Read("EmbedComponents");
+            chbShowCDDXOptions.IsChecked = !SettingsManager.Settings.ReadBool("CDDX.AlwaysUseSettings");
             chbCreatorUseComputerUserName.IsChecked = true;
-            if (Settings.Settings.HasSetting("CreatorUseComputerUserName"))
-                chbCreatorUseComputerUserName.IsChecked = Settings.Settings.ReadBool("CreatorUseComputerUserName");
-            string creatorName = Settings.Settings.Read("ComputerUserName") as string;
-            if (Settings.Settings.HasSetting("CreatorName"))
-                tbxCreatorName.Text = Settings.Settings.Read("CreatorName") as string;
+            if (SettingsManager.Settings.HasSetting("CreatorUseComputerUserName"))
+                chbCreatorUseComputerUserName.IsChecked = SettingsManager.Settings.ReadBool("CreatorUseComputerUserName");
+            string creatorName = SettingsManager.Settings.Read("ComputerUserName") as string;
+            if (SettingsManager.Settings.HasSetting("CreatorName"))
+                tbxCreatorName.Text = SettingsManager.Settings.Read("CreatorName") as string;
 
             // Plugins
             foreach (var item in PluginManager.Plugins)
                 lbxPlugins.Items.Add(new PluginListItem(item, item.Name, item.Author, item.Version, PluginManager.IsPluginEnabled(item)));
+
+            this.DPIChanged += winOptions_DPIChanged;
+        }
+
+        void winOptions_DPIChanged(object sender, EventArgs e)
+        {
+            var imageConverter = this.Resources["MultiResolutionImageToIMageSourceConverter"] as MultiResolutionImageToImageSourceConverter;
+            imageConverter.DPI = CurrentDPI;
         }
 
         public List<ImplementationConversionCollection> ComponentRepresentations
@@ -68,17 +77,17 @@ namespace CircuitDiagram
         private void button2_Click(object sender, RoutedEventArgs e)
         {
             // General
-            Settings.Settings.Write("showConnectionPoints", chbShowConnectionPoints.IsChecked.Value);
-            Settings.Settings.Write("showEditorGrid", chbShowGrid.IsChecked.Value);
-            Settings.Settings.Write("showToolboxScrollBar", chbShowToolboxScrollBar.IsChecked.Value);
-            Settings.Settings.Write("CheckForUpdatesOnStartup", chbCheckForUpdatesAutomatically.IsChecked.Value);
+            SettingsManager.Settings.Write("showConnectionPoints", chbShowConnectionPoints.IsChecked.Value);
+            SettingsManager.Settings.Write("showEditorGrid", chbShowGrid.IsChecked.Value);
+            SettingsManager.Settings.Write("showToolboxScrollBar", chbShowToolboxScrollBar.IsChecked.Value);
+            SettingsManager.Settings.Write("CheckForUpdatesOnStartup", chbCheckForUpdatesAutomatically.IsChecked.Value);
 
             // CDDX
-            Settings.Settings.Write("EmbedComponents", cbxEmbedComponents.SelectedIndex);
+            SettingsManager.Settings.Write("EmbedComponents", cbxEmbedComponents.SelectedIndex);
             ComponentHelper.EmbedOptions = (ComponentEmbedOptions)cbxEmbedComponents.SelectedIndex;
-            Settings.Settings.Write("CDDX.AlwaysUseSettings", chbShowCDDXOptions.IsChecked.Value == false);
-            Settings.Settings.Write("CreatorUseComputerUserName", chbCreatorUseComputerUserName.IsChecked == true);
-            Settings.Settings.Write("CreatorName", tbxCreatorName.Text);
+            SettingsManager.Settings.Write("CDDX.AlwaysUseSettings", chbShowCDDXOptions.IsChecked.Value == false);
+            SettingsManager.Settings.Write("CreatorUseComputerUserName", chbCreatorUseComputerUserName.IsChecked == true);
+            SettingsManager.Settings.Write("CreatorName", tbxCreatorName.Text);
 
             // Plugins
             foreach (PluginListItem item in lbxPlugins.Items)
@@ -136,7 +145,7 @@ namespace CircuitDiagram
 
         private void btnClearRecentFiles_Click(object sender, RoutedEventArgs e)
         {
-            Settings.Settings.Write("recentfiles", new string[] { });
+            SettingsManager.Settings.Write("recentfiles", new string[] { });
             if (this.Owner is MainWindow)
             {
                 (this.Owner as MainWindow).RecentFiles.Clear();

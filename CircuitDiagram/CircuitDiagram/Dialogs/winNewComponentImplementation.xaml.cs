@@ -21,6 +21,7 @@
 using CircuitDiagram.Components;
 using CircuitDiagram.Components.Description;
 using CircuitDiagram.DPIWindow;
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -40,6 +41,14 @@ namespace CircuitDiagram
 
             // Populate representation combobox
             UpdateChoices();
+
+            this.DPIChanged += winNewComponentImplementation_DPIChanged;
+        }
+
+        void winNewComponentImplementation_DPIChanged(object sender, EventArgs e)
+        {
+            var imageConverter = this.Resources["MultiResolutionImageToIMageSourceConverter"] as MultiResolutionImageToImageSourceConverter;
+            imageConverter.DPI = CurrentDPI;
         }
 
         private void UpdateChoices()
@@ -62,7 +71,7 @@ namespace CircuitDiagram
                     item.ToName = description.ComponentName;
                     item.ToGUID = description.Metadata.GUID;
                     if (description.Metadata.Icon != null)
-                        item.ToIcon = description.Metadata.Icon.GetBestIcon(CurrentDPI);
+                        item.ToIcon = description.Metadata.Icon;
                     cbxRepresentation.Items.Add(item);
                 }
                 else
@@ -73,9 +82,9 @@ namespace CircuitDiagram
                         item.ToName = description.ComponentName;
                         item.ToGUID = description.Metadata.GUID;
                         if (configuration.Icon == null && description.Metadata.Icon != null)
-                            item.ToIcon = description.Metadata.Icon.GetBestIcon(CurrentDPI);
+                            item.ToIcon = description.Metadata.Icon;
                         else
-                            item.ToIcon = configuration.Icon.GetBestIcon(CurrentDPI);
+                            item.ToIcon = configuration.Icon;
                         item.ToConfiguration = configuration.Name;
                         cbxRepresentation.Items.Add(item);
                     }

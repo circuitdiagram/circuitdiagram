@@ -48,7 +48,7 @@ namespace CircuitDiagram
                 foreach (IPlugin plugin in m_manager.m_plugins)
                 {
                     m_manager.m_pluginsEnabled.Add(plugin, false);
-                    if (Settings.Settings.HasSetting("PluginManager." + plugin.GUID.ToString()) && Settings.Settings.ReadBool("PluginManager." + plugin.GUID.ToString()))
+                    if (SettingsManager.Settings.HasSetting("PluginManager." + plugin.GUID.ToString()) && SettingsManager.Settings.ReadBool("PluginManager." + plugin.GUID.ToString()))
                         m_manager.m_pluginsEnabled[plugin] = true;
                 }
 
@@ -79,7 +79,7 @@ namespace CircuitDiagram
         public static void SaveSettings()
         {
             foreach (var plugin in m_manager.m_pluginsEnabled)
-                Settings.Settings.Write("PluginManager." + plugin.Key.GUID.ToString(), plugin.Value);
+                SettingsManager.Settings.Write("PluginManager." + plugin.Key.GUID.ToString(), plugin.Value);
         }
 
         public static bool IsPluginEnabled(IPlugin item)

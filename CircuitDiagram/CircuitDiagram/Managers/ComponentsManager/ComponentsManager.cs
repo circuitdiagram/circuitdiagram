@@ -53,7 +53,7 @@ namespace CircuitDiagram
 
 #if DEBUG
             // Components compiled for debug builds are placed in the project directory
-            string debugComponentsDirectory = Path.Combine(MainWindow.ProjectDirectory, "Components\\Output");
+            string debugComponentsDirectory = Path.Combine(App.ProjectDirectory, "Components\\Output");
             if (Directory.Exists(debugComponentsDirectory))
                 directories.Add(debugComponentsDirectory);
 #endif

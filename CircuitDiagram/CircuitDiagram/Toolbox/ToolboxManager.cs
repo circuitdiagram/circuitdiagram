@@ -16,7 +16,7 @@ namespace CircuitDiagram
 #if PORTABLE
             static readonly string toolboxSettingsPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\toolbox.xml";
 #elif DEBUG
-            static readonly string toolboxSettingsPath = Path.Combine(MainWindow.ProjectDirectory, "Components\\toolbox.xml");
+            static readonly string toolboxSettingsPath = Path.Combine(App.ProjectDirectory, "Components\\toolbox.xml");
 #else
             static readonly string toolboxSettingsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\toolbox.xml";
 #endif

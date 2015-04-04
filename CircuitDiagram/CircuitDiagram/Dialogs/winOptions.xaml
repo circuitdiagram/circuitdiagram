@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:cd="clr-namespace:CircuitDiagram"
         xmlns:window="clr-namespace:CircuitDiagram.DPIWindow;assembly=CircuitDiagram.DPIWindow"
+        xmlns:my="clr-namespace:CircuitDiagram"
         Title="Options" Height="460" Width="490" ShowInTaskbar="False" ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
         TitleCaps="False" WindowTransitionsEnabled="False" EnableDWMDropShadow="True">
     <Window.Resources>
@@ -12,6 +13,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <cd:NotConverter x:Key="NotConverter" />
+            <my:MultiResolutionImageToImageSourceConverter x:Key="MultiResolutionImageToImageSourceConverter" />
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -46,29 +48,77 @@
             </TabItem>
             <TabItem Header="Implementations" Name="tabImplementations">
                 <Grid>
-                    <ListBox Margin="6,67,0,6" Name="lbxImplementationsComponents" Width="124" HorizontalAlignment="Left" ItemsSource="{Binding ElementName=cbxImplementationsSet,Path=SelectedItem.Items}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Height="28" Margin="5" Name="lblChooseRepresentationsHolder" VerticalAlignment="Top">
+                        <TextBlock Name="lblChooseRepresentations" TextWrapping="WrapWithOverflow">Choose how standard components are represented.</TextBlock>
+                    </Label>
+
+                    <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Label Grid.Column="0" Margin="5,0" Content="Collection" Height="28" Name="lblCollection" />
+                        <ComboBox Grid.Column="2" Margin="5,3" Name="cbxImplementationsSet" IsEditable="True" ItemsSource="{Binding}" IsSynchronizedWithCurrentItem="True" />
+                    </Grid>
+                    
+                    <ListBox Grid.Column="0" Grid.Row="2" Margin="8" Name="lbxImplementationsComponents" Width="160" ItemsSource="{Binding ElementName=cbxImplementationsSet,Path=SelectedItem.Items}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding ImplementationName}" />
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <Label Height="28" Margin="6,6,6,0" Name="lblChooseRepresentationsHolder" VerticalAlignment="Top">
-                        <TextBlock Name="lblChooseRepresentations" TextWrapping="WrapWithOverflow">Choose how standard components are represented.</TextBlock>
-                    </Label>
-                    <Label Content="Collection" Height="28" HorizontalAlignment="Left" Margin="6,33,0,0" Name="lblCollection" VerticalAlignment="Top" />
-                    <ComboBox Height="23" Margin="83,35,6,0" Name="cbxImplementationsSet" VerticalAlignment="Top" IsEditable="True" ItemsSource="{Binding}" IsSynchronizedWithCurrentItem="True" />
-                    <Label Content="Name" Height="28" HorizontalAlignment="Left" Margin="136,67,0,0" Name="lblName" VerticalAlignment="Top" />
-                    <Label Name="lblConfiguration" Content="Configuration" Height="28" HorizontalAlignment="Left" Margin="136,135,0,0" VerticalAlignment="Top" />
-                    <Label Name="lblIcon" Content="Icon" Height="28" HorizontalAlignment="Left" Margin="136,175,0,0" VerticalAlignment="Top" />
-                    <Image Source="{Binding ElementName=lbxImplementationsComponents,Path=SelectedItem.ToIcon}" Height="45" HorizontalAlignment="Right" Margin="0,165,165,0" Stretch="Fill" VerticalAlignment="Top" Width="45" />
-                    <Label Content="GUID" Height="28" HorizontalAlignment="Left" Margin="136,101,0,0" Name="lblGuid" VerticalAlignment="Top" />
-                    <Label Content="{Binding ElementName=lbxImplementationsComponents,Path=SelectedItem.ToName}" Height="28" HorizontalAlignment="Right" Margin="0,67,6,0" VerticalAlignment="Top" Width="203" />
-                    <TextBox Text="{Binding ElementName=lbxImplementationsComponents,Path=SelectedItem.ToGUID}" Height="28" HorizontalAlignment="Right" Margin="0,101,6,0" VerticalAlignment="Top" Width="203" IsReadOnly="True" Background="Transparent" Style="{StaticResource SelectLabel}" />
-                    <Label Content="{Binding ElementName=lbxImplementationsComponents,Path=SelectedItem.ToConfiguration}" Height="28" HorizontalAlignment="Right" Margin="0,135,6,0" VerticalAlignment="Top" Width="203" />
-                    <Rectangle Height="1" Margin="136,0,6,35" Name="rectangle1" Stroke="Gray" VerticalAlignment="Bottom" />
-                    <Button Content="New" Height="23" HorizontalAlignment="Left" Margin="136,0,0,6" Name="btnImplementationsNew" VerticalAlignment="Bottom" Width="75" Click="btnImplementationsNew_Click" />
-                    <Button Content="Delete" Height="23" HorizontalAlignment="Left" Margin="217,0,0,6" Name="btnImplementationsDelete" VerticalAlignment="Bottom" Width="75" Click="btnImplementationsDelete_Click" />
+                    
+                    <Grid Grid.Row="2" Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Label Grid.Row="0" Grid.Column="0" Content="Name" Height="28" />
+                        <Label Grid.Row="0" Grid.Column="2" Content="{Binding ElementName=lbxImplementationsComponents,Path=SelectedItem.ToName}" Height="28" />
+                        
+                        <Label Grid.Row="1" Grid.Column="0" Name="lblConfiguration" Content="Configuration" Height="28" />
+                        <Label Grid.Row="1" Grid.Column="2" Content="{Binding ElementName=lbxImplementationsComponents,Path=SelectedItem.ToConfiguration}" Height="28" />
+                        
+                        <Label Grid.Row="2" Grid.Column="0" Name="lblIcon" Content="Icon" Height="28" />
+                        <Rectangle Grid.Row="2" Grid.Column="2" Fill="White" Width="32" Height="32" HorizontalAlignment="Left">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="{Binding ElementName=lbxImplementationsComponents, Path=SelectedItem.ToIcon, Converter={StaticResource MultiResolutionImageToImageSourceConverter}}" Stretch="None" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                        
+                        <Label Grid.Row="3" Grid.Column="0" Content="GUID" Height="28" Name="lblGuid" />
+                        <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding ElementName=lbxImplementationsComponents,Path=SelectedItem.ToGUID}" Height="28" IsReadOnly="True" Background="Transparent" Style="{StaticResource SelectLabel}" />
+                        
+                        <Rectangle Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Height="1" Stroke="Gray" Margin="8,0" />
+                        
+                        <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Margin="8" Content="New" Height="23" Name="btnImplementationsNew" VerticalAlignment="Bottom" Width="75" Click="btnImplementationsNew_Click" />
+                            <Button Margin="8" Content="Delete" Height="23" Name="btnImplementationsDelete" VerticalAlignment="Bottom" Width="75" Click="btnImplementationsDelete_Click" />
+                        </StackPanel>
+                    </Grid>
                 </Grid>
             </TabItem>
             <TabItem Header="CDDX">

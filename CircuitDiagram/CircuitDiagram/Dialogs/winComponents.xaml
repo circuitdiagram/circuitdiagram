@@ -66,7 +66,11 @@
                     <Hyperlink Name="lnkComponentDetails" Click="hyperlinkComponentDetails_Click">Details</Hyperlink>
                 </Label>
             </Grid>
-            <Image Width="32" Height="32" Grid.Column="1" Grid.Row="4" Source="{Binding Path=Metadata.Icon, Converter={StaticResource MultiResolutionImageToImageSourceConverter}}" Stretch="Uniform" HorizontalAlignment="Left" />
+            <Rectangle Fill="White" Width="32" Height="32" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left">
+                <Rectangle.OpacityMask>
+                    <ImageBrush ImageSource="{Binding Path=Metadata.Icon, Converter={StaticResource MultiResolutionImageToImageSourceConverter}}" />
+                </Rectangle.OpacityMask>
+            </Rectangle>
             <Label Grid.Column="1" Grid.Row="5" Content="{Binding Path=Metadata.GUID}" />
             <Label Grid.Column="1" Grid.Row="6" Content="{Binding Path=Metadata.Version}" />
             <Label Grid.Column="1" Grid.Row="7" Content="{Binding Path=Metadata.AdditionalInformation}" />

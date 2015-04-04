@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Windows;
 
@@ -14,6 +15,10 @@ namespace CircuitDiagram
     {
         public static String[] AppArgs;
 
+#if DEBUG
+        public static string ProjectDirectory { get; private set; }
+#endif
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             if (e.Args.Length > 0)
@@ -21,10 +26,14 @@ namespace CircuitDiagram
             else
                 AppArgs = new string[0];
 
+#if DEBUG
+            ProjectDirectory = Path.GetFullPath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\..\\..\\..\\..\\");
+#endif
+
 #if PORTABLE
             CircuitDiagram.Settings.Settings.Initialize(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\settings.xml");
 #else
-            CircuitDiagram.Settings.Settings.Initialize(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\settings.xml");
+            CircuitDiagram.SettingsManager.Settings.Initialize(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\settings.xml");
 #endif
         }
 

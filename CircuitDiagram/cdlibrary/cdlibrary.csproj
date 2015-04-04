@@ -121,8 +121,8 @@
     <Compile Include="Render\SVGRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Render\XmlRenderer.cs" />
-    <Compile Include="Settings\Settings.cs" />
-    <Compile Include="Settings\SettingsSerializer.cs" />
+    <Compile Include="SettingsManager\Settings.cs" />
+    <Compile Include="SettingsManager\SettingsSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ComponentKey.xml" />
