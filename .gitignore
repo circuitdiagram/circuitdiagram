@@ -13,3 +13,4 @@ packages/
 *.vsp
 *.psess
 *.pfx
+*.licenseheader

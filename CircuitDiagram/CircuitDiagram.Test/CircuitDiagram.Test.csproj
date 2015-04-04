@@ -36,6 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.XML" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <Choose>
@@ -51,6 +52,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="CDLibrary\IO\Xml\XmlReaderTest.cs" />
     <Compile Include="Core\IO\IODocumentTest.cs" />
     <Compile Include="Core\OrientationTest.cs" />
     <Compile Include="Core\Render\PathTest.cs" />
@@ -58,12 +60,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\cdlibrary\cdlibrary.csproj">
+      <Project>{d5fd5f79-6bce-40fb-b556-209758c612ec}</Project>
+      <Name>cdlibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">
       <Project>{445a46be-19f9-4e30-b476-1d539b024e69}</Project>
       <Name>CircuitDiagramCore</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

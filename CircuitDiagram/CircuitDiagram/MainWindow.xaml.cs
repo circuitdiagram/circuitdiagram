@@ -133,21 +133,11 @@ namespace CircuitDiagram
 
         void MainWindow_DPIChanged(object sender, EventArgs e)
         {
-            if (CurrentDPI > 96)
-            {
-                BitmapImage img = new BitmapImage();
-                img.BeginInit();
-                img.UriSource = new Uri("pack://application:,,,/Circuit Diagram;component/Images/Select64.png");
-                img.EndInit();
-            }
-            else
-            {
-                BitmapImage img = new BitmapImage();
-                img.BeginInit();
-                img.UriSource = new Uri("pack://application:,,,/Circuit Diagram;component/Images/Select32.png");
-                img.EndInit();
-            }
+            // Set the new DPI for the MultiResolutionImageToImageSourceConverter
+            var multiResImgConverter = this.Resources["MultiResolutionImageToImageSourceConverter"] as MultiResolutionImageToImageSourceConverter;
+            multiResImgConverter.DPI = this.CurrentDPI;
 
+            // Load new toolbox icons
             LoadToolbox();
         }
 
@@ -212,103 +202,14 @@ namespace CircuitDiagram
         /// </summary>
         private void Load()
         {
-            #region Load component descriptions
-            bool conflictingGuid = false;
-            List<string> componentLocations = new List<string>();
-
-            string permanentComponentsDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\ext";
-            if (Directory.Exists(permanentComponentsDirectory))
-                componentLocations.Add(permanentComponentsDirectory);
-#if !PORTABLE
-            string userComponentsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\components";
-            if (Directory.Exists(userComponentsDirectory))
-                componentLocations.Add(userComponentsDirectory);
-#endif
-
-#if DEBUG
-            string debugComponentsDirectory = Path.Combine(ProjectDirectory, "Components\\Output");
-            if (Directory.Exists(debugComponentsDirectory))
-                componentLocations.Add(debugComponentsDirectory);
-#endif
-
-#if PORTABLE
-            string portableComponentsDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\components";
-            if (Directory.Exists(portableComponentsDirectory))
-                componentLocations.Add(portableComponentsDirectory);
-#endif
-
-            CircuitDiagram.IO.XmlLoader xmlLoader = new CircuitDiagram.IO.XmlLoader();
-
-            // Load XML components
-            foreach (string location in componentLocations)
+            try
             {
-                foreach (string file in System.IO.Directory.GetFiles(location, "*.xml", SearchOption.TopDirectoryOnly))
-                {
-                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                    {
-                        if (xmlLoader.Load(fs))
-                        {
-                            ComponentDescription description = xmlLoader.GetDescriptions()[0];
-                            description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;
-                            description.Source = new ComponentDescriptionSource(file, new System.Collections.ObjectModel.ReadOnlyCollection<ComponentDescription>(new ComponentDescription[] { description }));
-
-                            // Check if duplicate GUID
-                            if (!conflictingGuid && description.Metadata.GUID != Guid.Empty)
-                            {
-                                foreach (ComponentDescription compareDescription in ComponentHelper.ComponentDescriptions)
-                                    if (compareDescription.Metadata.GUID == description.Metadata.GUID)
-                                        conflictingGuid = true;
-                            }
-
-                            ComponentHelper.AddDescription(description);
-                            if (ComponentHelper.WireDescription == null && description.ComponentName.ToLowerInvariant() == "wire" && description.Metadata.GUID == new Guid("6353882b-5208-4f88-a83b-2271cc82b94f"))
-                                ComponentHelper.WireDescription = description;
-                        }
-                    }
-                }
+                ComponentsManager.LoadComponents();
             }
-
-            X509Chain certChain = new X509Chain();
-
-            // Load binary components
-            foreach (string location in componentLocations)
+            catch (ComponentDescriptionLoadException ex)
             {
-                foreach (string file in System.IO.Directory.GetFiles(location, "*.cdcom", SearchOption.TopDirectoryOnly))
-                {
-                    var binLoader = new CircuitDiagram.IO.Descriptions.BinaryDescriptionReader();
-                    binLoader.CertificateChain = certChain;
-
-                    using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                    {
-                        if (binLoader.Read(fs))
-                        {
-                            var descriptions = binLoader.ComponentDescriptions;
-                            ComponentDescriptionSource source = new ComponentDescriptionSource(file, new System.Collections.ObjectModel.ReadOnlyCollection<ComponentDescription>(descriptions));
-                            foreach (ComponentDescription description in descriptions)
-                            {
-                                description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;
-                                description.Source = source;
-
-                                // Check if duplicate GUID
-                                if (!conflictingGuid && description.Metadata.GUID != Guid.Empty)
-                                {
-                                    foreach (ComponentDescription compareDescription in ComponentHelper.ComponentDescriptions)
-                                        if (compareDescription.Metadata.GUID == description.Metadata.GUID)
-                                            conflictingGuid = true;
-                                }
-
-                                ComponentHelper.AddDescription(description);
-                                if (ComponentHelper.WireDescription == null && description.ComponentName.ToLowerInvariant() == "wire" && description.Metadata.GUID == new Guid("6353882b-5208-4f88-a83b-2271cc82b94f"))
-                                    ComponentHelper.WireDescription = description;
-                            }
-                        }
-                    }
-                }
+                SetStatusText(ex.Message);
             }
-
-            if (conflictingGuid)
-                SetStatusText("Two or more components have the same GUID.");
-            #endregion
 
             #region Load Component Implementation Conversions
             if (File.Exists(implementationsFileLocation))
