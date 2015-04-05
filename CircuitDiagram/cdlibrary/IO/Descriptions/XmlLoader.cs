@@ -1,22 +1,16 @@
-﻿// XmlLoader.cs
-//
-// Circuit Diagram http://www.circuit-diagram.org/
-//
-// Copyright (C) 2011-2014  Sam Fisher
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+﻿#region Copyright & License Information
+/*
+ * Copyright 2012-2015 Sam Fisher
+ *
+ * This file is part of Circuit Diagram
+ * http://www.circuit-diagram.org/
+ * 
+ * Circuit Diagram is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or (at
+ * your option) any later version.
+ */
+#endregion
 
 using System;
 using System.Collections.Generic;
@@ -113,7 +107,7 @@ namespace CircuitDiagram.IO
                 XmlNodeList flagNodes = doc.SelectNodes("/cd:component/cd:declaration/cd:flags", namespaceManager);
                 foreach (XmlElement flagGroup in flagNodes)
                 {
-                    IConditionTreeItem conditions = Condition.Empty;
+                    IConditionTreeItem conditions = ConditionTree.Empty;
                     if (flagGroup.HasAttribute("conditions"))
                     {
                         if (useUpdatedConditions)
@@ -176,13 +170,13 @@ namespace CircuitDiagram.IO
 
                     List<ComponentPropertyFormat> formatRules = new List<ComponentPropertyFormat>();
                     if (((XmlElement)propertyElement).HasAttribute("format"))
-                        formatRules.Add(new ComponentPropertyFormat(propertyElement["format"].InnerText, Condition.Empty));
+                        formatRules.Add(new ComponentPropertyFormat(propertyElement["format"].InnerText, ConditionTree.Empty));
                     else
                     {
                         XmlNodeList formatRuleNodes = propertyElement.SelectNodes("cd:formatting/cd:format", namespaceManager);
                         foreach (XmlElement formatNode in formatRuleNodes)
                         {
-                            IConditionTreeItem conditionCollection = Condition.Empty;
+                            IConditionTreeItem conditionCollection = ConditionTree.Empty;
                             if (formatNode.HasAttribute("conditions"))
                             {
                                 if (useUpdatedConditions)
@@ -267,7 +261,7 @@ namespace CircuitDiagram.IO
                 XmlNodeList connectionGroupNodes = doc.SelectNodes("/cd:component/cd:connections/cd:group", namespaceManager);
                 foreach (XmlNode connectionGroupNode in connectionGroupNodes)
                 {
-                    IConditionTreeItem conditionCollection = Condition.Empty;
+                    IConditionTreeItem conditionCollection = ConditionTree.Empty;
                     List<ConnectionDescription> connections = new List<ConnectionDescription>();
 
                     if ((connectionGroupNode as XmlElement).HasAttribute("conditions"))
@@ -308,7 +302,7 @@ namespace CircuitDiagram.IO
                 XmlNodeList renderDescriptions = doc.SelectNodes("/cd:component/cd:render/cd:group", namespaceManager);
                 foreach (XmlNode renderNode in renderDescriptions)
                 {
-                    IConditionTreeItem conditionCollection = Condition.Empty;
+                    IConditionTreeItem conditionCollection = ConditionTree.Empty;
                     List<IRenderCommand> commands = new List<IRenderCommand>();
 
                     if ((renderNode as XmlElement).HasAttribute("conditions"))
@@ -465,11 +459,11 @@ namespace CircuitDiagram.IO
 
         private IConditionTreeItem ParseV1Conditions(string c)
         {
-            var andList = new Stack<Condition>();
+            var andList = new Stack<ConditionTreeLeaf>();
 
             string[] conditions = c.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string condition in conditions)
-                andList.Push(Condition.Parse(condition));
+                andList.Push(ConditionTreeLeaf.Parse(condition));
 
             return ConditionParser.ConvertLegacyConditions(andList);
         }

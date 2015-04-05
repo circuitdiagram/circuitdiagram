@@ -1,22 +1,16 @@
-﻿// BinaryIOExtensions.cs
-//
-// Circuit Diagram http://www.circuit-diagram.org/
-//
-// Copyright (C) 2012-2014  Sam Fisher
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+﻿#region Copyright & License Information
+/*
+ * Copyright 2012-2015 Sam Fisher
+ *
+ * This file is part of Circuit Diagram
+ * http://www.circuit-diagram.org/
+ * 
+ * Circuit Diagram is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or (at
+ * your option) any later version.
+ */
+#endregion
 
 using System;
 using System.Collections.Generic;
@@ -131,7 +125,7 @@ namespace CircuitDiagram.IO
 
         public static void Write(this System.IO.BinaryWriter writer, IConditionTreeItem value)
         {
-            if (value == Condition.Empty)
+            if (value == ConditionTree.Empty)
             {
                 writer.Write((byte)0); // 0 for empty
             }
@@ -144,9 +138,9 @@ namespace CircuitDiagram.IO
                 writer.Write(tree.Left);
                 writer.Write(tree.Right);
             }
-            else if (value is Condition)
+            else if (value is ConditionTreeLeaf)
             {
-                var condition = value as Condition;
+                var condition = value as ConditionTreeLeaf;
                 writer.Write((byte)2); // 0 for condition
                 writer.Write((int)condition.Type);
                 writer.Write((int)condition.Comparison);
@@ -161,7 +155,7 @@ namespace CircuitDiagram.IO
             if (type == 0)
             {
                 // Empty
-                return Condition.Empty;
+                return ConditionTree.Empty;
             }
             else if (type == 1)
             {
@@ -178,7 +172,7 @@ namespace CircuitDiagram.IO
                 string variableName = reader.ReadString();
                 BinaryType binType;
                 object compareTo = reader.ReadType(out binType);
-                return new Condition(conditionType, variableName, comparison, compareTo);
+                return new ConditionTreeLeaf(conditionType, variableName, comparison, compareTo);
             }
             else
                 throw new System.IO.InvalidDataException();
@@ -186,7 +180,7 @@ namespace CircuitDiagram.IO
 
         public static IConditionTreeItem ReadConditionCollection(this System.IO.BinaryReader reader)
         {
-            Stack<Condition> andList = new Stack<Condition>();
+            Stack<ConditionTreeLeaf> andList = new Stack<ConditionTreeLeaf>();
             int numConditions = reader.ReadInt32();
             for (int l = 0; l < numConditions; l++)
             {
@@ -195,7 +189,7 @@ namespace CircuitDiagram.IO
                 string variableName = reader.ReadString();
                 BinaryType binType;
                 object compareTo = reader.ReadType(out binType);
-                andList.Push(new Condition(conditionType, variableName, comparison, compareTo));
+                andList.Push(new ConditionTreeLeaf(conditionType, variableName, comparison, compareTo));
             }
             return ConditionParser.ConvertLegacyConditions(andList);
         }

@@ -1,22 +1,16 @@
-﻿// ConditionParser.cs
-//
-// Circuit Diagram http://www.circuit-diagram.org/
-//
-// Copyright (C) 2011-2014  Sam Fisher
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+﻿#region Copyright & License Information
+/*
+ * Copyright 2012-2015 Sam Fisher
+ *
+ * This file is part of Circuit Diagram
+ * http://www.circuit-diagram.org/
+ * 
+ * Circuit Diagram is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or (at
+ * your option) any later version.
+ */
+#endregion
 
 using System;
 using System.Collections.Generic;
@@ -67,11 +61,11 @@ namespace CircuitDiagram.Components.Description
         internal static IConditionTreeItem ParseToken(Queue<ConditionToken> r)
         {
             if (r.Count == 0)
-                return Condition.Empty;
+                return ConditionTree.Empty;
 
             ConditionToken t = r.Dequeue();
             if (t.Type == ConditionToken.TokenType.Symbol)
-                return Condition.ParseV1_1(t.Symbol);
+                return ConditionTreeLeaf.ParseV1_1(t.Symbol);
             else if (t.Type == ConditionToken.TokenType.Operator && t.Operator == ConditionToken.OperatorType.AND)
             {
                 IConditionTreeItem right = ParseToken(r);
@@ -153,11 +147,11 @@ namespace CircuitDiagram.Components.Description
             return (ParseToken(reversed) as IConditionTreeItem);
         }
 
-        public static IConditionTreeItem ConvertLegacyConditions(Stack<Condition> andList)
+        public static IConditionTreeItem ConvertLegacyConditions(Stack<ConditionTreeLeaf> andList)
         {
             if (andList.Count > 1)
             {
-                ConditionTree previous = new ConditionTree(ConditionTree.ConditionOperator.AND, andList.Pop(), Condition.Empty);
+                ConditionTree previous = new ConditionTree(ConditionTree.ConditionOperator.AND, andList.Pop(), ConditionTree.Empty);
                 while (andList.Count > 0)
                     previous = new ConditionTree(ConditionTree.ConditionOperator.AND, previous, andList.Pop());
                 return previous;
@@ -165,7 +159,7 @@ namespace CircuitDiagram.Components.Description
             else if (andList.Count == 1)
                 return andList.Pop();
             else
-                return Condition.Empty;
+                return ConditionTree.Empty;
         }
     }
 }

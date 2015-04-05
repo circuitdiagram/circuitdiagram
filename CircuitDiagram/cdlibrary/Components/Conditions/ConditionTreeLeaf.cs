@@ -1,22 +1,16 @@
-﻿// Condition.cs
-//
-// Circuit Diagram http://www.circuit-diagram.org/
-//
-// Copyright (C) 2011-2014 Sam Fisher
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+﻿#region Copyright & License Information
+/*
+ * Copyright 2012-2015 Sam Fisher
+ *
+ * This file is part of Circuit Diagram
+ * http://www.circuit-diagram.org/
+ * 
+ * Circuit Diagram is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or (at
+ * your option) any later version.
+ */
+#endregion
 
 using System;
 using System.Collections.Generic;
@@ -26,22 +20,19 @@ using System.Text.RegularExpressions;
 
 namespace CircuitDiagram.Components.Description
 {
-    public class Condition : IConditionTreeItem
+    public class ConditionTreeLeaf : IConditionTreeItem
     {
-        private static Condition emptyCondition = new Condition();
-        public static Condition Empty { get { return emptyCondition; } }
-
         public ConditionType Type { get; private set; }
         public ConditionComparison Comparison { get; private set; }
         public string VariableName { get; private set; }
         public object CompareTo { get; private set; }
 
-        private Condition()
+        internal ConditionTreeLeaf()
         {
             Type = ConditionType.Empty;
         }
 
-        public Condition(ConditionType type, string name, ConditionComparison comparison, object compareTo)
+        public ConditionTreeLeaf(ConditionType type, string name, ConditionComparison comparison, object compareTo)
         {
             Type = type;
             VariableName = name;
@@ -49,7 +40,7 @@ namespace CircuitDiagram.Components.Description
             CompareTo = compareTo;
         }
 
-        public static Condition ParseV1_1(string value)
+        public static ConditionTreeLeaf ParseV1_1(string value)
         {
             ConditionType type;
             if (value.IndexOf("_") <= 1 && value.IndexOf("_") != -1)
@@ -110,10 +101,10 @@ namespace CircuitDiagram.Components.Description
             if (type == ConditionType.State)
                 variableName = value.Replace("_", "").Replace("!", "");
 
-            return new Condition(type, variableName, comparisonType, compareTo);
+            return new ConditionTreeLeaf(type, variableName, comparisonType, compareTo);
         }
 
-        public static Condition Parse(string value)
+        public static ConditionTreeLeaf Parse(string value)
         {
             ConditionType type;
             if (value.IndexOf("_") <= 1 && value.IndexOf("_") != -1)
@@ -180,7 +171,7 @@ namespace CircuitDiagram.Components.Description
             if (type == ConditionType.State)
                 variableName = value.Replace("_", "").Replace("!", "");
 
-            return new Condition(type, variableName, comparisonType, compareTo);
+            return new ConditionTreeLeaf(type, variableName, comparisonType, compareTo);
         }
 
         public bool IsMet(Component component)
