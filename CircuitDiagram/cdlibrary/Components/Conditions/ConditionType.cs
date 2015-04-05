@@ -12,19 +12,17 @@
  */
 #endregion
 
-using CircuitDiagram.Components.Conditions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CircuitDiagram.Components.Description
+namespace CircuitDiagram.Components.Conditions
 {
-    public class ConnectionGroup : Conditional<ConnectionDescription[]>
+    public enum ConditionType : ushort
     {
-        public ConnectionGroup(IConditionTreeItem conditions, ConnectionDescription[] connections)
-            : base(connections, conditions)
-        {
-        }
+        Empty = 3,
+        Property = 0,
+        State = 1
     }
 }

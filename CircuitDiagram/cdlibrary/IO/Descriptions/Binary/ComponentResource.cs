@@ -1,4 +1,5 @@
 ﻿using CircuitDiagram.Components;
+using CircuitDiagram.Components.Conditions;
 using CircuitDiagram.Components.Description;
 using CircuitDiagram.Components.Description.Render;
 using CircuitDiagram.Render;

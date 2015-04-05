@@ -12,19 +12,22 @@
  */
 #endregion
 
-using CircuitDiagram.Components.Conditions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CircuitDiagram.Components.Description
+namespace CircuitDiagram.Components.Conditions
 {
-    public class ConnectionGroup : Conditional<ConnectionDescription[]>
+    public enum ConditionComparison
     {
-        public ConnectionGroup(IConditionTreeItem conditions, ConnectionDescription[] connections)
-            : base(connections, conditions)
-        {
-        }
+        Equal = 0,
+        NotEqual = 1,
+        Less = 2,
+        LessOrEqual = 3,
+        Greater = 4,
+        GreaterOrEqual = 5,
+        Empty = 6,
+        NotEmpty = 7
     }
 }

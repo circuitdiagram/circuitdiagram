@@ -18,7 +18,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace CircuitDiagram.Components.Description
+namespace CircuitDiagram.Components.Conditions
 {
     public class ConditionTreeLeaf : IConditionTreeItem
     {
@@ -38,140 +38,6 @@ namespace CircuitDiagram.Components.Description
             VariableName = name;
             Comparison = comparison;
             CompareTo = compareTo;
-        }
-
-        public static ConditionTreeLeaf ParseV1_1(string value)
-        {
-            ConditionType type;
-            if (value.IndexOf("_") <= 1 && value.IndexOf("_") != -1)
-                type = ConditionType.State;
-            else
-                type = ConditionType.Property;
-
-            ConditionComparison comparisonType = ConditionComparison.Equal;
-            object compareTo = true;
-
-            Regex opCheck = new Regex("(==|>|<|<=|>=|!=)");
-            Match opMatch = opCheck.Match(value);
-            if (opMatch.Success)
-            {
-                int compareToIndex = opMatch.Index + opMatch.Length;
-                string compareToStr = value.Substring(compareToIndex);
-
-                switch (opMatch.Value)
-                {
-                    case ">":
-                        comparisonType = ConditionComparison.Greater;
-                        compareTo = double.Parse(compareToStr);
-                        break;
-                    case ">=":
-                        comparisonType = ConditionComparison.GreaterOrEqual;
-                        compareTo = double.Parse(compareToStr);
-                        break;
-                    case "<":
-                        comparisonType = ConditionComparison.Less;
-                        compareTo = double.Parse(compareToStr);
-                        break;
-                    case "<=":
-                        comparisonType = ConditionComparison.LessOrEqual;
-                        compareTo = double.Parse(compareToStr);
-                        break;
-                    case "!=":
-                        comparisonType = ConditionComparison.NotEqual;
-                        compareTo = compareToStr;
-                        break;
-                    case "==":
-                        comparisonType = ConditionComparison.Equal;
-                        compareTo = compareToStr;
-                        break;
-                }
-            } // Else implicit '==true'
-
-            if (value.StartsWith("!"))
-            {
-                if (comparisonType == ConditionComparison.Equal)
-                    comparisonType = ConditionComparison.NotEqual;
-                else if (comparisonType == ConditionComparison.NotEqual)
-                    comparisonType = ConditionComparison.Equal;
-                else if (comparisonType == ConditionComparison.Empty)
-                    comparisonType = ConditionComparison.NotEmpty;
-            }
-
-            string variableName = Regex.Match(value, "\\$[a-zA-Z0-9]+").Value.Replace("$", "");
-            if (type == ConditionType.State)
-                variableName = value.Replace("_", "").Replace("!", "");
-
-            return new ConditionTreeLeaf(type, variableName, comparisonType, compareTo);
-        }
-
-        public static ConditionTreeLeaf Parse(string value)
-        {
-            ConditionType type;
-            if (value.IndexOf("_") <= 1 && value.IndexOf("_") != -1)
-                type = ConditionType.State;
-            else
-                type = ConditionType.Property;
-
-            ConditionComparison comparisonType = ConditionComparison.Equal;
-            Regex ltCheck = new Regex("\\(lt_[0-9.]+\\)");
-            Match ltMatch = ltCheck.Match(value);
-            Regex gtCheck = new Regex("\\(gt_[0-9.]+\\)");
-            Match gtMatch = gtCheck.Match(value);
-            Regex eqCheck = new Regex("\\(eq_[a-zA-Z0-9.]+\\)");
-            Match eqMatch = eqCheck.Match(value);
-            Regex lteqCheck = new Regex("\\(lteq_[0-9.]+\\)");
-            Match lteqMatch = lteqCheck.Match(value);
-            Regex gteqCheck = new Regex("\\(gteq_[0-9.]+\\)");
-            Match gteqMatch = gteqCheck.Match(value);
-            Regex emptyCheck = new Regex("\\(empty\\)");
-            Match emptyMatch = emptyCheck.Match(value);
-
-            object compareTo = true;
-            if (ltMatch.Success)
-            {
-                comparisonType = ConditionComparison.Less;
-                compareTo = double.Parse(ltMatch.Value.Replace("(lt_", "").Replace(")", ""));
-            }
-            else if (gtMatch.Success)
-            {
-                comparisonType = ConditionComparison.Greater;
-                compareTo = double.Parse(gtMatch.Value.Replace("(gt_", "").Replace(")", ""));
-            }
-            else if (eqMatch.Success)
-            {
-                compareTo = eqMatch.Value.Replace("(eq_", "").Replace(")", "");
-            }
-            else if (lteqMatch.Success)
-            {
-                comparisonType = ConditionComparison.LessOrEqual;
-                compareTo = double.Parse(lteqMatch.Value.Replace("(lteq_", "").Replace(")", ""));
-            }
-            else if (gteqMatch.Success)
-            {
-                comparisonType = ConditionComparison.GreaterOrEqual;
-                compareTo = double.Parse(gteqMatch.Value.Replace("(gteq_", "").Replace(")", ""));
-            }
-            else if (emptyMatch.Success)
-            {
-                comparisonType = ConditionComparison.Empty;
-                compareTo = "";
-            }
-
-            if (value.StartsWith("!"))
-            {
-                if (comparisonType == ConditionComparison.Equal)
-                    comparisonType = ConditionComparison.NotEqual;
-                else if (comparisonType == ConditionComparison.NotEqual)
-                    comparisonType = ConditionComparison.Equal;
-                else if (comparisonType == ConditionComparison.Empty)
-                    comparisonType = ConditionComparison.NotEmpty;
-            }
-
-            string variableName = Regex.Match(value, "\\$[a-zA-Z]+").Value.Replace("$", "").Replace("!", "");
-            if (type == ConditionType.State)
-                variableName = value.Replace("_", "").Replace("!", "");
-
-            return new ConditionTreeLeaf(type, variableName, comparisonType, compareTo);
         }
 
         public bool IsMet(Component component)
@@ -341,24 +207,5 @@ namespace CircuitDiagram.Components.Description
                 this.VariableName + 
                 ComparisonToString(this.Comparison) + this.CompareTo.ToString();
         }
-    }
-
-    public enum ConditionComparison
-    {
-        Equal = 0,
-        NotEqual = 1,
-        Less = 2,
-        LessOrEqual = 3,
-        Greater = 4,
-        GreaterOrEqual = 5,
-        Empty = 6,
-        NotEmpty = 7
-    }
-
-    public enum ConditionType : ushort
-    {
-        Empty = 3,
-        Property = 0,
-        State = 1
     }
 }

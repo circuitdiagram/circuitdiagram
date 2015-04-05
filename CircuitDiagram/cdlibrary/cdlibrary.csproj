@@ -49,6 +49,10 @@
   <ItemGroup>
     <Compile Include="CircuitDocument.cs" />
     <Compile Include="CircuitDocumentMetadata.cs" />
+    <Compile Include="Components\Conditions\ConditionComparison.cs" />
+    <Compile Include="Components\Conditions\ConditionType.cs" />
+    <Compile Include="Components\Conditions\Parsers\IConditionParser.cs" />
+    <Compile Include="Components\Conditions\Parsers\LegacyConditionParser.cs" />
     <Compile Include="Components\Instances\Component.cs" />
     <Compile Include="Components\Description\ComponentConfiguration.cs" />
     <Compile Include="Components\Instances\ComponentDataString.cs" />
@@ -67,12 +71,12 @@
     <Compile Include="Components\Conditions\Conditional.cs" />
     <Compile Include="Components\Instances\Connection.cs" />
     <Compile Include="Components\Instances\ConnectionCentre.cs" />
-    <Compile Include="Components\Conditions\ConditionParser.cs" />
+    <Compile Include="Components\Conditions\Parsers\ConditionParser.cs" />
     <Compile Include="Components\Conditions\ConditionToken.cs" />
     <Compile Include="Components\Conditions\ConditionTree.cs" />
     <Compile Include="Components\Description\ConnectionDescription.cs" />
     <Compile Include="Components\Instances\ConnectionGroup.cs" />
-    <Compile Include="Components\Description\IConditionTreeItem.cs" />
+    <Compile Include="Components\Conditions\IConditionTreeItem.cs" />
     <Compile Include="Components\Description\MultiResolutionImage.cs" />
     <Compile Include="Components\Description\Render\Ellipse.cs" />
     <Compile Include="Components\Description\Render\IRenderCommand.cs" />

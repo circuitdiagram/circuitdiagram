@@ -12,7 +12,7 @@
  */
 #endregion
 
-using CircuitDiagram.Components.Description;
+using CircuitDiagram.Components.Conditions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -85,6 +85,7 @@ using CircuitDiagram.Render.Path;
 using BW = System.IO.BinaryWriter;
 using CircuitDiagram.Render;
 using CircuitDiagram.Components.Description;
+using CircuitDiagram.Components.Conditions;
 
 namespace CircuitDiagram.IO
 {

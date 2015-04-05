@@ -18,6 +18,8 @@ using System.Linq;
 using System.Text;
 using CircuitDiagram.Components;
 using CircuitDiagram.Components.Description;
+using CircuitDiagram.Components.Conditions;
+using CircuitDiagram.Components.Conditions.Parsers;
 
 namespace CircuitDiagram.IO
 {
@@ -191,7 +193,8 @@ namespace CircuitDiagram.IO
                 object compareTo = reader.ReadType(out binType);
                 andList.Push(new ConditionTreeLeaf(conditionType, variableName, comparison, compareTo));
             }
-            return ConditionParser.ConvertLegacyConditions(andList);
+
+            return LegacyConditionParser.AndListToTree(andList);
         }
 
         public static void Write(this System.IO.BinaryWriter writer, System.Windows.Point value)

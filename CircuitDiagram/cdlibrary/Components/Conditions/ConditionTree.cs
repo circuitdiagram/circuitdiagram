@@ -19,7 +19,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace CircuitDiagram.Components.Description
+namespace CircuitDiagram.Components.Conditions
 {
     public class ConditionTree : IConditionTreeItem
     {
