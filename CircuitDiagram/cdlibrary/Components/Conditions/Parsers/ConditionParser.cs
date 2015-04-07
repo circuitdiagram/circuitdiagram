@@ -13,6 +13,7 @@
 #endregion
 
 using CircuitDiagram.Components.Conditions.Parsers;
+using CircuitDiagram.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,6 +28,32 @@ namespace CircuitDiagram.Components.Conditions.Parsers
     /// </summary>
     public class ConditionParser : IConditionParser
     {
+        private readonly string[] legalStateNames = new string[]
+        {
+            "horizontal"
+        };
+
+        /// <summary>
+        /// Gets or sets the format options to use when parsing.
+        /// </summary>
+        public ConditionFormat ParseFormat { get; set; }
+
+        /// <summary>
+        /// Creates a new ConditionParser using the default parse format.
+        /// </summary>
+        public ConditionParser()
+        {
+            ParseFormat = new ConditionFormat();
+        }
+
+        /// <summary>
+        /// Creates a new ConditionParser using the specified parse format.
+        /// </summary>
+        public ConditionParser(ConditionFormat parseFormat)
+        {
+            ParseFormat = parseFormat;
+        }
+
         public IConditionTreeItem Parse(string input)
         {
             // Tokenize
@@ -34,7 +61,7 @@ namespace CircuitDiagram.Components.Conditions.Parsers
             var output = new Queue<ConditionToken>();
             var operators = new Stack<ConditionToken>();
 
-            StringReader reader = new StringReader(input);
+            var reader = new PositioningReader(new StringReader(input));
             ConditionToken? token = ReadToken(reader);
             while (token.HasValue)
             {
@@ -49,6 +76,12 @@ namespace CircuitDiagram.Components.Conditions.Parsers
                     ConditionToken n = operators.Pop();
                     while (n.Type != ConditionToken.TokenType.LeftBracket)
                     {
+                        if (operators.Count == 0)
+                        {
+                            // Not enough operators
+                            throw new ConditionFormatException("Syntax error", 0, 0);
+                        }
+
                         output.Enqueue(n);
                         n = operators.Pop();
                     }
@@ -84,22 +117,18 @@ namespace CircuitDiagram.Components.Conditions.Parsers
             return (ParseToken(reversed) as IConditionTreeItem);
         }
 
-        private ConditionToken? ReadToken(StringReader r)
+        private ConditionToken? ReadToken(PositioningReader r)
         {
+            int position = r.CharPos;
+
             int c = r.Read();
             if (c == -1)
                 return null;
 
-            if (c == '&' || c == '|')
-            {
-                int d = r.Read();
-                if (c == '&' && d == '&')
-                    return ConditionToken.AND;
-                else if (c == '|' && d == '|')
-                    return ConditionToken.OR;
-                else
-                    throw new ArgumentException("Syntax error.", "r");
-            }
+            if (c == '|')
+                return ConditionToken.OR;
+            else if (c == ',')
+                return ConditionToken.AND;
             else if (c == '(')
                 return ConditionToken.LeftBracket;
             else if (c == ')')
@@ -108,12 +137,12 @@ namespace CircuitDiagram.Components.Conditions.Parsers
             {
                 StringBuilder b = new StringBuilder(((char)c).ToString());
                 int next = r.Peek();
-                while (next != -1 && next != '&' && next != '|' && next != '(' && next != ')')
+                while (next != -1 && next != ',' && next != '|' && next != '(' && next != ')')
                 {
                     b.Append((char)r.Read());
                     next = r.Peek();
                 }
-                return new ConditionToken(b.ToString());
+                return new ConditionToken(b.ToString(), position);
             }
         }
 
@@ -124,7 +153,7 @@ namespace CircuitDiagram.Components.Conditions.Parsers
 
             ConditionToken t = r.Dequeue();
             if (t.Type == ConditionToken.TokenType.Symbol)
-                return ParseLeaf(t.Symbol);
+                return ParseLeaf(t);
             else if (t.Type == ConditionToken.TokenType.Operator && t.Operator == ConditionToken.OperatorType.AND)
             {
                 IConditionTreeItem right = ParseToken(r);
@@ -149,18 +178,23 @@ namespace CircuitDiagram.Components.Conditions.Parsers
                 throw new ArgumentException("Invalid queue.", "r");
         }
 
-        private ConditionTreeLeaf ParseLeaf(string value)
+        private ConditionTreeLeaf ParseLeaf(ConditionToken token)
         {
+            string value = token.Symbol;
+
             ConditionType type;
-            if (value.IndexOf("_") <= 1 && value.IndexOf("_") != -1)
+            if (value.IndexOf("$") != -1)
+                type = ConditionType.Property;
+            else if ((ParseFormat.StatesUnderscored && value.IndexOf("_") <= 1 && value.IndexOf("_") != -1)
+                || (!ParseFormat.StatesUnderscored && value.IndexOf("_") == -1))
                 type = ConditionType.State;
             else
-                type = ConditionType.Property;
+                throw new ConditionFormatException("Illegal syntax for property or state", token.Position, token.Symbol.Length);
 
             ConditionComparison comparisonType = ConditionComparison.Equal;
             object compareTo = true;
 
-            Regex opCheck = new Regex("(==|>|<|<=|>=|!=)");
+            Regex opCheck = new Regex(@"(==|\[gt\]|\[lt\]|\[lteq\]|\[gteq\]|!=)");
             Match opMatch = opCheck.Match(value);
             if (opMatch.Success)
             {
@@ -169,19 +203,19 @@ namespace CircuitDiagram.Components.Conditions.Parsers
 
                 switch (opMatch.Value)
                 {
-                    case ">":
+                    case @"[gt]":
                         comparisonType = ConditionComparison.Greater;
                         compareTo = double.Parse(compareToStr);
                         break;
-                    case ">=":
+                    case @"[gteq]":
                         comparisonType = ConditionComparison.GreaterOrEqual;
                         compareTo = double.Parse(compareToStr);
                         break;
-                    case "<":
+                    case @"[lt]":
                         comparisonType = ConditionComparison.Less;
                         compareTo = double.Parse(compareToStr);
                         break;
-                    case "<=":
+                    case @"[lteq]":
                         comparisonType = ConditionComparison.LessOrEqual;
                         compareTo = double.Parse(compareToStr);
                         break;
@@ -206,9 +240,20 @@ namespace CircuitDiagram.Components.Conditions.Parsers
                     comparisonType = ConditionComparison.NotEmpty;
             }
 
-            string variableName = Regex.Match(value, "\\$[a-zA-Z0-9]+").Value.Replace("$", "");
+            string name = value;
+            if (opMatch.Success)
+                name = value.Substring(0, opMatch.Index);
+            string variableName = Regex.Match(name, "\\$[a-zA-Z0-9]+").Value.Replace("$", "");
+
+            // Check for illegal characters in variable name
+            if (type == ConditionType.Property && name.Replace("$", "")  != variableName)
+                throw new ConditionFormatException(String.Format("Illegal character in variable '{0}'", name), token.Position, token.Symbol.Length);
+
             if (type == ConditionType.State)
-                variableName = value.Replace("_", "").Replace("!", "");
+                variableName = name.Replace("!", "");
+
+            if (type == ConditionType.State && !legalStateNames.Contains(variableName))
+                throw new ConditionFormatException(String.Format("Unknown component state '{0}'", variableName), token.Position, token.Symbol.Length);
 
             return new ConditionTreeLeaf(type, variableName, comparisonType, compareTo);
         }

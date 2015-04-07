@@ -50,5 +50,31 @@ namespace CircuitDiagram.Render
             Text = text;
             Formatting = formatting;
         }
+
+        public override bool Equals(object obj)
+        {
+            // If parameter is null return false.
+            if (obj == null)
+            {
+                return false;
+            }
+
+            // If parameter cannot be cast to TextRun return false.
+            TextRun o = obj as TextRun;
+            if ((System.Object)o == null)
+            {
+                return false;
+            }
+
+            // Return true if the fields match:
+            return (Formatting.Equals(o.Formatting)
+                && Text.Equals(o.Text));
+        }
+
+        public override int GetHashCode()
+        {
+            return Formatting.GetHashCode()
+                ^ Text.GetHashCode();
+        }
     }
 }

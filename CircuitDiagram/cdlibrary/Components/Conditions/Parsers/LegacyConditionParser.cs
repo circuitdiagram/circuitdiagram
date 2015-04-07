@@ -116,7 +116,7 @@ namespace CircuitDiagram.Components.Conditions.Parsers
 
             string variableName = Regex.Match(value, "\\$[a-zA-Z]+").Value.Replace("$", "").Replace("!", "");
             if (type == ConditionType.State)
-                variableName = value.Replace("_", "").Replace("!", "");
+                variableName = value.Replace("_", "").Replace("!", "").ToLowerInvariant();
 
             return new ConditionTreeLeaf(type, variableName, comparisonType, compareTo);
         }

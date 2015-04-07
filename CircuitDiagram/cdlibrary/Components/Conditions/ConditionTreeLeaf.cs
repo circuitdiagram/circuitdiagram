@@ -117,11 +117,6 @@ namespace CircuitDiagram.Components.Conditions
             return false;
         }
 
-        public bool ConditionsAreMet(Component component)
-        {
-            return this.IsMet(component);
-        }
-
         public bool Compare(object value)
         {
                 if (Comparison == ConditionComparison.Equal && CompareTo.GetType() == typeof(string))
@@ -203,9 +198,39 @@ namespace CircuitDiagram.Components.Conditions
 
         public override string ToString()
         {
-            return (this.Type == ConditionType.Property ? "$" : "_") +
+            return (this.Type == ConditionType.Property ? "$" : "") +
                 this.VariableName + 
                 ComparisonToString(this.Comparison) + this.CompareTo.ToString();
+        }
+
+        public override bool Equals(object obj)
+        {
+            // If parameter is null return false.
+            if (obj == null)
+            {
+                return false;
+            }
+
+            // If parameter cannot be cast to ConditionTreeLeaf return false.
+            ConditionTreeLeaf o = obj as ConditionTreeLeaf;
+            if ((System.Object)o == null)
+            {
+                return false;
+            }
+
+            // Return true if the fields match:
+            return (Type.Equals(o.Type)
+                && Comparison.Equals(o.Comparison)
+                && VariableName.Equals(o.VariableName)
+                && CompareTo.Equals(o.CompareTo));
+        }
+
+        public override int GetHashCode()
+        {
+            return Type.GetHashCode()
+                ^ Comparison.GetHashCode()
+                ^ VariableName.GetHashCode()
+                ^ CompareTo.GetHashCode();
         }
     }
 }

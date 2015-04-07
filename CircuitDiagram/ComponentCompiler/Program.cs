@@ -31,6 +31,8 @@ using CircuitDiagram.Components.Description;
 using System.Security.Cryptography.X509Certificates;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using CircuitDiagram.IO.Descriptions;
+using CircuitDiagram.IO.Descriptions.Xml;
 
 namespace cdcompile
 {
@@ -70,28 +72,63 @@ namespace cdcompile
                 // Compile a directory of components
                 Console.WriteLine("Compiling components");
 
+                int failed = 0;
                 string[] inputPaths = Directory.GetFiles(compileOptions.Input, "*.xml");
                 foreach (string input in inputPaths)
                 {
-                    CompileComponent(input, compileOptions);
+                    if (!CompileComponent(input, compileOptions))
+                        failed++;
                 }
 
-                Console.WriteLine("Compiled {0} components", inputPaths.Length);
+                Console.WriteLine("Compiled {0} components", inputPaths.Length - failed);
             }
         }
 
-        private static void CompileComponent(string inputPath, CompileOptions compileOptions)
+        private static bool CompileComponent(string inputPath, CompileOptions compileOptions)
         {
             List<ComponentDescription> componentDescriptions = new List<ComponentDescription>();
             List<BinaryResource> binaryResources = new List<BinaryResource>();
 
-            XmlLoader loader = new CircuitDiagram.IO.XmlLoader();
+            XmlLoader loader = new XmlLoader();
             loader.Load(new FileStream(inputPath, FileMode.Open));
+
+            if (loader.LoadErrors.Count() > 0)
+            {
+                foreach (var error in loader.LoadErrors)
+                    Console.WriteLine(error.ToString());
+                return false;
+            }
 
             ComponentDescription description = loader.GetDescriptions()[0];
             description.ID = "C0";
             componentDescriptions.Add(description);
 
+            SetIcons(compileOptions, description);
+
+            string output = compileOptions.Output;
+            if (!Path.HasExtension(output))
+            {
+                if (!Directory.Exists(output))
+                    Directory.CreateDirectory(output);
+                output += "\\" + description.ComponentName.ToLowerInvariant() + ".cdcom";
+            }
+            FileStream stream = new FileStream(output, FileMode.Create, FileAccess.Write);
+
+            X509Certificate2 certificate = SelectCertificate(compileOptions);
+
+            CircuitDiagram.IO.BinaryWriter.BinaryWriterSettings settings = new CircuitDiagram.IO.BinaryWriter.BinaryWriterSettings();
+            settings.Certificate = certificate;
+            CircuitDiagram.IO.BinaryWriter writer = new CircuitDiagram.IO.BinaryWriter(stream, settings);
+            writer.Descriptions.AddRange(componentDescriptions);
+            writer.Resources.AddRange(binaryResources);
+            writer.Write();
+            stream.Flush();
+
+            return true;
+        }
+
+        private static void SetIcons(CompileOptions compileOptions, ComponentDescription description)
+        {
             if (compileOptions.DefaultIconPath != null)
             {
                 // Set icon from default path
@@ -146,16 +183,10 @@ namespace cdcompile
                     configuration.Icon.Add(new SingleResolutionImage() { Data = iconData, MimeType = "image/png" });
                 }
             }
+        }
 
-            string output = compileOptions.Output;
-            if (!Path.HasExtension(output))
-            {
-                if (!Directory.Exists(output))
-                    Directory.CreateDirectory(output);
-                output += "\\" + description.ComponentName.ToLowerInvariant() + ".cdcom";
-            }
-            FileStream stream = new FileStream(output, FileMode.Create, FileAccess.Write);
-
+        private static X509Certificate2 SelectCertificate(CompileOptions compileOptions)
+        {
             X509Certificate2 certificate = null;
             if (compileOptions.Sign && compileOptions.CertificateThumbprint == null)
             {
@@ -177,14 +208,7 @@ namespace cdcompile
                 X509Certificate2Collection fcollection = (X509Certificate2Collection)store.Certificates;
                 certificate = fcollection.Find(X509FindType.FindByThumbprint, compileOptions.CertificateThumbprint, false)[0];
             }
-
-            CircuitDiagram.IO.BinaryWriter.BinaryWriterSettings settings = new CircuitDiagram.IO.BinaryWriter.BinaryWriterSettings();
-            settings.Certificate = certificate;
-            CircuitDiagram.IO.BinaryWriter writer = new CircuitDiagram.IO.BinaryWriter(stream, settings);
-            writer.Descriptions.AddRange(componentDescriptions);
-            writer.Resources.AddRange(binaryResources);
-            writer.Write();
-            stream.Flush();
+            return certificate;
         }
 
         private static MultiResolutionImage SetDefaultIcon(string componentName, string configuration, string defaultIconPath)

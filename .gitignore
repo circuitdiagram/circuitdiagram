@@ -5,6 +5,7 @@ build/
 [Oo]bj/
 packages/
 /Components/Output/
+TestResults/
 
 *.exe
 *.suo

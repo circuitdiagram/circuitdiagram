@@ -51,8 +51,10 @@
     <Compile Include="CircuitDocumentMetadata.cs" />
     <Compile Include="Components\Conditions\ConditionComparison.cs" />
     <Compile Include="Components\Conditions\ConditionType.cs" />
+    <Compile Include="Components\Conditions\Parsers\ConditionFormat.cs" />
     <Compile Include="Components\Conditions\Parsers\IConditionParser.cs" />
     <Compile Include="Components\Conditions\Parsers\LegacyConditionParser.cs" />
+    <Compile Include="Components\Conditions\PositioningReader.cs" />
     <Compile Include="Components\Instances\Component.cs" />
     <Compile Include="Components\Description\ComponentConfiguration.cs" />
     <Compile Include="Components\Instances\ComponentDataString.cs" />
@@ -115,8 +117,12 @@
     <Compile Include="IO\ConnectionBuilder.cs" />
     <Compile Include="IO\Descriptions\Binary\BinaryDescriptionContentItem.cs" />
     <Compile Include="IO\Descriptions\Binary\ComponentResource.cs" />
+    <Compile Include="IO\Descriptions\Xml\IRenderCommandXmlExtensions.cs" />
+    <Compile Include="IO\Descriptions\Xml\XElementExtensions.cs" />
+    <Compile Include="IO\LoadError.cs" />
+    <Compile Include="Components\Conditions\ConditionFormatException.cs" />
     <Compile Include="IO\IComponentDescriptionLoader.cs" />
-    <Compile Include="IO\Descriptions\XmlLoader.cs" />
+    <Compile Include="IO\Descriptions\Xml\XmlLoader.cs" />
     <Compile Include="IO\PathExtensions.cs" />
     <Compile Include="IO\Xml\XmlReader.cs" />
     <Compile Include="IO\Xml\XmlWriter.cs" />

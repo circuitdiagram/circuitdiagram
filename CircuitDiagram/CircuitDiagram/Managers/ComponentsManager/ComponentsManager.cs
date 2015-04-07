@@ -14,6 +14,7 @@
 
 using CircuitDiagram.Components;
 using CircuitDiagram.Components.Description;
+using CircuitDiagram.IO.Descriptions.Xml;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -76,7 +77,7 @@ namespace CircuitDiagram
         {
             bool conflictingGuid = false;
 
-            var xmlLoader = new CircuitDiagram.IO.XmlLoader();
+            var xmlLoader = new XmlLoader();
             foreach (string location in componentDirectories)
             {
                 foreach (string file in System.IO.Directory.GetFiles(location, "*.xml", SearchOption.TopDirectoryOnly))

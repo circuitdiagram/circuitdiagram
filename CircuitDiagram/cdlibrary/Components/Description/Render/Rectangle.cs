@@ -80,5 +80,37 @@ namespace CircuitDiagram.Components.Description.Render
             else
                 dc.DrawRectangle(drawRect.TopLeft, drawRect.Size, StrokeThickness, Fill);
         }
+
+        public override bool Equals(object obj)
+        {
+            // If parameter is null return false.
+            if (obj == null)
+            {
+                return false;
+            }
+
+            // If parameter cannot be cast to Rectangle return false.
+            Rectangle o = obj as Rectangle;
+            if ((System.Object)o == null)
+            {
+                return false;
+            }
+
+            // Return true if the fields match:
+            return (Location.Equals(o.Location)
+                && Width.Equals(o.Width)
+                && Height.Equals(o.Height)
+                && StrokeThickness.Equals(o.StrokeThickness)
+                && Fill.Equals(o.Fill));
+        }
+
+        public override int GetHashCode()
+        {
+            return Location.GetHashCode()
+                ^ Width.GetHashCode()
+                ^ Height.GetHashCode()
+                ^ StrokeThickness.GetHashCode()
+                ^ Fill.GetHashCode();
+        }
     }
 }

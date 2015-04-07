@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<component version="1.2" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
+  <declaration>
+    <meta name="name" value="Test Component" />
+    <meta name="minsize" value="60" />
+    <meta name="author" value="Circuit Diagram" />
+
+    <property name="TestProperty" type="double" default="4700" serialize="test" display="Property">
+      <formatting>
+        <format conditions="$TestProperty[lt]1000" value="$TestProperty  \u2126" />
+        <format conditions="$TestProperty[lt]1000000" value="$TestProperty(div_1000_)(round_1)  k\u2126" />
+        <format value="$TestProperty(div_1000000)(round_1)  M\u2126" />
+      </formatting>
+    </property>
+  </declaration>
+
+  <connections>
+    <group conditions="horizontal">
+      <connection name="a" start="_Start" end="_Middle-21x" edge="start" />
+      <connection name="b" start="_Middle+21x" end="_End" edge="end" />
+    </group>
+    <group conditions="!horizontal">
+      <connection name="a" start="_Start" end="_Middle-21y" edge="start" />
+      <connection name="b" start="_Middle+21y" end="_End" edge="end" />
+    </group>
+  </connections>
+
+  <render>
+    <group conditions="horizontal">
+      <line start="_Start" end="_Middle-20x" />
+      <rect x="_Middle-20x" y="_Start-8y" width="40" height="16" />
+      <line start="_Middle+20x" end="_End" />
+      <text value="$TestProperty" x="_Middle" y="_Start-17" align="CentreCentre" />
+    </group>
+    <group conditions="!horizontal">
+      <line start="_Start" end="_Middle-20y" />
+      <rect x="_Start-8x" y="_Middle-20y" width="16" height="40" />
+      <line start="_Middle+20y" end="_End" />
+      <text value="$TestProperty" x="_Start-14" y="_Middle" align="CentreRight" />
+    </group>
+  </render>
+</component>

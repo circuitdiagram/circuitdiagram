@@ -59,5 +59,33 @@ namespace CircuitDiagram.Components.Description.Render
             else
                 dc.DrawLine(Start.Resolve(component), End.Resolve(component), Thickness);
         }
+
+        public override bool Equals(object obj)
+        {
+            // If parameter is null return false.
+            if (obj == null)
+            {
+                return false;
+            }
+
+            // If parameter cannot be cast to Line return false.
+            Line o = obj as Line;
+            if ((System.Object)o == null)
+            {
+                return false;
+            }
+
+            // Return true if the fields match:
+            return (Start.Equals(o.Start)
+                && End.Equals(o.End)
+                && Thickness.Equals(o.Thickness));
+        }
+
+        public override int GetHashCode()
+        {
+            return Start.GetHashCode()
+                ^ End.GetHashCode()
+                ^ Thickness.GetHashCode();
+        }
     }
 }

@@ -39,6 +39,7 @@ namespace CircuitDiagram.Components.Conditions
         public TokenType Type { get; set; }
         public OperatorType Operator { get; set; }
         public string Symbol { get; set; }
+        public int Position { get; set; }
 
         public ConditionToken(TokenType type)
             : this()
@@ -54,12 +55,13 @@ namespace CircuitDiagram.Components.Conditions
             Operator = op;
         }
 
-        public ConditionToken(string symbol)
+        public ConditionToken(string symbol, int position)
             : this()
         {
             Type = TokenType.Symbol;
             Operator = OperatorType.None;
             Symbol = symbol;
+            Position = position;
         }
 
         public static ConditionToken LeftBracket = new ConditionToken(TokenType.LeftBracket);

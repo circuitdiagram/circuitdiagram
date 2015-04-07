@@ -34,12 +34,7 @@ namespace CircuitDiagram.Components.Description.Render
         public ComponentPoint Start { get; set; }
         public double Thickness { get; set; }
         public bool Fill { get; set; }
-        private IList<IPathCommand> m_commands;
-
-        public IList<IPathCommand> Commands
-        {
-            get { return m_commands; }
-        }
+        public IList<IPathCommand> Commands { get; set; }
 
         public RenderCommandType Type
         {
@@ -51,7 +46,7 @@ namespace CircuitDiagram.Components.Description.Render
             Start = new ComponentPoint();
             Thickness = 2d;
             Fill = false;
-            m_commands = new List<IPathCommand>();
+            Commands = new List<IPathCommand>();
         }
 
         public RenderPath(ComponentPoint start, double thickness, bool fill, IList<IPathCommand> commands)
@@ -59,7 +54,7 @@ namespace CircuitDiagram.Components.Description.Render
             Start = start;
             Thickness = thickness;
             Fill = fill;
-            m_commands = commands;
+            Commands = commands;
         }
 
         public void Render(Component component, CircuitDiagram.Render.IRenderContext dc, bool absolute)

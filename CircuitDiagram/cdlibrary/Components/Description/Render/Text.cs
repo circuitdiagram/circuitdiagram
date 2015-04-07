@@ -141,5 +141,35 @@ namespace CircuitDiagram.Components.Description.Render
             else
                 dc.DrawText(renderLocation, tempAlignment, renderTextRuns);
         }
+
+        public override bool Equals(object obj)
+        {
+            // If parameter is null return false.
+            if (obj == null)
+            {
+                return false;
+            }
+
+            // If parameter cannot be cast to Text return false.
+            Text o = obj as Text;
+            if ((System.Object)o == null)
+            {
+                return false;
+            }
+
+            bool textRunsEqual = TextRuns.SequenceEqual(o.TextRuns);
+
+            // Return true if the fields match:
+            return (Location.Equals(o.Location)
+                && Alignment.Equals(o.Alignment)
+                && textRunsEqual);
+        }
+
+        public override int GetHashCode()
+        {
+            return Location.GetHashCode()
+                ^ Alignment.GetHashCode()
+                ^ TextRuns.GetHashCode();
+        }
     }
 }
