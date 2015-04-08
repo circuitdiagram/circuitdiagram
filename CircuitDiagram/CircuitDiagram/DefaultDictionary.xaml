@@ -86,7 +86,7 @@
                         <Canvas Name="ExpanderCanvas" Visibility="Collapsed">
                             <Path Width="5.57359" Height="8.70267" Canvas.Right="6" Canvas.Bottom="4" Stretch="Fill" Fill="#FF5E5E5E" Data="F1 M 44.1443,39.0107L 38.5707,34.6594L 38.5707,43.362L 44.1443,39.0107 Z "/>
                         </Canvas>
-                        <Popup Name="Popup" Placement="Right" IsOpen="{TemplateBinding IsExpanded}" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade" VerticalOffset="-3">
+                        <Popup Name="Popup" PlacementRectangle="2,0,55,50" Placement="Right" IsOpen="{TemplateBinding IsExpanded}" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade">
                             <Border Name="SubmenuBorder" SnapsToDevicePixels="True" BorderThickness="0" Background="{StaticResource UIBackgroundBrush}">
                                 <StackPanel Orientation="Horizontal" IsItemsHost="True" />
                             </Border>
