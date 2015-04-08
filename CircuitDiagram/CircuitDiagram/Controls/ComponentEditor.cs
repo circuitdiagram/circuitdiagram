@@ -67,11 +67,11 @@ namespace CircuitDiagram.Components
             {
                 mainGrid.RowDefinitions.Add(new RowDefinition() { Height = System.Windows.GridLength.Auto });
 
-                if (info.Type == typeof(bool))
+                if (info.Type == PropertyType.Boolean)
                 {
                     CheckBox checkbox = new CheckBox();
                     checkbox.Content = info.DisplayName;
-                    checkbox.IsChecked = (bool)component.GetProperty(info);
+                    checkbox.IsChecked = (bool)component.GetProperty(info).Value;
                     checkbox.Margin = new Thickness(5d);
                     checkbox.Tag = info;
 
@@ -85,7 +85,7 @@ namespace CircuitDiagram.Components
                     mainGrid.Children.Add(checkbox);
                     EditorControls.Add(info, checkbox);
                 }
-                else if (info.Type == typeof(double))
+                else if (info.Type == PropertyType.Decimal)
                 {
                     Label label = new Label();
                     label.Content = info.DisplayName;
@@ -108,7 +108,7 @@ namespace CircuitDiagram.Components
                     mainGrid.Children.Add(textbox);
                     EditorControls.Add(info, textbox);
                 }
-                else if (info.Type == typeof(int))
+                else if (info.Type == PropertyType.Integer)
                 {
                     Label label = new Label();
                     label.Content = info.DisplayName;
@@ -129,7 +129,7 @@ namespace CircuitDiagram.Components
                     mainGrid.Children.Add(textbox);
                     EditorControls.Add(info, textbox);
                 }
-                else if (info.Type == typeof(string) && info.EnumOptions != null && info.EnumOptions.Length > 0)
+                else if (info.Type == PropertyType.Enum)
                 {
                     Label label = new Label();
                     label.Content = info.DisplayName;
@@ -154,7 +154,7 @@ namespace CircuitDiagram.Components
                     mainGrid.Children.Add(combobox);
                     EditorControls.Add(info, combobox);
                 }
-                else if (info.Type == typeof(string))
+                else if (info.Type == PropertyType.String)
                 {
                     Label label = new Label();
                     label.Content = info.DisplayName;
@@ -167,7 +167,7 @@ namespace CircuitDiagram.Components
                     TextBox textbox = new TextBox();
                     textbox.Margin = new Thickness(5d);
                     textbox.Tag = info;
-                    textbox.Text = component.GetProperty(info) as string;
+                    textbox.Text = component.GetProperty(info).Value as string;
                     textbox.TextChanged += new TextChangedEventHandler(StringChanged);
 
                     textbox.SetValue(Grid.RowProperty, i);
@@ -189,7 +189,8 @@ namespace CircuitDiagram.Components
         {
             if (!this.IsLoaded)
                 return;
-            Component.SetProperty(((sender as Control).Tag as ComponentProperty), (sender as TextBox).Text);
+            var property = (sender as Control).Tag as ComponentProperty;
+            Component.SetProperty(property, new PropertyUnion((sender as TextBox).Text));
             Component.InvalidateVisual();
             ComponentUpdated(this, new ComponentUpdatedEventArgs(Component, m_previousData));
             m_previousData = GetComponentData();
@@ -212,7 +213,7 @@ namespace CircuitDiagram.Components
             double doubleValue;
             if (double.TryParse((sender as TextBox).Text, out doubleValue))
             {
-                Component.SetProperty(((sender as Control).Tag as ComponentProperty), doubleValue);
+                Component.SetProperty(((sender as Control).Tag as ComponentProperty), new PropertyUnion(doubleValue));
                 Component.InvalidateVisual();
                 ComponentUpdated(this, new ComponentUpdatedEventArgs(Component, m_previousData));
                 m_previousData = GetComponentData();
@@ -223,7 +224,7 @@ namespace CircuitDiagram.Components
         {
             if (!this.IsLoaded)
                 return;
-            Component.SetProperty(((sender as Control).Tag as ComponentProperty), (sender as CheckBox).IsChecked.Value);
+            Component.SetProperty(((sender as Control).Tag as ComponentProperty), new PropertyUnion((sender as CheckBox).IsChecked.Value));
             Component.InvalidateVisual();
             ComponentUpdated(this, new ComponentUpdatedEventArgs(Component, m_previousData));
             m_previousData = GetComponentData();
@@ -233,7 +234,7 @@ namespace CircuitDiagram.Components
         {
             if (!this.IsLoaded)
                 return;
-            Component.SetProperty(((sender as Control).Tag as ComponentProperty), (sender as ComboBox).SelectedItem);
+            Component.SetProperty(((sender as Control).Tag as ComponentProperty), new PropertyUnion((sender as ComboBox).SelectedItem.ToString()));
             Component.InvalidateVisual();
             ComponentUpdated(this, new ComponentUpdatedEventArgs(Component, m_previousData));
             m_previousData = GetComponentData();
@@ -245,7 +246,7 @@ namespace CircuitDiagram.Components
             foreach (var control in EditorControls)
             {
                 if (control.Value.GetType() == typeof(CheckBox))
-                    (control.Value as CheckBox).IsChecked = (bool)Component.GetProperty(control.Key);
+                    (control.Value as CheckBox).IsChecked = (bool)Component.GetProperty(control.Key).Value;
                 else if (control.Value.GetType() == typeof(TextBox))
                     (control.Value as TextBox).Text = Component.GetProperty(control.Key).ToString();
                 else if (control.Value.GetType() == typeof(ComboBox))

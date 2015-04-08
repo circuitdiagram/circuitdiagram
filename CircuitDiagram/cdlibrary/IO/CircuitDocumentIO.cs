@@ -309,7 +309,8 @@ namespace CircuitDiagram
             {
                 // XML component
                 XmlLoader loader = new XmlLoader();
-                if (loader.Load(data.Stream))
+                loader.Load(data.Stream);
+                if (loader.LoadErrors.Count() == 0)
                 {
                     var descriptions = loader.GetDescriptions();
                     if (descriptions.Length > 0)

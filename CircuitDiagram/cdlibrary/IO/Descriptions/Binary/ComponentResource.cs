@@ -106,7 +106,8 @@ namespace CircuitDiagram.IO.Descriptions
                         string serializedName = reader.ReadString();
                         string displayName = reader.ReadString();
                         BinaryType propType;
-                        object defaultValue = reader.ReadType(out propType);
+                        object rawDefaultValue = reader.ReadType(out propType);
+                        PropertyUnion defaultValue = propType.ToPropertyUnion(rawDefaultValue);
                         string[] enumOptions = null;
                         if (propType == BinaryType.Enum)
                         {
@@ -144,7 +145,7 @@ namespace CircuitDiagram.IO.Descriptions
                             otherConditions.Add(conditionType, conditions);
                         }
 
-                        properties.Add(new ComponentProperty(propertyName, serializedName, displayName, BinaryIOExtentions.BinaryTypeToType(propType), defaultValue, formatRules.ToArray(), otherConditions, enumOptions));
+                        properties.Add(new ComponentProperty(propertyName, serializedName, displayName, BinaryIOExtentions.BinaryTypeToPropertyType(propType), defaultValue, formatRules.ToArray(), otherConditions, enumOptions));
                     }
                 }
                 #endregion
@@ -158,11 +159,13 @@ namespace CircuitDiagram.IO.Descriptions
                         string implementationName = reader.ReadString();
 
                         int numSetters = reader.ReadInt32();
-                        Dictionary<string, object> setters = new Dictionary<string, object>(numSetters);
+                        var setters = new Dictionary<string, PropertyUnion>(numSetters);
                         for (int k = 0; k < numSetters; k++)
                         {
                             BinaryType tempType;
-                            setters.Add(reader.ReadString(), reader.ReadType(out tempType));
+                            string name = reader.ReadString();
+                            var setterValue = reader.ReadType(out tempType);
+                            setters.Add(name, tempType.ToPropertyUnion(setterValue));
                         }
 
                         int iconID = reader.ReadInt32();

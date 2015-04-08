@@ -32,7 +32,7 @@
       <option>Variable</option>
     </property>
 
-    <flags conditions="horizontal,$Type==Potentiometer">
+    <flags conditions="$Type==Potentiometer">
       <option>MiddleMustAlign</option>
     </flags>
 
@@ -70,7 +70,7 @@
       <rect x="_Start-8x" y="_Middle-20y" width="16" height="40" />
       <line start="_Middle+20y" end="_End" />
     </group>
-    <group conditions="horizontal,$Type!=Variable,$Type!=Thermistor,$Type!=LDR,$Show==Resistance">
+    <group conditions="!horizontal,$Type!=Variable,$Type!=Thermistor,$Type!=LDR,$Show==Resistance">
       <text value="$Resistance" x="_Start-14" y="_Middle" align="CentreRight" />
     </group>
 

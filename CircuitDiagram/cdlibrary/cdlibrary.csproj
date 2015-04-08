@@ -54,7 +54,9 @@
     <Compile Include="Components\Conditions\Parsers\ConditionFormat.cs" />
     <Compile Include="Components\Conditions\Parsers\IConditionParser.cs" />
     <Compile Include="Components\Conditions\Parsers\LegacyConditionParser.cs" />
+    <Compile Include="Components\Conditions\Parsers\ParseContext.cs" />
     <Compile Include="Components\Conditions\PositioningReader.cs" />
+    <Compile Include="Components\PropertyUnion.cs" />
     <Compile Include="Components\Instances\Component.cs" />
     <Compile Include="Components\Description\ComponentConfiguration.cs" />
     <Compile Include="Components\Instances\ComponentDataString.cs" />

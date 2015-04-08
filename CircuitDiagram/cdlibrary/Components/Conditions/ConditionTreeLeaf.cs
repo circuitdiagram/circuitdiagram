@@ -25,14 +25,14 @@ namespace CircuitDiagram.Components.Conditions
         public ConditionType Type { get; private set; }
         public ConditionComparison Comparison { get; private set; }
         public string VariableName { get; private set; }
-        public object CompareTo { get; private set; }
+        public PropertyUnion CompareTo { get; private set; }
 
         internal ConditionTreeLeaf()
         {
             Type = ConditionType.Empty;
         }
 
-        public ConditionTreeLeaf(ConditionType type, string name, ConditionComparison comparison, object compareTo)
+        public ConditionTreeLeaf(ConditionType type, string name, ConditionComparison comparison, PropertyUnion compareTo)
         {
             Type = type;
             VariableName = name;
@@ -51,126 +51,37 @@ namespace CircuitDiagram.Components.Conditions
                 if (VariableName.ToLower() == "horizontal")
                 {
                     if (Comparison == ConditionComparison.Equal)
-                        return (component.Orientation == Orientation.Horizontal) == (bool)CompareTo;
+                        return (component.Orientation == Orientation.Horizontal) == (bool)CompareTo.Value;
                     else
-                        return (component.Orientation == Orientation.Horizontal) != (bool)CompareTo;
+                        return (component.Orientation == Orientation.Horizontal) != (bool)CompareTo.Value;
                 }
             }
             else
             {
-                if (Comparison == ConditionComparison.Equal && CompareTo.GetType() == typeof(string))
-                    return String.Equals(component.GetProperty(component.FindProperty(VariableName)) as string, CompareTo as string, StringComparison.InvariantCultureIgnoreCase);
-                else if (Comparison == ConditionComparison.Equal && CompareTo.GetType() == typeof(bool))
-                    return bool.Equals((bool)component.GetProperty(component.FindProperty(VariableName)), (bool)CompareTo);
-                else if (Comparison == ConditionComparison.Equal)
-                    return component.GetProperty(component.FindProperty(VariableName)) == CompareTo;
-                else if (Comparison == ConditionComparison.NotEqual && CompareTo.GetType() == typeof(string))
-                    return !String.Equals(component.GetProperty(component.FindProperty(VariableName)) as string, CompareTo as string, StringComparison.InvariantCultureIgnoreCase);
-                else if (Comparison == ConditionComparison.NotEqual && CompareTo.GetType() == typeof(bool))
-                    return !bool.Equals((bool)component.GetProperty(component.FindProperty(VariableName)), (bool)CompareTo);
-                else if (Comparison == ConditionComparison.NotEqual)
-                    return component.GetProperty(component.FindProperty(VariableName)) != CompareTo;
-                else if (Comparison == ConditionComparison.Less)
-                {
-                    object propertyValue = component.GetProperty(component.FindProperty(VariableName));
-                    if (propertyValue.GetType() == typeof(double))
-                        return (double)propertyValue < (double)CompareTo;
-                    else if (propertyValue.GetType() == typeof(int))
-                        return (int)propertyValue < (int)CompareTo;
-                }
-                else if (Comparison == ConditionComparison.Greater)
-                {
-                    object propertyValue = component.GetProperty(component.FindProperty(VariableName));
-                    if (propertyValue.GetType() == typeof(double))
-                        return (double)propertyValue > (double)CompareTo;
-                    else if (propertyValue.GetType() == typeof(int))
-                        return (int)propertyValue > (int)CompareTo;
-                }
-                else if (Comparison == ConditionComparison.GreaterOrEqual)
-                {
-                    object propertyValue = component.GetProperty(component.FindProperty(VariableName));
-                    if (propertyValue.GetType() == typeof(double))
-                        return (double)propertyValue >= (double)CompareTo;
-                    else if (propertyValue.GetType() == typeof(int))
-                        return (int)propertyValue >= (int)CompareTo;
-                }
-                else if (Comparison == ConditionComparison.LessOrEqual)
-                {
-                    object propertyValue = component.GetProperty(component.FindProperty(VariableName));
-                    if (propertyValue.GetType() == typeof(double))
-                        return (double)propertyValue <= (double)CompareTo;
-                    else if (propertyValue.GetType() == typeof(int))
-                        return (int)propertyValue <= (int)CompareTo;
-                }
-                else if (Comparison == ConditionComparison.Empty)
-                {
-                    object propertyValue = component.GetProperty(component.FindProperty(VariableName));
-                    return String.IsNullOrEmpty(propertyValue.ToString());
-                }
+                var propertyValue = component.GetProperty(component.FindProperty(VariableName));
+
+                if (Comparison == ConditionComparison.Empty)
+                    return propertyValue.IsEmpty();
                 else if (Comparison == ConditionComparison.NotEmpty)
+                    return !propertyValue.IsEmpty();
+
+                int cv = propertyValue.CompareTo(CompareTo);
+                switch (Comparison)
                 {
-                    object propertyValue = component.GetProperty(component.FindProperty(VariableName));
-                    return !String.IsNullOrEmpty(propertyValue.ToString());
+                    case ConditionComparison.Equal:
+                        return cv == 0;
+                    case ConditionComparison.Greater:
+                        return cv == 1;
+                    case ConditionComparison.GreaterOrEqual:
+                        return cv >= 0;
+                    case ConditionComparison.Less:
+                        return cv == -1;
+                    case ConditionComparison.LessOrEqual:
+                        return cv <= 0;
+                    case ConditionComparison.NotEqual:
+                        return cv != 0;
                 }
             }
-
-            return false;
-        }
-
-        public bool Compare(object value)
-        {
-                if (Comparison == ConditionComparison.Equal && CompareTo.GetType() == typeof(string))
-                    return String.Equals(value as string, CompareTo as string, StringComparison.InvariantCultureIgnoreCase);
-                else if (Comparison == ConditionComparison.Equal && CompareTo.GetType() == typeof(bool))
-                    return bool.Equals(value, (bool)CompareTo);
-                else if (Comparison == ConditionComparison.Equal)
-                    return value == CompareTo;
-                else if (Comparison == ConditionComparison.NotEqual && CompareTo.GetType() == typeof(string))
-                    return !String.Equals(value as string, CompareTo as string, StringComparison.InvariantCultureIgnoreCase);
-                else if (Comparison == ConditionComparison.NotEqual && CompareTo.GetType() == typeof(bool))
-                    return !bool.Equals(value, (bool)CompareTo);
-                else if (Comparison == ConditionComparison.NotEqual)
-                    return value != CompareTo;
-                else if (Comparison == ConditionComparison.Less)
-                {
-                    object propertyValue = value;
-                    if (propertyValue.GetType() == typeof(double))
-                        return (double)propertyValue < (double)CompareTo;
-                    else if (propertyValue.GetType() == typeof(int))
-                        return (int)propertyValue < (int)CompareTo;
-                }
-                else if (Comparison == ConditionComparison.Greater)
-                {
-                    object propertyValue = value;
-                    if (propertyValue.GetType() == typeof(double))
-                        return (double)propertyValue > (double)CompareTo;
-                    else if (propertyValue.GetType() == typeof(int))
-                        return (int)propertyValue > (int)CompareTo;
-                }
-                else if (Comparison == ConditionComparison.GreaterOrEqual)
-                {
-                    object propertyValue = value;
-                    if (propertyValue.GetType() == typeof(double))
-                        return (double)propertyValue >= (double)CompareTo;
-                    else if (propertyValue.GetType() == typeof(int))
-                        return (int)propertyValue >= (int)CompareTo;
-                }
-                else if (Comparison == ConditionComparison.LessOrEqual)
-                {
-                    object propertyValue = value;
-                    if (propertyValue.GetType() == typeof(double))
-                        return (double)propertyValue <= (double)CompareTo;
-                    else if (propertyValue.GetType() == typeof(int))
-                        return (int)propertyValue <= (int)CompareTo;
-                }
-                else if (Comparison == ConditionComparison.Empty)
-                {
-                    return String.IsNullOrEmpty(value.ToString());
-                }
-                else if (Comparison == ConditionComparison.NotEmpty)
-                {
-                    return !String.IsNullOrEmpty(value.ToString());
-                }
 
             return false;
         }
@@ -210,7 +121,7 @@ namespace CircuitDiagram.Components.Conditions
             {
                 return false;
             }
-
+            
             // If parameter cannot be cast to ConditionTreeLeaf return false.
             ConditionTreeLeaf o = obj as ConditionTreeLeaf;
             if ((System.Object)o == null)

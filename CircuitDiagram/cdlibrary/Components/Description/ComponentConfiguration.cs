@@ -32,10 +32,10 @@ namespace CircuitDiagram.Components.Description
         /// <summary>
         /// A dictionary of setters with the serialized property name as the key.
         /// </summary>
-        public Dictionary<string, object> Setters { get; set; }
+        public Dictionary<string, PropertyUnion> Setters { get; set; }
         public MultiResolutionImage Icon { get; set; }
 
-        public ComponentConfiguration(string implementationName, string name, Dictionary<string, object> setters)
+        public ComponentConfiguration(string implementationName, string name, Dictionary<string, PropertyUnion> setters)
         {
             ImplementationName = implementationName;
             Name = name;
@@ -44,14 +44,9 @@ namespace CircuitDiagram.Components.Description
 
         public bool Matches(Component component)
         {
-            foreach (KeyValuePair<string, object> setter in Setters)
+            foreach (var setter in Setters)
             {
-                if (setter.Value is string)
-                {
-                    if (!string.Equals(component.GetProperty(component.FindPropertyBySerializedName(setter.Key)).ToString(), setter.Value))
-                        return false;
-                }
-                else
+                if (!setter.Value.Equals(component.GetProperty(component.FindPropertyBySerializedName(setter.Key))))
                     return false;
             }
             return true;

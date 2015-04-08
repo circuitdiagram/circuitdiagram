@@ -41,6 +41,9 @@ namespace CircuitDiagram.Components.Description
 
         internal ComponentDescription()
         {
+            // Set defaults
+            CanResize = true;
+            CanFlip = true;
             Metadata = new ComponentDescriptionMetadata();
         }
 

@@ -12,6 +12,10 @@
         <format value="$TestProperty(div_1000000)(round_1)  M\u2126" />
       </formatting>
     </property>
+
+    <flags conditions="$TestProperty(gt_1000)">
+      <option>MiddleMustAlign</option>
+    </flags>
   </declaration>
 
   <connections>

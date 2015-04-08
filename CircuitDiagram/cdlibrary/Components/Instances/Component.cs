@@ -59,7 +59,7 @@ namespace CircuitDiagram.Components
             // Apply configuration
             if (identifier.Configuration != null)
             {
-                foreach (KeyValuePair<string, object> setter in identifier.Configuration.Setters)
+                foreach (var setter in identifier.Configuration.Setters)
                 {
                     if (!data.ContainsKey(setter.Key))
                         data.Add(setter.Key, setter.Value);
@@ -101,7 +101,7 @@ namespace CircuitDiagram.Components
                 ComponentConfiguration configuration = description.Metadata.Configurations.FirstOrDefault(item => item.Name == properties["@config"].ToString());
                 if (configuration != null)
                 {
-                    foreach (KeyValuePair<string, object> setter in configuration.Setters)
+                    foreach (var setter in configuration.Setters)
                     {
                         if (!properties.ContainsKey(setter.Key))
                             properties.Add(setter.Key, setter.Value);
@@ -132,7 +132,7 @@ namespace CircuitDiagram.Components
 
         public Orientation Orientation { get; set; }
 
-        private Dictionary<ComponentProperty, object> m_propertyValues { get; set; }
+        private Dictionary<ComponentProperty, PropertyUnion> m_propertyValues { get; set; }
 
         public IComponentEditor Editor { get; private set; }
 
@@ -143,7 +143,7 @@ namespace CircuitDiagram.Components
         {
             Description = description;
             IsFlipped = false;
-            m_propertyValues = new Dictionary<ComponentProperty, object>(description.Properties.Length);
+            m_propertyValues = new Dictionary<ComponentProperty, PropertyUnion>(description.Properties.Length);
             foreach (ComponentProperty property in description.Properties)
                 m_propertyValues.Add(property, property.Default);
             if (System.Threading.Thread.CurrentThread.GetApartmentState() == System.Threading.ApartmentState.STA)
@@ -176,7 +176,7 @@ namespace CircuitDiagram.Components
             return null;
         }
 
-        public object GetProperty(ComponentProperty property)
+        public PropertyUnion GetProperty(ComponentProperty property)
         {
             if (m_propertyValues.ContainsKey(property))
                 return m_propertyValues[property];
@@ -192,19 +192,11 @@ namespace CircuitDiagram.Components
                 return null;
         }
 
-        public void SetProperty(ComponentProperty property, object value)
+        public void SetProperty(ComponentProperty property, PropertyUnion value)
         {
             if (m_propertyValues.ContainsKey(property))
             {
-                // cast to correct type
-                if (property.Type == value.GetType())
-                    m_propertyValues[property] = value;
-                else if (property.Type == typeof(double))
-                    m_propertyValues[property] = double.Parse(value.ToString());
-                else if (property.Type == typeof(int))
-                    m_propertyValues[property] = int.Parse(value.ToString());
-                else if (property.Type == typeof(bool))
-                    m_propertyValues[property] = bool.Parse(value.ToString());
+                m_propertyValues[property] = value;
             }
         }
 
@@ -366,11 +358,11 @@ namespace CircuitDiagram.Components
             if (Description.CanFlip)
                 properties.Add("@flipped", IsFlipped);
 
-            foreach (KeyValuePair<ComponentProperty, object> property in m_propertyValues)
+            foreach (var property in m_propertyValues)
             {
                 if (property.Key.OtherConditions.ContainsKey(PropertyOtherConditionType.Serialize) && !property.Key.OtherConditions[PropertyOtherConditionType.Serialize].IsMet(this))
                     continue;
-                properties.Add(property.Key.SerializedName, property.Value);
+                properties.Add(property.Key.SerializedName, property.Value.Value);
             }
         }
 
@@ -401,7 +393,7 @@ namespace CircuitDiagram.Components
         {
             this.Orientation = Orientation.Horizontal;
             this.IsFlipped = false;
-            foreach (KeyValuePair<string, object> property in properties)
+            foreach (var property in properties)
             {
                 // load common properties
                 if (property.Key == "@x")
@@ -421,7 +413,7 @@ namespace CircuitDiagram.Components
                     {
                         if (dProperty.SerializedName == property.Key)
                         {
-                            SetProperty(dProperty, property.Value);
+                            SetProperty(dProperty, new PropertyUnion(property.Value.ToString(), dProperty.Type));
                             break;
                         }
                     }
@@ -476,7 +468,7 @@ namespace CircuitDiagram.Components
             }
         }
 
-        public IDictionary<string, object> Properties
+        public IDictionary<string, PropertyUnion> Properties
         {
             get
             {

@@ -84,7 +84,8 @@ namespace CircuitDiagram
                 {
                     using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
-                        if (xmlLoader.Load(fs))
+                        xmlLoader.Load(fs);
+                        if (xmlLoader.LoadErrors.Count() == 0)
                         {
                             ComponentDescription description = xmlLoader.GetDescriptions()[0];
                             description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;

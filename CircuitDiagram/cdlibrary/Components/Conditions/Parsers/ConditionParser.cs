@@ -54,7 +54,7 @@ namespace CircuitDiagram.Components.Conditions.Parsers
             ParseFormat = parseFormat;
         }
 
-        public IConditionTreeItem Parse(string input)
+        public IConditionTreeItem Parse(string input, ParseContext context)
         {
             // Tokenize
 
@@ -114,7 +114,7 @@ namespace CircuitDiagram.Components.Conditions.Parsers
 
             // Convert to tree
             Queue<ConditionToken> reversed = new Queue<ConditionToken>(output.Reverse());
-            return (ParseToken(reversed) as IConditionTreeItem);
+            return (ParseToken(reversed, context) as IConditionTreeItem);
         }
 
         private ConditionToken? ReadToken(PositioningReader r)
@@ -146,18 +146,18 @@ namespace CircuitDiagram.Components.Conditions.Parsers
             }
         }
 
-        private IConditionTreeItem ParseToken(Queue<ConditionToken> r)
+        private IConditionTreeItem ParseToken(Queue<ConditionToken> r, ParseContext context)
         {
             if (r.Count == 0)
                 return ConditionTree.Empty;
 
             ConditionToken t = r.Dequeue();
             if (t.Type == ConditionToken.TokenType.Symbol)
-                return ParseLeaf(t);
+                return ParseLeaf(t, context);
             else if (t.Type == ConditionToken.TokenType.Operator && t.Operator == ConditionToken.OperatorType.AND)
             {
-                IConditionTreeItem right = ParseToken(r);
-                IConditionTreeItem left = ParseToken(r);
+                IConditionTreeItem right = ParseToken(r, context);
+                IConditionTreeItem left = ParseToken(r, context);
 
                 return new ConditionTree(
                     ConditionTree.ConditionOperator.AND,
@@ -166,8 +166,8 @@ namespace CircuitDiagram.Components.Conditions.Parsers
             }
             else if (t.Type == ConditionToken.TokenType.Operator && t.Operator == ConditionToken.OperatorType.OR)
             {
-                IConditionTreeItem right = ParseToken(r);
-                IConditionTreeItem left = ParseToken(r);
+                IConditionTreeItem right = ParseToken(r, context);
+                IConditionTreeItem left = ParseToken(r, context);
 
                 return new ConditionTree(
                     ConditionTree.ConditionOperator.OR,
@@ -178,85 +178,87 @@ namespace CircuitDiagram.Components.Conditions.Parsers
                 throw new ArgumentException("Invalid queue.", "r");
         }
 
-        private ConditionTreeLeaf ParseLeaf(ConditionToken token)
+        private ConditionTreeLeaf ParseLeaf(ConditionToken token, ParseContext context)
         {
-            string value = token.Symbol;
+            bool isNegated;
+            bool isState;
+            string property;
+            string comparisonStr;
+            string compareToStr;
+            SplitLeaf(token, out isNegated, out isState, out property, out comparisonStr, out compareToStr);
 
-            ConditionType type;
-            if (value.IndexOf("$") != -1)
-                type = ConditionType.Property;
-            else if ((ParseFormat.StatesUnderscored && value.IndexOf("_") <= 1 && value.IndexOf("_") != -1)
-                || (!ParseFormat.StatesUnderscored && value.IndexOf("_") == -1))
-                type = ConditionType.State;
-            else
-                throw new ConditionFormatException("Illegal syntax for property or state", token.Position, token.Symbol.Length);
+            if (compareToStr == String.Empty)
+                compareToStr = "true"; // Implicit true
 
-            ConditionComparison comparisonType = ConditionComparison.Equal;
-            object compareTo = true;
-
-            Regex opCheck = new Regex(@"(==|\[gt\]|\[lt\]|\[lteq\]|\[gteq\]|!=)");
-            Match opMatch = opCheck.Match(value);
-            if (opMatch.Success)
+            ConditionComparison comparison;
+            switch(comparisonStr)
             {
-                int compareToIndex = opMatch.Index + opMatch.Length;
-                string compareToStr = value.Substring(compareToIndex);
-
-                switch (opMatch.Value)
-                {
-                    case @"[gt]":
-                        comparisonType = ConditionComparison.Greater;
-                        compareTo = double.Parse(compareToStr);
-                        break;
-                    case @"[gteq]":
-                        comparisonType = ConditionComparison.GreaterOrEqual;
-                        compareTo = double.Parse(compareToStr);
-                        break;
-                    case @"[lt]":
-                        comparisonType = ConditionComparison.Less;
-                        compareTo = double.Parse(compareToStr);
-                        break;
-                    case @"[lteq]":
-                        comparisonType = ConditionComparison.LessOrEqual;
-                        compareTo = double.Parse(compareToStr);
-                        break;
-                    case "!=":
-                        comparisonType = ConditionComparison.NotEqual;
-                        compareTo = compareToStr;
-                        break;
-                    case "==":
-                        comparisonType = ConditionComparison.Equal;
-                        compareTo = compareToStr;
-                        break;
-                }
-            } // Else implicit '==true'
-
-            if (value.StartsWith("!"))
-            {
-                if (comparisonType == ConditionComparison.Equal)
-                    comparisonType = ConditionComparison.NotEqual;
-                else if (comparisonType == ConditionComparison.NotEqual)
-                    comparisonType = ConditionComparison.Equal;
-                else if (comparisonType == ConditionComparison.Empty)
-                    comparisonType = ConditionComparison.NotEmpty;
+                case "==":
+                    comparison = ConditionComparison.Equal;
+                    break;
+                case "!=":
+                    comparison = ConditionComparison.NotEqual;
+                    break;
+                case "[gt]":
+                    comparison = ConditionComparison.Greater;
+                    break;
+                case "[lt]":
+                    comparison = ConditionComparison.Less;
+                    break;
+                case "[gteq]":
+                    comparison = ConditionComparison.GreaterOrEqual;
+                    break;
+                case "[lteq]":
+                    comparison = ConditionComparison.LessOrEqual;
+                    break;
+                default:
+                    comparison = ConditionComparison.Equal;
+                    break;
             }
 
-            string name = value;
-            if (opMatch.Success)
-                name = value.Substring(0, opMatch.Index);
-            string variableName = Regex.Match(name, "\\$[a-zA-Z0-9]+").Value.Replace("$", "");
+            if (isNegated && comparison == ConditionComparison.Equal)
+                comparison = ConditionComparison.NotEqual;
+            else if (isNegated)
+            {
+                // Operator cannot be negated
+                throw new ConditionFormatException("Comparison cannot be negated (illegal '!')", token.Position, token.Symbol.Length);
+            }
 
-            // Check for illegal characters in variable name
-            if (type == ConditionType.Property && name.Replace("$", "")  != variableName)
-                throw new ConditionFormatException(String.Format("Illegal character in variable '{0}'", name), token.Position, token.Symbol.Length);
+            if (isState)
+            {
+                if (!legalStateNames.Contains(property))
+                    throw new ConditionFormatException(String.Format("Unknown component state '{0}'", property), token.Position, token.Symbol.Length);
 
-            if (type == ConditionType.State)
-                variableName = name.Replace("!", "");
+                return new ConditionTreeLeaf(ConditionType.State, property, comparison, new PropertyUnion(compareToStr, PropertyUnionType.Boolean));
+            }
+            else
+            {
+                PropertyUnionType propertyType;
+                if (!context.PropertyTypes.TryGetValue(property, out propertyType))
+                    throw new ConditionFormatException(String.Format("Unknown property '{0}'", property), token.Position, token.Symbol.Length);
 
-            if (type == ConditionType.State && !legalStateNames.Contains(variableName))
-                throw new ConditionFormatException(String.Format("Unknown component state '{0}'", variableName), token.Position, token.Symbol.Length);
-
-            return new ConditionTreeLeaf(type, variableName, comparisonType, compareTo);
+                return new ConditionTreeLeaf(ConditionType.Property, property, comparison, new PropertyUnion(compareToStr, propertyType));
+            }
         }
 
+        public static void SplitLeaf(ConditionToken token, out bool isNegated, out bool isState, out string property, out string op, out string compareTo)
+        {
+            string rIsNegated = @"(!?)";
+            string rIsState = @"(\$?)";
+            string rProperty = @"([a-zA-Z]+[a-zA-Z0-9_]*)";
+            string rOperator = @"((==|\[gt\]|\[lt\]|\[lteq\]|\[gteq\]|!=)";
+            string rCompareTo = @"([a-zA-Z0-9_.]+))?";
+            Regex regex = new Regex(String.Format("{0}{1}{2}{3}{4}", rIsNegated, rIsState, rProperty, rOperator, rCompareTo));
+            Match match = regex.Match(token.Symbol);
+
+            if (!match.Success)
+                throw new ConditionFormatException("Invalid syntax", token.Position, token.Symbol.Length);
+
+            isNegated = match.Groups[1].Value.Length == 1;
+            isState = match.Groups[2].Value.Length == 0;
+            property = match.Groups[3].Value;
+            op = match.Groups[5].Value;
+            compareTo = match.Groups[6].Value;
+        }
     }
 }

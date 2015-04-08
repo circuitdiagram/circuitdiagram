@@ -12,6 +12,7 @@
  */
 #endregion
 
+using CircuitDiagram.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,13 +26,13 @@ namespace CircuitDiagram.Components.Conditions.Parsers
     /// </summary>
     public class LegacyConditionParser : IConditionParser
     {
-        public IConditionTreeItem Parse(string input)
+        public IConditionTreeItem Parse(string input, ParseContext context)
         {
             var andList = new Stack<ConditionTreeLeaf>();
 
             string[] conditions = input.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string condition in conditions)
-                andList.Push(ParseLeaf(condition));
+                andList.Push(ParseLeaf(condition, context));
 
             return LegacyConditionParser.AndListToTree(andList);
         }
@@ -51,7 +52,7 @@ namespace CircuitDiagram.Components.Conditions.Parsers
                 return ConditionTree.Empty;
         }
 
-        private ConditionTreeLeaf ParseLeaf(string value)
+        private ConditionTreeLeaf ParseLeaf(string value, ParseContext context)
         {
             ConditionType type;
             if (value.IndexOf("_") <= 1 && value.IndexOf("_") != -1)
@@ -73,16 +74,16 @@ namespace CircuitDiagram.Components.Conditions.Parsers
             Regex emptyCheck = new Regex("\\(empty\\)");
             Match emptyMatch = emptyCheck.Match(value);
 
-            object compareTo = true;
+            string compareTo = "true";
             if (ltMatch.Success)
             {
                 comparisonType = ConditionComparison.Less;
-                compareTo = double.Parse(ltMatch.Value.Replace("(lt_", "").Replace(")", ""));
+                compareTo = ltMatch.Value.Replace("(lt_", "").Replace(")", "");
             }
             else if (gtMatch.Success)
             {
                 comparisonType = ConditionComparison.Greater;
-                compareTo = double.Parse(gtMatch.Value.Replace("(gt_", "").Replace(")", ""));
+                compareTo = gtMatch.Value.Replace("(gt_", "").Replace(")", "");
             }
             else if (eqMatch.Success)
             {
@@ -91,12 +92,12 @@ namespace CircuitDiagram.Components.Conditions.Parsers
             else if (lteqMatch.Success)
             {
                 comparisonType = ConditionComparison.LessOrEqual;
-                compareTo = double.Parse(lteqMatch.Value.Replace("(lteq_", "").Replace(")", ""));
+                compareTo = lteqMatch.Value.Replace("(lteq_", "").Replace(")", "");
             }
             else if (gteqMatch.Success)
             {
                 comparisonType = ConditionComparison.GreaterOrEqual;
-                compareTo = double.Parse(gteqMatch.Value.Replace("(gteq_", "").Replace(")", ""));
+                compareTo = gteqMatch.Value.Replace("(gteq_", "").Replace(")", "");
             }
             else if (emptyMatch.Success)
             {
@@ -118,7 +119,11 @@ namespace CircuitDiagram.Components.Conditions.Parsers
             if (type == ConditionType.State)
                 variableName = value.Replace("_", "").Replace("!", "").ToLowerInvariant();
 
-            return new ConditionTreeLeaf(type, variableName, comparisonType, compareTo);
+            var propertyType = PropertyUnionType.Boolean;
+            if (type == ConditionType.Property && !context.PropertyTypes.TryGetValue(variableName, out propertyType))
+                throw new ConditionFormatException(String.Format("Unknown property '{0}'", variableName), 0, 0);
+
+            return new ConditionTreeLeaf(type, variableName, comparisonType, new PropertyUnion(compareTo, propertyType));
         }
     }
 }

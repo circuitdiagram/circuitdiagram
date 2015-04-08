@@ -14,8 +14,8 @@ namespace CircuitDiagram.Test.CDLibrary.IO.Descriptions
     [TestClass]
     public class XmlLoaderTest
     {
-        private static readonly ConditionTreeLeaf IsHorizontalCondition = new ConditionTreeLeaf(ConditionType.State, "horizontal", ConditionComparison.Equal, true);
-        private static readonly ConditionTreeLeaf IsNotHorizontalCondition = new ConditionTreeLeaf(ConditionType.State, "horizontal", ConditionComparison.NotEqual, true);
+        private static readonly ConditionTreeLeaf IsHorizontalCondition = new ConditionTreeLeaf(ConditionType.State, "horizontal", ConditionComparison.Equal, new PropertyUnion(true));
+        private static readonly ConditionTreeLeaf IsNotHorizontalCondition = new ConditionTreeLeaf(ConditionType.State, "horizontal", ConditionComparison.NotEqual, new PropertyUnion(true));
 
         [TestMethod]
         [DeploymentItem("CDLibrary/IO/Descriptions/TestComponent_v1.2.xml")]
@@ -46,6 +46,7 @@ namespace CircuitDiagram.Test.CDLibrary.IO.Descriptions
                 // Check component data
                 AssertMetadata(testDescription);
                 AssertProperties(testDescription);
+                AssertFlags(testDescription);
                 AssertConnections(testDescription);
                 AssertRender(testDescription);
             }
@@ -67,22 +68,31 @@ namespace CircuitDiagram.Test.CDLibrary.IO.Descriptions
             Assert.AreEqual("TestProperty", prop.Name);
             Assert.AreEqual("Property", prop.DisplayName);
             Assert.AreEqual("test", prop.SerializedName);
-            Assert.AreEqual(typeof(double), prop.Type);
-            Assert.AreEqual(4700d, prop.Default);
+            Assert.AreEqual(PropertyType.Decimal, prop.Type);
+            Assert.AreEqual(new PropertyUnion(4700d), prop.Default);
 
             // Formatting
             Assert.AreEqual(3, prop.FormatRules.Count());
 
             // Conditional 1
-            Assert.AreEqual(new ConditionTreeLeaf(ConditionType.Property, "TestProperty", ConditionComparison.Less, 1000d), prop.FormatRules[0].Conditions);
+            Assert.AreEqual(new ConditionTreeLeaf(ConditionType.Property, "TestProperty", ConditionComparison.Less, new PropertyUnion(1000.0)), prop.FormatRules[0].Conditions);
             Assert.AreEqual(@"$TestProperty  \u2126", prop.FormatRules[0].Value);
 
             // Conditional 2
-            Assert.AreEqual(new ConditionTreeLeaf(ConditionType.Property, "TestProperty", ConditionComparison.Less, 1000000d), prop.FormatRules[1].Conditions);
+            Assert.AreEqual(new ConditionTreeLeaf(ConditionType.Property, "TestProperty", ConditionComparison.Less, new PropertyUnion(1000000d)), prop.FormatRules[1].Conditions);
             Assert.AreEqual(@"$TestProperty(div_1000_)(round_1)  k\u2126", prop.FormatRules[1].Value);
 
             // Default
             Assert.AreEqual(@"$TestProperty(div_1000000)(round_1)  M\u2126", prop.FormatRules[2].Value);
+        }
+
+        private void AssertFlags(ComponentDescription desc)
+        {
+            Assert.AreEqual(1, desc.Flags.Length);
+
+            var flag = desc.Flags[0];
+            Assert.AreEqual(new ConditionTreeLeaf(ConditionType.Property, "TestProperty", ConditionComparison.Greater, new PropertyUnion(1000d)), flag.Conditions);
+            Assert.AreEqual(FlagOptions.MiddleMustAlign, flag.Value);
         }
 
         private void AssertConnections(ComponentDescription desc)

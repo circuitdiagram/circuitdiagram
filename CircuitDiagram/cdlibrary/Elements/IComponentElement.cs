@@ -18,6 +18,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+using CircuitDiagram.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,6 +60,6 @@ namespace CircuitDiagram.Elements
         /// <summary>
         /// Properties of the component.
         /// </summary>
-        IDictionary<string, object> Properties { get; }
+        IDictionary<string, PropertyUnion> Properties { get; }
     }
 }

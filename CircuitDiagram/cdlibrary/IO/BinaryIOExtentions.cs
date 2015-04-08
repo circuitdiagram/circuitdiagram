@@ -42,33 +42,28 @@ namespace CircuitDiagram.IO
             return new ComponentPoint(relX, relY, new System.Windows.Vector(offsetX, offsetY));
         }
 
-        public static void WriteType(this System.IO.BinaryWriter writer, object value, bool isEnum = false)
+        public static void WriteType(this System.IO.BinaryWriter writer, PropertyUnion value, bool isEnum = false)
         {
-            Type valueType = value.GetType();
-            if (valueType == typeof(string) && !isEnum)
+            var valueType = value.InternalType;
+            if (valueType == PropertyUnionType.String && !isEnum)
             {
                 writer.Write((int)BinaryType.String);
-                writer.Write(value as string);
+                writer.Write(value.Value as string);
             }
-            else if (valueType == typeof(int))
-            {
-                writer.Write((int)BinaryType.Int);
-                writer.Write((int)value);
-            }
-            else if (valueType == typeof(double))
+            else if (valueType == PropertyUnionType.Double)
             {
                 writer.Write((int)BinaryType.Double);
-                writer.Write((double)value);
+                writer.Write((double)value.Value);
             }
-            else if (valueType == typeof(bool))
+            else if (valueType == PropertyUnionType.Boolean)
             {
                 writer.Write((int)BinaryType.Bool);
-                writer.Write((bool)value);
+                writer.Write((bool)value.Value);
             }
-            else if (valueType == typeof(string) && isEnum)
+            else if (valueType == PropertyUnionType.String && isEnum)
             {
                 writer.Write((int)BinaryType.Enum);
-                writer.Write(value as string);
+                writer.Write(value.Value as string);
             }
             else
             {
@@ -92,22 +87,20 @@ namespace CircuitDiagram.IO
             return null;
         }
 
-        public static Type BinaryTypeToType(BinaryType type)
+        public static PropertyType BinaryTypeToPropertyType(BinaryType type)
         {
             switch (type)
             {
-                case BinaryType.String:
-                    return typeof(string);
                 case BinaryType.Int:
-                    return typeof(int);
+                    return PropertyType.Integer;
                 case BinaryType.Double:
-                    return typeof(double);
+                    return PropertyType.Decimal;
                 case BinaryType.Bool:
-                    return typeof(bool);
+                    return PropertyType.Boolean;
                 case BinaryType.Enum:
-                    return typeof(string);
+                    return PropertyType.Enum;
                 default:
-                    return typeof(string);
+                    return PropertyType.String;
             }
         }
 
@@ -174,7 +167,8 @@ namespace CircuitDiagram.IO
                 string variableName = reader.ReadString();
                 BinaryType binType;
                 object compareTo = reader.ReadType(out binType);
-                return new ConditionTreeLeaf(conditionType, variableName, comparison, compareTo);
+
+                return new ConditionTreeLeaf(conditionType, variableName, comparison, binType.ToPropertyUnion(compareTo));
             }
             else
                 throw new System.IO.InvalidDataException();
@@ -191,7 +185,7 @@ namespace CircuitDiagram.IO
                 string variableName = reader.ReadString();
                 BinaryType binType;
                 object compareTo = reader.ReadType(out binType);
-                andList.Push(new ConditionTreeLeaf(conditionType, variableName, comparison, compareTo));
+                andList.Push(new ConditionTreeLeaf(conditionType, variableName, comparison, binType.ToPropertyUnion(compareTo)));
             }
 
             return LegacyConditionParser.AndListToTree(andList);
@@ -211,6 +205,21 @@ namespace CircuitDiagram.IO
         public static void WriteNullString(this System.IO.BinaryWriter writer, string value)
         {
             writer.Write((value != null ? value : ""));
+        }
+
+        public static PropertyUnion ToPropertyUnion(this BinaryType binType, object value)
+        {
+            switch(binType)
+            {
+                case BinaryType.Bool:
+                    return new PropertyUnion((bool)value);
+                case BinaryType.Double:
+                    return new PropertyUnion((double)value);
+                case BinaryType.Int:
+                    return new PropertyUnion((int)value);
+                default:
+                    return new PropertyUnion((string)value);
+            }
         }
     }
 

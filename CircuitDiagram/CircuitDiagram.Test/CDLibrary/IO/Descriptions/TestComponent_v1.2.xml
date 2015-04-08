@@ -5,13 +5,17 @@
     <meta name="minsize" value="60" />
     <meta name="author" value="Circuit Diagram" />
 
-    <property name="TestProperty" type="double" default="4700" serialize="test" display="Property">
+    <property name="TestProperty" type="decimal" default="4700" serialize="test" display="Property">
       <formatting>
         <format conditions="$TestProperty[lt]1000" value="$TestProperty  \u2126" />
         <format conditions="$TestProperty[lt]1000000" value="$TestProperty(div_1000_)(round_1)  k\u2126" />
         <format value="$TestProperty(div_1000000)(round_1)  M\u2126" />
       </formatting>
     </property>
+
+    <flags conditions="$TestProperty[gt]1000">
+      <option>MiddleMustAlign</option>
+    </flags>
   </declaration>
 
   <connections>

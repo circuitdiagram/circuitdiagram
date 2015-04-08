@@ -30,7 +30,7 @@ namespace CircuitDiagram.IO
 {
     interface IComponentDescriptionLoader
     {
-        bool Load(Stream stream);
+        void Load(Stream stream);
         ComponentDescription[] GetDescriptions();
     }
 }

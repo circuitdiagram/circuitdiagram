@@ -25,13 +25,13 @@ namespace CircuitDiagram.Components.Description
         public string Name { get; private set; }
         public string SerializedName { get; private set; }
         public string DisplayName { get; private set; }
-        public object Default { get; private set; }
+        public PropertyUnion Default { get; private set; }
         public string[] EnumOptions { get; private set; }
-        public Type Type { get; private set; }
+        public PropertyType Type { get; private set; }
         public ComponentPropertyFormat[] FormatRules { get; private set; }
         public Dictionary<PropertyOtherConditionType, IConditionTreeItem> OtherConditions { get; private set; }
 
-        public ComponentProperty(string name, string serializedName, string displayName, Type type, object defaultValue, ComponentPropertyFormat[] formatRules, Dictionary<PropertyOtherConditionType, IConditionTreeItem> otherConditions, string[] enumOptions = null)
+        public ComponentProperty(string name, string serializedName, string displayName, PropertyType type, PropertyUnion defaultValue, ComponentPropertyFormat[] formatRules, Dictionary<PropertyOtherConditionType, IConditionTreeItem> otherConditions, string[] enumOptions = null)
         {
             Name = name;
             SerializedName = serializedName;
@@ -52,5 +52,14 @@ namespace CircuitDiagram.Components.Description
             }
             return value.ToString();
         }
+    }
+
+    public enum PropertyType
+    {
+        Boolean,
+        Decimal,
+        Enum,
+        Integer,
+        String,
     }
 }

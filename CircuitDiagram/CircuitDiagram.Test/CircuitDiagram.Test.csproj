@@ -52,6 +52,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="CDLibrary\Components\Conditions\Parsers\ConditionParserTest.cs" />
     <Compile Include="CDLibrary\IO\Descriptions\XmlLoaderTest.cs" />
     <Compile Include="CDLibrary\IO\Xml\XmlReaderTest.cs" />
     <Compile Include="Core\IO\IODocumentTest.cs" />

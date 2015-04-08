@@ -12,6 +12,7 @@
  */
 #endregion
 
+using CircuitDiagram.Components;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -54,7 +55,7 @@ namespace CircuitDiagram.Elements
             get { throw new NotImplementedException(); }
         }
 
-        public IDictionary<string, object> Properties
+        public IDictionary<string, PropertyUnion> Properties
         {
             get { throw new NotImplementedException(); }
         }

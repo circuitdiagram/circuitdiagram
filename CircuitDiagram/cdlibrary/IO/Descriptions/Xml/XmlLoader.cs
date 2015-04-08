@@ -48,7 +48,7 @@ namespace CircuitDiagram.IO.Descriptions.Xml
             return m_descriptions;
         }
 
-        public bool Load(System.IO.Stream stream)
+        public void Load(System.IO.Stream stream)
         {
             LoadContext lc = new LoadContext();
 
@@ -98,12 +98,11 @@ namespace CircuitDiagram.IO.Descriptions.Xml
                 ReadRenderSection(declaration, lc, description);
 
                 m_descriptions = new ComponentDescription[] { description };
-
-                return true;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                lc.Errors.Add(new LoadError(lc.FileName, 0, 0, LoadErrorCategory.Error, "A fatal error occurred - '" + ex.Message + "'"));
+                m_descriptions = new ComponentDescription[0];
             }
             finally
             {
@@ -128,6 +127,10 @@ namespace CircuitDiagram.IO.Descriptions.Xml
 
             //Read properties
             List<ComponentProperty> properties = new List<ComponentProperty>();
+            foreach (var propertyElement in declaration.Elements(ns + "property"))
+            {
+                ScanPropertyNode(propertyElement, lc);
+            }
             foreach (var propertyElement in declaration.Elements(ns + "property"))
             {
                 ComponentProperty property = ReadPropertyNode(propertyElement, lc);
@@ -176,7 +179,7 @@ namespace CircuitDiagram.IO.Descriptions.Xml
 
                     try
                     {
-                        conditionCollection = lc.ConditionParser.Parse(connectionGroupNode.Attribute("conditions").Value);
+                        conditionCollection = lc.ConditionParser.Parse(connectionGroupNode.Attribute("conditions").Value, lc.ParseContext);
                     }
                     catch (ConditionFormatException ex)
                     {
@@ -226,7 +229,7 @@ namespace CircuitDiagram.IO.Descriptions.Xml
 
                     try
                     {
-                        conditionCollection = lc.ConditionParser.Parse(conditionsAttribute.Value);
+                        conditionCollection = lc.ConditionParser.Parse(conditionsAttribute.Value, lc.ParseContext);
                     }
                     catch (ConditionFormatException ex)
                     {
@@ -284,7 +287,7 @@ namespace CircuitDiagram.IO.Descriptions.Xml
             if (configurationElement.Attribute("implements") != null)
                 configImplements = configurationElement.Attribute("implements").Value;
 
-            ComponentConfiguration newConfiguration = new ComponentConfiguration(configImplements, configName, new Dictionary<string, object>());
+            ComponentConfiguration newConfiguration = new ComponentConfiguration(configImplements, configName, new Dictionary<string,PropertyUnion>());
 
             string[] setters = configValue.Split(new char[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string setter in setters)
@@ -298,16 +301,7 @@ namespace CircuitDiagram.IO.Descriptions.Xml
                 {
                     if (propertyName == property.Name)
                     {
-                        object setterValue = value;
-                        if (property.Type == typeof(double))
-                            setterValue = double.Parse(value);
-                        else if (property.Type == typeof(int))
-                            setterValue = int.Parse(value);
-                        else if (property.Type == typeof(bool))
-                            setterValue = bool.Parse(value);
-
-                        newConfiguration.Setters.Add(property.SerializedName, setterValue);
-
+                        newConfiguration.Setters.Add(property.SerializedName, new PropertyUnion(value, property.Type));
                         break;
                     }
                 }
@@ -315,37 +309,71 @@ namespace CircuitDiagram.IO.Descriptions.Xml
             return newConfiguration;
         }
 
+        private void ScanPropertyNode(XElement propertyElement, LoadContext lc)
+        {
+            string propertyName = propertyElement.Attribute("name").Value;
+            string type = propertyElement.Attribute("type").Value;
+            string defaultValue = propertyElement.Attribute("default").Value;
+
+            PropertyType propertyType;
+            switch (type.ToLowerInvariant())
+            {
+                case "double":
+                    propertyType = PropertyType.Decimal;
+                    break;
+                case "decimal":
+                    propertyType = PropertyType.Decimal;
+                    break;
+                case "int":
+                    propertyType = PropertyType.Integer;
+                    break;
+                case "bool":
+                    propertyType = PropertyType.Boolean;
+                    break;
+                default:
+                    propertyType = PropertyType.String;
+                    break;
+            }
+
+            PropertyUnion propertyDefaultValue = new PropertyUnion(defaultValue, propertyType);
+
+            lc.ParseContext.PropertyTypes.Add(propertyName, propertyDefaultValue.InternalType);
+        }
+
         private ComponentProperty ReadPropertyNode(XElement propertyElement, LoadContext lc)
         {
+            IXmlLineInfo elementLine = propertyElement as IXmlLineInfo;
+
             string propertyName = propertyElement.Attribute("name").Value;
             string type = propertyElement.Attribute("type").Value;
             string defaultValue = propertyElement.Attribute("default").Value;
             string serializeAs = propertyElement.Attribute("serialize").Value;
             string display = propertyElement.Attribute("display").Value;
 
-            Type propertyType;
+            PropertyType propertyType;
             switch (type.ToLowerInvariant())
             {
                 case "double":
-                    propertyType = typeof(double);
+                    propertyType = PropertyType.Decimal;
+                    if (lc.FormatVersion >= new Version(1, 2))
+                        lc.Errors.Add(new LoadError(lc.FileName, elementLine.LineNumber, elementLine.LinePosition, LoadErrorCategory.Warning,
+                            "Property type 'double' is deprecated, use 'decimal' instead"));
+                    break;
+                case "decimal":
+                    propertyType = PropertyType.Decimal;
                     break;
                 case "int":
-                    propertyType = typeof(int);
+                    propertyType = PropertyType.Integer;
                     break;
                 case "bool":
-                    propertyType = typeof(bool);
+                    propertyType = PropertyType.Boolean;
                     break;
                 default:
-                    propertyType = typeof(string);
+                    propertyType = PropertyType.String;
                     break;
             }
-            object propertyDefaultValue = defaultValue;
-            if (propertyType == typeof(double))
-                propertyDefaultValue = double.Parse(defaultValue);
-            else if (propertyType == typeof(int))
-                propertyDefaultValue = int.Parse(defaultValue);
-            else if (propertyType == typeof(bool))
-                propertyDefaultValue = bool.Parse(defaultValue);
+
+            PropertyUnion propertyDefaultValue = new PropertyUnion(defaultValue, propertyType);
 
             List<string> propertyOptions = null;
             if (type == "enum")
@@ -371,7 +399,7 @@ namespace CircuitDiagram.IO.Descriptions.Xml
                     {
                         try
                         {
-                            conditionCollection = lc.ConditionParser.Parse(formatNode.Attribute("conditions").Value);
+                            conditionCollection = lc.ConditionParser.Parse(formatNode.Attribute("conditions").Value, lc.ParseContext);
                         }
                         catch (ConditionFormatException ex)
                         {
@@ -398,7 +426,7 @@ namespace CircuitDiagram.IO.Descriptions.Xml
 
                     try
                     {
-                        conditionCollection = lc.ConditionParser.Parse(conditionsString);
+                        conditionCollection = lc.ConditionParser.Parse(conditionsString, lc.ParseContext);
                     }
                     catch (ConditionFormatException ex)
                     {
@@ -494,7 +522,7 @@ namespace CircuitDiagram.IO.Descriptions.Xml
 
                 try
                 {
-                    conditions = lc.ConditionParser.Parse(conditionsAttribute.Value);
+                    conditions = lc.ConditionParser.Parse(conditionsAttribute.Value, lc.ParseContext);
                 }
                 catch (ConditionFormatException ex)
                 {
@@ -504,7 +532,7 @@ namespace CircuitDiagram.IO.Descriptions.Xml
             }
 
             FlagOptions theOptions = FlagOptions.None;
-            foreach (var node in flagElement.Descendants("option"))
+            foreach (var node in flagElement.Descendants(lc.NS + "option"))
                 theOptions |= (FlagOptions)Enum.Parse(typeof(FlagOptions), node.Value, true);
 
             return new Conditional<FlagOptions>(theOptions, conditions);
@@ -516,6 +544,7 @@ namespace CircuitDiagram.IO.Descriptions.Xml
         public LoadContext()
         {
             Errors = new List<LoadError>();
+            ParseContext = new ParseContext();
         }
 
         public XNamespace NS { get; set; }
@@ -524,5 +553,6 @@ namespace CircuitDiagram.IO.Descriptions.Xml
         public IConditionParser ConditionParser { get; set; }
         public XmlNamespaceManager NamespaceManager { get; set; }
         public List<LoadError> Errors { get; set; }
+        public ParseContext ParseContext { get; set; }
     }
 }

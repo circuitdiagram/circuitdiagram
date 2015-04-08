@@ -367,7 +367,7 @@ namespace CircuitDiagram.IO
                             configurationWriter.Write((configuration.ImplementationName != null ? configuration.ImplementationName : ""));
 
                             configurationWriter.Write(configuration.Setters.Count);
-                            foreach (KeyValuePair<string, object> setter in configuration.Setters)
+                            foreach (var setter in configuration.Setters)
                             {
                                 foreach (ComponentProperty property in description.Properties)
                                     if (property.SerializedName == setter.Key)

@@ -6,8 +6,8 @@ using System.Text;
 
 namespace CircuitDiagram.Components.Conditions.Parsers
 {
-    public interface IConditionParser
+    internal interface IConditionParser
     {
-        IConditionTreeItem Parse(string input);
+        IConditionTreeItem Parse(string input, ParseContext context);
     }
 }

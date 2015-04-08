@@ -39,9 +39,9 @@ namespace CircuitDiagram.Components.Conditions
             switch(op)
             {
                 case ConditionOperator.AND:
-                    return "&&";
+                    return ",";
                 case ConditionOperator.OR:
-                    return "||";
+                    return "|";
                 default:
                     return "??";
             }
@@ -76,6 +76,34 @@ namespace CircuitDiagram.Components.Conditions
         public override string ToString()
         {
             return this.Left.ToString() + ConditionOperatorToString(this.Operator) + this.Right.ToString();
+        }
+
+        public override bool Equals(object obj)
+        {
+            // If parameter is null return false.
+            if (obj == null)
+            {
+                return false;
+            }
+
+            // If parameter cannot be cast to ConditionTree return false.
+            ConditionTree o = obj as ConditionTree;
+            if ((System.Object)o == null)
+            {
+                return false;
+            }
+
+            // Return true if the fields match:
+            return Operator.Equals(o.Operator)
+                && Left.Equals(o.Left)
+                && Right.Equals(o.Right);
+        }
+
+        public override int GetHashCode()
+        {
+            return Operator.GetHashCode()
+                ^ Left.GetHashCode()
+                ^ Right.GetHashCode();
         }
     }
 }
