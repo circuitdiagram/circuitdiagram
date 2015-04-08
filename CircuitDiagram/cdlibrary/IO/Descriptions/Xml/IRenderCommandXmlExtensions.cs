@@ -103,7 +103,6 @@ namespace CircuitDiagram.IO.Descriptions.Xml
                     size = ComponentHelper.LargeTextSize;
             }
 
-            List<TextRun> textRuns = new List<TextRun>();
             var textValueNode = element.Element(lc.NS + "value");
             if (textValueNode != null)
             {
@@ -114,11 +113,11 @@ namespace CircuitDiagram.IO.Descriptions.Xml
                     string nodeValue = spanNode.Value;
 
                     if (spanNode.Name.LocalName == "span")
-                        textRuns.Add(new TextRun(nodeValue, TextRunFormatting.Normal));
+                        command.TextRuns.Add(new TextRun(nodeValue, TextRunFormatting.Normal));
                     else if (spanNode.Name.LocalName == "sub")
-                        textRuns.Add(new TextRun(nodeValue, TextRunFormatting.Subscript));
+                        command.TextRuns.Add(new TextRun(nodeValue, TextRunFormatting.Subscript));
                     else if (spanNode.Name.LocalName == "sup")
-                        textRuns.Add(new TextRun(nodeValue, TextRunFormatting.Superscript));
+                        command.TextRuns.Add(new TextRun(nodeValue, TextRunFormatting.Superscript));
                     else
                         lc.Errors.Add(new LoadError(lc.FileName, line.LineNumber, line.LinePosition, LoadErrorCategory.Warning,
                             String.Format("Unexpected node {0}.", spanNode.Name.LocalName)));

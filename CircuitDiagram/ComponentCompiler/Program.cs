@@ -92,7 +92,7 @@ namespace cdcompile
             XmlLoader loader = new XmlLoader();
             loader.Load(new FileStream(inputPath, FileMode.Open));
 
-            if (loader.LoadErrors.Count() > 0)
+            if (loader.LoadErrors.Count(e => e.Category == LoadErrorCategory.Error) > 0)
             {
                 foreach (var error in loader.LoadErrors)
                     Console.WriteLine(error.ToString());
