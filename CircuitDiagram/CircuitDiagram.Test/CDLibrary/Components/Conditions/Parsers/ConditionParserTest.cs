@@ -43,7 +43,8 @@ namespace CircuitDiagram.Test.CDLibrary.Components.Conditions.Parsers
                 "$123",                     // Property names cannot start with a number
                 "$_123",                    // Property names cannot start with an underscore
                 "$1.23",                    // Property names cannot contain special characters
-                "horizontal||$Prop[gt]1000" // OR is '|', not '||
+                "horizontal||$Prop[gt]1000",// OR is '|', not '||'
+                "$Prop==1||$Prop==2"        // OR is '|', not '||'    
             };
 
             var parseContext = new ParseContext();

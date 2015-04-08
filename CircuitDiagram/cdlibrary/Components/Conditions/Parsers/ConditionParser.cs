@@ -149,7 +149,7 @@ namespace CircuitDiagram.Components.Conditions.Parsers
         private IConditionTreeItem ParseToken(Queue<ConditionToken> r, ParseContext context)
         {
             if (r.Count == 0)
-                return ConditionTree.Empty;
+                throw new ConditionFormatException("Invalid condition", 0, 0);
 
             ConditionToken t = r.Dequeue();
             if (t.Type == ConditionToken.TokenType.Symbol)

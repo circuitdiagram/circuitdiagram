@@ -68,57 +68,57 @@
       <connection start="_Middle+48x-60y" end="_End-60y" edge="End" />
     </group>
 
-    <group conditions="$size==6||$size==8||$size==10||$size==12||$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==6|$size==8|$size==10|$size==12|$size==14|$size==16|$size==18|$size==20|$size==22|$size==24|$size==26|$size==28">
       <connection start="_Start-40y" end="_Middle-48x-40y" edge="Start" />
       <connection start="_Middle+48x-40y" end="_End-40y" edge="End" />
     </group>
 
-    <group conditions="$size==8||$size==10||$size==12||$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==8|$size==10|$size==12|$size==14|$size==16|$size==18|$size==20|$size==22|$size==24|$size==26|$size==28">
       <connection start="_Start-20y" end="_Middle-48x-20y" edge="Start" />
       <connection start="_Middle+48x-20y" end="_End-20y" edge="End" />
     </group>
 
-    <group conditions="$size==10||$size==12||$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==10|$size==12|$size==14|$size==16|$size==18|$size==20|$size==22|$size==24|$size==26|$size==28">
       <connection start="_Start" end="_Middle-48x" edge="Start" />
       <connection start="_Middle+48x" end="_End" edge="End" />
     </group>
 
-    <group conditions="$size==12||$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==12|$size==14|$size==16|$size==18|$size==20|$size==22|$size==24|$size==26|$size==28">
       <connection start="_Start+20y" end="_Middle-48x+20y" edge="Start" />
       <connection start="_Middle+48x+20y" end="_End+20y" edge="End" />
     </group>
 
-    <group conditions="$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==14|$size==16|$size==18|$size==20|$size==22|$size==24|$size==26|$size==28">
       <connection start="_Start+40y" end="_Middle-48x+40y" edge="Start" />
       <connection start="_Middle+48x+40y" end="_End+40y" edge="End" />
     </group>
 
-    <group conditions="$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==16|$size==18|$size==20|$size==22|$size==24|$size==26|$size==28">
       <connection start="_Start+60y" end="_Middle-48x+60y" edge="Start" />
       <connection start="_Middle+48x+60y" end="_End+60y" edge="End" />
     </group>
 
-    <group conditions="$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==18|$size==20|$size==22|$size==24|$size==26|$size==28">
       <connection start="_Start+80y" end="_Middle-48x+80y" edge="Start" />
       <connection start="_Middle+48x+80y" end="_End+80y" edge="End" />
     </group>
 
-    <group conditions="$size==20||$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==20|$size==22|$size==24|$size==26|$size==28">
       <connection start="_Start+100y" end="_Middle-48x+100y" edge="Start" />
       <connection start="_Middle+48x+100y" end="_End+100y" edge="End" />
     </group>
 
-    <group conditions="$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==22|$size==24|$size==26|$size==28">
       <connection start="_Start+120y" end="_Middle-48x+120y" edge="Start" />
       <connection start="_Middle+48x+120y" end="_End+120y" edge="End" />
     </group>
 
-    <group conditions="$size==24||$size==26||$size==28">
+    <group conditions="$size==24|$size==26|$size==28">
       <connection start="_Start+140y" end="_Middle-48x+140y" edge="Start" />
       <connection start="_Middle+48x+140y" end="_End+140y" edge="End" />
     </group>
 
-    <group conditions="$size==26||$size==28">
+    <group conditions="$size==26|$size==28">
       <connection start="_Start+160y" end="_Middle-48x+160y" edge="Start" />
       <connection start="_Middle+48x+160y" end="_End+160y" edge="End" />
     </group>
@@ -182,7 +182,7 @@
       <text x="_Middle+46" y="_Middle-60" align="CentreRight" size="large" value="$pin3" />
     </group>
 
-    <group conditions="$size==6||$size==8||$size==10||$size==12||$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==6|$size==8|$size==10|$size==12|$size==14|$size==16|$size==18|$size==20|$size==22|$size==24|$size==26|$size==28">
       <line start="_Start-40y" end="_Middle-50x-40y" />
       <line start="_Middle+50x-40y" end="_End-40y" />
 
@@ -191,7 +191,7 @@
       <text x="_Middle+46" y="_Middle-40" align="CentreRight" size="large" value="$pin5" />
     </group>
 
-    <group conditions="$size==8||$size==10||$size==12||$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==8|$size==10|$size==12|$size==14|$size==16|$size==18|$size==20|$size==22|$size==24|$size==26|$size==28">
       <line start="_Start-20y" end="_Middle-50x-20y" />
       <line start="_Middle+50x-20y" end="_End-20y" />
 
@@ -200,7 +200,7 @@
       <text x="_Middle+46" y="_Middle-20" align="CentreRight" size="large" value="$pin7" />
     </group>
 
-    <group conditions="$size==10||$size==12||$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==10|$size==12|$size==14|$size==16|$size==18|$size==20|$size==22|$size==24|$size==26|$size==28">
       <line start="_Start" end="_Middle-50x" />
       <line start="_Middle+50x" end="_End" />
 
@@ -209,7 +209,7 @@
       <text x="_Middle+46" y="_Middle" align="CentreRight" size="large" value="$pin9" />
     </group>
 
-    <group conditions="$size==12||$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==12|$size==14|$size==16|$size==18|$size==20|$size==22|$size==24|$size==26|$size==28">
       <line start="_Start+20y" end="_Middle-50x+20y" />
       <line start="_Middle+50x+20y" end="_End+20y" />
 
@@ -218,7 +218,7 @@
       <text x="_Middle+46" y="_Middle+20" align="CentreRight" size="large" value="$pin11" />
     </group>
 
-    <group conditions="$size==14||$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==14|$size==16|$size==18|$size==20|$size==22|$size==24|$size==26|$size==28">
       <line start="_Start+40y" end="_Middle-50x+40y" />
       <line start="_Middle+50x+40y" end="_End+40y" />
 
@@ -227,7 +227,7 @@
       <text x="_Middle+46" y="_Middle+40" align="CentreRight" size="large" value="$pin13" />
     </group>
 
-    <group conditions="$size==16||$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==16|$size==18|$size==20|$size==22|$size==24|$size==26|$size==28">
       <line start="_Start+60y" end="_Middle-50x+60y" />
       <line start="_Middle+50x+60y" end="_End+60y" />
 
@@ -236,7 +236,7 @@
       <text x="_Middle+46" y="_Middle+60" align="CentreRight" size="large" value="$pin15" />
     </group>
 
-    <group conditions="$size==18||$size==20||$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==18|$size==20|$size==22|$size==24|$size==26|$size==28">
       <line start="_Start+80y" end="_Middle-50x+80y" />
       <line start="_Middle+50x+80y" end="_End+80y" />
 
@@ -245,7 +245,7 @@
       <text x="_Middle+46" y="_Middle+80" align="CentreRight" size="large" value="$pin17" />
     </group>
 
-    <group conditions="$size==20||$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==20|$size==22|$size==24|$size==26|$size==28">
       <line start="_Start+100y" end="_Middle-50x+100y" />
       <line start="_Middle+50x+100y" end="_End+100y" />
 
@@ -254,7 +254,7 @@
       <text x="_Middle+46" y="_Middle+100" align="CentreRight" size="large" value="$pin19" />
     </group>
 
-    <group conditions="$size==22||$size==24||$size==26||$size==28">
+    <group conditions="$size==22|$size==24|$size==26|$size==28">
       <line start="_Start+120y" end="_Middle-50x+120y" />
       <line start="_Middle+50x+120y" end="_End+120y" />
 
@@ -263,7 +263,7 @@
       <text x="_Middle+46" y="_Middle+120" align="CentreRight" size="large" value="$pin21" />
     </group>
 
-    <group conditions="$size==24||$size==26||$size==28">
+    <group conditions="$size==24|$size==26|$size==28">
       <line start="_Start+140y" end="_Middle-50x+140y" />
       <line start="_Middle+50x+140y" end="_End+140y" />
 
@@ -272,7 +272,7 @@
       <text x="_Middle+46" y="_Middle+140" align="CentreRight" size="large" value="$pin23" />
     </group>
 
-    <group conditions="$size==26||$size==28">
+    <group conditions="$size==26|$size==28">
       <line start="_Start+160y" end="_Middle-50x+160y" />
       <line start="_Middle+50x+160y" end="_End+160y" />
 
