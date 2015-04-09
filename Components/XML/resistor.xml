@@ -16,7 +16,7 @@
 
     <property name="Text" type="string" default="R1" serialize="text" display="Text" />
 
-    <property name="Resistance" type="double" default="4700" serialize="resistance" display="Resistance">
+    <property name="Resistance" type="decimal" default="4700" serialize="resistance" display="Resistance">
       <formatting>
         <format conditions="$Resistance[lt]1000" value="$Resistance  \u2126" />
         <format conditions="$Resistance[lt]1000000" value="$Resistance(div_1000)(round_1)  k\u2126" />

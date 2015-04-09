@@ -53,7 +53,7 @@ using System.Windows.Media;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("3.0.0.*")]
-[assembly: BuildChannel("Alpha 1", UpdateChannelType.Dev)]
+[assembly: BuildChannel("Alpha 2", UpdateChannelType.Dev)]
 
 // Per-monitor DPI scaling
 [assembly: DisableDpiAwareness]
