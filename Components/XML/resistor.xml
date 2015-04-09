@@ -19,7 +19,7 @@
     <property name="Resistance" type="double" default="4700" serialize="resistance" display="Resistance">
       <formatting>
         <format conditions="$Resistance[lt]1000" value="$Resistance  \u2126" />
-        <format conditions="$Resistance[lt]1000000" value="$Resistance(div_1000_)(round_1)  k\u2126" />
+        <format conditions="$Resistance[lt]1000000" value="$Resistance(div_1000)(round_1)  k\u2126" />
         <format value="$Resistance(div_1000000)(round_1)  M\u2126" />
       </formatting>
     </property>

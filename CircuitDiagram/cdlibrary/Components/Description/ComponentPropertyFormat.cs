@@ -62,7 +62,7 @@ namespace CircuitDiagram.Components.Description
             return regex.Replace(formattedVars, match => ((char)Int32.Parse(match.Value.Substring(2), NumberStyles.HexNumber)).ToString());
         }
 
-        private static string ApplySpecialFormatting(object property, string formatting)
+        private static string ApplySpecialFormatting(PropertyUnion property, string formatting)
         {
             string[] formatTasks = formatting.Split(new char[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string formatTask in formatTasks)
@@ -77,20 +77,16 @@ namespace CircuitDiagram.Components.Description
                 switch (task)
                 {
                     case "div":
-                        if (property.GetType() == typeof(double))
-                            property = (double)property / double.Parse(option);
-                        else if (property.GetType() == typeof(int))
-                            property = (int)property / int.Parse(option);
+                        if (property.InternalType == PropertyUnionType.Double)
+                            property = new PropertyUnion((double)property.Value / double.Parse(option));
                         break;
                     case "mul":
-                        if (property.GetType() == typeof(double))
-                            property = (double)property * double.Parse(option);
-                        else if (property.GetType() == typeof(int))
-                            property = (int)property * int.Parse(option);
+                        if (property.InternalType == PropertyUnionType.Double)
+                            property = new PropertyUnion((double)property.Value * double.Parse(option));
                         break;
                     case "round":
-                        if (property.GetType() == typeof(double))
-                            property = Math.Round((double)property, int.Parse(option));
+                        if (property.InternalType == PropertyUnionType.Double)
+                            property = new PropertyUnion(Math.Round((double)property.Value, int.Parse(option)));
                         break;
                 }
             }
