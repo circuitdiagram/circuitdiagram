@@ -57,7 +57,7 @@ namespace CircuitDiagram
                         var newItem = new IdentifierWithShortcut();
                         newItem.Identifier = new ComponentIdentifier(description, configuration);
 
-                        if (newItem.Icon.LoadedIcons.Count == 0)
+                        if (newItem.Icon != null && newItem.Icon.LoadedIcons.Count == 0)
                             newItem.Icon.LoadIcons();
 
                         // Shortcut
