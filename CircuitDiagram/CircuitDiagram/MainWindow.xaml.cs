@@ -131,7 +131,14 @@ namespace CircuitDiagram
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             var multiResImgConverter = this.Resources["MultiResolutionImageToImageSourceConverter"] as MultiResolutionImageToImageSourceConverter;
-            multiResImgConverter.DPI = this.CurrentDPI;
+            try
+            {
+                multiResImgConverter.DPI = this.CurrentDPI;
+            }
+            catch
+            {
+                multiResImgConverter.DPI = 96d;
+            }
 
             LoadToolbox();
 

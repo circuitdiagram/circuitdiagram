@@ -136,7 +136,15 @@ namespace CircuitDiagram.SettingsManager
             else
             {
                 // create new settings file
-                
+                var directory = Path.GetDirectoryName(m_file);
+                if (!Directory.Exists(directory))
+                    Directory.CreateDirectory(directory);
+                using (var sw = File.CreateText(m_file))
+                {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"utf - 8\"?>");
+                    sw.WriteLine("<settings>");
+                    sw.WriteLine("</settings>");
+                }
             }
 
             Serializer = new SettingsSerializer();
