@@ -40,13 +40,13 @@ namespace CircuitDiagram
             }
             
             // Set app display version
-            AppDisplayVersion = String.Format("{0}.{1}.{2} {3} ", BuildVersion.Major, BuildVersion.Minor, BuildVersion.Build, BuildChannelVersion.DisplayName);
+            AppDisplayVersion = String.Format("{0}.{1} {2} ", BuildVersion.Major, BuildVersion.Minor, BuildChannelVersion.DisplayName);
 #if PORTABLE
-            AppDisplayVersion += String.Format("(Portable, Build {0})", BuildVersion.Revision);
+            AppDisplayVersion += String.Format("(Portable, Rev {0})", BuildVersion.Build);
 #elif DEBUG
-            AppDisplayVersion += String.Format("(Debug, Build {0})", BuildVersion.Revision);
+            AppDisplayVersion += String.Format("(Debug, Rev {0})", BuildVersion.Build);
 #else
-            AppDisplayVersion += String.Format("(Build {0})", BuildVersion.Revision);
+            AppDisplayVersion += String.Format("(Rev {0})", BuildVersion.Build);
 #endif
         }
 
