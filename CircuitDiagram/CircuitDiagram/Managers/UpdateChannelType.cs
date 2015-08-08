@@ -7,7 +7,8 @@ namespace CircuitDiagram
 {
     enum UpdateChannelType
     {
-        Stable,
-        Dev
+        Stable = 0,
+        Prerelease = 1,
+        Nightly = 2
     }
 }

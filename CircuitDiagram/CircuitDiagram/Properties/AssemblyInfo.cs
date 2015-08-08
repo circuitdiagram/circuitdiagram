@@ -14,7 +14,7 @@ using System.Windows.Media;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Circuit Diagram")]
 [assembly: AssemblyProduct("Circuit Diagram")]
-[assembly: AssemblyCopyright("Copyright © Circut Diagram 2013")]
+[assembly: AssemblyCopyright("Copyright © Circut Diagram 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -52,8 +52,18 @@ using System.Windows.Media;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.0.1.0")]
+[assembly: AssemblyVersion("3.0.1.*")]
+
+// Set build channel from environment variables
+#if BUILD_CHANNEL_STABLE
 [assembly: BuildChannel("", UpdateChannelType.Stable)]
+#elif BUILD_CHANNEL_PRE
+[assembly: BuildChannel("Pre", UpdateChannelType.Prerelease)]
+#elif BUILD_CHANNEL_NIGHTLY
+[assembly: BuildChannel("Nightly", UpdateChannelType.Nightly)]
+#else
+[assembly: BuildChannel("Dev", UpdateChannelType.Stable)]
+#endif
 
 // Per-monitor DPI scaling
 [assembly: DisableDpiAwareness]

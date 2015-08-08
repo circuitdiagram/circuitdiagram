@@ -131,6 +131,23 @@
   <PropertyGroup Condition="'$(Platform)' == 'x64'">
     <NativeLibsPath>..\Libs\x64</NativeLibsPath>
   </PropertyGroup>
+  <Choose>
+    <When Condition="'$(BUILD_CHANNEL_STABLE)' != ''">
+      <PropertyGroup>
+        <DefineConstants>$(DefineConstants);BUILD_CHANNEL_STABLE</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition="$(BUILD_CHANNEL_PRE) != ''">
+      <PropertyGroup>
+        <DefineConstants>$(DefineConstants);BUILD_CHANNEL_PRE</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition="$(BUILD_CHANNEL_NIGHTLY) != ''">
+      <PropertyGroup>
+        <DefineConstants>$(DefineConstants);BUILD_CHANNEL_NIGHTLY</DefineConstants>
+      </PropertyGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Reference Include="CircuitDiagram.DPIWindow, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
