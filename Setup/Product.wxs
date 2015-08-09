@@ -91,7 +91,7 @@
         <RemoveFolder Id="AppDataFilesFolder" On="uninstall" />
         <File Source="../Components/toolbox.xml" />
         <File Source="../Components/implementations.xml" />
-        <File Source="../Setup/settings.xml" />
+        <File Source="settings.xml" />
       </Component>
     </ComponentGroup>
 

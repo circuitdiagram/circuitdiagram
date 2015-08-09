@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<settings>
+  <setting key="CheckForUpdatesOnStartup" type="bool" value="True" />
+  <setting key="EmbedComponents" type="int" value="1" />
+</settings>
