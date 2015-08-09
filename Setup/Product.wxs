@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="256C36F9-7193-49FF-B7B7-AEF7CD23FFC9" Name="$(var.ProductName)" Language="1033" Version="$(var.ProductVersion)"
+           Manufacturer="Circuit Diagram" UpgradeCode="6a0895e1-faf7-4c65-a3e7-3d180bd5d836">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="ProductFeature" Title="CircuitDiagram.Setup" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="ResourceComponents" />
+      <ComponentGroupRef Id="ComponentComponents" />
+      <ComponentRef Id="ApplicationShortcut"/>
+      <ComponentGroupRef Id="AppDataComponents" />
+		</Feature>
+
+    <UIRef Id="WixUI_InstallDir" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <WixVariable Id="WixUILicenseRtf" Value="license.rtf" />
+
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+             Name="Circuit Diagram"
+           Description="Circuit Diagram"
+            Target="[#ProductComponentFile]"
+                  WorkingDirectory="INSTALLFOLDER"/>
+        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\Circuit Diagram\Circuit Diagram" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLFOLDER" Name="Circuit Diagram">
+          <Directory Id="ResourcesFolder" Name="en-GB" />
+          <Directory Id="ComponentsFolder" Name="ext" />
+        </Directory>
+			</Directory>
+
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="Circuit Diagram"/>
+      </Directory>
+
+      <Directory Id="AppDataFolder">
+        <Directory Id="AppDataFilesFolder" Name="Circuit Diagram" />
+      </Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<Component Id="ProductComponent" Win64="yes">
+        <File Id="ProductComponentFile" Source="../CircuitDiagram/CircuitDiagram/bin/Release/Circuit Diagram.exe" />
+			</Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/cdlibrary/bin/Release/cdlibrary.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagramCore/bin/Release/CircuitDiagramCore.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/TaskDialog/bin/Release/TaskDialog.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/Toolbox/bin/Release/Toolbox.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/CircuitDiagram.DPIWindow.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/MahApps.Metro.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/System.Windows.Interactivity.dll" />
+      </Component>
+		</ComponentGroup>
+
+    <ComponentGroup Id="ResourceComponents" Directory="ResourcesFolder">
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/en-GB/Circuit Diagram.resources.dll" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="AppDataComponents" Directory="AppDataFilesFolder">
+      <Component Id="RemoveAppDataFilesFolder" Guid="AC3521D0-4DC0-45EE-A07C-0F60356C220A" Win64="yes">
+        <RegistryValue Root="HKCU" Key="Software\Circuit Diagram\Circuit Diagram" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <RemoveFolder Id="AppDataFilesFolder" On="uninstall" />
+        <File Source="../Components/toolbox.xml" />
+        <File Source="../Components/implementations.xml" />
+        <File Source="../Setup/settings.xml" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="ComponentComponents" Directory="ComponentsFolder">
+      <Component Win64="yes">
+        <File Source="../Components/Output/buzzer.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/capacitor.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/counter (4-bit).cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/crystal.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/d flip-flop.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/demultiplexer.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/diode.cdcom" />
+      </Component>
+        <Component Win64="yes">
+        <File Source="../Components/Output/external connection.cdcom" />
+      </Component>
+        <Component Win64="yes">
+        <File Source="../Components/Output/fuse.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/heater.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/inductor.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/integrated circuit.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/label.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/lamp.cdcom" />
+      </Component>
+        <Component Win64="yes">
+        <File Source="../Components/Output/logic gate.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/meter.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/microcontroller.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/microphone.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/motor.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/op amp.cdcom" />
+      </Component>        
+      <Component Win64="yes">
+        <File Source="../Components/Output/resistor.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/source.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/speaker.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/switch.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/transformer.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/transistor.cdcom" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../Components/Output/wire.cdcom" />
+      </Component>
+    </ComponentGroup>
+	</Fragment>
+</Wix>
