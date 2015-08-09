@@ -1,4 +1,7 @@
-﻿$productName = "Circuit Diagram (Nightly)"
+﻿#Install Wix
+& ".\nuget" install Wix -Version 3.9.2
+
+$productName = "Circuit Diagram (Nightly)"
 $productVersion = [environment]::GetEnvironmentVariable("APPVEYOR_BUILD_VERSION");
 If ([environment]::GetEnvironmentVariable("BUILD_CHANNEL_STABLE") -eq "true") {
     $productName = "Circuit Diagram"
@@ -6,7 +9,7 @@ If ([environment]::GetEnvironmentVariable("BUILD_CHANNEL_STABLE") -eq "true") {
     $productName = "Circuit Diagram (Prerelease)"
 }
 
-& "C:\Program Files (x86)\WiX Toolset v3.10\bin\candle.exe" Product.wxs -ext WixUIExtension `
+& ".\WiX.3.9.2\tools\candle.exe" Product.wxs -ext WixUIExtension `
     "-dProductName=$productName" `
     "-dProductVersion=$productVersion"
-& "C:\Program Files (x86)\WiX Toolset v3.10\bin\light.exe" -out Output\Setup.msi Product.wixobj -ext WixUIExtension
+& ".\WiX.3.9.2\tools\light.exe" -out Output\Setup.msi Product.wixobj -ext WixUIExtension
