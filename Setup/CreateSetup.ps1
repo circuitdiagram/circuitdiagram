@@ -1,5 +1,5 @@
 ﻿#Install Wix
-& ".\nuget" install Wix -Version 3.9.2
+nuget install Wix -Version 3.9.2
 
 $productName = "Circuit Diagram (Nightly)"
 $productVersion = [environment]::GetEnvironmentVariable("APPVEYOR_BUILD_VERSION");
