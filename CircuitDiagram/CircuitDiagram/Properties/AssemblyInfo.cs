@@ -58,7 +58,7 @@ using System.Windows.Media;
 #if BUILD_CHANNEL_STABLE
 [assembly: BuildChannel("", UpdateChannelType.Stable)]
 #elif BUILD_CHANNEL_PRE
-[assembly: BuildChannel("Pre", UpdateChannelType.Prerelease)]
+[assembly: BuildChannel("Pre", UpdateChannelType.Pre)]
 #elif BUILD_CHANNEL_NIGHTLY
 [assembly: BuildChannel("Nightly", UpdateChannelType.Nightly)]
 #else
