@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component version="1.0" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
+<component version="1.2" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
   <declaration>
     <meta name="name" value="Fuse" />
     <meta name="minsize" value="50" />
@@ -8,29 +8,29 @@
     <meta name="guid" value="7af9b261-baea-404d-b165-86e4e2089c03" />
     <meta name="implementset" value="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common" />
     <meta name="implementitem" value="fuse" />
-    <property name="Value" type="double" default="2" serialize="value" display="Value">
+    <property name="Value" type="decimal" default="2" serialize="value" display="Value">
       <formatting>
         <format value="$Value(round_1)  A" />
       </formatting>
     </property>
   </declaration>
   <connections>
-    <group conditions="_Horizontal">
+    <group conditions="horizontal">
       <connection name="a" start="_Start" end="_Middle-21x" edge="start" />
       <connection name="b" start="_Middle+21x" end="_End" edge="end" />
     </group>
-    <group conditions="!_Horizontal">
+    <group conditions="!horizontal">
       <connection name="a" start="_Start" end="_Middle-21y" edge="start" />
       <connection name="b" start="_Middle+21y" end="_End" edge="end" />
     </group>
   </connections>
   <render>
-    <group conditions="_Horizontal">
+    <group conditions="horizontal">
       <rect x="_Middle-20x" y="_Start-8y" width="40" height="16" />
       <line start="_Start" end="_End" />
       <text value="$Value" x="_Middle" y="_Start-17" align="CentreCentre" />
     </group>
-    <group conditions="!_Horizontal">
+    <group conditions="!horizontal">
       <rect x="_Start-8x" y="_Middle-20y" width="16" height="40" />
       <line start="_Start" end="_End" />
       <text value="$Value" x="_Start-14" y="_Middle" align="CentreRight" />

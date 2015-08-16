@@ -6,6 +6,8 @@ build/
 packages/
 /Components/Output/
 TestResults/
+Setup/WiX*/
+Setup/Output/
 
 *.exe
 *.suo
@@ -15,3 +17,4 @@ TestResults/
 *.psess
 *.pfx
 *.licenseheader
+*.wixobj
