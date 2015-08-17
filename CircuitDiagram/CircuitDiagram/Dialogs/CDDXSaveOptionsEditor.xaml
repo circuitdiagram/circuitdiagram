@@ -16,15 +16,15 @@
         </Grid>
         <Expander Name="expAdvancedOptions" Header="Advanced Options" IsExpanded="False" Margin="12,6,12,6">
             <StackPanel>
-                <GroupBox Header="Data to Include" Margin="0,6,0,6" Name="gbxDataToInclude" Height="120">
+                <GroupBox Header="Data to Include" Margin="0,6,0,6" Name="gbxDataToInclude" Height="130">
                     <Grid>
-                        <CheckBox Content="Connections" Height="16" HorizontalAlignment="Left" Margin="9,6,0,0" Name="chbIncludeConnections" VerticalAlignment="Top" Checked="chbIncludeConnections_Checked" Unchecked="chbIncludeConnections_Checked" />
+                        <CheckBox Content="Connections" HorizontalAlignment="Left" Margin="9,6,0,0" Name="chbIncludeConnections" VerticalAlignment="Top" Checked="chbIncludeConnections_Checked" Unchecked="chbIncludeConnections_Checked" />
                         <Label Name="lblUsedForSimulation" Content="Used for simulating the circuit." Height="28" HorizontalAlignment="Left" Margin="38,20,0,0" VerticalAlignment="Top" />
-                        <CheckBox Content="Layout" Height="16" HorizontalAlignment="Left" Margin="9,48,0,0" Name="chbIncludeLayout" VerticalAlignment="Top" Checked="chbIncludeLayout_Checked" Unchecked="chbIncludeLayout_Checked" />
+                        <CheckBox Content="Layout" HorizontalAlignment="Left" Margin="9,48,0,0" Name="chbIncludeLayout" VerticalAlignment="Top" Checked="chbIncludeLayout_Checked" Unchecked="chbIncludeLayout_Checked" />
                         <Label Name="lblUsedForLayout" Content="Used for maintaining the same diagram layout." Height="28" HorizontalAlignment="Left" Margin="43,66,0,0" VerticalAlignment="Top" />
                     </Grid>
                 </GroupBox>
-                <CheckBox Content="Embed thumbnail" Height="16" HorizontalAlignment="Left" Margin="4,6,0,6" Name="chbEmbedThumbnail" VerticalAlignment="Bottom" Checked="chbEmbedThumbnail_Checked" Unchecked="chbEmbedThumbnail_Checked">
+                <CheckBox Content="Embed thumbnail" HorizontalAlignment="Left" Margin="4,6,0,6" Name="chbEmbedThumbnail" VerticalAlignment="Bottom" Checked="chbEmbedThumbnail_Checked" Unchecked="chbEmbedThumbnail_Checked">
                     <CheckBox.ToolTip>Shows a thumbnail of the circuit in Windows Explorer.</CheckBox.ToolTip>
                 </CheckBox>
             </StackPanel>
