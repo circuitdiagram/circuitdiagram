@@ -32,10 +32,7 @@ namespace CircuitDiagram
 
         public override string ToString()
         {
-            string s = String.Format("@rid:{0}", Identifier.Description.RuntimeID);
-            if (Identifier.Configuration != null)
-                s += String.Format(", @config:{0}", Identifier.Configuration.Name);
-            return s;
+            return Identifier.ToString();
         }
     }
 }

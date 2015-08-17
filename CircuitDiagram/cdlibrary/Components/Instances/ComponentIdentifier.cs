@@ -106,5 +106,13 @@ namespace CircuitDiagram.Components
         {
             return base.GetHashCode();
         }
+
+        public override string ToString()
+        {
+            string s = String.Format("@rid:{0}", Description.RuntimeID);
+            if (Configuration != null)
+                s += String.Format(", @config:{0}", Configuration.Name);
+            return s;
+        }
     }
 }

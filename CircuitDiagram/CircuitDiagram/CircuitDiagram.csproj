@@ -182,7 +182,9 @@
     </ApplicationDefinition>
     <Compile Include="BuildChannelAttribute.cs" />
     <Compile Include="Controls\ComponentEditor.cs" />
-    <Compile Include="Controls\ToolboxComponent.cs" />
+    <Compile Include="Controls\QuickCommandControl.xaml.cs">
+      <DependentUpon>QuickCommandControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\MultiResolutionImageToImageSourceConverter.cs" />
     <Compile Include="Converters\BinaryResourceToImageSourceConverter.cs" />
     <Compile Include="Converters\NotConverter.cs" />
@@ -254,6 +256,10 @@
     <Compile Include="Dialogs\winToolbox.xaml.cs">
       <DependentUpon>winToolbox.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\QuickCommandControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DefaultDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

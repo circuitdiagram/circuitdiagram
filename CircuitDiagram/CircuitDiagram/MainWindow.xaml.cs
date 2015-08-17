@@ -1219,6 +1219,11 @@ namespace CircuitDiagram
 
                     e.Handled = true;
                 }
+                else if (e.Key == Key.Q)
+                {
+                    quickCommand.IsOpen = true;
+                    e.Handled = true;
+                }
                 else
                 {
                     // Check custom toolbox entries
@@ -1412,5 +1417,10 @@ namespace CircuitDiagram
             circuitDisplay.DrawConnections();
         }
         #endregion
+
+        private void quickCommand_ComponentSelected(object sender, EventArgs e, string componentData)
+        {
+            circuitDisplay.NewComponentData = componentData;
+        }
     }
 }
