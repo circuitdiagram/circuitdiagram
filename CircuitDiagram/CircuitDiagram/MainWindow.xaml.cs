@@ -260,6 +260,19 @@ namespace CircuitDiagram
                     }
                 }
 
+                // Add search tool
+                var searchIcon = new MultiResolutionImage();
+                searchIcon.LoadedIcons.Add(new BitmapImage(new Uri("pack://application:,,,/Images/Search32.png")));
+                searchIcon.LoadedIcons.Add(new BitmapImage(new Uri("pack://application:,,,/Images/Search64.png")));
+                var searchItem = new CustomToolboxItem()
+                {
+                    DisplayName = "Search",
+                    Icon = searchIcon
+                };
+                var searchCategory = new List<IToolboxItem>();
+                searchCategory.Add(searchItem);
+                toolboxData.Insert(0, searchCategory);
+
                 // Add "select" tool
                 var selectIcon = new MultiResolutionImage();
                 selectIcon.LoadedIcons.Add(new BitmapImage(new Uri("pack://application:,,,/Images/Select32.png")));
@@ -299,6 +312,11 @@ namespace CircuitDiagram
             circuitDisplay.NewComponentData = null;
         }
 
+        private void ToolboxSelectSearchTool()
+        {
+            mainToolbox.SetSelectedCategoryItem((mainToolbox.Items[1] as IEnumerable<IToolboxItem>).First());
+        }
+
         private void ToolboxSelectWire()
         {
             foreach(List<IToolboxItem> item in mainToolbox.Items)
@@ -319,9 +337,19 @@ namespace CircuitDiagram
 
             if (selectedItem == null)
             {
-                // "Select" tool
-                circuitDisplay.NewComponentData = null;
-                return;
+                var cat = mainToolbox.SelectedCategoryItem as CustomToolboxItem;
+                if (cat.DisplayName == "Select")
+                {
+                    // "Select" tool
+                    circuitDisplay.NewComponentData = null;
+                    return;
+                }
+                else if (cat.DisplayName == "Search")
+                {
+                    // Open quick command
+                    quickCommand.IsOpen = true;
+                    return;
+                }
             }
 
             circuitDisplay.NewComponentData = selectedItem.ToString();
@@ -1221,6 +1249,7 @@ namespace CircuitDiagram
                 }
                 else if (e.Key == Key.Q)
                 {
+                    ToolboxSelectSearchTool();
                     quickCommand.IsOpen = true;
                     e.Handled = true;
                 }
