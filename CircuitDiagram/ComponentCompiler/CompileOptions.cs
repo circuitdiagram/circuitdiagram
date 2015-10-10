@@ -13,6 +13,7 @@ namespace cdcompile
         public string DefaultIconPath { get; set; }
         public bool Sign { get; set; }
         public string CertificateThumbprint { get; set; }
+        public bool Recursive { get; set; }
 
         public CompileOptions()
         {

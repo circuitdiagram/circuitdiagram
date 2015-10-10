@@ -2,7 +2,7 @@
 //
 // Circuit Diagram http://www.circuit-diagram.org/
 //
-// Copyright (C) 2012  Sam Fisher
+// Copyright (C) 2015  Sam Fisher
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -51,6 +51,7 @@ namespace cdcompile
                 { "sign", "If present, presents a dialog for choosing a certificate for component signing.", v => compileOptions.Sign = v != null },
                 { "certificate=", "Thumbprint of certificate to use for signing.", v => compileOptions.CertificateThumbprint = v},
    	            { "h|?|help", "Display help and options.",   v => help = v != null },
+                { "r|recursive", "Recursively search sub-directories of the input directory", v => compileOptions.Recursive = v != null }
             };
             List<string> extra = p.Parse(args);
 
@@ -73,7 +74,8 @@ namespace cdcompile
                 Console.WriteLine("Compiling components");
 
                 int failed = 0;
-                string[] inputPaths = Directory.GetFiles(compileOptions.Input, "*.xml");
+                string[] inputPaths = Directory.GetFiles(compileOptions.Input, "*.xml",
+                    compileOptions.Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
                 foreach (string input in inputPaths)
                 {
                     if (!CompileComponent(input, compileOptions))
@@ -106,12 +108,26 @@ namespace cdcompile
             SetIcons(compileOptions, description);
 
             string output = compileOptions.Output;
+
+            if (compileOptions.Recursive)
+            {
+                string inputSubdirectory = Path.GetDirectoryName(inputPath.Remove(0, compileOptions.Input.Length));
+
+                if (inputSubdirectory.IndexOf("\\") == 0)
+                    inputSubdirectory = inputSubdirectory.Remove(0, 1);
+
+                if (inputSubdirectory != "\\")
+                    output = Path.Combine(output, inputSubdirectory);
+            }
+
+            if (!Directory.Exists(output))
+                Directory.CreateDirectory(output);
+
             if (!Path.HasExtension(output))
             {
-                if (!Directory.Exists(output))
-                    Directory.CreateDirectory(output);
                 output += "\\" + description.ComponentName.ToLowerInvariant() + ".cdcom";
             }
+
             FileStream stream = new FileStream(output, FileMode.Create, FileAccess.Write);
 
             X509Certificate2 certificate = SelectCertificate(compileOptions);
