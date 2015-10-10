@@ -71,7 +71,7 @@ namespace cdcompile
             else if (Directory.Exists(compileOptions.Input))
             {
                 // Compile a directory of components
-                Console.WriteLine("Compiling components");
+                Console.WriteLine("Compiling components...");
 
                 int failed = 0;
                 string[] inputPaths = Directory.GetFiles(compileOptions.Input, "*.xml",
@@ -139,6 +139,8 @@ namespace cdcompile
             writer.Resources.AddRange(binaryResources);
             writer.Write();
             stream.Flush();
+
+            Console.WriteLine("{0} -> {1}", Path.GetFullPath(inputPath), Path.GetFullPath(output));
 
             return true;
         }
