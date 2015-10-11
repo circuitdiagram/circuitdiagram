@@ -14,6 +14,8 @@ namespace cdcompile
         public bool Sign { get; set; }
         public string CertificateThumbprint { get; set; }
         public bool Recursive { get; set; }
+        public bool Strict { get; set; }
+        public bool Verbose { get; set; }
 
         public CompileOptions()
         {

@@ -38,7 +38,7 @@ namespace cdcompile
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             var compileOptions = new CompileOptions();
             bool help = false;
@@ -51,20 +51,30 @@ namespace cdcompile
                 { "sign", "If present, presents a dialog for choosing a certificate for component signing.", v => compileOptions.Sign = v != null },
                 { "certificate=", "Thumbprint of certificate to use for signing.", v => compileOptions.CertificateThumbprint = v},
    	            { "h|?|help", "Display help and options.",   v => help = v != null },
-                { "r|recursive", "Recursively search sub-directories of the input directory", v => compileOptions.Recursive = v != null }
+                { "r|recursive", "Recursively search sub-directories of the input directory", v => compileOptions.Recursive = v != null },
+                { "v|verbose", "Prints extra information to the console.", v => compileOptions.Verbose = v != null },
+                { "s|strict", "Fail if an icon cannot be found.", v => compileOptions.Strict = v != null }
             };
             List<string> extra = p.Parse(args);
 
             if (compileOptions.Input == null || compileOptions.Output == null || help)
             {
                 p.WriteOptionDescriptions(Console.Out);
-                return;
+                return 0;
             }
 
             if (File.Exists(compileOptions.Input))
             {
                 // Compile a single component
-                CompileComponent(compileOptions.Input, compileOptions);
+                try
+                {
+                    CompileComponent(compileOptions.Input, compileOptions);
+                }
+                catch (IconNotFoundException ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    return 1;
+                }
 
                 Console.WriteLine("Compiled {0}", Path.GetFileName(compileOptions.Input));
             }
@@ -78,12 +88,22 @@ namespace cdcompile
                     compileOptions.Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
                 foreach (string input in inputPaths)
                 {
-                    if (!CompileComponent(input, compileOptions))
-                        failed++;
+                    try
+                    {
+                        if (!CompileComponent(input, compileOptions))
+                            failed++;
+                    }
+                    catch (IconNotFoundException ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                        return 1;
+                    }
                 }
 
                 Console.WriteLine("Compiled {0} components", inputPaths.Length - failed);
             }
+
+            return 0;
         }
 
         private static bool CompileComponent(string inputPath, CompileOptions compileOptions)
@@ -150,7 +170,7 @@ namespace cdcompile
             if (compileOptions.DefaultIconPath != null)
             {
                 // Set icon from default path
-                description.Metadata.Icon = SetDefaultIcon(description.ComponentName, "", compileOptions.DefaultIconPath);
+                description.Metadata.Icon = SetDefaultIcon(description.ComponentName, "", compileOptions.DefaultIconPath, compileOptions);
             }
             else
             {
@@ -186,7 +206,7 @@ namespace cdcompile
                     var configuration = description.Metadata.Configurations[i];
 
                     // Set icon from default path
-                    configuration.Icon = SetDefaultIcon(description.ComponentName, configuration.Name, compileOptions.DefaultIconPath);
+                    configuration.Icon = SetDefaultIcon(description.ComponentName, configuration.Name, compileOptions.DefaultIconPath, compileOptions);
                 }
             }
             else
@@ -229,7 +249,7 @@ namespace cdcompile
             return certificate;
         }
 
-        private static MultiResolutionImage SetDefaultIcon(string componentName, string configuration, string defaultIconPath)
+        private static MultiResolutionImage SetDefaultIcon(string componentName, string configuration, string defaultIconPath, CompileOptions compileOptions)
         {
             // Construct base name
             string baseName = String.Format("{0}", FormatNameForIcon(componentName));
@@ -245,7 +265,14 @@ namespace cdcompile
                 string iconPath = Path.Combine(defaultIconPath, iconFileName);
 
                 if (!File.Exists(iconPath))
+                {
+                    if (compileOptions.Strict)
+                        throw new IconNotFoundException(componentName, configuration, resolution, iconPath);
                     continue;
+                }
+
+                if (compileOptions.Verbose)
+                    Console.WriteLine("Icon for {0}\\{1}@{2}: {3}", componentName, configuration, resolution, iconPath);
 
                 var iconData = File.ReadAllBytes(iconPath);
                 returnIcon.Add(new SingleResolutionImage() { Data = iconData, MimeType = "image/png" });
