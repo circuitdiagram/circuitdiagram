@@ -16,6 +16,7 @@ namespace cdcompile
         public bool Recursive { get; set; }
         public bool Strict { get; set; }
         public bool Verbose { get; set; }
+        public bool Colour { get; set; }
 
         public CompileOptions()
         {

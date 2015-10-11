@@ -53,7 +53,8 @@ namespace cdcompile
    	            { "h|?|help", "Display help and options.",   v => help = v != null },
                 { "r|recursive", "Recursively search sub-directories of the input directory", v => compileOptions.Recursive = v != null },
                 { "v|verbose", "Prints extra information to the console.", v => compileOptions.Verbose = v != null },
-                { "s|strict", "Fail if an icon cannot be found.", v => compileOptions.Strict = v != null }
+                { "s|strict", "Fail if an icon cannot be found.", v => compileOptions.Strict = v != null },
+                { "c|colour", "Use colours in output.", v => compileOptions.Colour = v != null }
             };
             List<string> extra = p.Parse(args);
 
@@ -72,7 +73,7 @@ namespace cdcompile
                 }
                 catch (IconNotFoundException ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    WriteLineColour(ConsoleColor.Red, compileOptions, ex.ToString());
                     return 1;
                 }
 
@@ -95,7 +96,7 @@ namespace cdcompile
                     }
                     catch (IconNotFoundException ex)
                     {
-                        Console.WriteLine(ex.ToString());
+                        WriteLineColour(ConsoleColor.Red, compileOptions, ex.ToString());
                         return 1;
                     }
                 }
@@ -106,6 +107,17 @@ namespace cdcompile
             return 0;
         }
 
+        private static void WriteLineColour(ConsoleColor colour, CompileOptions compileOptions, string format, params object[] arg)
+        {
+            if (compileOptions.Colour)
+                Console.ForegroundColor = colour;
+
+            Console.WriteLine(format, arg);
+
+            if (compileOptions.Colour)
+                Console.ResetColor();
+        }
+        
         private static bool CompileComponent(string inputPath, CompileOptions compileOptions)
         {
             List<ComponentDescription> componentDescriptions = new List<ComponentDescription>();
@@ -272,7 +284,7 @@ namespace cdcompile
                 }
 
                 if (compileOptions.Verbose)
-                    Console.WriteLine("Icon for {0}\\{1}@{2}: {3}", componentName, configuration, resolution, iconPath);
+                    WriteLineColour(ConsoleColor.Cyan, compileOptions, "Icon for {0}\\{1}@{2}: {3}", componentName, configuration, resolution, iconPath);
 
                 var iconData = File.ReadAllBytes(iconPath);
                 returnIcon.Add(new SingleResolutionImage() { Data = iconData, MimeType = "image/png" });
