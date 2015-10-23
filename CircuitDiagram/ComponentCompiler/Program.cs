@@ -278,7 +278,7 @@ namespace cdcompile
 
                 if (!File.Exists(iconPath))
                 {
-                    if (compileOptions.Strict)
+                    if (compileOptions.Strict && string.IsNullOrEmpty(configuration)) // Must have a default icon
                         throw new IconNotFoundException(componentName, configuration, resolution, iconPath);
                     continue;
                 }
