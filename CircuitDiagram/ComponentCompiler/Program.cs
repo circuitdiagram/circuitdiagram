@@ -64,19 +64,22 @@ namespace cdcompile
                 return 0;
             }
 
+            bool success = true;
             if (File.Exists(compileOptions.Input))
             {
                 // Compile a single component
                 try
                 {
+                    Console.WriteLine();
                     CompileComponent(compileOptions.Input, compileOptions);
                 }
                 catch (IconNotFoundException ex)
                 {
-                    WriteLineColour(ConsoleColor.Red, compileOptions, ex.ToString());
-                    return 1;
+                    WriteLineColour(ConsoleColor.Red, compileOptions, "  - " + ex.ToString());
+                    success = false;
                 }
 
+                Console.WriteLine();
                 Console.WriteLine("Compiled {0}", Path.GetFileName(compileOptions.Input));
             }
             else if (Directory.Exists(compileOptions.Input))
@@ -91,20 +94,22 @@ namespace cdcompile
                 {
                     try
                     {
+                        Console.WriteLine();
                         if (!CompileComponent(input, compileOptions))
                             failed++;
                     }
                     catch (IconNotFoundException ex)
                     {
-                        WriteLineColour(ConsoleColor.Red, compileOptions, ex.ToString());
-                        return 1;
+                        WriteLineColour(ConsoleColor.Red, compileOptions, "  - " + ex.ToString());
+                        success = false;
                     }
                 }
 
+                Console.WriteLine();
                 Console.WriteLine("Compiled {0} components", inputPaths.Length - failed);
             }
 
-            return 0;
+            return success ? 0 : 1;
         }
 
         private static void WriteLineColour(ConsoleColor colour, CompileOptions compileOptions, string format, params object[] arg)
@@ -284,7 +289,7 @@ namespace cdcompile
                 }
 
                 if (compileOptions.Verbose)
-                    WriteLineColour(ConsoleColor.Cyan, compileOptions, "Icon for {0}\\{1}@{2}: {3}", componentName, configuration, resolution, iconPath);
+                    WriteLineColour(ConsoleColor.Gray, compileOptions, "  - Icon for {0}\\{1}@{2}: {3}", componentName, configuration, resolution, iconPath);
 
                 var iconData = File.ReadAllBytes(iconPath);
                 returnIcon.Add(new SingleResolutionImage() { Data = iconData, MimeType = "image/png" });
