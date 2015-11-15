@@ -116,6 +116,10 @@ namespace ComponentCompiler
             
             string outputPath = GetOutputPath(inputPath, cliOptions);
 
+            var outputDirectory = Path.GetDirectoryName(outputPath);
+            if (!Directory.Exists(outputDirectory))
+                Directory.CreateDirectory(outputDirectory);
+
             ComponentCompileResult result;
             using (var input = File.OpenRead(inputPath))
             using (var output = File.OpenWrite(outputPath))
