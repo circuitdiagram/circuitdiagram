@@ -103,13 +103,10 @@
         <File Source="../Components/Output/capacitor.cdcom" />
       </Component>
       <Component Win64="yes">
-        <File Source="../Components/Output/counter (4-bit).cdcom" />
+        <File Source="../Components/Output/counter4.cdcom" />
       </Component>
       <Component Win64="yes">
         <File Source="../Components/Output/crystal.cdcom" />
-      </Component>
-      <Component Win64="yes">
-        <File Source="../Components/Output/d flip-flop.cdcom" />
       </Component>
       <Component Win64="yes">
         <File Source="../Components/Output/demultiplexer.cdcom" />
@@ -118,9 +115,12 @@
         <File Source="../Components/Output/diode.cdcom" />
       </Component>
         <Component Win64="yes">
-        <File Source="../Components/Output/external connection.cdcom" />
+        <File Source="../Components/Output/externalconnection.cdcom" />
       </Component>
-        <Component Win64="yes">
+      <Component Win64="yes">
+        <File Source="../Components/Output/flipflop.cdcom" />
+      </Component>
+      <Component Win64="yes">
         <File Source="../Components/Output/fuse.cdcom" />
       </Component>
       <Component Win64="yes">
@@ -130,7 +130,7 @@
         <File Source="../Components/Output/inductor.cdcom" />
       </Component>
       <Component Win64="yes">
-        <File Source="../Components/Output/integrated circuit.cdcom" />
+        <File Source="../Components/Output/integratedcircuit.cdcom" />
       </Component>
       <Component Win64="yes">
         <File Source="../Components/Output/label.cdcom" />
@@ -139,7 +139,7 @@
         <File Source="../Components/Output/lamp.cdcom" />
       </Component>
         <Component Win64="yes">
-        <File Source="../Components/Output/logic gate.cdcom" />
+        <File Source="../Components/Output/logicgate.cdcom" />
       </Component>
       <Component Win64="yes">
         <File Source="../Components/Output/meter.cdcom" />
@@ -154,7 +154,7 @@
         <File Source="../Components/Output/motor.cdcom" />
       </Component>
       <Component Win64="yes">
-        <File Source="../Components/Output/op amp.cdcom" />
+        <File Source="../Components/Output/opamp.cdcom" />
       </Component>        
       <Component Win64="yes">
         <File Source="../Components/Output/resistor.cdcom" />
