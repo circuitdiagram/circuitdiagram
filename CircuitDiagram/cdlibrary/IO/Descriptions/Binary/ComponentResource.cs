@@ -77,6 +77,7 @@ namespace CircuitDiagram.IO.Descriptions
                     if (iconResource != -1)
                         iconResourceId = (uint)iconResource;
                     long created = reader.ReadInt64();
+                    descriptionMetadata.Created = DateTime.FromBinary(created);
                 }
                 #endregion
                 #region Flags

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace cdcompile
+namespace ComponentCompiler
 {
-    class CompileOptions
+    class CliCompileOptions
     {
         public string Output { get; set; }
         public string Input { get; set; }
@@ -17,8 +17,9 @@ namespace cdcompile
         public bool Strict { get; set; }
         public bool Verbose { get; set; }
         public bool Colour { get; set; }
+        public string WriteManifest { get; set; }
 
-        public CompileOptions()
+        public CliCompileOptions()
         {
             IconPaths = new List<string>();
         }

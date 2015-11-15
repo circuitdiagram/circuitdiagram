@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component version="1.0" xmlns="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml">
+  <declaration>
+    <meta name="name" value="Wire" />
+    <meta name="author" value="Circuit Diagram" />
+    <meta name="additionalinformation" value="http://www.circuit-diagram.org/" />
+    <meta name="guid" value="6353882b-5208-4f88-a83b-2271cc82b94f" />
+  </declaration>
+  <connections>
+    <group>
+      <connection start="_Start" end="_End" edge="both" />
+    </group>
+  </connections>
+  <render>
+    <group>
+      <line start="_Start" end="_End" />
+    </group>
+  </render>
+</component>

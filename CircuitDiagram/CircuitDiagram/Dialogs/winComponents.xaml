@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:my="clr-namespace:CircuitDiagram"
         xmlns:window="clr-namespace:CircuitDiagram.DPIWindow;assembly=CircuitDiagram.DPIWindow"
-        Title="Components" Height="385" Width="600" ShowInTaskbar="False" ResizeMode="NoResize"
+        Title="Components" Height="410" Width="600" ShowInTaskbar="False" ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner" TitleCaps="False" WindowTransitionsEnabled="False" EnableDWMDropShadow="True">
     <Window.Resources>
         <ResourceDictionary>
@@ -39,6 +39,7 @@
                 <RowDefinition Height="27" />
                 <RowDefinition Height="27" />
                 <RowDefinition Height="27" />
+                <RowDefinition Height="27" />
             </Grid.RowDefinitions>
             <Label Name="lblName" Grid.Column="0" Grid.Row="0">Name</Label>
             <Label Name="lblAuthor" Grid.Column="0" Grid.Row="1">Author</Label>
@@ -50,6 +51,7 @@
             <Label Name="lblAdditionalInfo" Grid.Column="0" Grid.Row="7">Additional information</Label>
             <Label Name="lblLocation" Grid.Column="0" Grid.Row="8">Location</Label>
             <Label Name="lblSigned" Grid.Column="0" Grid.Row="9">Signed</Label>
+            <Label Grid.Column="0" Grid.Row="10">Created</Label>
 
             <Label Grid.Column="1" Grid.Row="0" Content="{Binding Path=ComponentName}" />
             <Label Grid.Column="1" Grid.Row="1" Content="{Binding Path=Metadata.Author}" 
@@ -83,6 +85,7 @@
                     <Hyperlink Name="lnkViewCertificate" Click="lnkViewCertificate_Click">View certificate</Hyperlink>
                 </Label>
             </Grid>
+            <Label Grid.Column="1" Grid.Row="10" Content="{Binding Path=Metadata.Created}" />
 
         </Grid>
         <Label Name="lblMoreComponents" Margin="0,0,93,9" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="136">

@@ -43,6 +43,7 @@ namespace CircuitDiagram.Components.Description
         public string ImplementSet { get; set; }
         public string ImplementItem { get; set; }
         public SignatureStatus Signature { get; set; }
+        public DateTime Created { get; set; }
 
         /// <summary>
         /// Gets or sets the icon for this component.
@@ -59,6 +60,7 @@ namespace CircuitDiagram.Components.Description
             Location = LocationType.None;
             Configurations = new List<ComponentConfiguration>();
             Signature = new SignatureStatus();
+            Created = DateTime.Now;
         }
 
         public enum LocationType

@@ -1,6 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cdlibrary", "cdlibrary\cdlibrary.csproj", "{D5FD5F79-6BCE-40FB-B556-209758C612EC}"
 EndProject
@@ -17,6 +18,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskDialog", "TaskDialog\TaskDialog.csproj", "{37FD53F7-8A8F-4427-8FF4-6299E2933A7E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Test", "CircuitDiagram.Test\CircuitDiagram.Test.csproj", "{7E7C093B-79FB-4329-88D7-C21639A199B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Compiler", "CircuitDiagram.ComponentCompiler\CircuitDiagram.Compiler.csproj", "{CF146D9D-208F-41A2-BF8D-A183FF1B1191}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Compiler.Test", "CircuitDiagram.ComponentCompiler.Test\CircuitDiagram.Compiler.Test.csproj", "{B1DDEC5A-3BBC-4C1D-9BEA-D6527BE4B863}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +78,18 @@ Global
 		{7E7C093B-79FB-4329-88D7-C21639A199B6}.Portable|Any CPU.Build.0 = Release|Any CPU
 		{7E7C093B-79FB-4329-88D7-C21639A199B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E7C093B-79FB-4329-88D7-C21639A199B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF146D9D-208F-41A2-BF8D-A183FF1B1191}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF146D9D-208F-41A2-BF8D-A183FF1B1191}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF146D9D-208F-41A2-BF8D-A183FF1B1191}.Portable|Any CPU.ActiveCfg = Release|Any CPU
+		{CF146D9D-208F-41A2-BF8D-A183FF1B1191}.Portable|Any CPU.Build.0 = Release|Any CPU
+		{CF146D9D-208F-41A2-BF8D-A183FF1B1191}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF146D9D-208F-41A2-BF8D-A183FF1B1191}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1DDEC5A-3BBC-4C1D-9BEA-D6527BE4B863}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1DDEC5A-3BBC-4C1D-9BEA-D6527BE4B863}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1DDEC5A-3BBC-4C1D-9BEA-D6527BE4B863}.Portable|Any CPU.ActiveCfg = Release|Any CPU
+		{B1DDEC5A-3BBC-4C1D-9BEA-D6527BE4B863}.Portable|Any CPU.Build.0 = Release|Any CPU
+		{B1DDEC5A-3BBC-4C1D-9BEA-D6527BE4B863}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1DDEC5A-3BBC-4C1D-9BEA-D6527BE4B863}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

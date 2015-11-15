@@ -40,7 +40,8 @@ namespace CircuitDiagram.IO
 
     public enum LoadErrorCategory
     {
-        Warning,
-        Error
+        None = 0,
+        Warning = 1,
+        Error = 2
     }
 }
