@@ -49,7 +49,8 @@ namespace ComponentCompiler
                 { "r|recursive", "Recursively search sub-directories of the input directory", v => compileOptions.Recursive = v != null },
                 { "v|verbose", "Prints extra information to the console.", v => compileOptions.Verbose = v != null },
                 { "s|strict", "Fail if an icon cannot be found.", v => compileOptions.Strict = v != null },
-                { "manifest=", "Write a manifest file of compiled components.", v => compileOptions.WriteManifest = v }
+                { "manifest=", "Write a manifest file of compiled components.", v => compileOptions.WriteManifest = v },
+                { "preview=", "Generate previews in the specified directory.", v => compileOptions.Preview = v }
             };
             p.Parse(args);
             
@@ -138,9 +139,21 @@ namespace ComponentCompiler
                 extendedResult.Output = outputPath;
             }
 
+            // Generate preview
+            if (cliOptions.Preview != null)
+            {
+                string previewPath = GetPreviewPath(inputPath, cliOptions);
+                string previewDirectory = Path.GetDirectoryName(previewPath);
+                if (!Directory.Exists(previewDirectory))
+                    Directory.CreateDirectory(previewDirectory);
+
+                var preview = PreviewRenderer.GetSvgPreview(result.Description, null, true);
+                File.WriteAllBytes(previewPath, preview);
+            }
+
             return extendedResult;
         }
-
+        
         private static X509Certificate2 SelectCertificate()
         {
             X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
@@ -157,8 +170,21 @@ namespace ComponentCompiler
 
         private static string GetOutputPath(string inputPath, CliCompileOptions cliOptions)
         {
+            if (File.Exists(cliOptions.Input) && !Directory.Exists(cliOptions.Output))
+                return cliOptions.Output; // Single file
+
             string fileName = Path.GetFileNameWithoutExtension(inputPath);
             string outputName = Path.Combine(cliOptions.Output, fileName + ".cdcom");
+            return outputName;
+        }
+
+        private static string GetPreviewPath(string inputPath, CliCompileOptions cliOptions)
+        {
+            if (File.Exists(cliOptions.Input) && !Directory.Exists(cliOptions.Preview))
+                return cliOptions.Preview; // Single file
+
+            string fileName = Path.GetFileNameWithoutExtension(inputPath);
+            string outputName = Path.Combine(cliOptions.Preview, fileName + ".svg");
             return outputName;
         }
 

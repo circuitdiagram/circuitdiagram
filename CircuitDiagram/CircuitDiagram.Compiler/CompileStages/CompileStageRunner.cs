@@ -37,6 +37,7 @@ namespace CircuitDiagram.Compiler.CompileStages
                     compiledEntry.ComponentName = context.Description.ComponentName;
                     compiledEntry.Author = context.Description.Metadata.Author;
                     compiledEntry.Guid = context.Description.Metadata.GUID;
+                    compiledEntry.Description = context.Description;
                 }
             }
 

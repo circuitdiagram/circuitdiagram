@@ -18,6 +18,7 @@ namespace ComponentCompiler
         public bool Verbose { get; set; }
         public bool Colour { get; set; }
         public string WriteManifest { get; set; }
+        public string Preview { get; set; }
 
         public CliCompileOptions()
         {

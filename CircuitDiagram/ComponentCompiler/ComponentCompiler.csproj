@@ -58,6 +58,7 @@
     <Compile Include="ExtendedCompileResult.cs" />
     <Compile Include="MappedDirectoryResourceProvider.cs" />
     <Compile Include="Options.cs" />
+    <Compile Include="PreviewRenderer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -69,6 +70,10 @@
     <ProjectReference Include="..\CircuitDiagram.Compiler\CircuitDiagram.Compiler.csproj">
       <Project>{cf146d9d-208f-41a2-bf8d-a183ff1b1191}</Project>
       <Name>CircuitDiagram.Compiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">
+      <Project>{445a46be-19f9-4e30-b476-1d539b024e69}</Project>
+      <Name>CircuitDiagramCore</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
