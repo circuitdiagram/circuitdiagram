@@ -50,6 +50,11 @@ namespace CircuitDiagram.Components.Description
         /// </summary>
         public MultiResolutionImage Icon { get; set; }
 
+        /// <summary>
+        /// Gets a collection of custom description entries.
+        /// </summary>
+        public IDictionary<string, string> Entries { get; }
+
         public ComponentDescriptionMetadata()
         {
             GUID = Guid.Empty;
@@ -61,6 +66,7 @@ namespace CircuitDiagram.Components.Description
             Configurations = new List<ComponentConfiguration>();
             Signature = new SignatureStatus();
             Created = DateTime.Now;
+            Entries = new Dictionary<string, string>();
         }
 
         public enum LocationType

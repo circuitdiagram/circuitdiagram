@@ -208,6 +208,15 @@ namespace ComponentCompiler
                     writer.WriteAttributeString("guid", entry.Guid.ToString());
                     writer.WriteAttributeString("input", entry.Input);
                     writer.WriteAttributeString("output", entry.Output);
+
+                    foreach (var metaEntry in entry.Description.Metadata.Entries)
+                    {
+                        writer.WriteStartElement("meta");
+                        writer.WriteAttributeString("name", metaEntry.Key);
+                        writer.WriteAttributeString("value", metaEntry.Value);
+                        writer.WriteEndElement();
+                    }
+
                     writer.WriteEndElement();
                 }
 

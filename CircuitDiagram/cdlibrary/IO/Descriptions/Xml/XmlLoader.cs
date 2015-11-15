@@ -509,6 +509,9 @@ namespace CircuitDiagram.IO.Descriptions.Xml
                             "Illegal value for attribute 'value' on <meta> tag 'guid' (expected GUID)"));
                     }
                     break;
+                default:
+                    description.Metadata.Entries.Add(metaName, metaValue);
+                    break;
             }
         }
 

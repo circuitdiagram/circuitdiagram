@@ -15,6 +15,7 @@ namespace ComponentCompiler
             ComponentName = result.ComponentName;
             Guid = result.Guid;
             Success = result.Success;
+            Description = result.Description;
         }
 
         public string Input { get; set; }

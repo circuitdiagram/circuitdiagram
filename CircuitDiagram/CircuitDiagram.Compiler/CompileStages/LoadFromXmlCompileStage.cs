@@ -17,8 +17,8 @@ namespace CircuitDiagram.Compiler.CompileStages
             if (loader.LoadErrors.Count(e => e.Category == LoadErrorCategory.Error) > 0)
                 return;
 
-            ComponentDescription description = loader.GetDescriptions()[0];
-
+            var description = loader.GetDescriptions()[0];
+            
             // The component XML format doesn't provide an ID, so make one now
             description.ID = "C0";
 
