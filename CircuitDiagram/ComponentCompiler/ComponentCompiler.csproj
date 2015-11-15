@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CliCompileOptions.cs" />
+    <Compile Include="ExtendedCompileResult.cs" />
     <Compile Include="MappedDirectoryResourceProvider.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
@@ -65,7 +66,7 @@
       <Project>{D5FD5F79-6BCE-40FB-B556-209758C612EC}</Project>
       <Name>cdlibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CircuitDiagram.ComponentCompiler\CircuitDiagram.Compiler.csproj">
+    <ProjectReference Include="..\CircuitDiagram.Compiler\CircuitDiagram.Compiler.csproj">
       <Project>{cf146d9d-208f-41a2-bf8d-a183ff1b1191}</Project>
       <Name>CircuitDiagram.Compiler</Name>
     </ProjectReference>

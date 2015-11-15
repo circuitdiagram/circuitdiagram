@@ -62,7 +62,7 @@ namespace ComponentCompiler
             if (compileOptions.Verbose)
                 log4net.Config.BasicConfigurator.Configure();
 
-            var compiledComponents = new List<ComponentCompileResult>();
+            var compiledComponents = new List<ExtendedCompileResult>();
             if (File.Exists(compileOptions.Input))
             {
                 // Compile a single component
@@ -94,7 +94,7 @@ namespace ComponentCompiler
             return compiledComponents.All(c => c.Success) ? 0 : 1;
         }
 
-        private static ComponentCompileResult CompileComponent(string inputPath, CliCompileOptions cliOptions)
+        private static ExtendedCompileResult CompileComponent(string inputPath, CliCompileOptions cliOptions)
         {
             var compiler = new CompilerService();
 
@@ -127,10 +127,18 @@ namespace ComponentCompiler
                 result = compiler.Compile(input, output, resources, options);
             }
 
-            if (result.Success)
-                Console.WriteLine("{0} -> {1}", Path.GetFullPath(inputPath), Path.GetFullPath(outputPath));
+            var extendedResult = new ExtendedCompileResult(result)
+            {
+                Input = inputPath
+            };
 
-            return result;
+            if (result.Success)
+            {
+                Console.WriteLine("{0} -> {1}", Path.GetFullPath(inputPath), Path.GetFullPath(outputPath));
+                extendedResult.Output = outputPath;
+            }
+
+            return extendedResult;
         }
 
         private static X509Certificate2 SelectCertificate()
@@ -154,11 +162,14 @@ namespace ComponentCompiler
             return outputName;
         }
 
-        private static void WriteManifest(IList<ComponentCompileResult> compiledEntries, CliCompileOptions compileOptions)
+        private static void WriteManifest(IList<ExtendedCompileResult> compiledEntries, CliCompileOptions compileOptions)
         {
             using (var fs = File.OpenWrite(compileOptions.WriteManifest))
             {
-                var writer = new XmlTextWriter(fs, Encoding.UTF8);
+                var writer = new XmlTextWriter(fs, Encoding.UTF8)
+                {
+                    Formatting = Formatting.Indented
+                };
 
                 writer.WriteStartDocument();
                 writer.WriteStartElement("components");
@@ -169,6 +180,8 @@ namespace ComponentCompiler
                     writer.WriteAttributeString("name", entry.ComponentName);
                     writer.WriteAttributeString("author", entry.Author);
                     writer.WriteAttributeString("guid", entry.Guid.ToString());
+                    writer.WriteAttributeString("input", entry.Input);
+                    writer.WriteAttributeString("output", entry.Output);
                     writer.WriteEndElement();
                 }
 

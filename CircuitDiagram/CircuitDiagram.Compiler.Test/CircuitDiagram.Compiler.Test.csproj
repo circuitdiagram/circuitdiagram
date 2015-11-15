@@ -61,7 +61,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CircuitDiagram.ComponentCompiler\CircuitDiagram.Compiler.csproj">
+    <ProjectReference Include="..\CircuitDiagram.Compiler\CircuitDiagram.Compiler.csproj">
       <Project>{cf146d9d-208f-41a2-bf8d-a183ff1b1191}</Project>
       <Name>CircuitDiagram.Compiler</Name>
     </ProjectReference>

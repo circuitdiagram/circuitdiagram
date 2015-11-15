@@ -19,9 +19,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskDialog", "TaskDialog\Ta
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Test", "CircuitDiagram.Test\CircuitDiagram.Test.csproj", "{7E7C093B-79FB-4329-88D7-C21639A199B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Compiler", "CircuitDiagram.ComponentCompiler\CircuitDiagram.Compiler.csproj", "{CF146D9D-208F-41A2-BF8D-A183FF1B1191}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Compiler", "CircuitDiagram.Compiler\CircuitDiagram.Compiler.csproj", "{CF146D9D-208F-41A2-BF8D-A183FF1B1191}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Compiler.Test", "CircuitDiagram.ComponentCompiler.Test\CircuitDiagram.Compiler.Test.csproj", "{B1DDEC5A-3BBC-4C1D-9BEA-D6527BE4B863}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Compiler.Test", "CircuitDiagram.Compiler.Test\CircuitDiagram.Compiler.Test.csproj", "{B1DDEC5A-3BBC-4C1D-9BEA-D6527BE4B863}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
