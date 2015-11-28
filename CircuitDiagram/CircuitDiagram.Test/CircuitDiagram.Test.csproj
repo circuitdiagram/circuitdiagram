@@ -55,6 +55,7 @@
     <Compile Include="CDLibrary\Components\Conditions\Parsers\ConditionParserTest.cs" />
     <Compile Include="CDLibrary\IO\Descriptions\XmlLoaderTest.cs" />
     <Compile Include="CDLibrary\IO\Xml\XmlReaderTest.cs" />
+    <Compile Include="Controls\UnitsTextBoxTest.cs" />
     <Compile Include="Core\IO\IODocumentTest.cs" />
     <Compile Include="Core\OrientationTest.cs" />
     <Compile Include="Core\Render\PathTest.cs" />
@@ -69,6 +70,10 @@
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">
       <Project>{445a46be-19f9-4e30-b476-1d539b024e69}</Project>
       <Name>CircuitDiagramCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CircuitDiagram\CircuitDiagram.csproj">
+      <Project>{c01cd61a-6db0-460a-ac1c-1b96a9038af6}</Project>
+      <Name>CircuitDiagram</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

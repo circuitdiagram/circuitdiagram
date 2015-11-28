@@ -67,3 +67,5 @@ using System.Windows.Media;
 
 // Per-monitor DPI scaling
 [assembly: DisableDpiAwareness]
+
+[assembly: InternalsVisibleTo("CircuitDiagram.Test")]

@@ -26,6 +26,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using CircuitDiagram.Controls;
 
 namespace CircuitDiagram.Components
 {
@@ -95,15 +96,17 @@ namespace CircuitDiagram.Components
 
                     mainGrid.Children.Add(label);
 
-                    TextBox textbox = new TextBox();
-                    textbox.Tag = info;
-                    textbox.Text = component.GetProperty(info).ToString();
-                    textbox.Margin = new Thickness(5d);
+                    var textbox = new UnitsTextBox
+                    {
+                        Tag = info,
+                        Value = (double)component.GetProperty(info).Value,
+                        Margin = new Thickness(5d)
+                    };
 
                     textbox.SetValue(Grid.RowProperty, i);
                     textbox.SetValue(Grid.ColumnProperty, 1);
 
-                    textbox.TextChanged += new TextChangedEventHandler(DoubleChanged);
+                    textbox.TextChanged += DoubleChanged;
 
                     mainGrid.Children.Add(textbox);
                     EditorControls.Add(info, textbox);
@@ -210,14 +213,11 @@ namespace CircuitDiagram.Components
         {
             if (!this.IsLoaded)
                 return;
-            double doubleValue;
-            if (double.TryParse((sender as TextBox).Text, out doubleValue))
-            {
-                Component.SetProperty(((sender as Control).Tag as ComponentProperty), new PropertyUnion(doubleValue));
-                Component.InvalidateVisual();
-                ComponentUpdated(this, new ComponentUpdatedEventArgs(Component, m_previousData));
-                m_previousData = GetComponentData();
-            }
+            double doubleValue = (sender as UnitsTextBox).Value;
+            Component.SetProperty(((sender as Control).Tag as ComponentProperty), new PropertyUnion(doubleValue));
+            Component.InvalidateVisual();
+            ComponentUpdated(this, new ComponentUpdatedEventArgs(Component, m_previousData));
+            m_previousData = GetComponentData();
         }
 
         void BoolChanged(object sender, RoutedEventArgs e)

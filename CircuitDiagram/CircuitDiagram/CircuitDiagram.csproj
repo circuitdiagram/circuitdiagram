@@ -185,6 +185,7 @@
     <Compile Include="Controls\QuickCommandControl.xaml.cs">
       <DependentUpon>QuickCommandControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\UnitsTextBox.cs" />
     <Compile Include="Converters\MultiResolutionImageToImageSourceConverter.cs" />
     <Compile Include="Converters\BinaryResourceToImageSourceConverter.cs" />
     <Compile Include="Converters\NotConverter.cs" />
