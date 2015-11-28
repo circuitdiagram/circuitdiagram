@@ -1,13 +1,13 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CircuitDiagram.IO;
+using NUnit.Framework;
 
 namespace CircuitDiagram.Test.Core.IO
 {
-    [TestClass]
+    [TestFixture]
     public class IODocumentTest
     {
-        [TestMethod]
+        [Test]
         public void TestGetComponentTypes()
         {
             // Create the component types

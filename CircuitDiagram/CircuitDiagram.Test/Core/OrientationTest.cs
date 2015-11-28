@@ -1,16 +1,16 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace CircuitDiagram.Test.Core
 {
-    [TestClass]
+    [TestFixture]
     public class OrientationTest
     {
         /// <summary>
         /// Tests that reversing a Horizontal orientation becomes Vertical,
         /// and that Vertical becomes Horizontal.
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestReverse()
         {
             // Horizontal to Vertical

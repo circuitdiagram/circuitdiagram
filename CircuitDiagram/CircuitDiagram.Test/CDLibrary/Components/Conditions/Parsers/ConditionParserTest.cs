@@ -1,16 +1,16 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using CircuitDiagram.Components.Conditions;
 using CircuitDiagram.Components.Conditions.Parsers;
 using CircuitDiagram.Components;
+using NUnit.Framework;
 
 namespace CircuitDiagram.Test.CDLibrary.Components.Conditions.Parsers
 {
-    [TestClass]
+    [TestFixture]
     public class ConditionParserTest
     {
-        [TestMethod]
+        [Test]
         public void TestConditionParserValidConditions()
         {
             var horizontal = new ConditionTreeLeaf(ConditionType.State, "horizontal", ConditionComparison.Equal, new PropertyUnion(true));
@@ -35,7 +35,7 @@ namespace CircuitDiagram.Test.CDLibrary.Components.Conditions.Parsers
             }
         }
 
-        [TestMethod]
+        [Test]
         public void TestConditionParserInvalidConditions()
         {
             var conditionTests = new string[]
@@ -62,7 +62,7 @@ namespace CircuitDiagram.Test.CDLibrary.Components.Conditions.Parsers
             }
         }
 
-        [TestMethod]
+        [Test]
         public void TestSplitLeaf()
         {
             var leafTests = new Dictionary<string, Tuple<bool, bool, string, string, string>>()

@@ -1,14 +1,14 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CircuitDiagram.Render.Path;
 using System.Windows;
+using NUnit.Framework;
 
 namespace CircuitDiagram.Test.Core.Render
 {
-    [TestClass]
+    [TestFixture]
     public class PathHelperTest
     {
-        [TestMethod]
+        [Test]
         public void TestParseCommands()
         {
             string input = "M 1,1 l 1,0 M 1,2 l 1,0";

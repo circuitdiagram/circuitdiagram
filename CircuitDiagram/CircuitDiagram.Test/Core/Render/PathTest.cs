@@ -1,14 +1,14 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CircuitDiagram.Render.Path;
 using System.Windows;
+using NUnit.Framework;
 
 namespace CircuitDiagram.Test.Core.Render
 {
-    [TestClass]
+    [TestFixture]
     public class PathTest
     {
-        [TestMethod]
+        [Test]
         public void TestClosePath()
         {
             var c = new ClosePath();
@@ -17,7 +17,7 @@ namespace CircuitDiagram.Test.Core.Render
             Assert.AreEqual("Z", c.Shorthand(new Point(), new Point()));
         }
 
-        [TestMethod]
+        [Test]
         public void TestCurveTo()
         {
             var c = new CurveTo(1, 2, 3, 4, 5, 6);
@@ -32,7 +32,7 @@ namespace CircuitDiagram.Test.Core.Render
             Assert.AreEqual("c -10,-8 -12,-6 -14,-4", c.Flip(true).Shorthand(offset, previous));
         }
 
-        [TestMethod]
+        [Test]
         public void TestEllipticalArcTo()
         {
             var c = new EllipticalArcTo(2, 2, 5, false, false, 1, 2);
@@ -47,7 +47,7 @@ namespace CircuitDiagram.Test.Core.Render
             Assert.AreEqual("A 2,2 5 0 1 6,10", c.Flip(true).Shorthand(offset, previous));
         }
 
-        [TestMethod]
+        [Test]
         public void TestLineTo()
         {
             var c = new LineTo(10, 11);
@@ -62,7 +62,7 @@ namespace CircuitDiagram.Test.Core.Render
             Assert.AreEqual("L -9,13", c.Flip(true).Shorthand(offset, previous));
         }
 
-        [TestMethod]
+        [Test]
         public void TestMoveTo()
         {
             var c = new MoveTo(10, 11);
@@ -77,7 +77,7 @@ namespace CircuitDiagram.Test.Core.Render
             Assert.AreEqual("M -9,13", c.Flip(true).Shorthand(offset, previous));
         }
 
-        [TestMethod]
+        [Test]
         public void TestQuadraticBezierCurveTo()
         {
             var c = new QuadraticBeizerCurveTo(1, 2, 3, 4);
@@ -92,7 +92,7 @@ namespace CircuitDiagram.Test.Core.Render
             Assert.AreEqual("Q 6,10 4,12", c.Flip(true).Shorthand(offset, previous));
         }
 
-        [TestMethod]
+        [Test]
         public void TestSmoothCurveTo()
         {
             var c = new SmoothCurveTo(1, 2, 3, 4);
@@ -107,7 +107,7 @@ namespace CircuitDiagram.Test.Core.Render
             Assert.AreEqual("S -1,2 -3,4", c.Flip(true).Shorthand(offset, previous));
         }
 
-        [TestMethod]
+        [Test]
         public void TestSmoothQuadraticBezierCurveTo()
         {
             var c = new SmoothQuadraticBeizerCurveTo(3, 4);

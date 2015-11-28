@@ -11,23 +11,23 @@
  * your option) any later version.
  */
 #endregion
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+ 
 using System;
 using System.IO;
 using System.Text;
 using System.Xml;
+using NUnit.Framework;
 using XmlReader = CircuitDiagram.IO.Xml.XmlReader;
 
 namespace CircuitDiagram.Test.CDLibrary.IO.Xml
 {
-    [TestClass]
+    [TestFixture]
     public class XmlReaderTest
     {
         /// <summary>
         /// Tests loading a circuit in XML v1.1 format.
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestLoadXml1_1Circuit()
         {
             // Create the test document

@@ -1,39 +1,42 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Reflection;
 using CircuitDiagram.IO;
 using CircuitDiagram.IO.Descriptions.Xml;
 using CircuitDiagram.Components.Description;
 using CircuitDiagram.Components.Conditions;
 using CircuitDiagram.Components;
 using CircuitDiagram.Components.Description.Render;
+using NUnit.Framework;
 
 namespace CircuitDiagram.Test.CDLibrary.IO.Descriptions
 {
-    [TestClass]
+    [TestFixture]
     public class XmlLoaderTest
     {
         private static readonly ConditionTreeLeaf IsHorizontalCondition = new ConditionTreeLeaf(ConditionType.State, "horizontal", ConditionComparison.Equal, new PropertyUnion(true));
         private static readonly ConditionTreeLeaf IsNotHorizontalCondition = new ConditionTreeLeaf(ConditionType.State, "horizontal", ConditionComparison.NotEqual, new PropertyUnion(true));
 
-        [TestMethod]
-        [DeploymentItem("CDLibrary/IO/Descriptions/TestComponent_v1.2.xml")]
+        [Test]
         public void TestLoadXmlDescription_V1_2()
         {
             TestComponent("TestComponent_v1.2.xml");
         }
 
-        [TestMethod]
-        [DeploymentItem("CDLibrary/IO/Descriptions/TestComponent_v1.0.xml")]
+        [Test]
         public void TestLoadXmlDescription_V1_0()
         {
             TestComponent("TestComponent_v1.0.xml");
         }
 
-        private void TestComponent(string path)
+        private void TestComponent(string resource)
         {
-            using (var xml = File.OpenRead(path))
+            var assembly = Assembly.GetExecutingAssembly();
+            var resources = assembly.GetManifestResourceNames();
+            var resourceName = resources.First(r => r.EndsWith(resource));
+
+            using (var xml = assembly.GetManifestResourceStream(resourceName))
             {
                 var loader = new XmlLoader();
                 loader.Load(xml);
