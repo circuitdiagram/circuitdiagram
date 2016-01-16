@@ -255,7 +255,8 @@ namespace CircuitDiagram
                 {
                     foreach(IdentifierWithShortcut component in cat)
                     {
-                        if (component.ShortcutKey != Key.None)
+                        if (component.ShortcutKey != Key.None &&
+                            !m_toolboxShortcuts.ContainsKey(component.ShortcutKey)) // Ignore duplicate shortcuts
                             m_toolboxShortcuts.Add(component.ShortcutKey, component);
                     }
                 }
