@@ -154,7 +154,7 @@ namespace CircuitDiagram.Document.InternalWriter
                 {
                     connections.Add(new XElement(Ns.Document + "cn",
                         new XAttribute("id", context.GetOrAssignId(connection.Value.Connection)),
-                        new XAttribute("pt", connection.Value.Name)));
+                        new XAttribute("pt", connection.Key)));
                 }
                 componentXml.Add(connections);
 

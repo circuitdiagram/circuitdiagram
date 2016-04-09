@@ -44,6 +44,7 @@
     <Compile Include="Data\CollectionType.cs" />
     <Compile Include="Data\Component.cs" />
     <Compile Include="Data\ComponentConfiguration.cs" />
+    <Compile Include="Data\ElementLocation.cs" />
     <Compile Include="Data\ComponentName.cs" />
     <Compile Include="Data\ComponentOrientation.cs" />
     <Compile Include="Data\ComponentProperty.cs" />
@@ -53,7 +54,6 @@
     <Compile Include="Data\Connection.cs" />
     <Compile Include="Data\ConnectionName.cs" />
     <Compile Include="Data\DependentDictionary.cs" />
-    <Compile Include="Data\ElementLocation.cs" />
     <Compile Include="Data\IConnectedElement.cs" />
     <Compile Include="Data\IElement.cs" />
     <Compile Include="Data\IPositionalElement.cs" />
