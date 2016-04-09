@@ -27,7 +27,10 @@ using CircuitDiagram.Elements;
 using CircuitDiagram.IO;
 using System.Windows;
 using CircuitDiagram.Components.Description;
+using CircuitDiagram.IO.Data;
 using CircuitDiagram.IO.Descriptions.Xml;
+using Component = CircuitDiagram.Components.Component;
+using ComponentConfiguration = CircuitDiagram.Components.Description.ComponentConfiguration;
 
 namespace CircuitDiagram
 {
@@ -359,6 +362,63 @@ namespace CircuitDiagram
                 return new ComponentIdentifier(description);
             else
                 return null; // Incorrect
+        }
+
+        public static IO.Data.CircuitDocument ToIOCircuitDocument(this IODocument document)
+        {
+            var iod = new IO.Data.CircuitDocument
+            {
+                Size = new IO.Data.Size((int)document.Size.Width, (int)document.Size.Height)
+            };
+            
+            var componentMap = new Dictionary<IOComponent, IO.Data.Component>();
+            foreach (var c in document.Components)
+            {
+                var type = new ComponentType(c.Type.GUID,
+                    new ComponentTypeCollection(new Uri(c.Type.Collection)),
+                    new ComponentTypeCollectionItem(c.Type.Item),
+                    new ComponentName(c.Type.Name),
+                    c.Connections.Select(x => new ConnectionName(x.Key)),
+                    new List<IO.Data.ComponentConfiguration>());
+
+                var component = new IO.Data.PositionalComponent(type,
+                    null,
+                    new ComponentLocation((int)c.Location.Value.X, (int)c.Location.Value.Y));
+
+                foreach (var property in c.Properties)
+                    component.Properties.Add(new IO.Data.ComponentProperty
+                    {
+                        Id = property.Key,
+                        Value = property.Value
+                    });
+
+                iod.Elements.Add(component);
+                componentMap.Add(c, component);
+            }
+
+            // Connections
+            var allConnections = document.Components.SelectMany(x =>
+                x.Connections.Select(xc => new
+                {
+                    Component = x,
+                    ConnectionName = xc.Key,
+                    ConnectionPoint = xc.Value
+                })).GroupBy(x => x.ConnectionPoint);
+
+            foreach (var connectionPoint in allConnections)
+            {
+                // Connect everything to the first connection
+                var c = componentMap[connectionPoint.First().Component];
+                var connectTo = c.Connections.First(x => x.Name.Value == connectionPoint.First().ConnectionName);
+
+                foreach (var connection in connectionPoint.Skip(1))
+                {
+                    var cn = componentMap[connection.Component].Connections.First(x => x.Name.Value == connection.ConnectionName);
+                    cn.ConnectTo(connectTo);
+                }
+            }
+            
+            return iod;
         }
     }
 }

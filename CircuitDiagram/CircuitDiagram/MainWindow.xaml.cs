@@ -35,6 +35,7 @@ using System.Windows.Threading;
 using System.Windows.Xps;
 using System.Windows.Xps.Packaging;
 using System.Xml;
+using CircuitDiagram.IO.Document;
 using TaskDialogInterop;
 
 namespace CircuitDiagram
@@ -685,32 +686,36 @@ namespace CircuitDiagram
 
                     if (doSave)
                     {
-                        IO.CDDX.CDDXWriter writer = new IO.CDDX.CDDXWriter();
-                        writer.Document = ioDocument;
-                        writer.Options = saveOptions;
-                        writer.EmbedComponents = embedComponents;
+                        var writer = new CircuitDiagramDocumentWriter();
+                        using (var fs = File.OpenWrite(sfd.FileName))
+                            writer.WriteCircuit(ioDocument.ToIOCircuitDocument(), fs);
 
-                        writer.Begin();
-                        if (writer.RenderContext != null)
-                        {
-                            writer.RenderContext.Begin();
-                            circuitDisplay.Document.Render(writer.RenderContext);
-                            writer.RenderContext.End();
-                        }
+                        //IO.CDDX.CDDXWriter writer = new IO.CDDX.CDDXWriter();
+                        //writer.Document = ioDocument;
+                        //writer.Options = saveOptions;
+                        //writer.EmbedComponents = embedComponents;
 
-                        using (FileStream fs = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.Read))
-                        {
-                            writer.Write(fs);
-                        }
+                        //writer.Begin();
+                        //if (writer.RenderContext != null)
+                        //{
+                        //    writer.RenderContext.Begin();
+                        //    circuitDisplay.Document.Render(writer.RenderContext);
+                        //    writer.RenderContext.End();
+                        //}
 
-                        writer.End();
+                        //using (FileStream fs = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+                        //{
+                        //    writer.Write(fs);
+                        //}
 
-                        m_docPath = sfd.FileName;
-                        m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName);
-                        this.Title = m_documentTitle + " - Circuit Diagram";
-                        m_undoManager.SetSaveIndex();
-                        AddRecentFile(m_docPath);
-                        m_lastSaveOptions = saveOptions;
+                        //writer.End();
+
+                        //m_docPath = sfd.FileName;
+                        //m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(sfd.FileName);
+                        //this.Title = m_documentTitle + " - Circuit Diagram";
+                        //m_undoManager.SetSaveIndex();
+                        //AddRecentFile(m_docPath);
+                        //m_lastSaveOptions = saveOptions;
 
                         saved = true;
                     }

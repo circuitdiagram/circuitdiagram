@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7E7C093B-79FB-4329-88D7-C21639A199B6}</ProjectGuid>
+    <ProjectGuid>{045ED5A8-CADD-4CEF-956A-4BB3B66A7DB0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CircuitDiagram.Test</RootNamespace>
-    <AssemblyName>CircuitDiagram.Test</AssemblyName>
+    <RootNamespace>CircuitDiagram.IO.Test</RootNamespace>
+    <AssemblyName>CircuitDiagram.IO.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -16,7 +16,6 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -36,13 +35,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=3.0.5797.27534, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.0.0\lib\net45\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=3.2.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.2.0\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.XML" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -53,40 +50,18 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="CDLibrary\Components\Conditions\Parsers\ConditionParserTest.cs" />
-    <Compile Include="CDLibrary\IO\Descriptions\XmlLoaderTest.cs" />
-    <Compile Include="CDLibrary\IO\Xml\XmlReaderTest.cs" />
-    <Compile Include="Controls\UnitsTextBoxTest.cs" />
-    <Compile Include="Core\IO\IODocumentTest.cs" />
-    <Compile Include="Core\OrientationTest.cs" />
-    <Compile Include="Core\Render\PathTest.cs" />
-    <Compile Include="Core\Render\PathHelperTest.cs" />
+    <Compile Include="Data\ConnectionTest.cs" />
+    <Compile Include="Data\MockElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\cdlibrary\cdlibrary.csproj">
-      <Project>{d5fd5f79-6bce-40fb-b556-209758c612ec}</Project>
-      <Name>cdlibrary</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">
-      <Project>{445a46be-19f9-4e30-b476-1d539b024e69}</Project>
-      <Name>CircuitDiagramCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CircuitDiagram\CircuitDiagram.csproj">
-      <Project>{c01cd61a-6db0-460a-ac1c-1b96a9038af6}</Project>
-      <Name>CircuitDiagram</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="CDLibrary\IO\Descriptions\TestComponent_v1.0.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CDLibrary\IO\Descriptions\TestComponent_v1.2.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CircuitDiagram.IO\CircuitDiagram.IO.csproj">
+      <Project>{56ee342a-0096-4826-90a2-37dd07717efd}</Project>
+      <Name>CircuitDiagram.IO</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
