@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.TypeDescript
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Document", "CircuitDiagram.Document\CircuitDiagram.Document.csproj", "{F1B212C7-1C4F-40BE-9D63-0B053BA4F3DE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Document.Test", "CircuitDiagram.Document.Test\CircuitDiagram.Document.Test.csproj", "{E29D1EBC-009B-406F-B9AF-7E7DBA2C1558}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

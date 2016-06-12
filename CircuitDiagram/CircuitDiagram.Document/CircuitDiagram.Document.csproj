@@ -45,6 +45,7 @@
     <Compile Include="CircuitDiagramDocument.cs" />
     <Compile Include="CircuitDiagramDocumentReader.cs" />
     <Compile Include="CircuitDiagramDocumentWriter.cs" />
+    <Compile Include="CircuitDocumentReader.cs" />
     <Compile Include="ContentTypeNames.cs" />
     <Compile Include="InternalReader\DefinitionsReader.cs" />
     <Compile Include="InternalReader\ElementsReader.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="ReaderErrors\ReaderErrorCode.cs" />
     <Compile Include="ReaderErrors\ReaderErrorCodes.cs" />
     <Compile Include="RelationshipTypes.cs" />
+    <Compile Include="InternalReader\XmlExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">

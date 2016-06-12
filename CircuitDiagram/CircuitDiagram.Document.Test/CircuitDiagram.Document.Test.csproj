@@ -78,6 +78,7 @@
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">
       <Project>{8ec13aaa-2959-4356-b8a1-0465daffceac}</Project>
       <Name>CircuitDiagramCore</Name>
+
     </ProjectReference>
   </ItemGroup>
   <Choose>

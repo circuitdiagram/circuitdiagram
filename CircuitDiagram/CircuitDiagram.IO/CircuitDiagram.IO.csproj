@@ -44,6 +44,7 @@
     <Compile Include="Data\CollectionType.cs" />
     <Compile Include="Data\Component.cs" />
     <Compile Include="Data\ComponentConfiguration.cs" />
+    <Compile Include="Data\DependentDictionary.cs" />
     <Compile Include="Data\ElementLocation.cs" />
     <Compile Include="Data\ComponentName.cs" />
     <Compile Include="Data\ComponentOrientation.cs" />
@@ -61,9 +62,8 @@
     <Compile Include="Data\Metadata\CircuitDocumentMetadata.cs" />
     <Compile Include="Data\NamedConnection.cs" />
     <Compile Include="Data\PositionalComponent.cs" />
-    <Compile Include="Data\SIze.cs" />
-    <Compile Include="Data\Wire.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Data\Size.cs" />
+    <Compile Include="Data\Wire.cs" />operties\AssemblyInfo.cs" />
     <Compile Include="Read\ICircuitReader.cs" />
     <Compile Include="Write\ICircuitWriter.cs" />
   </ItemGroup>

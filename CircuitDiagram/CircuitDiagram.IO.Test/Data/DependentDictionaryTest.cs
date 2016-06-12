@@ -1,4 +1,4 @@
-﻿// Circuit Diagram http://www.circuit-diagram.org/
+// Circuit Diagram http://www.circuit-diagram.org/
 // 
 // Copyright (C) 2016  Samuel Fisher
 // 
