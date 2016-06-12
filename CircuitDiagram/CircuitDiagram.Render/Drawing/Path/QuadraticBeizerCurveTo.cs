@@ -1,4 +1,4 @@
-﻿// QuadraticBeizerCurveTo.cs
+// QuadraticBeizerCurveTo.cs
 //
 // Circuit Diagram http://www.circuit-diagram.org/
 //
