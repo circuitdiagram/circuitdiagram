@@ -35,10 +35,7 @@ namespace CircuitDiagram.IO
         /// <summary>
         /// Gets the binary content item type ID for this item.
         /// </summary>
-        public override BinaryConstants.ContentItemType ItemType
-        {
-            get { return BinaryConstants.ContentItemType.Resource; }
-        }
+        public override BinaryConstants.ContentItemType ItemType => BinaryConstants.ContentItemType.Resource;
 
         /// <summary>
         /// The type of resource.

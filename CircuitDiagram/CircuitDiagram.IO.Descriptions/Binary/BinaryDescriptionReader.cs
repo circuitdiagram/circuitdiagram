@@ -22,6 +22,7 @@ namespace CircuitDiagram.IO.Descriptions
         public List<ComponentDescription> ComponentDescriptions = new List<ComponentDescription>();
         public List<BinaryResource> Resources = new List<BinaryResource>();
         public List<BinaryDescriptionContentItem> Items = new List<BinaryDescriptionContentItem>();
+        public Dictionary<uint, MultiResolutionImage> Images = new Dictionary<uint, MultiResolutionImage>(); 
 
         public X509Chain CertificateChain { get; set; }
 
@@ -81,7 +82,6 @@ namespace CircuitDiagram.IO.Descriptions
                 }
 
                 // Process images
-                Dictionary<uint, MultiResolutionImage> images = new Dictionary<uint, MultiResolutionImage>();
                 foreach(var resource in Resources)
                 {
                     if (resource.ResourceType == BinaryResourceType.BitmapImage
@@ -89,10 +89,10 @@ namespace CircuitDiagram.IO.Descriptions
                         || resource.ResourceType == BinaryResourceType.PNGImage
                         || true)
                     {
-                        if (!images.ContainsKey(resource.ID))
-                            images.Add(resource.ID, new MultiResolutionImage());
+                        if (!Images.ContainsKey(resource.ID))
+                            Images.Add(resource.ID, new MultiResolutionImage());
 
-                        images[resource.ID].Add(new SingleResolutionImage()
+                        Images[resource.ID].Add(new SingleResolutionImage()
                         {
                             MimeType = BinaryConstants.ResourceMimeTypeToString((uint)resource.ResourceType),
                             Data = resource.Buffer
@@ -103,7 +103,7 @@ namespace CircuitDiagram.IO.Descriptions
                 // Add component descriptions
                 foreach(var componentDescription in componentDescriptions)
                 {
-                    componentDescription.SetIcons(images);
+                    componentDescription.SetIcons(Images);
                     ComponentDescriptions.Add(componentDescription.ComponentDescription);
                 }
 
