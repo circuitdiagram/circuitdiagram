@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Markup;
+using CircuitDiagram.Dependency;
 
 namespace CircuitDiagram
 {
@@ -15,28 +16,20 @@ namespace CircuitDiagram
     /// </summary>
     public partial class App : Application
     {
-        public static String[] AppArgs;
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
 
-#if DEBUG
-        public static string ProjectDirectory { get; private set; }
-#endif
+            log4net.Config.BasicConfigurator.Configure();
+
+            log4net.LogManager.GetLogger(typeof(App)).Info("Test");
+
+            var bootstrapper = new Bootstrapper();
+            bootstrapper.Run();
+        }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            if (e.Args.Length > 0)
-                AppArgs = e.Args;
-            else
-                AppArgs = new string[0];
-
-#if DEBUG
-            ProjectDirectory = Path.GetFullPath(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\..\\..\\..\\..\\");
-#endif
-
-#if PORTABLE
-            CircuitDiagram.Settings.Settings.Initialize(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\settings\\settings.xml");
-#else
-            CircuitDiagram.SettingsManager.Settings.Initialize(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram\\settings.xml");
-#endif
             // Ensure the current culture passed into bindings is the OS culture.
             // By default, WPF uses en-US as the culture, regardless of the system settings.
             FrameworkElement.LanguageProperty.OverrideMetadata(

@@ -51,6 +51,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Data\ConnectionTest.cs" />
+    <Compile Include="Data\DependentDictionaryTest.cs" />
     <Compile Include="Data\MockElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -58,9 +59,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CircuitDiagram.IO\CircuitDiagram.IO.csproj">
-      <Project>{56ee342a-0096-4826-90a2-37dd07717efd}</Project>
-      <Name>CircuitDiagram.IO</Name>
+    <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">
+      <Project>{8ec13aaa-2959-4356-b8a1-0465daffceac}</Project>
+      <Name>CircuitDiagramCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

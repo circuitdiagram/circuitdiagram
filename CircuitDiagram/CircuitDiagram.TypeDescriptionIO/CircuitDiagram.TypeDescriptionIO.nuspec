@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>CircuitDiagram.TypeDescriptionIO</id>
+    <version>4.0-pre3</version>
+    <title>CircuitDiagram.TypeDescriptionIO</title>
+    <authors>Samuel Fisher</authors>
+    <owners>Samuel Fisher</owners>
+    <licenseUrl>https://raw.githubusercontent.com/circuitdiagram/circuitdiagram/master/LICENSE.txt</licenseUrl>
+    <projectUrl>http://www.circuit-diagram.org/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>CircuitDiagram.TypeDescriptionIO</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags></tags>
+    <dependencies>
+      <dependency id="CircuitDiagramCore" version="4.0-pre6" />
+      <dependency id="CircuitDiagram.Render" version="4.0-pre4" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\CircuitDiagram.TypeDescriptionIO.dll" target="lib\netstandard1.3" />
+  </files>
+</package>

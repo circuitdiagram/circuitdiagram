@@ -140,15 +140,15 @@ namespace ComponentCompiler
             }
 
             // Generate preview
-            if (cliOptions.Preview != null)
+            if (result.Success && cliOptions.Preview != null)
             {
                 string previewPath = GetPreviewPath(inputPath, cliOptions);
                 string previewDirectory = Path.GetDirectoryName(previewPath);
                 if (!Directory.Exists(previewDirectory))
                     Directory.CreateDirectory(previewDirectory);
 
-                var preview = PreviewRenderer.GetSvgPreview(result.Description, null, true);
-                File.WriteAllBytes(previewPath, preview);
+                //var preview = PreviewRenderer.GetSvgPreview(result.Description, null, true);
+                //File.WriteAllBytes(previewPath, preview);
             }
 
             return extendedResult;

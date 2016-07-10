@@ -10,7 +10,7 @@ namespace CircuitDiagram.IO.Data
     {
         public PositionalComponent(ComponentType type,
                                    ComponentConfiguration configuration,
-                                   ComponentLocation location)
+                                   ElementLocation location)
             : base(type, configuration)
         {
             Layout = new LayoutInformation(location);

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CircuitDiagram.IO.Data
 {
-    public class Connection
+    public class Connection : IComparable
     {
         private readonly HashSet<NamedConnection> namedConnections;
 
@@ -41,6 +41,11 @@ namespace CircuitDiagram.IO.Data
         internal void Disconnect(NamedConnection namedConnection)
         {
             namedConnections.Remove(namedConnection);
+        }
+        
+        public int CompareTo(object obj)
+        {
+            return ReferenceEquals(this, obj) ? 0 : -1;
         }
     }
 }

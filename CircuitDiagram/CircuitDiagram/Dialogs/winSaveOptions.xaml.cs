@@ -1,6 +1,7 @@
 ﻿using CircuitDiagram.DPIWindow;
 using CircuitDiagram.IO;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace CircuitDiagram
 {
@@ -9,18 +10,18 @@ namespace CircuitDiagram
     /// </summary>
     public partial class winSaveOptions : MetroDPIWindow
     {
-        private SaveOptionsEditor m_editor;
+        private UserControl m_editor;
 
-        public winSaveOptions(SaveOptionsEditor editor, ISaveOptions options)
+        public winSaveOptions(UserControl editor, ISaveOptions options)
         {
             InitializeComponent();
 
             m_editor = editor;
             stpPlugin.Children.Add(editor);
-            editor.SetOptions(options);
+            ((ISaveOptionsEditor)editor).Options = options;
         }
 
-        public ISaveOptions Options { get { return m_editor.GetOptions(); } }
+        public ISaveOptions Options { get { return ((ISaveOptionsEditor)m_editor).Options; } }
 
         public bool AlwaysUseSettings { get { return chbAlwaysUseSettings.IsChecked == true; } }
 

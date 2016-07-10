@@ -19,7 +19,7 @@ namespace CircuitDiagram
     /// <summary>
     /// Interaction logic for CDDXSaveOptionsEditor.xaml
     /// </summary>
-    public partial class CDDXSaveOptionsEditor : SaveOptionsEditor
+    public partial class CDDXSaveOptionsEditor : UserControl, ISaveOptionsEditor
     {
         private CDDXSaveOptions m_saveOptions;
 
@@ -33,16 +33,13 @@ namespace CircuitDiagram
             };
         }
 
-        public override void SetOptions(ISaveOptions options)
-        {
-            m_saveOptions = options as CDDXSaveOptions;
-
-            LoadSaveOptions(options as CDDXSaveOptions);
-        }
-
-        public override ISaveOptions GetOptions()
-        {
-            return m_saveOptions;
+        public ISaveOptions Options {
+            get { return m_saveOptions; }
+            set
+            {
+                m_saveOptions = value as CDDXSaveOptions;
+                LoadSaveOptions(m_saveOptions);
+            }
         }
 
         bool m_autoApplying = false;

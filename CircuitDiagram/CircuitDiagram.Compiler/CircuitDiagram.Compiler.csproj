@@ -62,13 +62,17 @@
     <Compile Include="StreamExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\cdlibrary\cdlibrary.csproj">
-      <Project>{d5fd5f79-6bce-40fb-b556-209758c612ec}</Project>
-      <Name>cdlibrary</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\CircuitDiagram.Render\CircuitDiagram.Render.csproj">
+      <Project>{313c9117-7047-4bd0-8462-18e898304d8f}</Project>
+      <Name>CircuitDiagram.Render</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CircuitDiagram.IO.Legacy\CircuitDiagram.IO.Legacy.csproj">
+      <Project>{98b7355e-0335-4bdf-b1ab-3f484f311a17}</Project>
+      <Name>CircuitDiagram.IO.Legacy</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

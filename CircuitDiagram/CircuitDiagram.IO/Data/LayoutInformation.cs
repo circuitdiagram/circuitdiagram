@@ -11,15 +11,15 @@ namespace CircuitDiagram.IO.Data
     /// </summary>
     public class LayoutInformation
     {
-        internal LayoutInformation(ComponentLocation location)
+        internal LayoutInformation(ElementLocation location)
         {
             Location = location;
         }
 
         /// <summary>
-        /// Gets or sets the position of the component within the document.
+        /// Gets the position of the component within the document.
         /// </summary>
-        public ComponentLocation Location { get; }
+        public ElementLocation Location { get; }
 
         /// <summary>
         /// Gets or sets the size of the component.

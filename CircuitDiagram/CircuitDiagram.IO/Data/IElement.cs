@@ -11,6 +11,5 @@ namespace CircuitDiagram.IO.Data
     /// </summary>
     public interface IElement
     {
-        IReadOnlyList<NamedConnection> Connections { get; } 
     }
 }

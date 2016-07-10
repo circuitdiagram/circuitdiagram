@@ -14,13 +14,13 @@ namespace CircuitDiagram.IO.Data
         /// <summary>
         /// Creates a new component name from the specified string.
         /// </summary>
-        /// <param name="name">The component name.</param>
-        public ComponentName(string name)
+        /// <param name="value">The component name.</param>
+        public ComponentName(string value)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Invalid component name", nameof(name));
+            if (string.IsNullOrWhiteSpace(value))
+                throw new ArgumentException("Invalid component name", nameof(value));
 
-            Value = name;
+            Value = value;
         }
 
         /// <summary>
@@ -58,6 +58,11 @@ namespace CircuitDiagram.IO.Data
         public static bool operator !=(ComponentName left, ComponentName right)
         {
             return !Equals(left, right);
+        }
+
+        public static implicit operator ComponentName(string value)
+        {
+            return new ComponentName(value);
         }
     }
 }

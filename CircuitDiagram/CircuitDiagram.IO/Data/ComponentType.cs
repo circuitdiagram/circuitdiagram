@@ -9,7 +9,7 @@ namespace CircuitDiagram.IO.Data
     /// <summary>
     /// Represents the type of a component. This class is immutable.
     /// </summary>
-    public sealed class ComponentType
+    public class ComponentType : CollectionType
     {
         /// <summary>
         /// Creates a new componen type.
@@ -19,15 +19,15 @@ namespace CircuitDiagram.IO.Data
         /// <param name="item">The item this component type implements within the collection.</param>
         /// <param name="name">The name of this component type.</param>
         /// <param name="connectionNames">The connection names for this component type.</param>
-        public ComponentType(Guid id,
+        public ComponentType(Guid? id,
                              ComponentTypeCollection collection,
                              ComponentTypeCollectionItem item,
                              ComponentName name,
                              IEnumerable<ConnectionName> connectionNames,
                              IEnumerable<ComponentConfiguration> configurations)
+            : base(collection, item)
         {
             Id = id;
-            Collection = collection;
             Name = name;
             ConnectionNames = connectionNames.ToList();
             Configurations = configurations.ToList();
@@ -36,18 +36,8 @@ namespace CircuitDiagram.IO.Data
         /// <summary>
         /// Gets the unique identifier for this component type.
         /// </summary>
-        public Guid Id { get; }
-
-        /// <summary>
-        /// Gets the collection this component type belongs to.
-        /// </summary>
-        public ComponentTypeCollection Collection { get; }
-
-        /// <summary>
-        /// Gets the item this component type implements within the collection.
-        /// </summary>
-        public ComponentTypeCollectionItem CollectionItem { get; }
-
+        public Guid? Id { get; }
+        
         /// <summary>
         /// Gets the name of this component type.
         /// </summary>
@@ -65,41 +55,8 @@ namespace CircuitDiagram.IO.Data
         /// </remarks>
         public bool IsStandard => Collection != null;
 
-        public IReadOnlyCollection<ConnectionName> ConnectionNames { get; }
+        public ICollection<ConnectionName> ConnectionNames { get; }
 
         public IReadOnlyCollection<ComponentConfiguration> Configurations { get; }
-
-        private bool Equals(ComponentType other)
-        {
-            return Id.Equals(other.Id) && Equals(Collection, other.Collection) && Equals(Name, other.Name);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            return obj is ComponentType && Equals((ComponentType)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = Id.GetHashCode();
-                hashCode = (hashCode * 397) ^ (Collection?.GetHashCode() ?? 0);
-                hashCode = (hashCode * 397) ^ (Name?.GetHashCode() ?? 0);
-                return hashCode;
-            }
-        }
-
-        public static bool operator ==(ComponentType left, ComponentType right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(ComponentType left, ComponentType right)
-        {
-            return !Equals(left, right);
-        }
     }
 }

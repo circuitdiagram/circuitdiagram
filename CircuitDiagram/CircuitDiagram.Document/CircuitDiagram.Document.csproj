@@ -2,15 +2,20 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B6D21A00-AD31-44C3-AE84-448DB063090A}</ProjectGuid>
+    <ProjectGuid>{F1B212C7-1C4F-40BE-9D63-0B053BA4F3DE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CircuitDiagram.Document</RootNamespace>
     <AssemblyName>CircuitDiagram.Document</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,33 +35,41 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
+    <!-- A reference to the entire .NET Framework is automatically included -->
+    <None Include="CircuitDiagram.Document.nuspec">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CircuitDiagramDocument.cs" />
+    <Compile Include="CircuitDiagramDocumentReader.cs" />
     <Compile Include="CircuitDiagramDocumentWriter.cs" />
     <Compile Include="ContentTypeNames.cs" />
+    <Compile Include="InternalReader\DefinitionsReader.cs" />
+    <Compile Include="InternalReader\ElementsReader.cs" />
+    <Compile Include="InternalReader\MainDocumentReader.cs" />
+    <Compile Include="InternalReader\PropertiesReader.cs" />
+    <Compile Include="InternalReader\ReaderContext.cs" />
+    <Compile Include="InternalReader\XmlExtensions.cs" />
     <Compile Include="InternalWriter\MainDocumentWriter.cs" />
+    <Compile Include="InternalWriter\MetadataWriter.cs" />
     <Compile Include="InternalWriter\PackageManager.cs" />
     <Compile Include="InternalWriter\WriterContext.cs" />
     <Compile Include="Namespaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReaderErrors\ErrorInstance.cs" />
+    <Compile Include="ReaderErrors\ReaderErrorCode.cs" />
+    <Compile Include="ReaderErrors\ReaderErrorCodes.cs" />
     <Compile Include="RelationshipTypes.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CircuitDiagram.IO\CircuitDiagram.IO.csproj">
-      <Project>{56ee342a-0096-4826-90a2-37dd07717efd}</Project>
-      <Name>CircuitDiagram.IO</Name>
+    <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">
+      <Project>{8ec13aaa-2959-4356-b8a1-0465daffceac}</Project>
+      <Name>CircuitDiagramCore</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

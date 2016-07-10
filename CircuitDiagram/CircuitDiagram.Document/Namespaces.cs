@@ -42,6 +42,11 @@ namespace CircuitDiagram.Document
         public static readonly XNamespace DocumentComponentDescriptions = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/document/component-descriptions";
 
         /// <summary>
+        /// THe XML namespace for core properties.
+        /// </summary>
+        public static readonly XNamespace CoreProperties = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/metadata/core-properties";
+
+        /// <summary>
         /// The XML namespace used for OPC relationships.
         /// </summary>
         public static readonly XNamespace Relationships = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";

@@ -2,15 +2,20 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{56EE342A-0096-4826-90A2-37DD07717EFD}</ProjectGuid>
+    <ProjectGuid>{6B3CE358-BCE7-4C64-9C9D-7B2AC796ACAA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CircuitDiagram.IO</RootNamespace>
     <AssemblyName>CircuitDiagram.IO</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,21 +35,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <None Include="project.json" />
+    <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataExtensions\ConnectionExtensions.cs" />
     <Compile Include="Data\CircuitDocument.cs" />
+    <Compile Include="Data\CollectionType.cs" />
     <Compile Include="Data\Component.cs" />
     <Compile Include="Data\ComponentConfiguration.cs" />
-    <Compile Include="Data\ComponentLocation.cs" />
     <Compile Include="Data\ComponentName.cs" />
     <Compile Include="Data\ComponentOrientation.cs" />
     <Compile Include="Data\ComponentProperty.cs" />
@@ -53,17 +52,22 @@
     <Compile Include="Data\ComponentTypeCollectionItem.cs" />
     <Compile Include="Data\Connection.cs" />
     <Compile Include="Data\ConnectionName.cs" />
+    <Compile Include="Data\DependentDictionary.cs" />
+    <Compile Include="Data\ElementLocation.cs" />
+    <Compile Include="Data\IConnectedElement.cs" />
     <Compile Include="Data\IElement.cs" />
     <Compile Include="Data\IPositionalElement.cs" />
     <Compile Include="Data\LayoutInformation.cs" />
+    <Compile Include="Data\Metadata\CircuitDocumentMetadata.cs" />
     <Compile Include="Data\NamedConnection.cs" />
     <Compile Include="Data\PositionalComponent.cs" />
     <Compile Include="Data\SIze.cs" />
-    <Compile Include="Write\ICircuitWriter.cs" />
+    <Compile Include="Data\Wire.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Read\ICircuitReader.cs" />
+    <Compile Include="Write\ICircuitWriter.cs" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

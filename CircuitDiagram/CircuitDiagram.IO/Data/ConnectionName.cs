@@ -10,6 +10,9 @@ namespace CircuitDiagram.IO.Data
     {
         public ConnectionName(string value)
         {
+            if (value == null)
+                throw new ArgumentException("Value cannot be null.", nameof(value));
+
             Value = value;
         }
 
@@ -18,6 +21,39 @@ namespace CircuitDiagram.IO.Data
         public override string ToString()
         {
             return Value;
+        }
+
+        protected bool Equals(ConnectionName other)
+        {
+            return string.Equals(Value, other.Value);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ConnectionName)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
+
+        public static bool operator ==(ConnectionName left, ConnectionName right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(ConnectionName left, ConnectionName right)
+        {
+            return !Equals(left, right);
+        }
+
+        public static implicit operator ConnectionName(string value)
+        {
+            return new ConnectionName(value);
         }
     }
 }

@@ -21,8 +21,8 @@
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
@@ -32,8 +32,8 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
@@ -63,13 +63,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\cdlibrary\cdlibrary.csproj">
-      <Project>{D5FD5F79-6BCE-40FB-B556-209758C612EC}</Project>
-      <Name>cdlibrary</Name>
+    <ProjectReference Include="..\CircuitDiagram.Render\CircuitDiagram.Render.csproj">
+      <Project>{313c9117-7047-4bd0-8462-18e898304d8f}</Project>
+      <Name>CircuitDiagram.Render</Name>
     </ProjectReference>
     <ProjectReference Include="..\CircuitDiagram.Compiler\CircuitDiagram.Compiler.csproj">
       <Project>{cf146d9d-208f-41a2-bf8d-a183ff1b1191}</Project>
       <Name>CircuitDiagram.Compiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CircuitDiagram.IO.Legacy\CircuitDiagram.IO.Legacy.csproj">
+      <Project>{98b7355e-0335-4bdf-b1ab-3f484f311a17}</Project>
+      <Name>CircuitDiagram.IO.Legacy</Name>
     </ProjectReference>
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">
       <Project>{445a46be-19f9-4e30-b476-1d539b024e69}</Project>
@@ -82,7 +86,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>call "$(SolutionDir)..\Components\compile.bat" "$(TargetPath)" "$(SolutionDir)..\Components\"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

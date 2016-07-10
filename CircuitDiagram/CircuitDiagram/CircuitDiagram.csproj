@@ -42,7 +42,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <ApplicationIcon>Images\Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Portable|AnyCPU'">
     <OutputPath>bin\Portable\</OutputPath>
@@ -160,16 +160,72 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\CircuitDiagram.DPIWindow.1.0.1\lib\net40-Client\CircuitDiagram.DPIWindow.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MahApps.Metro">
       <HintPath>..\packages\MahApps.Metro.1.1.2.0\lib\net40\MahApps.Metro.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Prism, Version=6.1.0.0, Culture=neutral, PublicKeyToken=91a96d2a154366d8, processorArchitecture=MSIL">
+      <HintPath>..\packages\Prism.Core.6.1.0\lib\net45\Prism.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Prism.Unity.Wpf, Version=6.1.0.0, Culture=neutral, PublicKeyToken=91a96d2a154366d8, processorArchitecture=MSIL">
+      <HintPath>..\packages\Prism.Unity.6.1.1\lib\net45\Prism.Unity.Wpf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Prism.Wpf, Version=6.1.0.0, Culture=neutral, PublicKeyToken=91a96d2a154366d8, processorArchitecture=MSIL">
+      <HintPath>..\packages\Prism.Wpf.6.1.0\lib\net45\Prism.Wpf.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ReachFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.0.1\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Packaging, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Packaging.4.0.0\lib\net46\System.IO.Packaging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Printing" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.2.0\lib\net46\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.0.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.0.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.1.0\lib\net46\System.Security.Cryptography.X509Certificates.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.1.2.0\lib\net40\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -187,116 +243,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="BuildChannelAttribute.cs" />
-    <Compile Include="Controls\ComponentEditor.cs" />
-    <Compile Include="Controls\QuickCommandControl.xaml.cs">
-      <DependentUpon>QuickCommandControl.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Other\BuildChannelAttribute.cs" />
     <Compile Include="Controls\UnitsTextBox.cs" />
     <Compile Include="Converters\MultiResolutionImageToImageSourceConverter.cs" />
     <Compile Include="Converters\BinaryResourceToImageSourceConverter.cs" />
     <Compile Include="Converters\NotConverter.cs" />
-    <Compile Include="Converters\SignatureStatusConverter.cs" />
-    <Compile Include="Converters\SignatureToFontWeightConverter.cs" />
-    <Compile Include="Dialogs\CDDXSaveOptionsEditor.xaml.cs">
-      <DependentUpon>CDDXSaveOptionsEditor.xaml</DependentUpon>
+    <Compile Include="Dependency\Bootstrapper.cs" />
+    <Compile Include="Dependency\CircuitDiagramModule.cs" />
+    <Compile Include="Other\ImplementationConversion.cs" />
+    <Compile Include="ShellWindow.xaml.cs">
+      <DependentUpon>ShellWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\winComponentDetails.xaml.cs">
-      <DependentUpon>winComponentDetails.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\winDocumentLoadResult.xaml.cs">
-      <DependentUpon>winDocumentLoadResult.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\winDocumentSize.xaml.cs">
-      <DependentUpon>winDocumentSize.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\winExportPNG.xaml.cs">
-      <DependentUpon>winExportPNG.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\winSaveOptions.xaml.cs">
-      <DependentUpon>winSaveOptions.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ImplementationConversion.cs" />
-    <Compile Include="Managers\ComponentsManager\ComponentDescriptionLoadException.cs" />
-    <Compile Include="Managers\ComponentsManager\ComponentsManager.cs" />
-    <Compile Include="Managers\ImplementationConversionManager.cs" />
-    <Compile Include="Managers\UpdateDetails.cs" />
-    <Compile Include="Managers\UpdateManager.cs" />
-    <Compile Include="Managers\UpdateChannelType.cs" />
-    <Compile Include="Toolbox\CustomToolboxItem.cs" />
-    <Compile Include="Toolbox\IdentifierWithShortcut.cs" />
-    <Compile Include="Toolbox\IToolboxItem.cs" />
-    <Compile Include="Toolbox\ToolboxManager.cs" />
-    <Compile Include="MultiResolutionImageExtensions.cs" />
-    <Compile Include="Managers\PluginManager.cs" />
-    <Compile Include="Render\CircuitElementDrawingVisual.cs" />
+    <Compile Include="Other\MultiResolutionImageExtensions.cs" />
     <Compile Include="Converters\BoolToYesNoConverter.cs" />
     <Compile Include="Converters\KeyTextConverter.cs" />
-    <Compile Include="Converters\SignatureToColourConverter.cs" />
-    <Compile Include="CustomCommands.cs" />
-    <Compile Include="Render\DrawingRenderer.cs" />
-    <Compile Include="Render\RenderHelper.cs" />
-    <Compile Include="Render\WPFRenderer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Managers\UndoManager.cs" />
-    <Compile Include="Dialogs\winAbout.xaml.cs">
-      <DependentUpon>winAbout.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\winComponents.xaml.cs">
-      <DependentUpon>winComponents.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\winDocumentProperties.xaml.cs">
-      <DependentUpon>winDocumentProperties.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\winNewComponentImplementation.xaml.cs">
-      <DependentUpon>winNewComponentImplementation.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\winNewDocument.xaml.cs">
-      <DependentUpon>winNewDocument.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\winNewVersion.xaml.cs">
-      <DependentUpon>winNewVersion.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\winOptions.xaml.cs">
-      <DependentUpon>winOptions.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\winToolbox.xaml.cs">
-      <DependentUpon>winToolbox.xaml</DependentUpon>
-    </Compile>
-    <Page Include="Controls\QuickCommandControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <Compile Include="Other\CustomCommands.cs" />
+    <Compile Include="Other\UpdateChannelType.cs" />
     <Page Include="DefaultDictionary.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Dialogs\CDDXSaveOptionsEditor.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\winComponentDetails.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\winDocumentLoadResult.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\winDocumentSize.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\winExportPNG.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\winSaveOptions.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -304,46 +267,13 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Controls\CircuitDisplay.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="ToolboxDictionary.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Dialogs\winAbout.xaml">
+    <Page Include="ShellWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dialogs\winComponents.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Other\ToolboxDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\winDocumentProperties.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\winNewComponentImplementation.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\winNewDocument.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\winNewVersion.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\winOptions.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\winToolbox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -374,20 +304,20 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\cdlibrary\cdlibrary.csproj">
-      <Project>{D5FD5F79-6BCE-40FB-B556-209758C612EC}</Project>
-      <Name>cdlibrary</Name>
+    <ProjectReference Include="..\CircuitDiagram.Render\CircuitDiagram.Render.csproj">
+      <Project>{313c9117-7047-4bd0-8462-18e898304d8f}</Project>
+      <Name>CircuitDiagram.Render</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CircuitDiagram.Document\CircuitDiagram.Document.csproj">
-      <Project>{b6d21a00-ad31-44c3-ae84-448db063090a}</Project>
-      <Name>CircuitDiagram.Document</Name>
+    <ProjectReference Include="..\CircuitDiagram.TypeDescriptionIO\CircuitDiagram.TypeDescriptionIO.csproj">
+      <Project>{7b509b50-aae6-4bab-9b3c-e89f50938800}</Project>
+      <Name>CircuitDiagram.TypeDescriptionIO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CircuitDiagram.IO\CircuitDiagram.IO.csproj">
-      <Project>{56ee342a-0096-4826-90a2-37dd07717efd}</Project>
-      <Name>CircuitDiagram.IO</Name>
+    <ProjectReference Include="..\CircuitDiagram.View\CircuitDiagram.View.csproj">
+      <Project>{dc2bce3e-c1f2-490d-bd7e-10aa0d2c9f0f}</Project>
+      <Name>CircuitDiagram.View</Name>
     </ProjectReference>
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">
-      <Project>{445A46BE-19F9-4E30-B476-1D539B024E69}</Project>
+      <Project>{445a46be-19f9-4e30-b476-1d539b024e69}</Project>
       <Name>CircuitDiagramCore</Name>
     </ProjectReference>
     <ProjectReference Include="..\TaskDialog\TaskDialog.csproj">
@@ -403,7 +333,7 @@
     <Resource Include="Images\Logo32.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icon.ico" />
+    <Resource Include="Images\Icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <SplashScreen Include="Images\SplashScreen.png" />

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>CircuitDiagram.Document</id>
+    <version>4.0-pre4</version>
+    <title>CircuitDiagram.Document</title>
+    <authors>Samuel Fisher</authors>
+    <owners>Samuel Fisher</owners>
+    <licenseUrl>https://raw.githubusercontent.com/circuitdiagram/circuitdiagram/master/LICENSE.txt</licenseUrl>
+    <projectUrl>http://www.circuit-diagram.org/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>CircuitDiagram.Document</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags></tags>
+    <dependencies>
+      <dependency id="CircuitDiagramCore" version="4.0-pre6" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\CircuitDiagram.Document.dll" target="lib\netstandard1.3" />
+  </files>
+</package>

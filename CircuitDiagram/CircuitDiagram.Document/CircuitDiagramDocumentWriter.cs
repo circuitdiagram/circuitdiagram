@@ -1,4 +1,22 @@
-﻿using System;
+﻿// Circuit Diagram http://www.circuit-diagram.org/
+// 
+// Copyright (C) 2016  Samuel Fisher
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Packaging;
@@ -6,12 +24,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using CircuitDiagram.Circuit;
 using CircuitDiagram.Document.InternalWriter;
-using CircuitDiagram.IO.Data;
+using CircuitDiagram.IO;
 using CircuitDiagram.IO.Document.InternalWriter;
-using CircuitDiagram.IO.Write;
 
-namespace CircuitDiagram.IO.Document
+namespace CircuitDiagram.Document
 {
     /// <summary>
     /// Writes documents in the Circuit Diagram Document format.
@@ -32,12 +50,6 @@ namespace CircuitDiagram.IO.Document
 
         public string FileTypeExtension => ".cddx";
 
-        public Formatting Formatting
-        {
-            get { return mainDocumentWriter.Formatting; }
-            set { mainDocumentWriter.Formatting = value; }
-        }
-
         public void WriteCircuit(CircuitDocument document, Stream stream)
         {
             // Cannot write directly to a file stream, so write to this and copy later
@@ -53,7 +65,6 @@ namespace CircuitDiagram.IO.Document
                     // Write the metadata. This contains document size, author, created time etc.
 
                     // Write any additional resources
-
                 }
 
                 ms.WriteTo(stream);

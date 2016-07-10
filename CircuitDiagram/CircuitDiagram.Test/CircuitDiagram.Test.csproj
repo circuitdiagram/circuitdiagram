@@ -64,9 +64,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\cdlibrary\cdlibrary.csproj">
-      <Project>{d5fd5f79-6bce-40fb-b556-209758c612ec}</Project>
-      <Name>cdlibrary</Name>
+    <ProjectReference Include="..\cdlibrary\CircuitDiagram.Render.csproj">
+      <Project>{313c9117-7047-4bd0-8462-18e898304d8f}</Project>
+      <Name>CircuitDiagram.Render</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CircuitDiagram.IO.CDDX\CircuitDiagram.IO.Legacy.csproj">
+      <Project>{98b7355e-0335-4bdf-b1ab-3f484f311a17}</Project>
+      <Name>CircuitDiagram.IO.Legacy</Name>
     </ProjectReference>
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">
       <Project>{445a46be-19f9-4e30-b476-1d539b024e69}</Project>
@@ -86,6 +90,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Choose>

@@ -1,6 +1,6 @@
 ﻿using System;
+using CircuitDiagram.Primitives;
 using CircuitDiagram.Render.Path;
-using System.Windows;
 using NUnit.Framework;
 
 namespace CircuitDiagram.Test.Core.Render

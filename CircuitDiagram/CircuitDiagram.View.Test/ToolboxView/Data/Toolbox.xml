@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<display>
+  <category>
+    <component guid="6353882b-5208-4f88-a83b-2271cc82b94f" key="W" />
+  </category>
+  <category>
+    <component guid="dab6d52b-51a0-49b0-bc40-3cda966148aa" configuration="Resistor" key="R" />
+    <component guid="dab6d52b-51a0-49b0-bc40-3cda966148aa" configuration="Variable Resistor" />
+  </category>
+</display>

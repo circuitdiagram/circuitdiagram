@@ -1,4 +1,22 @@
-﻿using System;
+﻿// Circuit Diagram http://www.circuit-diagram.org/
+// 
+// Copyright (C) 2016  Samuel Fisher
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,7 +24,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using CircuitDiagram.IO.Data;
+using CircuitDiagram.Circuit;
+using CircuitDiagram.Primitives;
 using Ns = CircuitDiagram.Document.Namespaces;
 
 namespace CircuitDiagram.Document.InternalWriter
@@ -15,24 +34,23 @@ namespace CircuitDiagram.Document.InternalWriter
     {
         private const string Version = "1.2";
 
-        public Formatting Formatting { get; set; }
-
         public void Write(CircuitDocument document, Stream stream)
         {
             var context = new WriterContext();
-            
+
             var xml = new XDocument(new XDeclaration("1.0", "utf-8", null),
                 new XElement(Ns.Document + "circuit",
                     new XAttribute("version", Version),
                     CreateMetadata(document, context),
-                    CreateComponentSources(document, context),
-                    CreateDocument(document, context),
-                    CreateLayout(document, context)));
+                    CreateDefinitions(document, context),
+                    CreateElements(document, context)));
 
-            var writer = new XmlTextWriter(stream, Encoding.UTF8)
+            var writer = XmlWriter.Create(stream, new XmlWriterSettings
             {
-                Formatting = Formatting
-            };
+                Encoding = Encoding.UTF8,
+                Indent = true,
+                IndentChars = "\t"
+            });
 
             xml.WriteTo(writer);
             writer.Flush();
@@ -40,7 +58,7 @@ namespace CircuitDiagram.Document.InternalWriter
 
         private XElement CreateMetadata(CircuitDocument document, WriterContext context)
         {
-            var metadata = new XElement(Ns.Document + "metadata");
+            var metadata = new XElement(Ns.Document + "properties");
 
             if (document.Size != null)
             {
@@ -51,30 +69,38 @@ namespace CircuitDiagram.Document.InternalWriter
             return metadata;
         }
 
-        private XElement CreateComponentSources(CircuitDocument document, WriterContext context)
+        private XElement CreateDefinitions(CircuitDocument document, WriterContext context)
         {
-            var componentSources = new XElement(Ns.Document + "componentsources");
+            var componentSources = new XElement(Ns.Document + "definitions");
 
             var componentTypes = document.Elements.Where(x => x is Component)
                                          .Cast<Component>()
                                          .Select(c => c.Type)
                                          .Distinct();
-            
+
             foreach (var source in componentTypes.GroupBy(x => x.Collection))
             {
-                var sourceXml = new XElement(Ns.Document + "source");
-                sourceXml.SetAttributeValue("definitions", source.Key.Value);
+                var sourceXml = new XElement(Ns.Document + "src");
+
+                if (source.Key != ComponentTypeCollection.Unknown)
+                    sourceXml.SetAttributeValue("col", source.Key.Value);
 
                 foreach (var type in source)
                 {
                     var typeXml = new XElement(Ns.Document + "add");
                     typeXml.SetAttributeValue("id", context.AssignId(type));
-                    typeXml.SetAttributeValue("name", type.Name);
-                    typeXml.SetAttributeValue("item", type.CollectionItem);
+
+                    if (type.CollectionItem != null)
+                        typeXml.SetAttributeValue("item", type.CollectionItem);
+
+                    typeXml.SetAttributeValue(Ns.DocumentComponentDescriptions + "name", type.Name);
+
+                    if (type.Id.HasValue)
+                        typeXml.SetAttributeValue(Ns.DocumentComponentDescriptions + "guid", type.Id);
 
                     // Only write configurations that are actually used in this document
                     foreach (var configuration in type.Configurations.Where(cf =>
-                             document.Components.Any(cp => cp.Configuration == cf)))
+                        document.Components.Any(cp => cp.Configuration == cf)))
                     {
                         typeXml.Add(new XElement(Ns.Document + "configuration",
                             new XAttribute("name", configuration.Name),
@@ -90,73 +116,74 @@ namespace CircuitDiagram.Document.InternalWriter
             return componentSources;
         }
 
-        private XElement CreateDocument(CircuitDocument document, WriterContext context)
+        private XElement CreateElements(CircuitDocument document, WriterContext context)
         {
-            var documentXml = new XElement(Ns.Document + "document");
+            var documentXml = new XElement(Ns.Document + "elements");
 
             foreach (var component in document.Components)
             {
-                var componentXml = new XElement(Ns.Document + "component");
+                var componentXml = new XElement(Ns.Document + "c");
 
                 componentXml.SetAttributeValue("id", context.GetOrAssignId(component));
-                componentXml.SetAttributeValue("type", context.GetId(component.Type));
+
+                var typeId = context.GetId(component.Type);
+                componentXml.SetAttributeValue("tp", "{" + typeId + "}");
+
+                // Layout
+                var positionalComponent = component as PositionalComponent;
+                if (positionalComponent != null)
+                    WriteLayout(positionalComponent.Layout, componentXml);
 
                 // Properties
-                var properties = new XElement(Ns.Document + "properties");
+                var properties = new XElement(Ns.Document + "prs");
 
                 if (component.Configuration != null)
                     properties.SetAttributeValue("configuration", component.Configuration.Name);
 
                 foreach (var property in component.Properties)
                 {
-                    properties.Add(new XElement(Ns.Document + "property",
-                        new XAttribute("name", property.Id),
-                        new XAttribute("value", property.Value)));
+                    properties.Add(new XElement(Ns.Document + "p",
+                        new XAttribute("k", property.Key),
+                        new XAttribute("v", property.Value)));
                 }
                 componentXml.Add(properties);
 
                 // Connections
-                var connections = new XElement(Ns.Document + "connections");
+                var connections = new XElement(Ns.Document + "cns");
                 foreach (var connection in component.Connections)
                 {
-                    connections.Add(new XElement(Ns.Document + "connection",
-                        new XAttribute("id", context.GetOrAssignId(connection.Connection)),
-                        new XAttribute("point", connection.Name)));
+                    connections.Add(new XElement(Ns.Document + "cn",
+                        new XAttribute("id", context.GetOrAssignId(connection.Value.Connection)),
+                        new XAttribute("pt", connection.Value.Name)));
                 }
                 componentXml.Add(connections);
 
                 documentXml.Add(componentXml);
             }
 
+            foreach (var wire in document.Wires)
+            {
+                var wireXml = new XElement(Ns.Document + "w");
+                WriteLayout(wire.Layout, wireXml);
+                documentXml.Add(wireXml);
+            }
+
             return documentXml;
         }
 
-        private XElement CreateLayout(CircuitDocument document, WriterContext context)
+        private static void WriteLayout(LayoutInformation layout, XElement targetElement)
         {
-            var layout = new XElement(Ns.Document + "layout");
+            targetElement.SetAttributeValue("x", layout.Location.X);
+            targetElement.SetAttributeValue("y", layout.Location.Y);
 
-            foreach (var pe in document.PositionalElements)
-            {
-                string elName = pe is Component ? "component" : "wire";
+            targetElement.SetAttributeValue("o",
+                layout.Orientation == Orientation.Horizontal
+                    ? "h"
+                    : "v");
 
-                var xmlPe = new XElement(Ns.Document + elName);
+            targetElement.SetAttributeValue("sz", layout.Size);
 
-                if (pe is Component)
-                    xmlPe.SetAttributeValue("id", context.GetOrAssignId(pe));
-
-                xmlPe.SetAttributeValue("x", pe.Layout.Location.X);
-                xmlPe.SetAttributeValue("y", pe.Layout.Location.Y);
-
-                if (pe.Layout.Size.HasValue)
-                    xmlPe.SetAttributeValue("size", pe.Layout.Size.Value);
-
-                if (pe.Layout.Orientation.HasValue)
-                    xmlPe.SetAttributeValue("orientation", pe.Layout.Orientation.Value.ToString().ToLowerInvariant());
-
-                layout.Add(xmlPe);
-            }
-
-            return layout;
+            targetElement.SetAttributeValue("flp", layout.IsFlipped.ToString().ToLowerInvariant());
         }
     }
 }

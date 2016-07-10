@@ -1,0 +1,63 @@
+diff a/CircuitDiagram/CircuitDiagram/MainWindow.xaml.cs b/CircuitDiagram/CircuitDiagram/MainWindow.xaml.cs	(rejected hunks)
+@@ -35,6 +35,8 @@
+ using System.Windows.Xps;
+ using System.Windows.Xps.Packaging;
+ using System.Xml;
++using CircuitDiagram.Document;
++using CircuitDiagram.IO.CDDX;
+ using CircuitDiagram.IO.Document;
+ using TaskDialogInterop;
+ 
+@@ -493,34 +495,16 @@
+         {
+             if (System.IO.Path.GetExtension(path).ToLowerInvariant() == ".cddx" || System.IO.Path.GetExtension(path).ToLowerInvariant() == ".zip")
+             {
+-                using (IO.CDDX.CDDXReader reader = new IO.CDDX.CDDXReader())
+-                {
+-                    bool succeeded = reader.Load(File.OpenRead(path));
+-
+-                    List<IOComponentType> unavailableComponents = null;
+-                    CircuitDocument loadedDocument = null;
+-                    if (succeeded)
+-                    {
+-                        loadedDocument = reader.Document.ToCircuitDocument(reader, out unavailableComponents);
+-                        loadedDocument.Metadata.Format = reader.LoadResult.Format; // Set format
+-                    }
+-                    if (unavailableComponents == null)
+-                        unavailableComponents = new List<IOComponentType>();
++                var reader = new CircuitDiagramDocumentReader();
+ 
+-                    // Show load result dialog
+-                    if (reader.LoadResult.Type != DocumentLoadResultType.Success || reader.LoadResult.Errors.Count > 0 || unavailableComponents.Count > 0)
++                using (var fs = File.OpenRead(path))
++                {
++                    try
+                     {
+-                        winDocumentLoadResult loadResultWindow = new winDocumentLoadResult();
+-                        loadResultWindow.Owner = this;
+-                        loadResultWindow.SetMessage(reader.LoadResult.Type);
+-                        loadResultWindow.SetErrors(reader.LoadResult.Errors);
+-                        loadResultWindow.SetUnavailableComponents(unavailableComponents);
+-                        loadResultWindow.ShowDialog();
+-                    }
++                        var circuit = reader.ReadCircuit(fs);
+ 
+-                    if (succeeded)
+-                    {
+-                        circuitDisplay.Document = loadedDocument;
++                        List<IOComponentType> c;
++                        circuitDisplay.Document = circuit.ToIODocument().ToCircuitDocument(new CDDXReader(), out c);
+                         circuitDisplay.DrawConnections();
+                         m_docPath = path;
+                         m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
+@@ -531,6 +515,10 @@
+                         m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
+                         AddRecentFile(path);
+                     }
++                    catch (Exception)
++                    {
++                        MessageBox.Show(this, "Unable to read circuit document.", "Could not Read File", MessageBoxButton.OK);
++                    }
+                 }
+             }
+             else

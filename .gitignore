@@ -5,6 +5,8 @@ build/
 [Oo]bj/
 packages/
 /Components/Output/
+/Components/Preview/
+/Components/manifest.xml
 TestResults/
 Setup/WiX*/
 Setup/Output/
@@ -18,3 +20,5 @@ Setup/Output/
 *.pfx
 *.licenseheader
 *.wixobj
+*.DotSettings.user
+*.nupkg

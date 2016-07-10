@@ -78,17 +78,7 @@ namespace CircuitDiagram
 
             System.Diagnostics.Process.Start(componentsDirectory);
         }
-
-        private void lnkViewCertificate_Click(object sender, RoutedEventArgs e)
-        {
-            ComponentDescription selected = lbxComponents.SelectedItem as ComponentDescription;
-            if (selected != null && selected.Metadata.Signature.Certificate != null)
-            {
-                System.Windows.Interop.WindowInteropHelper helper = new System.Windows.Interop.WindowInteropHelper(this);
-                System.Security.Cryptography.X509Certificates.X509Certificate2UI.DisplayCertificate(selected.Metadata.Signature.Certificate, helper.Handle);
-            }
-        }
-
+        
         private void hyperlinkComponentDetails_Click(object sender, RoutedEventArgs e)
         {
             winComponentDetails componentDetailsWindow = new winComponentDetails(lbxComponents.SelectedItem as ComponentDescription);

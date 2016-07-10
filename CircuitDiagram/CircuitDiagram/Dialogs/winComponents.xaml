@@ -12,11 +12,8 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <my:BoolToYesNoConverter x:Key="YesNoConverter" />
-            <my:EmbedByDefaultConverter x:Key="EmbedByDefaultConverter" />
+            <!--<my:EmbedByDefaultConverter x:Key="EmbedByDefaultConverter" />-->
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-            <my:SignatureToColourConverter x:Key="SignatureToColourConverter" />
-            <my:SignatureToFontWeightConverter x:Key="SignatureToFontWeightConverter" />
-            <my:SignatureStatusConverter x:Key="SignatureStatusConverter" />
             <my:MultiResolutionImageToImageSourceConverter x:Key="MultiResolutionImageToImageSourceConverter" />
         </ResourceDictionary>
     </Window.Resources>
@@ -39,7 +36,6 @@
                 <RowDefinition Height="27" />
                 <RowDefinition Height="27" />
                 <RowDefinition Height="27" />
-                <RowDefinition Height="27" />
             </Grid.RowDefinitions>
             <Label Name="lblName" Grid.Column="0" Grid.Row="0">Name</Label>
             <Label Name="lblAuthor" Grid.Column="0" Grid.Row="1">Author</Label>
@@ -50,13 +46,10 @@
             <Label Name="lblVersion" Grid.Column="0" Grid.Row="6">Version</Label>
             <Label Name="lblAdditionalInfo" Grid.Column="0" Grid.Row="7">Additional information</Label>
             <Label Name="lblLocation" Grid.Column="0" Grid.Row="8">Location</Label>
-            <Label Name="lblSigned" Grid.Column="0" Grid.Row="9">Signed</Label>
-            <Label Grid.Column="0" Grid.Row="10">Created</Label>
+            <Label Grid.Column="0" Grid.Row="9">Created</Label>
 
             <Label Grid.Column="1" Grid.Row="0" Content="{Binding Path=ComponentName}" />
-            <Label Grid.Column="1" Grid.Row="1" Content="{Binding Path=Metadata.Author}" 
-                   Foreground="{Binding Path=Metadata.Signature, Converter={StaticResource SignatureToColourConverter}}"
-                   FontWeight="{Binding Path=Metadata.Signature, Converter={StaticResource SignatureToFontWeightConverter}}" />
+            <Label Grid.Column="1" Grid.Row="1" Content="{Binding Path=Metadata.Author}"  />
             <Label Grid.Column="1" Grid.Row="2" Content="{Binding ElementName=lbxComponents, Path=SelectedItem, Converter={StaticResource EmbedByDefaultConverter}}" />
             <Grid Grid.Column="1" Grid.Row="3">
                 <Grid.ColumnDefinitions>
@@ -77,15 +70,7 @@
             <Label Grid.Column="1" Grid.Row="6" Content="{Binding Path=Metadata.Version}" />
             <Label Grid.Column="1" Grid.Row="7" Content="{Binding Path=Metadata.AdditionalInformation}" />
             <Label Grid.Column="1" Grid.Row="8" Content="{Binding Path=Metadata.Location}" />
-            <Grid Grid.Column="1" Grid.Row="9">
-                <Label Content="{Binding Path=Metadata.Signature, Converter={StaticResource SignatureStatusConverter}}" 
-                       Foreground="{Binding Path=Metadata.Signature, Converter={StaticResource SignatureToColourConverter}}"
-                       FontWeight="{Binding Path=Metadata.Signature, Converter={StaticResource SignatureToFontWeightConverter}}" />
-                <Label Name="lblViewCertificate" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" Visibility="{Binding Path=Metadata.Signature.IsSigned, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <Hyperlink Name="lnkViewCertificate" Click="lnkViewCertificate_Click">View certificate</Hyperlink>
-                </Label>
-            </Grid>
-            <Label Grid.Column="1" Grid.Row="10" Content="{Binding Path=Metadata.Created}" />
+            <Label Grid.Column="1" Grid.Row="9" Content="{Binding Path=Metadata.Created}" />
 
         </Grid>
         <Label Name="lblMoreComponents" Margin="0,0,93,9" Height="27" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="136">

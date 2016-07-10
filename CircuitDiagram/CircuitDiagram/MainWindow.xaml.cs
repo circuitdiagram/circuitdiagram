@@ -35,6 +35,8 @@ using System.Windows.Threading;
 using System.Windows.Xps;
 using System.Windows.Xps.Packaging;
 using System.Xml;
+using CircuitDiagram.Document;
+using CircuitDiagram.IO.CDDX;
 using CircuitDiagram.IO.Document;
 using TaskDialogInterop;
 
@@ -493,34 +495,16 @@ namespace CircuitDiagram
         {
             if (System.IO.Path.GetExtension(path).ToLowerInvariant() == ".cddx" || System.IO.Path.GetExtension(path).ToLowerInvariant() == ".zip")
             {
-                using (IO.CDDX.CDDXReader reader = new IO.CDDX.CDDXReader())
+                var reader = new CircuitDiagramDocumentReader();
+
+                using (var fs = File.OpenRead(path))
                 {
-                    bool succeeded = reader.Load(File.OpenRead(path));
-
-                    List<IOComponentType> unavailableComponents = null;
-                    CircuitDocument loadedDocument = null;
-                    if (succeeded)
+                    try
                     {
-                        loadedDocument = reader.Document.ToCircuitDocument(reader, out unavailableComponents);
-                        loadedDocument.Metadata.Format = reader.LoadResult.Format; // Set format
-                    }
-                    if (unavailableComponents == null)
-                        unavailableComponents = new List<IOComponentType>();
+                        var circuit = reader.ReadCircuit(fs);
 
-                    // Show load result dialog
-                    if (reader.LoadResult.Type != DocumentLoadResultType.Success || reader.LoadResult.Errors.Count > 0 || unavailableComponents.Count > 0)
-                    {
-                        winDocumentLoadResult loadResultWindow = new winDocumentLoadResult();
-                        loadResultWindow.Owner = this;
-                        loadResultWindow.SetMessage(reader.LoadResult.Type);
-                        loadResultWindow.SetErrors(reader.LoadResult.Errors);
-                        loadResultWindow.SetUnavailableComponents(unavailableComponents);
-                        loadResultWindow.ShowDialog();
-                    }
-
-                    if (succeeded)
-                    {
-                        circuitDisplay.Document = loadedDocument;
+                        List<IOComponentType> c;
+                        circuitDisplay.Document = circuit.ToIODocument().ToCircuitDocument(new CDDXReader(), out c);
                         circuitDisplay.DrawConnections();
                         m_docPath = path;
                         m_documentTitle = System.IO.Path.GetFileNameWithoutExtension(path);
@@ -530,6 +514,10 @@ namespace CircuitDiagram
                         m_undoManager.ActionDelegate = new CircuitDiagram.UndoManager.UndoActionDelegate(UndoActionProcessor);
                         m_undoManager.ActionOccurred += new EventHandler(m_undoManager_ActionOccurred);
                         AddRecentFile(path);
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show(this, "Unable to read circuit document.", "Could not Read File", MessageBoxButton.OK);
                     }
                 }
             }
@@ -853,17 +841,6 @@ namespace CircuitDiagram
                         writer.Write(doc.DocumentPaginator);
                     }
                 }
-                else if (extension == ".emf") // Disabled
-                {
-                    EMFRenderer renderer = new EMFRenderer((int)circuitDisplay.Document.Size.Width, (int)circuitDisplay.Document.Size.Height);
-                    renderer.Begin();
-                    circuitDisplay.Document.Render(renderer);
-                    renderer.End();
-                    using (FileStream stream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.Read))
-                    {
-                        renderer.WriteEnhMetafile(stream);
-                    }
-                }
                 else
                 {
                     // Create the document writer
@@ -1009,7 +986,7 @@ namespace CircuitDiagram
             docSizeWindow.DocumentHeight = circuitDisplay.Document.Size.Height;
             if (docSizeWindow.ShowDialog() == true)
             {
-                Size newSize = new Size(docSizeWindow.DocumentWidth, docSizeWindow.DocumentHeight);
+                var newSize = new Primitives.Size(docSizeWindow.DocumentWidth, docSizeWindow.DocumentHeight);
                 if (newSize != circuitDisplay.Document.Size)
                 {
                     UndoAction resizeAction = new UndoAction(UndoCommand.ResizeDocument, "Resize document");
@@ -1109,7 +1086,7 @@ namespace CircuitDiagram
                 }
 
                 CircuitDocument newDocument = new CircuitDocument();
-                newDocument.Size = new Size(newDocumentWindow.DocumentWidth, newDocumentWindow.DocumentHeight);
+                newDocument.Size = new Primitives.Size(newDocumentWindow.DocumentWidth, newDocumentWindow.DocumentHeight);
                 InitializeMetadata(newDocument);
                 circuitDisplay.Document = newDocument;
                 circuitDisplay.DrawConnections();
@@ -1381,7 +1358,7 @@ namespace CircuitDiagram
                         break;
                     case UndoCommand.ResizeDocument:
                         {
-                            circuitDisplay.Document.Size = e.Action.GetData<Size>("before");
+                            circuitDisplay.Document.Size = e.Action.GetData<Primitives.Size>("before");
                             circuitDisplay.DocumentSizeChanged();
                         }
                         break;
@@ -1435,7 +1412,7 @@ namespace CircuitDiagram
                         break;
                     case UndoCommand.ResizeDocument:
                         {
-                            circuitDisplay.Document.Size = e.Action.GetData<Size>("after");
+                            circuitDisplay.Document.Size = e.Action.GetData<Primitives.Size>("after");
                             circuitDisplay.DocumentSizeChanged();
                         }
                         break;
