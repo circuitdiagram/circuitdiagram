@@ -63,7 +63,7 @@ namespace CircuitDiagram.Updates
 #if DEBUG
             appDisplayVersion += $"(Debug, Build {buildVersion.Revision})";
 #else
-            appDisplayVersion += String.Format("(Build {0})", BuildVersion.Revision);
+            appDisplayVersion += String.Format("(Build {0})", buildVersion.Revision);
 #endif
         }
 

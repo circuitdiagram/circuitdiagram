@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>CircuitDiagramCore</id>
-    <version>4.0-pre6</version>
+    <version>$version$</version>
     <title>CircuitDiagramCore</title>
     <authors>Samuel Fisher</authors>
     <owners>Samuel Fisher</owners>

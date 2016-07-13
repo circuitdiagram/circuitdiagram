@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>CircuitDiagram.Document</id>
-    <version>4.0-pre4</version>
+    <version>$version$</version>
     <title>CircuitDiagram.Document</title>
     <authors>Samuel Fisher</authors>
     <owners>Samuel Fisher</owners>
