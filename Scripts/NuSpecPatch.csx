@@ -1,13 +1,8 @@
 using System.IO;
 
-if (false && Environment.GetEnvironmentVariable("APPVEYOR") == null)
-{
-    Console.WriteLine("Not running on AppVeyor");
-    return;
-}
-
-string version = Environment.GetEnvironmentVariable("APPVEYOR_BULID_VERSION");
+string version = Environment.GetEnvironmentVariable("APPVEYOR_BUILD_VERSION");
 string branch = Environment.GetEnvironmentVariable("APPVEYOR_REPO_BRANCH");
+
 string packageVersion = version + "-" + branch;
 
 var nuspecFiles = Directory.GetFiles(Environment.CurrentDirectory, "*.nuspec", SearchOption.AllDirectories);

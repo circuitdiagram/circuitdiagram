@@ -2,10 +2,10 @@
 cinst scriptcs
 
 # Patch *.nuspec files
-scriptcs NuSpecPatch.csx
+scriptcs Scripts\NuSpecPatch.csx
 
 # Package
-nuget pack CircuitDiagram/CircuitDiagramCore/CircuitDiagramCore.nuspec
+nuget pack CircuitDiagram\CircuitDiagramCore\CircuitDiagramCore.nuspec
 
 # Publish
-Get-ChildItem .\CircuitDiagram\CircuitDiagramCore\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+Get-ChildItem .\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
