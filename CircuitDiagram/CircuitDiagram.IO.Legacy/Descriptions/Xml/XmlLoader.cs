@@ -85,8 +85,11 @@ namespace CircuitDiagram.IO.Descriptions.Xml
                 var declaration = root.Elements().First(x => x.Name == ComponentNamespace + "declaration");
                 ReadDeclarationSection(declaration, lc, description);
 
-                var connections = root.Elements().First(x => x.Name == ComponentNamespace + "connections");
-                ReadConnectionsSection(connections, lc, description);
+                var connections = root.Elements().FirstOrDefault(x => x.Name == ComponentNamespace + "connections");
+                if (connections != null)
+                    ReadConnectionsSection(connections, lc, description);
+                else
+                    description.Connections = new ConnectionGroup[0];
 
                 var render = root.Elements().First(x => x.Name == ComponentNamespace + "render");
                 ReadRenderSection(render, lc, description);
