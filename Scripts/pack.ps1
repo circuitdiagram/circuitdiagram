@@ -5,7 +5,7 @@ cinst scriptcs
 scriptcs Scripts\NuSpecPatch.csx
 
 # Package
-nuget pack CircuitDiagram\CircuitDiagramCore\CircuitDiagramCore.nuspec
+Get-ChildItem -recurse .\*.nuspec | % { nuget pack $_.FullName }
 
 # Publish
 Get-ChildItem .\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
