@@ -243,6 +243,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Dialogs\DialogService.cs" />
+    <Compile Include="Dialogs\DialogWindow.xaml.cs">
+      <DependentUpon>DialogWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Other\BuildChannelAttribute.cs" />
     <Compile Include="Controls\UnitsTextBox.cs" />
     <Compile Include="Converters\MultiResolutionImageToImageSourceConverter.cs" />
@@ -259,6 +263,7 @@
     <Compile Include="Converters\KeyTextConverter.cs" />
     <Compile Include="Other\CustomCommands.cs" />
     <Compile Include="Other\UpdateChannelType.cs" />
+    <Compile Include="Updates\UpdateVersionService.cs" />
     <Page Include="DefaultDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -267,6 +272,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Dialogs\DialogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ShellWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -353,6 +362,7 @@
   <ItemGroup>
     <Resource Include="Images\Search64.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

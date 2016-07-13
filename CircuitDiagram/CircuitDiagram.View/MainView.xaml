@@ -12,6 +12,8 @@
              mvvm:ViewModelLocator.AutoWireViewModel="True">
     <UserControl.Resources>
         <converters:MultiResolutionImageToImageSourceConverter x:Key="MultiResolutionImageConverter" DPI="192" />
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <converters:InverseNullToVisibilityConverter x:Key="InverseNullToVisibilityConverter" />
     </UserControl.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
@@ -53,9 +55,11 @@
             <MenuItem Header="_Help">
                 <MenuItem Header="_Documentation" />
                 <Separator />
-                <MenuItem Header="Check for _Updates" />
+                <MenuItem Header="Check for _Updates"
+                          Command="{Binding CheckForUpdatesCommand}" />
                 <Separator />
-                <MenuItem Header="_About" />
+                <MenuItem Header="_About"
+                          Command="{Binding AboutCommand}"/>
             </MenuItem>
         </Menu>
         <StatusBar DockPanel.Dock="Bottom" Height="23" Style="{StaticResource StatusBarStyle}">
@@ -68,14 +72,30 @@
                              SelectedCategoryItem="{Binding SelectedToolboxItem, Mode=TwoWay}">
                 <toolbox:Toolbox.CategoryItemTemplate>
                     <DataTemplate>
-                        <Image Source="{Binding Icon, Converter={StaticResource MultiResolutionImageConverter}}"
-                               Width="32" Height="32"/>
+                        <Grid ToolTip="{Binding Name}"
+                              Background="Transparent">
+                            <Image Source="{Binding Icon, Converter={StaticResource MultiResolutionImageConverter}}"
+                                Width="32" Height="32"
+                                Visibility="{Binding Icon, Converter={StaticResource NullToVisibilityConverter}}"/>
+                            <TextBlock Text="{Binding Name}"
+                                       Visibility="{Binding Icon, Converter={StaticResource InverseNullToVisibilityConverter}}"
+                                       TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
                     </DataTemplate>
                 </toolbox:Toolbox.CategoryItemTemplate>
                 <toolbox:Toolbox.CategoryMainItemTemplate>
                     <DataTemplate>
-                        <Image Source="{Binding Icon, Converter={StaticResource MultiResolutionImageConverter}}"
-                               Width="32" Height="32"/>
+                        <Grid ToolTip="{Binding Name}"
+                              Background="Transparent">
+                            <Image Source="{Binding Icon, Converter={StaticResource MultiResolutionImageConverter}}"
+                                Width="32" Height="32"
+                                Visibility="{Binding Icon, Converter={StaticResource NullToVisibilityConverter}}"/>
+                            <TextBlock Text="{Binding Name}"
+                                       Visibility="{Binding Icon, Converter={StaticResource InverseNullToVisibilityConverter}}"
+                                       TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
                     </DataTemplate>
                 </toolbox:Toolbox.CategoryMainItemTemplate>
             </toolbox:Toolbox>

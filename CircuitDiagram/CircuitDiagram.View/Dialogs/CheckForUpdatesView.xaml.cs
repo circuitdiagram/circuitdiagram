@@ -21,28 +21,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CircuitDiagram.Dialogs;
-using CircuitDiagram.Updates;
-using CircuitDiagram.View.Services;
-using Microsoft.Practices.Unity;
-using Prism.Modularity;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
-namespace CircuitDiagram.Dependency
+namespace CircuitDiagram.View.Dialogs
 {
-    [Module(ModuleName = "CircuitDiagram.Base")]
-    public class CircuitDiagramModule : IModule
+    /// <summary>
+    /// Interaction logic for CheckForUpdatesView.xaml
+    /// </summary>
+    public partial class CheckForUpdatesView : UserControl
     {
-        private readonly IUnityContainer container;
-
-        public CircuitDiagramModule(IUnityContainer container)
+        public CheckForUpdatesView()
         {
-            this.container = container;
+            InitializeComponent();
         }
 
-        public void Initialize()
+        private void Close(object sender, RoutedEventArgs e)
         {
-            container.RegisterType<IDialogService, DialogService>();
-            container.RegisterType<IUpdateVersionService, UpdateVersionService>();
+            var dialog = Window.GetWindow(this);
+            dialog.Close();
+        }
+
+        private void OpenDownloadLink(object sender, RequestNavigateEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.Uri.ToString());
         }
     }
 }

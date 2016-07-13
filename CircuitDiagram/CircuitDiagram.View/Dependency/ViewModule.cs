@@ -31,6 +31,7 @@ using Prism.Regions;
 namespace CircuitDiagram.View.Dependency
 {
     [Module(ModuleName = "CircuitDiagram.View")]
+    [ModuleDependency("CircuitDiagram.Base")]
     public class ViewModule : IModule
     {
         private readonly IUnityContainer container;

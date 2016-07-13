@@ -58,6 +58,7 @@ namespace CircuitDiagram.View.Editor.Operations
             element = new PositionalComponent(context.PlaceType.Type, context.PlaceType.Configuration, initialMousePosition.ToCdPoint());
             SizeComponent(element, initialMousePosition.ToCdPoint(), initialMousePosition.ToCdPoint(), context.GridSize);
             SetDefaultProperties(element);
+            SetConfigurationProperties(element);
             context.AddElement(element);
         }
 
@@ -178,6 +179,18 @@ namespace CircuitDiagram.View.Editor.Operations
                     !((DependentDictionary<PropertyName, PropertyValue>)component.Properties).IsSetExplicitly(property.SerializedName))
                     component.Properties[property.SerializedName] = property.Default;
             }
+        }
+
+        private void SetConfigurationProperties(Component component)
+        {
+            if (component.Configuration == null)
+                return;
+
+            var description = descriptionLookup.GetDescription(component.Type);
+            var configuration = description.Metadata.Configurations.FirstOrDefault(x => x.ImplementationName == component.Configuration.Implements);
+            
+            foreach (var property in configuration.Setters)
+                component.Properties[property.Key] = property.Value;
         }
     }
 }

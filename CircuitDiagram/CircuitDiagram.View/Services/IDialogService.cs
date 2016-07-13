@@ -21,28 +21,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CircuitDiagram.Dialogs;
-using CircuitDiagram.Updates;
-using CircuitDiagram.View.Services;
-using Microsoft.Practices.Unity;
-using Prism.Modularity;
 
-namespace CircuitDiagram.Dependency
+namespace CircuitDiagram.View.Services
 {
-    [Module(ModuleName = "CircuitDiagram.Base")]
-    public class CircuitDiagramModule : IModule
+    public interface IDialogService
     {
-        private readonly IUnityContainer container;
-
-        public CircuitDiagramModule(IUnityContainer container)
-        {
-            this.container = container;
-        }
-
-        public void Initialize()
-        {
-            container.RegisterType<IDialogService, DialogService>();
-            container.RegisterType<IUpdateVersionService, UpdateVersionService>();
-        }
+        bool? ShowDialog(string title, object viewModel);
     }
 }

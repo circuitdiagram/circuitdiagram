@@ -21,28 +21,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CircuitDiagram.Dialogs;
-using CircuitDiagram.Updates;
-using CircuitDiagram.View.Services;
-using Microsoft.Practices.Unity;
-using Prism.Modularity;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using CircuitDiagram.DPIWindow;
 
-namespace CircuitDiagram.Dependency
+namespace CircuitDiagram.Dialogs
 {
-    [Module(ModuleName = "CircuitDiagram.Base")]
-    public class CircuitDiagramModule : IModule
+    /// <summary>
+    /// Interaction logic for DialogWindow.xaml
+    /// </summary>
+    public partial class DialogWindow : MetroDPIWindow
     {
-        private readonly IUnityContainer container;
-
-        public CircuitDiagramModule(IUnityContainer container)
+        public DialogWindow()
         {
-            this.container = container;
+            InitializeComponent();
         }
 
-        public void Initialize()
+        public void SetChild(FrameworkElement control)
         {
-            container.RegisterType<IDialogService, DialogService>();
-            container.RegisterType<IUpdateVersionService, UpdateVersionService>();
+            AddChild(control);
         }
     }
 }

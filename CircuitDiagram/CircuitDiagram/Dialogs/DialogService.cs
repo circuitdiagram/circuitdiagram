@@ -21,28 +21,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CircuitDiagram.Dialogs;
-using CircuitDiagram.Updates;
 using CircuitDiagram.View.Services;
-using Microsoft.Practices.Unity;
-using Prism.Modularity;
+using Microsoft.Practices.ServiceLocation;
+using System.Windows;
 
-namespace CircuitDiagram.Dependency
+namespace CircuitDiagram.Dialogs
 {
-    [Module(ModuleName = "CircuitDiagram.Base")]
-    public class CircuitDiagramModule : IModule
+    class DialogService : IDialogService
     {
-        private readonly IUnityContainer container;
-
-        public CircuitDiagramModule(IUnityContainer container)
+        public bool? ShowDialog(string title, object viewModel)
         {
-            this.container = container;
-        }
+            var viewTypeName = viewModel.GetType().FullName.Replace("ViewModel", "View");
+            var viewType = viewModel.GetType().Assembly.GetType(viewTypeName);
 
-        public void Initialize()
-        {
-            container.RegisterType<IDialogService, DialogService>();
-            container.RegisterType<IUpdateVersionService, UpdateVersionService>();
+            // Build the view and model, and bind them
+            var view = (FrameworkElement)ServiceLocator.Current.GetInstance(viewType);
+            view.DataContext = viewModel;
+
+            var host = new DialogWindow
+            {
+                Title = title,
+                Owner = Application.Current.MainWindow
+            };
+
+            host.SetChild(view);
+
+            return host.ShowDialog();
         }
     }
 }

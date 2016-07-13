@@ -28,6 +28,7 @@ using CircuitDiagram.Document;
 using CircuitDiagram.Primitives;
 using CircuitDiagram.Render;
 using CircuitDiagram.TypeDescription;
+using CircuitDiagram.View.Dialogs;
 using CircuitDiagram.View.Services;
 using CircuitDiagram.View.ToolboxView;
 using Microsoft.Win32;
@@ -38,6 +39,10 @@ namespace CircuitDiagram.View
 {
     public class MainViewModel : BindableBase
     {
+        private readonly IDialogService dialogService;
+        private readonly AboutViewModel aboutViewModel;
+        private readonly CheckForUpdatesViewModel checkForUpdatesViewModel;
+        private readonly Func<NewDocumentViewModel> newDocumentViewModelProvider;
         private CircuitDocument document;
         private ToolboxEntry[][] availableComponents;
         private ToolboxEntry selectedToolboxItem;
@@ -48,16 +53,27 @@ namespace CircuitDiagram.View
         };
 
         public MainViewModel(IComponentDescriptionService descriptionService,
+                             IDialogService dialogService,
                              IToolboxReader toolboxReader,
-                             IConfigurationValues configurationValues)
+                             IConfigurationValues configurationValues,
+                             AboutViewModel aboutViewModel,
+                             CheckForUpdatesViewModel checkForUpdatesViewModel,
+                             Func<NewDocumentViewModel> newDocumentViewModelProvider)
         {
+            this.dialogService = dialogService;
+            this.aboutViewModel = aboutViewModel;
+            this.checkForUpdatesViewModel = checkForUpdatesViewModel;
+            this.newDocumentViewModelProvider = newDocumentViewModelProvider;
             DescriptionLookup = descriptionService;
             descriptionService.LoadDescriptions();
 
             using (var toolboxStream = File.OpenRead(configurationValues.ToolboxConfigurationFile))
                 AvailableComponents = new[] {new[] {select}}.Concat(toolboxReader.GetToolbox(toolboxStream, descriptionService.AvailableTypes)).ToArray();
 
-            NewDocument();
+            Document = new CircuitDocument
+            {
+                Size = new Size(640, 480)
+            };
         }
 
         public ToolboxEntry[][] AvailableComponents
@@ -98,11 +114,19 @@ namespace CircuitDiagram.View
 
         public ICommand SaveDocumentAsCommand => new DelegateCommand(SaveDocumentAs);
 
+        public ICommand CheckForUpdatesCommand => new DelegateCommand(CheckForUpdates);
+
+        public ICommand AboutCommand => new DelegateCommand(() => dialogService.ShowDialog("About Circuit Diagram", aboutViewModel));
+
         private void NewDocument()
         {
+            var viewModel = newDocumentViewModelProvider();
+            if (dialogService.ShowDialog("New Document", viewModel) != true)
+                return;
+
             Document = new CircuitDocument
             {
-                Size = new Size(640, 480)
+                Size = new Size(viewModel.DocumentWidth, viewModel.DocumentHeight)
             };
         }
 
@@ -111,7 +135,7 @@ namespace CircuitDiagram.View
             var ofd = new OpenFileDialog
             {
                 Title = "Open",
-                Filter = "Supported Circuits (*.cddx;*.xml)|*.cddx;*.xml|Circuit Diagram Document (*.cddx)|*.cddx|XML Files (*.xml)|*.xml|All Files (*.*)|*.*",
+                Filter = "Circuit Diagram Document (*.cddx)|*.cddx|All Files (*.*)|*.*",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             };
 
@@ -138,6 +162,12 @@ namespace CircuitDiagram.View
                 using (var fs = new FileStream(sfd.FileName, FileMode.Create))
                     writer.WriteCircuit(Document, fs);
             }
+        }
+
+        private void CheckForUpdates()
+        {
+            checkForUpdatesViewModel.CheckForUpdates();
+            dialogService.ShowDialog("Updates", checkForUpdatesViewModel);
         }
     }
 }

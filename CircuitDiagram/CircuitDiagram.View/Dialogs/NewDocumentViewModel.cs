@@ -21,28 +21,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CircuitDiagram.Dialogs;
-using CircuitDiagram.Updates;
-using CircuitDiagram.View.Services;
-using Microsoft.Practices.Unity;
-using Prism.Modularity;
+using Prism.Mvvm;
 
-namespace CircuitDiagram.Dependency
+namespace CircuitDiagram.View.Dialogs
 {
-    [Module(ModuleName = "CircuitDiagram.Base")]
-    public class CircuitDiagramModule : IModule
+    public class NewDocumentViewModel : BindableBase
     {
-        private readonly IUnityContainer container;
+        private double documentWidth;
+        private double documentHeight;
 
-        public CircuitDiagramModule(IUnityContainer container)
+        public NewDocumentViewModel()
         {
-            this.container = container;
+            DocumentWidth = 640;
+            DocumentHeight = 480;
         }
 
-        public void Initialize()
+        public double DocumentWidth
         {
-            container.RegisterType<IDialogService, DialogService>();
-            container.RegisterType<IUpdateVersionService, UpdateVersionService>();
+            get { return documentWidth; }
+            set
+            {
+                documentWidth = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double DocumentHeight
+        {
+            get { return documentHeight; }
+            set
+            {
+                documentHeight = value;
+                OnPropertyChanged();
+            }
         }
     }
 }
