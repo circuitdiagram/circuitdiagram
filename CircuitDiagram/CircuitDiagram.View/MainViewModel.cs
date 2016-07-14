@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -40,6 +41,7 @@ namespace CircuitDiagram.View
     public class MainViewModel : BindableBase
     {
         private readonly IDialogService dialogService;
+        private readonly IDocumentService documentService;
         private readonly AboutViewModel aboutViewModel;
         private readonly CheckForUpdatesViewModel checkForUpdatesViewModel;
         private readonly Func<NewDocumentViewModel> newDocumentViewModelProvider;
@@ -52,8 +54,11 @@ namespace CircuitDiagram.View
             Name = "Select"
         };
 
+        private ObservableCollection<IPositionalElement> selectedElements;
+
         public MainViewModel(IComponentDescriptionService descriptionService,
                              IDialogService dialogService,
+                             IDocumentService documentService,
                              IToolboxReader toolboxReader,
                              IConfigurationValues configurationValues,
                              AboutViewModel aboutViewModel,
@@ -61,9 +66,11 @@ namespace CircuitDiagram.View
                              Func<NewDocumentViewModel> newDocumentViewModelProvider)
         {
             this.dialogService = dialogService;
+            this.documentService = documentService;
             this.aboutViewModel = aboutViewModel;
             this.checkForUpdatesViewModel = checkForUpdatesViewModel;
             this.newDocumentViewModelProvider = newDocumentViewModelProvider;
+            SelectedElements = new ObservableCollection<IPositionalElement>();
             DescriptionLookup = descriptionService;
             descriptionService.LoadDescriptions();
 
@@ -106,6 +113,16 @@ namespace CircuitDiagram.View
             }
         }
 
+        public ObservableCollection<IPositionalElement> SelectedElements
+        {
+            get { return selectedElements; }
+            set
+            {
+                selectedElements = value;
+                OnPropertyChanged();
+            }
+        }
+
         public IComponentDescriptionLookup DescriptionLookup { get; }
 
         public ICommand NewDocumentCommand => new DelegateCommand(NewDocument);
@@ -143,7 +160,7 @@ namespace CircuitDiagram.View
             {
                 var reader = new CircuitDiagramDocumentReader();
                 using (var fs = new FileStream(ofd.FileName, FileMode.Open))
-                    Document = reader.ReadCircuit(fs);
+                    Document = documentService.OpenDocument(fs);
             }
         }
 

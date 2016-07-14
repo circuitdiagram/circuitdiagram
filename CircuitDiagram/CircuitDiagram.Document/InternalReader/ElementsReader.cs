@@ -134,6 +134,18 @@ namespace CircuitDiagram.Document.InternalReader
 
                 document.Elements.Add(component);
             }
+
+            var wires = from el in elements.Elements()
+                             where el.Name == Ns.Document + "w"
+                             select el;
+
+            foreach (var wireElement in wires)
+            {
+                var wire = new Wire(new Point());
+                ReadLayout(wire, wireElement, context);
+
+                document.Elements.Add(wire);
+            }
         }
 
         private void ReadLayout(IPositionalElement positionalElement, XElement element, ReaderContext context)

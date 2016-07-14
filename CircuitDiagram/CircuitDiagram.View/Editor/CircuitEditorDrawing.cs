@@ -35,10 +35,8 @@ namespace CircuitDiagram.View.Editor
 {
     class CircuitEditorDrawing : CircuitEditorVisual
     {
-        private static readonly DependencyPropertyKey SelectedElementsPropertyKey = DependencyProperty.RegisterReadOnly(
+        private static readonly DependencyProperty SelectedElementsProperty = DependencyProperty.Register(
             "SelectedElements", typeof(ObservableCollection<IPositionalElement>), typeof(CircuitEditorDrawing), new PropertyMetadata(default(ICollection<IPositionalElement>)));
-
-        public static readonly DependencyProperty SelectedElementsProperty = SelectedElementsPropertyKey.DependencyProperty;
 
         private VisualiseCircuitConnections visualiseConnections;
 
@@ -54,11 +52,9 @@ namespace CircuitDiagram.View.Editor
         public ObservableCollection<IPositionalElement> SelectedElements
         {
             get { return (ObservableCollection<IPositionalElement>)GetValue(SelectedElementsProperty); }
-            private set { SetValue(SelectedElementsPropertyKey, value); }
+            set { SetValue(SelectedElementsProperty, value); }
         }
-
         
-
         private void RenderStaticElements()
         {
             if (Circuit != null)
