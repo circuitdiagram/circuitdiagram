@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>CircuitDiagram.TypeDescriptionIO</id>
-    <version>4.0-pre3</version>
+    <version>$version$</version>
     <title>CircuitDiagram.TypeDescriptionIO</title>
     <authors>Samuel Fisher</authors>
     <owners>Samuel Fisher</owners>
@@ -14,8 +14,8 @@
     <copyright>Copyright 2016</copyright>
     <tags></tags>
     <dependencies>
-      <dependency id="CircuitDiagramCore" version="4.0-pre6" />
-      <dependency id="CircuitDiagram.Render" version="4.0-pre4" />
+      <dependency id="CircuitDiagramCore" version="$version$" />
+      <dependency id="CircuitDiagram.Render" version="$version$" />
     </dependencies>
   </metadata>
   <files>

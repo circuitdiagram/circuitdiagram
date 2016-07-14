@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>CircuitDiagram.Render</id>
-    <version>4.0-pre4</version>
+    <version>$version$</version>
     <title>CircuitDiagram.Render</title>
     <authors>Samuel Fisher</authors>
     <owners>Samuel Fisher</owners>
@@ -14,7 +14,7 @@
     <copyright>Copyright 2016</copyright>
     <tags></tags>
     <dependencies>
-      <dependency id="CircuitDiagramCore" version="4.0-pre6" />
+      <dependency id="CircuitDiagramCore" version="$version$" />
     </dependencies>
   </metadata>
   <files>
