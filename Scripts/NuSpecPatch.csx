@@ -1,9 +1,12 @@
 using System.IO;
 
 string version = Environment.GetEnvironmentVariable("APPVEYOR_BUILD_VERSION");
+string buildNumber = Environment.GetEnvironmentVariable("APPVEYOR_BUILD_NUMBER");
 string branch = Environment.GetEnvironmentVariable("APPVEYOR_REPO_BRANCH");
 
-string packageVersion = version + "-" + branch;
+version = version.Substring(0, version.LastIndexOf("."));
+
+string packageVersion = version + "-b" + buildNumber + "-" + branch;
 
 var nuspecFiles = Directory.GetFiles(Environment.CurrentDirectory, "*.nuspec", SearchOption.AllDirectories);
 
