@@ -30,7 +30,7 @@ namespace CircuitDiagram.View.Editor.Operations
 {
     class SingleSelectOperation : IEditorOperation
     {
-        private IPositionalElement selectionElement;
+        private PositionalComponent selectionElement;
         private Primitives.Point? initialLocation;
         private double? initialSize;
 
@@ -74,7 +74,7 @@ namespace CircuitDiagram.View.Editor.Operations
                 context.SelectedElements.Remove(selectionElement);
         }
 
-        private bool MatchesSelection(IPositionalElement element)
+        private bool MatchesSelection(PositionalComponent element)
         {
             return element != null && element == selectionElement &&
                    element.Layout.Location == initialLocation.Value &&

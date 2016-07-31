@@ -72,7 +72,7 @@ namespace CircuitDiagram.View.Editor
 
         public class ElementHitTestResult
         {
-            public IPositionalElement Element { get; set; }
+            public PositionalComponent Element { get; set; }
             public ResizeHandle ResizeHandle { get; set; }
         }
     }

@@ -36,22 +36,22 @@ namespace CircuitDiagram.View.Editor
     class CircuitEditorDrawing : CircuitEditorVisual
     {
         private static readonly DependencyProperty SelectedElementsProperty = DependencyProperty.Register(
-            "SelectedElements", typeof(ObservableCollection<IPositionalElement>), typeof(CircuitEditorDrawing), new PropertyMetadata(default(ICollection<IPositionalElement>)));
+            "SelectedElements", typeof(ObservableCollection<PositionalComponent>), typeof(CircuitEditorDrawing), new PropertyMetadata(default(ICollection<IPositionalElement>)));
 
         private VisualiseCircuitConnections visualiseConnections;
 
         public CircuitEditorDrawing()
         {
-            SelectedElements = new ObservableCollection<IPositionalElement>();
+            SelectedElements = new ObservableCollection<PositionalComponent>();
         }
 
         /// <summary>
         /// Gets the collection of elements that have either been clicked on to select them, or have
         /// been selected by dragging a selection box around them.
         /// </summary>
-        public ObservableCollection<IPositionalElement> SelectedElements
+        public ObservableCollection<PositionalComponent> SelectedElements
         {
-            get { return (ObservableCollection<IPositionalElement>)GetValue(SelectedElementsProperty); }
+            get { return (ObservableCollection<PositionalComponent>)GetValue(SelectedElementsProperty); }
             set { SetValue(SelectedElementsProperty, value); }
         }
         
@@ -115,7 +115,7 @@ namespace CircuitDiagram.View.Editor
                 return;
 
             // Add ElementVisuals
-            foreach (var element in Circuit.PositionalElements)
+            foreach (var element in Circuit.PositionalComponents)
             {
                 var renderer = new CircuitRenderer(DescriptionLookup);
                 var visual = new ElementDrawingVisual(renderer, element);

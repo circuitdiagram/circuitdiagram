@@ -42,14 +42,11 @@ namespace CircuitDiagram.View.Controls
     class CircuitEditor : CircuitEditorDrawing, IEditorOperationalContext
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(CircuitEditor));
-
+        
         public static readonly DependencyProperty PlaceTypeProperty = DependencyProperty.Register(
             "PlaceType", typeof(IComponentTypeIdentifier), typeof(CircuitEditor), new PropertyMetadata(default(IComponentTypeIdentifier)));
 
-        //private readonly MoveOperation moveOperation = new MoveOperation();
-
         private readonly HashSet<IPositionalElement> highlighted = new HashSet<IPositionalElement>();
-        //private readonly HashSet<IPositionalElement> activeElements = new HashSet<IPositionalElement>();
 
         private IList<IEditorOperation> operations = new IEditorOperation[0];
 
@@ -68,7 +65,12 @@ namespace CircuitDiagram.View.Controls
             };
         }
 
-        ICollection<IPositionalElement> IEditorOperationalContext.SelectedElements => SelectedElements;
+        ICollection<PositionalComponent> IEditorOperationalContext.SelectedElements => SelectedElements;
+
+        public Action<PositionalComponent> UpdateComponent
+        {
+            get { return component => ((IEditorOperationalContext)this).ReRenderElement(component); }
+        }
 
         void IEditorOperationalContext.AddElement(IPositionalElement element)
         {
@@ -104,22 +106,6 @@ namespace CircuitDiagram.View.Controls
             HighlightBoxVisuals[element].UpdateVisual();
             RenderConnections();
         }
-
-        //private MouseAction currentAction = MouseAction.None;
-        //private bool isPerformingAction = false;
-        //private IEditorOperation currentOperation;
-
-
-        //enum MouseAction
-        //{
-        //    None,
-        //    Move,
-        //    ResizeFirst,
-        //    ResizeSecond,
-        //    SelectMany,
-        //    Place
-        //}
-
 
         public IComponentTypeIdentifier PlaceType
         {

@@ -38,7 +38,7 @@ namespace CircuitDiagram.View.Editor
         private bool isHighlighted;
         private Brush resizeHandleBrush;
 
-        public ElementDrawingVisual(ICircuitRenderer renderer, IPositionalElement circuitElement)
+        public ElementDrawingVisual(ICircuitRenderer renderer, PositionalComponent circuitElement)
         {
             this.renderer = renderer;
             CircuitElement = circuitElement;
@@ -47,7 +47,7 @@ namespace CircuitDiagram.View.Editor
             UpdateVisual();
         }
 
-        public IPositionalElement CircuitElement { get; }
+        public PositionalComponent CircuitElement { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether a highlight box and resize controls should be shown.

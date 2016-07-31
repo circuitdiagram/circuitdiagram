@@ -15,6 +15,8 @@
     <tags></tags>
     <dependencies>
       <dependency id="CircuitDiagramCore" version="$version$" />
+      <dependency id="System.IO.Packaging" version="4.0.0" />
+      <dependency id="Microsoft.Extensions.Logging.Abstractions" version="1.0.0" />
     </dependencies>
   </metadata>
   <files>

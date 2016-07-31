@@ -21,20 +21,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CircuitDiagram.Circuit;
+using System.Windows;
+using System.Windows.Controls;
+using CircuitDiagram.TypeDescription;
 
-namespace CircuitDiagram.View.Editor.Operations
+namespace CircuitDiagram.View.Controls.ComponentProperties
 {
-    class EditorOperationHitTest
+    class PropertyEditorDataTemplateSelector : DataTemplateSelector
     {
-        public PositionalComponent Element { get; set; }
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        {
+            var property = (EditableProperty)item;
+            var element = container as FrameworkElement;
 
-        public ResizeHandle? ResizeHandle { get; set; }
-    }
-
-    public enum ResizeHandle
-    {
-        Begin,
-        End
+            switch (property.Property.Type)
+            {
+                case PropertyType.Boolean:
+                    return element.FindResource("BooleanPropertyDataTemplate") as DataTemplate;
+                default:
+                    return null;
+            }
+        }
     }
 }

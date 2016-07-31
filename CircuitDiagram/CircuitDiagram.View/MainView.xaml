@@ -106,7 +106,9 @@
                 <RowDefinition Height="40" />
             </Grid.RowDefinitions>
             <ScrollViewer Name="gridEditor" Grid.Row="0" VerticalScrollBarVisibility="Auto">
-                <controls:PropertyEditor EditableComponents="{Binding SelectedElements}" />
+                <controls:PropertyEditor EditableComponents="{Binding SelectedElements}"
+                                         DescriptionLookup="{Binding DescriptionLookup}"
+                                         ComponentPropertyChanged="{Binding ElementName=CircuitEditor, Path=UpdateComponent}"/>
             </ScrollViewer>
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
@@ -129,7 +131,8 @@
         </Grid>
         
         <ScrollViewer Background="LightGray" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-            <controls:CircuitEditor Circuit="{Binding Document}"
+            <controls:CircuitEditor x:Name="CircuitEditor"
+                                    Circuit="{Binding Document}"
                                     DescriptionLookup="{Binding DescriptionLookup}"
                                     PlaceType="{Binding ElementName=mainToolbox, Path=SelectedCategoryItem}"
                                     SelectedElements="{Binding SelectedElements}">

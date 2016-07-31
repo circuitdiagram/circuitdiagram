@@ -18,23 +18,38 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using CircuitDiagram.Circuit;
 
-namespace CircuitDiagram.View.Editor.Operations
+namespace CircuitDiagram.View.Controls.ComponentProperties
 {
-    class EditorOperationHitTest
+    class PropertyValueConverter : IValueConverter
     {
-        public PositionalComponent Element { get; set; }
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var propertyValue = (PropertyValue)value;
 
-        public ResizeHandle? ResizeHandle { get; set; }
-    }
+            switch (propertyValue.PropertyType)
+            {
+                case PropertyValue.Type.Boolean:
+                    return propertyValue.BooleanValue;
+                default:
+                    return null;
+            }
+        }
 
-    public enum ResizeHandle
-    {
-        Begin,
-        End
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var type = value.GetType();
+
+            if (type == typeof(bool))
+                return new PropertyValue((bool)value);
+
+            return null;
+        }
     }
 }

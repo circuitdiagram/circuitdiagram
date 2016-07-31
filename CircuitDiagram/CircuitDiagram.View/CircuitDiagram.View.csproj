@@ -77,9 +77,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\PropertyEditor\PropertyEditor.xaml.cs">
+    <Compile Include="Controls\ComponentProperties\EditableProperty.cs" />
+    <Compile Include="Controls\ComponentProperties\PropertyEditor.xaml.cs">
       <DependentUpon>PropertyEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ComponentProperties\PropertyEditorDataTemplateSelector.cs" />
+    <Compile Include="Controls\ComponentProperties\PropertyValueConverter.cs" />
     <Compile Include="Converters\InverseBooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\InverseNullToVisibilityConverter.cs" />
     <Compile Include="Converters\MultiResolutionImageToImageSourceConverter.cs" />
@@ -138,7 +141,7 @@
     <Compile Include="Util\PrimitiveExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Controls\PropertyEditor\PropertyEditor.xaml">
+    <Page Include="Controls\ComponentProperties\PropertyEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

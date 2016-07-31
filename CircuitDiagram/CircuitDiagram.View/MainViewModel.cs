@@ -54,7 +54,7 @@ namespace CircuitDiagram.View
             Name = "Select"
         };
 
-        private ObservableCollection<IPositionalElement> selectedElements;
+        private ObservableCollection<PositionalComponent> selectedElements;
 
         public MainViewModel(IComponentDescriptionService descriptionService,
                              IDialogService dialogService,
@@ -70,7 +70,7 @@ namespace CircuitDiagram.View
             this.aboutViewModel = aboutViewModel;
             this.checkForUpdatesViewModel = checkForUpdatesViewModel;
             this.newDocumentViewModelProvider = newDocumentViewModelProvider;
-            SelectedElements = new ObservableCollection<IPositionalElement>();
+            SelectedElements = new ObservableCollection<PositionalComponent>();
             DescriptionLookup = descriptionService;
             descriptionService.LoadDescriptions();
 
@@ -113,7 +113,7 @@ namespace CircuitDiagram.View
             }
         }
 
-        public ObservableCollection<IPositionalElement> SelectedElements
+        public ObservableCollection<PositionalComponent> SelectedElements
         {
             get { return selectedElements; }
             set

@@ -32,7 +32,7 @@ namespace CircuitDiagram.View.Editor.Operations
         Cursor Cursor { get; set; }
         double GridSize { get; }
         IComponentTypeIdentifier PlaceType { get; }
-        ICollection<IPositionalElement> SelectedElements { get; }
+        ICollection<PositionalComponent> SelectedElements { get; }
         void AddElement(IPositionalElement element);
         void ReRenderElement(IPositionalElement element);
         void UpdateElementPosition(IPositionalElement element);

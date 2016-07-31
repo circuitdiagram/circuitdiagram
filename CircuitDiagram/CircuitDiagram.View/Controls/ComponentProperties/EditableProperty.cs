@@ -22,19 +22,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CircuitDiagram.Circuit;
+using CircuitDiagram.TypeDescription;
 
-namespace CircuitDiagram.View.Editor.Operations
+namespace CircuitDiagram.View.Controls.ComponentProperties
 {
-    class EditorOperationHitTest
+    public class EditableProperty
     {
-        public PositionalComponent Element { get; set; }
+        public Component Component { get; set; }
 
-        public ResizeHandle? ResizeHandle { get; set; }
-    }
+        public ComponentDescription ComponentDescription { get; set; }
 
-    public enum ResizeHandle
-    {
-        Begin,
-        End
+        public ComponentProperty Property { get; set; }
+
+        public string DisplayName => Property.DisplayName;
+
+        public PropertyValue Value
+        {
+            get { return ComponentDescription.GetProperty(Component, Property.Name); }
+            set
+            {
+                Component.Properties[Property.SerializedName] = value;
+                ValueChanged();
+            }
+        }
+
+        public Action ValueChanged;
     }
 }
