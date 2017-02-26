@@ -52,6 +52,7 @@ namespace CircuitDiagram.View.Dependency
             container.RegisterType<IConfigurationValues, ConfigurationValues>(new ContainerControlledLifetimeManager());
             container.RegisterType<IComponentIconProvider, ComponentDescriptionService>();
             container.RegisterType<IDocumentService, DocumentService>();
+            container.RegisterType<IPluginService, PluginService>(new ContainerControlledLifetimeManager());
 
             regionManager.Regions["MainRegion"].Add(new MainView());
         }

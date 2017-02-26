@@ -13,7 +13,7 @@ namespace CircuitDiagram.Circuit
     public class ComponentType : CollectionType
     {
         public ComponentType(Guid? id, string name)
-            : base(ComponentTypeCollection.Unknown, null)
+            : base(ComponentTypeCollection.Unknown, (ComponentTypeCollectionItem)null)
         {
             Id = id;
             Name = name;
@@ -90,6 +90,7 @@ namespace CircuitDiagram.Circuit
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
+            if (obj is CollectionType) return ((CollectionType)obj).Equals(this);
             if (obj.GetType() != this.GetType()) return false;
             return Equals((ComponentType) obj);
         }
@@ -103,6 +104,16 @@ namespace CircuitDiagram.Circuit
                 hashCode = (hashCode*397) ^ (Name != null ? Name.GetHashCode() : 0);
                 return hashCode;
             }
+        }
+
+        public static bool operator ==(ComponentType left, CollectionType right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(ComponentType left, CollectionType right)
+        {
+            return !(left == right);
         }
     }
 }

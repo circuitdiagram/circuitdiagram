@@ -29,7 +29,8 @@
                           Command="{Binding SaveDocumentAsCommand}"/>
                 <Separator />
                 <MenuItem Header="_Import" />
-                <MenuItem Header="_Export" />
+                <MenuItem Header="_Export"
+                          Command="{Binding ExportCommand}"/>
                 <Separator />
                 <MenuItem Header="_Print" />
                 <Separator />

@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CircuitDiagram.Circuit
 {
+    [DebuggerDisplay("{GetHashCode()}: {Name.Value} ({Owner.GetHashCode()})")]
     public sealed class NamedConnection
     {
-        internal NamedConnection(ConnectionName name, IConnectedElement owner)
+        public NamedConnection(ConnectionName name, IConnectedElement owner)
         {
             Name = name;
             Owner = owner;
@@ -21,7 +23,7 @@ namespace CircuitDiagram.Circuit
 
         public Connection Connection { get; internal set; }
 
-        public IReadOnlyCollection<NamedConnection> ConnectedTo => Connection.NamedConnections;
+        public IEnumerable<NamedConnection> ConnectedTo => Connection.NamedConnections.Except(new [] { this });
 
         public void ConnectTo(NamedConnection other) => Connection.ConnectTo(other);
 

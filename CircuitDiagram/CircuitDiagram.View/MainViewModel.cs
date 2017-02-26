@@ -1,8 +1,9 @@
-﻿// Circuit Diagram http://www.circuit-diagram.org/
+// This file is part of Circuit Diagram.
+// http://www.circuit-diagram.org/
 // 
-// Copyright (C) 2016  Samuel Fisher
-// 
-// This program is free software; you can redistribute it and/or
+// Copyright (c) 2017 Samuel Fisher
+//  
+// Circuit Diagram is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
@@ -26,6 +27,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using CircuitDiagram.Circuit;
 using CircuitDiagram.Document;
+using CircuitDiagram.IO;
 using CircuitDiagram.Primitives;
 using CircuitDiagram.Render;
 using CircuitDiagram.TypeDescription;
@@ -45,6 +47,7 @@ namespace CircuitDiagram.View
         private readonly AboutViewModel aboutViewModel;
         private readonly CheckForUpdatesViewModel checkForUpdatesViewModel;
         private readonly Func<NewDocumentViewModel> newDocumentViewModelProvider;
+        private readonly IPluginService pluginService;
         private CircuitDocument document;
         private ToolboxEntry[][] availableComponents;
         private ToolboxEntry selectedToolboxItem;
@@ -59,6 +62,7 @@ namespace CircuitDiagram.View
         public MainViewModel(IComponentDescriptionService descriptionService,
                              IDialogService dialogService,
                              IDocumentService documentService,
+                             IPluginService pluginService,
                              IToolboxReader toolboxReader,
                              IConfigurationValues configurationValues,
                              AboutViewModel aboutViewModel,
@@ -71,6 +75,7 @@ namespace CircuitDiagram.View
             this.checkForUpdatesViewModel = checkForUpdatesViewModel;
             this.newDocumentViewModelProvider = newDocumentViewModelProvider;
             SelectedElements = new ObservableCollection<PositionalComponent>();
+            this.pluginService = pluginService;
             DescriptionLookup = descriptionService;
             descriptionService.LoadDescriptions();
 
@@ -135,6 +140,8 @@ namespace CircuitDiagram.View
 
         public ICommand AboutCommand => new DelegateCommand(() => dialogService.ShowDialog("About Circuit Diagram", aboutViewModel));
 
+        public ICommand ExportCommand => new DelegateCommand(Export);
+
         private void NewDocument()
         {
             var viewModel = newDocumentViewModelProvider();
@@ -185,6 +192,26 @@ namespace CircuitDiagram.View
         {
             checkForUpdatesViewModel.CheckForUpdates();
             dialogService.ShowDialog("Updates", checkForUpdatesViewModel);
+        }
+
+        private void Export()
+        {
+            var exporters = pluginService.GetPluginParts<ICircuitWriter>().ToList();
+            var filter = string.Join("|", exporters.Select(x => $"{x.FileTypeName} (*{x.FileTypeExtension})|*{x.FileTypeExtension}"));
+
+            var sfd = new SaveFileDialog
+            {
+                Title = "Export",
+                Filter = filter,
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+
+            if (sfd.ShowDialog() == true)
+            {
+                var writer = exporters[sfd.FilterIndex - 1];
+                using (var fs = new FileStream(sfd.FileName, FileMode.Create))
+                    writer.WriteCircuit(Document, fs);
+            }
         }
     }
 }

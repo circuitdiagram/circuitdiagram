@@ -11,7 +11,7 @@ namespace CircuitDiagram.CircuitExtensions
     {
         public static bool IsConnectedTo(this NamedConnection connection, NamedConnection other)
         {
-            return connection.ConnectedTo.Contains(other);
+            return connection == other || connection.ConnectedTo.Contains(other);
         }
     }
 }

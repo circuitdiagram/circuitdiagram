@@ -29,6 +29,7 @@ namespace CircuitDiagram.Circuit
         /// Gets or sets the type of component.
         /// </summary>
         public ComponentType Type { get; }
+        
 
         public ComponentConfiguration Configuration { get; set; }
 
@@ -41,6 +42,11 @@ namespace CircuitDiagram.Circuit
         /// Connections for the component, in the format Name-ConnectionID.
         /// </summary>
         public IReadOnlyDictionary<ConnectionName, NamedConnection> Connections { get; }
+
+        public CollectionType GetCollectionType()
+        {
+            return Configuration != null ? new CollectionType(Type.Collection, Configuration.Implements) : Type;
+        }
 
         public override string ToString()
         {

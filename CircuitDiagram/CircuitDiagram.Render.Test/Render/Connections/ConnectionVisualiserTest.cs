@@ -21,8 +21,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CircuitDiagram.Circuit;
-using CircuitDiagram.Components.Description;
 using CircuitDiagram.Primitives;
 using CircuitDiagram.Render.Connections;
 using NUnit.Framework;

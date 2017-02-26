@@ -1,4 +1,23 @@
-﻿using System;
+﻿// This file is part of Circuit Diagram.
+// http://www.circuit-diagram.org/
+// 
+// Copyright (c) 2017 Samuel Fisher
+//  
+// Circuit Diagram is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -23,26 +42,20 @@ namespace CircuitDiagram.Circuit
 
         internal void ConnectTo(NamedConnection other)
         {
-            // Add to this connection
-            namedConnections.Add(other);
+            // Add all connections 'other' points to
+            namedConnections.UnionWith(other.Connection.NamedConnections);
 
             // Set all connections 'other' is connected to to point to this connection
             var previousConnections = other.Connection.NamedConnections;
             foreach (var c in previousConnections)
                 c.Connection = this;
-
-            // Add all connections 'other' points to
-            namedConnections.UnionWith(other.Connection.NamedConnections);
-
-            // Set the 'other' connection to point to this
-            other.Connection = this;
         }
 
         internal void Disconnect(NamedConnection namedConnection)
         {
             namedConnections.Remove(namedConnection);
         }
-        
+
         public int CompareTo(object obj)
         {
             return ReferenceEquals(this, obj) ? 0 : -1;

@@ -20,5 +20,5 @@ Setup/Output/
 *.pfx
 *.licenseheader
 *.wixobj
-*.DotSettings.user
 *.nupkg
+*.DotSettings.user

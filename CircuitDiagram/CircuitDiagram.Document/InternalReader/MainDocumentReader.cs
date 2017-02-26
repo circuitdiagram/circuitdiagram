@@ -26,7 +26,6 @@ using System.Xml;
 using System.Xml.Linq;
 using Ns = CircuitDiagram.Document.Namespaces;
 
-
 namespace CircuitDiagram.Document.InternalReader
 {
     class MainDocumentReader

@@ -46,10 +46,25 @@ namespace CircuitDiagram.View.Editor
 
         public IList<Point> VisualiseConnections(IEnumerable<PositionalComponent> components, LayoutOptions layoutOptions)
         {
-            var connectionPoints = components.SelectMany(x => GetConnectionPoints(x, layoutOptions));
-            var connectionsByLocation = connectionPoints.GroupBy(x => x.Location);
-            return connectionsByLocation.Where(x => connectionVisualiser.VisualiseConnections(x.ToList()))
-                                        .Select(x => x.Key).ToList();
+            var connectionPoints = components.SelectMany(x => GetConnectionPoints(x, layoutOptions).Select(c => Tuple.Create(x, c)));
+            var connectionsByLocation = connectionPoints.GroupBy(x => x.Item2.Location);
+            var connectedConnections = connectionsByLocation.Where(x => connectionVisualiser.VisualiseConnections(x.Select(c => c.Item2).ToList())).ToList();
+
+            foreach (var c in connectedConnections)
+            {
+                foreach (var c1 in c)
+                {
+                    foreach (var c2 in c)
+                    {
+                        var connection1 = c1.Item1.Connections[c1.Item2.Connection];
+                        var connection2 = c2.Item1.Connections[c2.Item2.Connection];
+                        connection1.ConnectTo(connection2);
+                        
+                    }
+                }
+            }
+
+            return connectedConnections.Select(x => x.Key).ToList();
         }
 
         private IList<ConnectionPoint> GetConnectionPoints(PositionalComponent component, LayoutOptions layoutOptions)

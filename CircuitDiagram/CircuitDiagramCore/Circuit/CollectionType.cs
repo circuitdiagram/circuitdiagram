@@ -8,6 +8,11 @@ namespace CircuitDiagram.Circuit
 {
     public class CollectionType
     {
+        public CollectionType(ComponentTypeCollection collection, string item)
+            : this(collection, new ComponentTypeCollectionItem(item))
+        {
+        }
+
         public CollectionType(ComponentTypeCollection collection,
                               ComponentTypeCollectionItem collectionItem)
         {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CircuitDiagram.Circuit;
-using CircuitDiagram.IO;
+using CircuitDiagram.Plugin;
 
 namespace CircuitDiagram.IO
 {

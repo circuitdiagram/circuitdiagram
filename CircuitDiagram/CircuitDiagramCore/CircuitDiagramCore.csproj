@@ -51,6 +51,7 @@
     <Compile Include="Circuit\IPositionalConnectedElement.cs" />
     <Compile Include="Circuit\PropertyName.cs" />
     <Compile Include="Circuit\PropertyValue.cs" />
+    <Compile Include="CommonComponents.cs" />
     <Compile Include="DocumentMetadata.cs" />
     <Compile Include="Circuit\Extensions\ConnectionExtensions.cs" />
     <Compile Include="Circuit\CircuitDocument.cs" />
@@ -74,8 +75,9 @@
     <Compile Include="Circuit\Wire.cs" />
     <Compile Include="IO\ICircuitReader.cs" />
     <Compile Include="IO\ICircuitWriter.cs" />
-    <Compile Include="IPlugin.cs" />
-    <Compile Include="IPluginPart.cs" />
+    <Compile Include="Plugin\IPlugin.cs" />
+    <Compile Include="Plugin\IPluginMetadata.cs" />
+    <Compile Include="Plugin\IPluginPart.cs" />
     <Compile Include="Primitives\LinqExtensions.cs" />
     <Compile Include="Primitives\Orientation.cs" />
     <Compile Include="Primitives\Point.cs" />

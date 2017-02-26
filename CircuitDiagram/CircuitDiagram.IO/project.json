@@ -1,15 +1,10 @@
 ﻿{
-  "supports": {
-    "net46.app": {},
-    "dnxcore50.app": {}
-  },
+  "supports": {},
   "dependencies": {
     "Microsoft.NETCore": "5.0.0",
-    "Microsoft.NETCore.Portable.Compatibility": "1.0.0"
+    "Microsoft.NETCore.Portable.Compatibility": "1.0.1",
   },
   "frameworks": {
-    "dotnet": {
-      "imports": "portable-net452"
-    }
+    "netstandard1.1": {}
   }
 }

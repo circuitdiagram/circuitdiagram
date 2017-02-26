@@ -31,9 +31,13 @@ namespace CircuitDiagram.Circuit
             return Keys.ToDictionary(key => key, key =>
             {
                 TValue val;
-                if (values.TryGetValue(key, out val))
-                    return val;
-                return valueGenerator(key);
+                if (!values.TryGetValue(key, out val))
+                {
+                    val = valueGenerator(key);
+                    values.Add(key, val);
+                }
+
+                return val;
             });
         } 
 

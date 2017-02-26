@@ -75,7 +75,7 @@ namespace CircuitDiagram.View.Editor.Operations
                 return false;
 
             var offset = new Primitives.Vector(mousePosition.X - initialMousePosition.X, mousePosition.Y - initialMousePosition.Y);
-
+            
             foreach (var element in elements)
             {
                 var newLocation = initialLocations[element].Add(offset).SnapToGrid(context.GridSize);
