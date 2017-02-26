@@ -113,6 +113,9 @@
       <Component Win64="yes">
         <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/Microsoft.Practices.Unity.Configuration.dll" />
       </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/log.config" />
+      </Component>
 		</ComponentGroup>
 
     <ComponentGroup Id="ResourceComponents" Directory="ResourcesFolder">
