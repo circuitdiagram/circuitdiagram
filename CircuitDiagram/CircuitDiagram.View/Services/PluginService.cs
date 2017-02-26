@@ -2,7 +2,7 @@
 // http://www.circuit-diagram.org/
 // 
 // Copyright (c) 2017 Samuel Fisher
-//  
+// 
 // Circuit Diagram is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
@@ -32,9 +32,11 @@ namespace CircuitDiagram.View.Services
 {
     class PluginService : IPluginService
     {
-        [ImportMany(typeof(IPlugin))] private IEnumerable<Lazy<IPlugin, IPluginMetadata>> plugins;
-
-        private IEnumerable<Lazy<IPlugin, IPluginMetadata>> enabledPlugins => plugins;
+#pragma warning disable 649
+        // Used implicitly by MEF
+        [ImportMany(typeof(IPlugin))]
+        private IEnumerable<Lazy<IPlugin, IPluginMetadata>> plugins;
+#pragma warning restore 649
 
         public PluginService()
         {
@@ -60,8 +62,14 @@ namespace CircuitDiagram.View.Services
 
         public IEnumerable<T> GetPluginParts<T>()
         {
-            foreach (var plugin in enabledPlugins.SelectMany(p => p.Value.PluginParts.Where(x => x is T).Cast<T>()))
+            foreach (var plugin in GetEnabledPlugins().SelectMany(p => p.Value.PluginParts.Where(x => x is T).Cast<T>()))
                 yield return plugin;
+        }
+
+        private IEnumerable<Lazy<IPlugin, IPluginMetadata>> GetEnabledPlugins()
+        {
+            // TODO: support enabling/disabling plugins
+            return plugins;
         }
     }
 }
