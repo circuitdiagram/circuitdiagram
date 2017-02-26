@@ -28,19 +28,39 @@ namespace CircuitDiagram.View.Services
 {
     class ConfigurationValues : IConfigurationValues
     {
-        private readonly string configurationDirectory;
-
         public ConfigurationValues()
         {
             string executingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
+            
 #if DEBUG
-            configurationDirectory = Path.GetFullPath(Path.Combine(executingDirectory, "../../../../Config/AppData"));
+            string configurationDirectory = Path.GetFullPath(Path.Combine(executingDirectory, "../../../../Config/AppData"));
+
+            ComponentsDirectories = new[]
+            {
+                Path.Combine(executingDirectory, "../../../../", "Components/Output")
+            };
 #else
-            configurationDirectory = Path.Combine(executingDirectory, "settings");
+            string configurationDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Circuit Diagram");
+            
+            ComponentsDirectories = new[]
+            {
+                Path.Combine(configurationDirectory, "components"),
+                Path.Combine(executingDirectory, "ext")
+            };
 #endif
+
+            PluginDirectories = new[]
+            {
+                Path.Combine(executingDirectory, "Plugins")
+            };
+
+            ToolboxConfigurationFile = Path.Combine(configurationDirectory, "toolbox.xml");
         }
 
-        public string ToolboxConfigurationFile => Path.Combine(configurationDirectory, "toolbox.xml");
+        public string ToolboxConfigurationFile { get; }
+
+        public string[] ComponentsDirectories { get; }
+
+        public string[] PluginDirectories { get; }
     }
 }

@@ -89,6 +89,27 @@
       <Component Win64="yes">
         <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/System.Windows.Interactivity.dll" />
       </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/log4net.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/Prism.Unity.Wpf.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/Prism.Wpf.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/Microsoft.Practices.Unity.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/Microsoft.Practices.Unity.RegistrationByConvention.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/Microsoft.Practices.ServiceLocation.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/Microsoft.Practices.Unity.Configuration.dll" />
+      </Component>
 		</ComponentGroup>
 
     <ComponentGroup Id="ResourceComponents" Directory="ResourcesFolder">

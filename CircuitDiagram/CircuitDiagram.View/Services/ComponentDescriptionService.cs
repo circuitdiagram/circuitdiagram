@@ -35,12 +35,19 @@ namespace CircuitDiagram.View.Services
 {
     class ComponentDescriptionService : DictionaryComponentDescriptionLookup, IComponentDescriptionService
     {
+        private readonly IConfigurationValues configurationValues;
+
         private readonly Dictionary<Tuple<ComponentType, ComponentConfiguration>, MultiResolutionImage> icons =
             new Dictionary<Tuple<ComponentType, ComponentConfiguration>, MultiResolutionImage>();
-        
+
+        public ComponentDescriptionService(IConfigurationValues configurationValues)
+        {
+            this.configurationValues = configurationValues;
+        }
+
         public void LoadDescriptions()
         {
-            LoadCompiledComponents(new [] { @"../../../../Components/Output" });
+            LoadCompiledComponents(configurationValues.ComponentsDirectories.Where(Directory.Exists));
         }
 
         public MultiResolutionImage GetIcon(IComponentTypeIdentifier identifier)
@@ -77,7 +84,7 @@ namespace CircuitDiagram.View.Services
             }
         }
 
-        private void LoadCompiledComponents(string[] directories)
+        private void LoadCompiledComponents(IEnumerable<string> directories)
         {
             foreach (string location in directories)
             {

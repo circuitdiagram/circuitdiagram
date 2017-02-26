@@ -38,10 +38,11 @@ namespace CircuitDiagram.View.Services
         private IEnumerable<Lazy<IPlugin, IPluginMetadata>> plugins;
 #pragma warning restore 649
 
-        public PluginService()
+        public PluginService(IConfigurationValues configurationValues)
         {
             var catalog = new AggregateCatalog();
-            catalog.Catalogs.Add(new DirectoryCatalog(@"C:\Users\Sam\Documents\Projects\CircuitDiagram\CircuitDiagram\CircuitDiagram\bin\Debug\plugins"));
+            foreach(var pluginDirectory in configurationValues.PluginDirectories.Where(Directory.Exists))
+                catalog.Catalogs.Add(new DirectoryCatalog(pluginDirectory));
 
             var container = new CompositionContainer(catalog);
 

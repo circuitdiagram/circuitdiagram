@@ -27,5 +27,7 @@ namespace CircuitDiagram.View.Services
     public interface IConfigurationValues
     {
         string ToolboxConfigurationFile { get; }
+        string[] ComponentsDirectories { get; }
+        string[] PluginDirectories { get; }
     }
 }
