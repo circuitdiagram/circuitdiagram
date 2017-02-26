@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Markup;
 using CircuitDiagram.Dependency;
+using log4net;
 
 namespace CircuitDiagram
 {
@@ -20,12 +21,19 @@ namespace CircuitDiagram
         {
             base.OnStartup(e);
 
-            log4net.Config.BasicConfigurator.Configure();
+            log4net.Config.XmlConfigurator.Configure();
 
-            log4net.LogManager.GetLogger(typeof(App)).Info("Test");
-
+            LogManager.GetLogger(typeof(App)).Info("Application starting up.");
+            
             var bootstrapper = new Bootstrapper();
             bootstrapper.Run();
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+
+            LogManager.GetLogger(typeof(App)).Info("Application shutting down.");
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -40,13 +48,7 @@ namespace CircuitDiagram
 
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-#if PORTABLE
-            string errorLogDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-#else
-            string errorLogDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Circuit Diagram";
-#endif
-            if (System.IO.Directory.Exists(errorLogDirectory))
-                System.IO.File.WriteAllText(errorLogDirectory + "\\ErrorLog.txt", e.Exception.ToString());
+            LogManager.GetLogger(typeof(App)).Error("Unhandled exception.", e.Exception);
         }
     }
 }

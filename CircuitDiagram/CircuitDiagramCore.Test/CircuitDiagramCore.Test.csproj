@@ -6,8 +6,8 @@
     <ProjectGuid>{045ED5A8-CADD-4CEF-956A-4BB3B66A7DB0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CircuitDiagram.IO.Test</RootNamespace>
-    <AssemblyName>CircuitDiagram.IO.Test</AssemblyName>
+    <RootNamespace>CircuitDiagramCore.Test</RootNamespace>
+    <AssemblyName>CircuitDiagramCore.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>

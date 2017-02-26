@@ -96,6 +96,9 @@
         <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/Prism.Unity.Wpf.dll" />
       </Component>
       <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/Prism.dll" />
+      </Component>
+      <Component Win64="yes">
         <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/Prism.Wpf.dll" />
       </Component>
       <Component Win64="yes">

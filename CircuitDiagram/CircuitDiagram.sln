@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Compiler", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Compiler.Test", "CircuitDiagram.Compiler.Test\CircuitDiagram.Compiler.Test.csproj", "{B1DDEC5A-3BBC-4C1D-9BEA-D6527BE4B863}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.IO.Test", "CircuitDiagram.IO.Test\CircuitDiagram.IO.Test.csproj", "{045ED5A8-CADD-4CEF-956A-4BB3B66A7DB0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagramCore.Test", "CircuitDiagramCore.Test\CircuitDiagramCore.Test.csproj", "{045ED5A8-CADD-4CEF-956A-4BB3B66A7DB0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Document.Test", "CircuitDiagram.Document.Test\CircuitDiagram.Document.Test.csproj", "{E29D1EBC-009B-406F-B9AF-7E7DBA2C1558}"
 EndProject
