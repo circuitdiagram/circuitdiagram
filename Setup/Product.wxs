@@ -57,7 +57,19 @@
         <File Id="ProductComponentFile" Source="../CircuitDiagram/CircuitDiagram/bin/Release/Circuit Diagram.exe" />
 			</Component>
       <Component Win64="yes">
-        <File Source="../CircuitDiagram/cdlibrary/bin/Release/cdlibrary.dll" />
+        <File Source="../CircuitDiagram/CircuitDiagram.Document/bin/Release/CircuitDiagram.Document.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram.IO.Legacy/bin/Release/CircuitDiagram.IO.Legacy.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram.Render/bin/Release/CircuitDiagram.Render.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram.TypeDescriptionIO/bin/Release/CircuitDiagram.TypeDescriptionIO.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram.View/bin/Release/CircuitDiagram.View.dll" />
       </Component>
       <Component Win64="yes">
         <File Source="../CircuitDiagram/CircuitDiagramCore/bin/Release/CircuitDiagramCore.dll" />
@@ -89,7 +101,7 @@
       <Component Id="RemoveAppDataFilesFolder" Guid="AC3521D0-4DC0-45EE-A07C-0F60356C220A" Win64="yes">
         <RegistryValue Root="HKCU" Key="Software\Circuit Diagram\Circuit Diagram" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
         <RemoveFolder Id="AppDataFilesFolder" On="uninstall" />
-        <File Source="../Components/toolbox.xml" />
+        <File Source="../Config/AppData/toolbox.xml" />
         <File Source="../Components/implementations.xml" />
         <File Source="settings.xml" />
       </Component>
