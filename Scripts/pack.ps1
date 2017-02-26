@@ -1,11 +1,11 @@
 # Install C# script support
 cinst scriptcs
 
-# Patch *.nuspec files
+"Patching *.nuspec files"
 scriptcs Scripts\NuSpecPatch.csx
 
-# Package
+"Packaging *.nuspec files"
 Get-ChildItem -recurse .\*.nuspec | % { nuget pack $_.FullName }
 
-# Publish
+"Publishing *.nuspec files"
 Get-ChildItem .\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
