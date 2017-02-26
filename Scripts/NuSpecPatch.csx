@@ -12,6 +12,9 @@ Console.WriteLine($"Package version: {packageVersion}");
 
 var nuspecFiles = Directory.GetFiles(Environment.CurrentDirectory, "*.nuspec", SearchOption.AllDirectories);
 
+Console.WriteLine(Environment.CurrentDirectory);
+Console.WriteLine(nuspecFiles);
+
 foreach(var nuspec in nuspecFiles)
 {
     Console.WriteLine($"Patching {nuspec}");
