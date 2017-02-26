@@ -10,10 +10,7 @@ string packageVersion = version + "-b" + buildNumber + "-" + branch;
 
 Console.WriteLine($"Package version: {packageVersion}");
 
-var nuspecFiles = Directory.GetFiles(Environment.CurrentDirectory, "*.nuspec", SearchOption.AllDirectories);
-
-Console.WriteLine(Environment.CurrentDirectory);
-Console.WriteLine(nuspecFiles);
+var nuspecFiles = Directory.GetFiles(Environment.CurrentDirectory, "../*.nuspec", SearchOption.AllDirectories);
 
 foreach(var nuspec in nuspecFiles)
 {
