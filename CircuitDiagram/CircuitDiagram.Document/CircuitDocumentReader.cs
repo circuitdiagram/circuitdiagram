@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using CircuitDiagram.Circuit;
 using CircuitDiagram.Document.InternalReader;
-using CircuitDiagram.IO.Data;
-using CircuitDiagram.IO.Read;
+using CircuitDiagram.IO;
 
 namespace CircuitDiagram.Document
 {

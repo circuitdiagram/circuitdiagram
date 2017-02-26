@@ -22,9 +22,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CircuitDiagram.Circuit;
 using CircuitDiagram.Primitives;
+using CircuitDiagram.TypeDescription;
 
-namespace CircuitDiagram.Components.Description.Render
+namespace CircuitDiagram.Drawing
 {
     public class Rectangle : IRenderCommand
     {
@@ -33,11 +35,7 @@ namespace CircuitDiagram.Components.Description.Render
         public double Height { get; set; }
         public double StrokeThickness { get; set; }
         public bool Fill { get; set; }
-
-        public RenderCommandType Type
-        {
-            get { return RenderCommandType.Rect; }
-        }
+        public RenderCommandType Type => RenderCommandType.Rect;
 
         public Rectangle()
         {
@@ -66,18 +64,20 @@ namespace CircuitDiagram.Components.Description.Render
             Fill = fill;
         }
 
-        public void Render(Component component, CircuitDiagram.Render.IRenderContext dc, bool absolute)
+        public void Render(LayoutInformation layout, ILayoutContext layoutContext, IDrawingContext drawingContext)
         {
-            Rect drawRect = new Rect(Location.Resolve(component), new Size(Width, Height));
-            if (component.IsFlipped == true && component.Orientation == Orientation.Horizontal)
+            Point location = Location.Resolve(layout, layoutContext.Options);
+            var drawRect = new Rect(location, new Size(Width, Height));
+
+            if (layout.IsFlipped && layout.Orientation == Orientation.Horizontal)
                 drawRect = new Rect(drawRect.X - Width, drawRect.Y, Width, Height);
-            else if (component.IsFlipped == true && component.Orientation == Orientation.Vertical)
+            else if (layout.IsFlipped && layout.Orientation == Orientation.Vertical)
                 drawRect = new Rect(drawRect.X, drawRect.Y - Height, Width, Height);
 
-            if (absolute)
-                dc.DrawRectangle(Point.Add(drawRect.TopLeft, component.Location), drawRect.Size, StrokeThickness, Fill);
+            if (layoutContext.Options.Absolute)
+                drawingContext.DrawRectangle(Point.Add(drawRect.TopLeft, layout.Location), drawRect.Size, StrokeThickness, Fill);
             else
-                dc.DrawRectangle(drawRect.TopLeft, drawRect.Size, StrokeThickness, Fill);
+                drawingContext.DrawRectangle(drawRect.TopLeft, drawRect.Size, StrokeThickness, Fill);
         }
 
         public override bool Equals(object obj)

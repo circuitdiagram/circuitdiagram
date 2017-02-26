@@ -63,7 +63,6 @@
     <Compile Include="ReaderErrors\ReaderErrorCode.cs" />
     <Compile Include="ReaderErrors\ReaderErrorCodes.cs" />
     <Compile Include="RelationshipTypes.cs" />
-    <Compile Include="InternalReader\XmlExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">
