@@ -29,12 +29,15 @@ using CircuitDiagram.Render;
 using CircuitDiagram.TypeDescription;
 using CircuitDiagram.TypeDescriptionIO;
 using CircuitDiagram.TypeDescriptionIO.Binary;
+using log4net;
 using ComponentConfiguration = CircuitDiagram.Circuit.ComponentConfiguration;
 
 namespace CircuitDiagram.View.Services
 {
     class ComponentDescriptionService : DictionaryComponentDescriptionLookup, IComponentDescriptionService
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ComponentDescriptionService));
+
         private readonly IConfigurationValues configurationValues;
 
         private readonly Dictionary<Tuple<ComponentType, ComponentConfiguration>, MultiResolutionImage> icons =
@@ -47,7 +50,17 @@ namespace CircuitDiagram.View.Services
 
         public void LoadDescriptions()
         {
-            LoadCompiledComponents(configurationValues.ComponentsDirectories.Where(Directory.Exists));
+            foreach (var directory in configurationValues.ComponentsDirectories)
+            {
+                if (!Directory.Exists(directory))
+                {
+                    Log.Warn($"Skipping loading components from {directory} as it does not exist.");
+                    continue;
+                }
+
+                Log.Info($"Loading components from {directory}");
+                LoadCompiledComponents(directory);
+            }
         }
 
         public MultiResolutionImage GetIcon(IComponentTypeIdentifier identifier)
@@ -84,30 +97,27 @@ namespace CircuitDiagram.View.Services
             }
         }
 
-        private void LoadCompiledComponents(IEnumerable<string> directories)
+        private void LoadCompiledComponents(string directory)
         {
-            foreach (string location in directories)
+            foreach (string file in Directory.GetFiles(directory, "*.cdcom", SearchOption.TopDirectoryOnly))
             {
-                foreach (string file in Directory.GetFiles(location, "*.cdcom", SearchOption.TopDirectoryOnly))
+                using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    var binaryLoader = new BinaryDescriptionReader();
+                    if (binaryLoader.Read(fs))
                     {
-                        var binaryLoader = new BinaryDescriptionReader();
-                        if (binaryLoader.Read(fs))
+                        foreach (var description in binaryLoader.ComponentDescriptions)
                         {
-                            foreach (var description in binaryLoader.ComponentDescriptions)
-                            {
-                                description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;
-                                description.Source = new ComponentDescriptionSource(file,
-                                                                                    new System.Collections.ObjectModel.ReadOnlyCollection<ComponentDescription>(new ComponentDescription[] {description}));
-                                
-                                var type = GetTypeFromDescription(description);
-                                AddDescription(type, description);
+                            description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;
+                            description.Source = new ComponentDescriptionSource(file,
+                                                                                new System.Collections.ObjectModel.ReadOnlyCollection<ComponentDescription>(new ComponentDescription[] {description}));
 
-                                var icon = description.Metadata.Icon as MultiResolutionImage;
-                                if (icon != null)
-                                    icons.Add(Tuple.Create(type, (ComponentConfiguration)null), icon);
-                            }
+                            var type = GetTypeFromDescription(description);
+                            AddDescription(type, description);
+
+                            var icon = description.Metadata.Icon as MultiResolutionImage;
+                            if (icon != null)
+                                icons.Add(Tuple.Create(type, (ComponentConfiguration)null), icon);
                         }
                     }
                 }
