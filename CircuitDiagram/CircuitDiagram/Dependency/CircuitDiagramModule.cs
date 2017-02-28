@@ -42,7 +42,7 @@ namespace CircuitDiagram.Dependency
         public void Initialize()
         {
             container.RegisterType<IDialogService, DialogService>();
-            container.RegisterType<IUpdateVersionService, UpdateVersionService>();
+            container.RegisterType<IUpdateVersionService, UpdateVersionService>(new ContainerControlledLifetimeManager());
         }
     }
 }

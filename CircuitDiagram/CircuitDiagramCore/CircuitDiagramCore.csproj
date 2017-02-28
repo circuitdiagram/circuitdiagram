@@ -75,6 +75,8 @@
     <Compile Include="Circuit\Wire.cs" />
     <Compile Include="IO\ICircuitReader.cs" />
     <Compile Include="IO\ICircuitWriter.cs" />
+    <Compile Include="Logging\ILog.cs" />
+    <Compile Include="Logging\LogManager.cs" />
     <Compile Include="Plugin\IPlugin.cs" />
     <Compile Include="Plugin\IPluginMetadata.cs" />
     <Compile Include="Plugin\IPluginPart.cs" />

@@ -114,6 +114,21 @@
         <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/Microsoft.Practices.Unity.Configuration.dll" />
       </Component>
       <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/System.Security.Cryptography.Algorithms.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/System.Security.Cryptography.Encoding.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/System.Security.Cryptography.Primitives.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/System.Security.Cryptography.X509Certificates.dll" />
+      </Component>
+      <Component Win64="yes">
+        <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/System.IO.FileSystem.Primitives.dll" />
+      </Component>
+      <Component Win64="yes">
         <File Source="../CircuitDiagram/CircuitDiagram/bin/Release/log.config" />
       </Component>
 		</ComponentGroup>

@@ -33,10 +33,10 @@ namespace CircuitDiagram.Updates
     {
         private const string UpdateDocUrl = "http://www.circuit-diagram.org/app/appversion.xml";
 
-        private readonly string appDisplayVersion;
-        private readonly Version buildVersion;
+        private static readonly Lazy<string> AppDisplayVersion = new Lazy<string>(LoadAppDisplayVersion);
 
-        private UpdateChannelType updateChannel;
+        private readonly Version buildVersion;
+        private readonly UpdateChannelType updateChannel;
 
         public UpdateVersionService()
         {
@@ -57,21 +57,30 @@ namespace CircuitDiagram.Updates
             //{
                 updateChannel = buildChannelVersion.UpdateChannel;
             //}
-
-            // Set app display version
-            appDisplayVersion = $"{buildVersion.Major}.{buildVersion.Minor}.{buildVersion.Build} {buildChannelVersion.DisplayName} ";
-#if DEBUG
-            appDisplayVersion += $"(Debug, Build {buildVersion.Revision})";
-#else
-            appDisplayVersion += String.Format("(Build {0})", buildVersion.Revision);
-#endif
         }
 
-        public string GetAppDisplayVersion()
+        private static string LoadAppDisplayVersion()
         {
-            return appDisplayVersion;
+            // Fetch the build channel attribute the program was compiled with
+            var assemblyInfo = System.Reflection.Assembly.GetExecutingAssembly();
+            var version = assemblyInfo.GetName().Version;
+            var buildChannelVersion = assemblyInfo.GetCustomAttributes(typeof(BuildChannelAttribute), false).FirstOrDefault(item => item is BuildChannelAttribute) as BuildChannelAttribute ??
+                                      new BuildChannelAttribute("", UpdateChannelType.Stable);
+            
+            string displayVersion = $"{version.Major}.{version.Minor}.{version.Build} {buildChannelVersion.DisplayName} ";
+#if DEBUG
+            displayVersion += $"(Debug, Build {version.Revision})";
+#else
+            displayVersion += String.Format("(Build {0})", version.Revision);
+#endif
+
+            return displayVersion;
         }
 
+        public static string GetAppDisplayVersion() => AppDisplayVersion.Value;
+
+        string IUpdateVersionService.GetAppDisplayVersion() => AppDisplayVersion.Value;
+        
         public IEnumerable<string> GetUpdateChannels()
         {
             return Enum.GetNames(typeof(UpdateChannelType));

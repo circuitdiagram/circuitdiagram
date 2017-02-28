@@ -27,11 +27,14 @@ using System.Xml.Linq;
 using CircuitDiagram.Circuit;
 using CircuitDiagram.Render;
 using CircuitDiagram.View.Services;
+using log4net;
 
 namespace CircuitDiagram.View.ToolboxView
 {
     class XmlToolboxReader : IToolboxReader
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(XmlToolboxReader));
+
         private readonly IComponentIconProvider iconProvider;
 
         public XmlToolboxReader(IComponentIconProvider iconProvider)
@@ -67,7 +70,10 @@ namespace CircuitDiagram.View.ToolboxView
 
                     var type = availableTypes.FirstOrDefault(x => x.Id == guid);
                     if (type == null)
+                    {
+                        Log.Warn($"Unable to find a component type with GUID '{guid}'. Hiding from the toolbox.");
                         continue;
+                    }
 
                     var configuration = type.Configurations.FirstOrDefault(x => x.Name == configurationName);
 
@@ -83,7 +89,8 @@ namespace CircuitDiagram.View.ToolboxView
                     categoryItems.Add(entry);
                 }
 
-                entries.Add(categoryItems.ToArray());
+                if (categoryItems.Any())
+                    entries.Add(categoryItems.ToArray());
             }
 
             return entries.ToArray();

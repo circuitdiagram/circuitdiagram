@@ -8,7 +8,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Markup;
 using CircuitDiagram.Dependency;
-using log4net;
+using CircuitDiagram.Logging;
+using CircuitDiagram.Updates;
+using LogManager = log4net.LogManager;
 
 namespace CircuitDiagram
 {
@@ -22,8 +24,10 @@ namespace CircuitDiagram
             base.OnStartup(e);
 
             log4net.Config.XmlConfigurator.Configure();
+            CircuitDiagram.Logging.LogManager.Initialize(t => new Log4NetLogger(LogManager.GetLogger(t)));
 
-            LogManager.GetLogger(typeof(App)).Info("Application starting up.");
+            var log = LogManager.GetLogger(typeof(App));
+            log.Info($"Application starting up: Circuit Diagram {UpdateVersionService.GetAppDisplayVersion()}");
             
             var bootstrapper = new Bootstrapper();
             bootstrapper.Run();

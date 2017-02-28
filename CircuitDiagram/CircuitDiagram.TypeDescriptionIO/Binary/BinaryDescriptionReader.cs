@@ -7,12 +7,15 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using CircuitDiagram.Logging;
 using CircuitDiagram.TypeDescription;
 
 namespace CircuitDiagram.TypeDescriptionIO.Binary
 {
     public class BinaryDescriptionReader
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(BinaryDescriptionReader));
+
         bool isSigned;
         bool validSignature;
         bool certificateTrusted;
@@ -108,9 +111,10 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // Invalid binary file
+                Log.Error("Failed to load component.", ex);
                 return false;
             }
         }

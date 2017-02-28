@@ -247,6 +247,7 @@
     <Compile Include="Dialogs\DialogWindow.xaml.cs">
       <DependentUpon>DialogWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Logging\Log4NetLogger.cs" />
     <Compile Include="Other\BuildChannelAttribute.cs" />
     <Compile Include="Controls\UnitsTextBox.cs" />
     <Compile Include="Converters\MultiResolutionImageToImageSourceConverter.cs" />
