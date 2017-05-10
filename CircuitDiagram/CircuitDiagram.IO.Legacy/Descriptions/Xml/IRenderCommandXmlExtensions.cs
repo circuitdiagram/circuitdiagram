@@ -100,7 +100,7 @@ namespace CircuitDiagram.IO.Descriptions.Xml
                     size = 12d;
             }
 
-            var textValueNode = element.Element(XmlLoader.ComponentNamespace + "value");
+            var textValueNode = element.Element(XmlLoaderLegacy.ComponentNamespace + "value");
             if (textValueNode != null)
             {
                 foreach (var spanNode in textValueNode.Elements())

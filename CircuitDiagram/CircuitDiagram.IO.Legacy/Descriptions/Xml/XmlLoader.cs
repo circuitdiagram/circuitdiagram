@@ -34,7 +34,7 @@ namespace CircuitDiagram.IO.Descriptions.Xml
     /// <summary>
     /// Loads component descriptions from an XML file.
     /// </summary>
-    public class XmlLoader : IComponentDescriptionLoader
+    public class XmlLoaderLegacy : IComponentDescriptionLoader
     {
         public static readonly XNamespace ComponentNamespace = "http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/component/xml";
 

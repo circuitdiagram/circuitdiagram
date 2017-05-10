@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "ComponentCompiler": {
+      "commandName": "Project",
+      "commandLineArgs": "resistor.xml --png --svg --cdcom -v --manifest",
+      "workingDirectory": "C:\\Users\\Sam\\Documents\\Projects\\CircuitDiagram\\CircuitDiagram\\ComponentCompiler\\bin\\Debug\\netcoreapp1.1"
+    }
+  }
+}

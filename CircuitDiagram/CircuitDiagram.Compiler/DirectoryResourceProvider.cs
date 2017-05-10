@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace CircuitDiagram.Compiler
 {
-    public class DirectoryResourceProvider : IResourceProvider
+    public class DirectoryResourceProvider : FileMapResourceProvider
     {
         private readonly string directory;
 
@@ -34,17 +34,20 @@ namespace CircuitDiagram.Compiler
             this.directory = directory;
         }
 
-        public bool HasResource(string name)
+        public override bool HasResource(string name)
         {
-            return File.Exists(Path.Combine(directory, name));
+            return base.HasResource(name) || File.Exists(Path.Combine(directory, name));
         }
 
-        public IResource GetResource(string name)
+        public override IResource GetResource(string name)
         {
-            if (!HasResource(name))
-                throw new InvalidOperationException($"Resource {name} not found.");
+            if (base.HasResource(name))
+                return base.GetResource(name);
 
-            return new FileResource(Path.Combine(directory, name));
+            if (File.Exists(Path.Combine(directory, name)))
+                return new FileResource(Path.Combine(directory, name));
+
+            throw new InvalidOperationException($"Resource {name} not found.");
         }
     }
 }

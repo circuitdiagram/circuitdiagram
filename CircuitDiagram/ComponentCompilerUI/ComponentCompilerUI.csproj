@@ -94,12 +94,6 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ComponentCompiler\ComponentCompiler.csproj">
-      <Project>{8119d219-d756-4b4e-b8a0-70209190d441}</Project>
-      <Name>ComponentCompiler</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

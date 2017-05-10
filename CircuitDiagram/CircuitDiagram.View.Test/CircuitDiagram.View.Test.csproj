@@ -66,16 +66,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CircuitDiagram.Render\CircuitDiagram.Render.csproj">
-      <Project>{313c9117-7047-4bd0-8462-18e898304d8f}</Project>
-      <Name>CircuitDiagram.Render</Name>
-    </ProjectReference>
     <ProjectReference Include="..\CircuitDiagram.View\CircuitDiagram.View.csproj">
       <Project>{dc2bce3e-c1f2-490d-bd7e-10aa0d2c9f0f}</Project>
       <Name>CircuitDiagram.View</Name>
     </ProjectReference>
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">
-      <Project>{8ec13aaa-2959-4356-b8a1-0465daffceac}</Project>
+      <Project>{03a4001d-947e-48e5-a5f4-732835be95b7}</Project>
       <Name>CircuitDiagramCore</Name>
     </ProjectReference>
   </ItemGroup>

@@ -1,230 +1,254 @@
-﻿// Program.cs
-//
-// Circuit Diagram http://www.circuit-diagram.org/
-//
-// Copyright (C) 2015  Sam Fisher
-//
-// This program is free software; you can redistribute it and/or
+﻿// This file is part of Circuit Diagram.
+// Copyright (c) 2017 Samuel Fisher
+//  
+// Circuit Diagram is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-//
+// 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-//
+// 
 // You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+// along with Circuit Diagram. If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using NDesk.Options;
-using System.Xml;
+using System.Collections.Immutable;
+using System.CommandLine;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
+using System.Linq;
+using CircuitDiagram.Circuit;
 using CircuitDiagram.Compiler;
+using CircuitDiagram.IO;
+using CircuitDiagram.IO.Descriptions.Xml;
+using CircuitDiagram.Logging;
+using CircuitDiagram.TypeDescription;
+using ComponentCompiler.OutputGenerators;
+using Microsoft.Extensions.Logging;
 
 namespace ComponentCompiler
 {
     class Program
     {
-        static int Main(string[] args)
+        private static readonly ILogger Log = LogManager.GetLogger<Program>();
+
+        private static readonly IDictionary<string, IOutputGenerator> Generators = new IOutputGenerator[]
         {
-            var compileOptions = new CliCompileOptions();
-            bool help = false;
-            
-            var p = new OptionSet() {
-                { "i|input=", "Path to input XML component or component folder.", v => compileOptions.Input = v },
-                { "o|output=", "Path to write compiled component to.", v => compileOptions.Output = v },
-                { "icon=", "Path to PNG icon.", v => compileOptions.IconPaths.Add(v)},
-                { "icondir=", "Find icons automatically in the specified directory.", v => compileOptions.DefaultIconPath = v},
-                { "sign", "If present, presents a dialog for choosing a certificate for component signing.", v => compileOptions.Sign = v != null },
-                { "certificate=", "Thumbprint of certificate to use for signing.", v => compileOptions.CertificateThumbprint = v},
-   	            { "h|?|help", "Display help and options.",   v => help = v != null },
-                { "r|recursive", "Recursively search sub-directories of the input directory", v => compileOptions.Recursive = v != null },
-                { "v|verbose", "Prints extra information to the console.", v => compileOptions.Verbose = v != null },
-                { "s|strict", "Fail if an icon cannot be found.", v => compileOptions.Strict = v != null },
-                { "manifest=", "Write a manifest file of compiled components.", v => compileOptions.WriteManifest = v },
-                { "preview=", "Generate previews in the specified directory.", v => compileOptions.Preview = v }
-            };
-            p.Parse(args);
-            
-            if (compileOptions.Input == null || compileOptions.Output == null || help)
+            new BinaryComponentGenerator(),
+            new SvgPreviewRenderer(),
+            new PngPreviewRenderer()
+        }.ToDictionary(x => x.FileExtension, x => x);
+
+        static void Main(string[] args)
+        {
+            IReadOnlyList<string> input = Array.Empty<string>();
+            IReadOnlyList<string> resources = null;
+            string output = null;
+            string cdcom = null;
+            string svg = null;
+            string png = null;
+            string manifest = null;
+            bool recursive = false;
+            bool silent = false;
+            bool verbose = false;
+
+            var cliOptions = ArgumentSyntax.Parse(args, options =>
             {
-                p.WriteOptionDescriptions(Console.Out);
-                return 0;
+                options.ApplicationName = "cdcompile";
+
+                options.DefineOption("o|output", ref output,
+                                     "Output file (the format will be inferred from the extension). Cannot be used for directory inputs or in combination with specific output format options.");
+
+                var cdcomOption = options.DefineOption("cdcom", ref cdcom, false, "Output a compiled binary component.");
+                if (cdcomOption.IsSpecified && cdcom == null)
+                    cdcom = string.Empty;
+
+                var svgOption = options.DefineOption("svg", ref svg, false, "Render preview in SVG format.");
+                if (svgOption.IsSpecified && svg == null)
+                    svg = string.Empty;
+
+                var pngOption = options.DefineOption("png", ref png, false, "Render preview in PNG format (experimental).");
+                if (pngOption.IsSpecified && png == null)
+                    png = string.Empty;
+
+                var manifestOption = options.DefineOption("manifest", ref manifest, false, "Writes a manifest file listing the compiled components.");
+                if (manifestOption.IsSpecified && manifest == null)
+                    manifest = "manifest.xml";
+
+                options.DefineOption("r|recursive", ref recursive, "Recursively searches sub-directories of the input directory.");
+                options.DefineOption("s|silent", ref silent, "Does not output anything to the console on successful operation.");
+                options.DefineOption("v|verbose", ref verbose, "Outputs extra information to the console.");
+
+                options.DefineOptionList("resources", ref resources, "Resources to use in generating the output. Either a directory, or a space-separated list of [key] [filename] pairs.");
+
+                options.DefineParameterList("input", ref input, "Components to compile.");
+            });
+
+            if (!silent)
+                LogManager.LoggerFactory.AddProvider(new BasicConsoleLogger(verbose ? LogLevel.Debug : LogLevel.Information));
+
+            if (!input.Any())
+                cliOptions.ReportError("At least one input file must be specified.");
+
+            if (output != null && (svg != null || png != null))
+                cliOptions.ReportError("Supplying both --output and a specific format is not supported.");
+
+            IResourceProvider resourceProvider = null;
+            if (resources != null && resources.Count == 1)
+            {
+                string directory = resources.Single();
+                if (!Directory.Exists(directory))
+                    cliOptions.ReportError($"Directory '{directory}' used for --resources does not exist.");
+
+                Log.LogDebug($"Using directory '{directory}' as resource provider.");
+                resourceProvider = new DirectoryResourceProvider(resources.Single());
+            }
+            else if (resources != null && resources.Count % 2 == 0)
+            {
+                Log.LogDebug("Mapping resources as key-file pairs.");
+                resourceProvider = new FileMapResourceProvider();
+                for (int i = 0; i + 1 < resources.Count; i += 2)
+                    ((FileMapResourceProvider)resourceProvider).Mappings.Add(resources[i], resources[i + 1]);
+            }
+            else if (resources != null)
+            {
+                cliOptions.ReportError("--resources must either be a directory or a space-separated list of [key] [filename] pairs.");
+            }
+            else
+            {
+                Log.LogDebug("Not supplying resources.");
+                resourceProvider = new FileMapResourceProvider();
             }
 
-            if (compileOptions.Verbose)
-                log4net.Config.BasicConfigurator.Configure();
-
-            var compiledComponents = new List<ExtendedCompileResult>();
-            if (File.Exists(compileOptions.Input))
+            var formats = new Dictionary<IOutputGenerator, string>();
+            if (output != null)
             {
-                // Compile a single component
-                var entry = CompileComponent(compileOptions.Input, compileOptions);
-                compiledComponents.Add(entry);
-                
-                Console.WriteLine("Compiled {0}", Path.GetFileName(compileOptions.Input));
-            }
-            else if (Directory.Exists(compileOptions.Input))
-            {
-                // Compile a directory of components
-                Console.WriteLine("Compiling components...");
-                
-                string[] inputPaths = Directory.GetFiles(compileOptions.Input, "*.xml",
-                    compileOptions.Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
-
-                foreach (var input in inputPaths)
+                IOutputGenerator generator;
+                if (Generators.TryGetValue(Path.GetExtension(output), out generator))
                 {
-                    var entry = CompileComponent(input, compileOptions);
-                    compiledComponents.Add(entry);
+                    // Use the generator implied by the file extension
+                    formats.Add(generator, output);
                 }
-                
-                Console.WriteLine("Compiled {0} components", compiledComponents.Count(c => c.Success));
-            }
-
-            if (compileOptions.WriteManifest != null)
-                WriteManifest(compiledComponents, compileOptions);
-
-            return compiledComponents.All(c => c.Success) ? 0 : 1;
-        }
-
-        private static ExtendedCompileResult CompileComponent(string inputPath, CliCompileOptions cliOptions)
-        {
-            var compiler = new CompilerService();
-
-            var resources = new MappedDirectoryResourceProvider(cliOptions.DefaultIconPath);
-
-            // Icon paths are specified as:
-            // --icon resourceName fileName
-            // --icon wire_32 wire_32.png wire_64 wire_64.png
-            for (int i = 0; i < cliOptions.IconPaths.Count; i += 2)
-                resources.Mappings.Add(cliOptions.IconPaths[i], cliOptions.IconPaths[i + 1]);
-            
-            var options = new CompileOptions()
-            {
-                CertificateThumbprint = cliOptions.CertificateThumbprint
-            };
-
-            if (cliOptions.Sign && cliOptions.CertificateThumbprint == null)
-                options.CertificateThumbprint = SelectCertificate();
-            
-            string outputPath = GetOutputPath(inputPath, cliOptions);
-
-            var outputDirectory = Path.GetDirectoryName(outputPath);
-            if (!Directory.Exists(outputDirectory))
-                Directory.CreateDirectory(outputDirectory);
-
-            ComponentCompileResult result;
-            using (var input = File.OpenRead(inputPath))
-            using (var output = File.OpenWrite(outputPath))
-            {
-                result = compiler.Compile(input, output, resources, options);
-            }
-
-            var extendedResult = new ExtendedCompileResult(result)
-            {
-                Input = inputPath
-            };
-
-            if (result.Success)
-            {
-                Console.WriteLine("{0} -> {1}", Path.GetFullPath(inputPath), Path.GetFullPath(outputPath));
-                extendedResult.Output = outputPath;
-            }
-
-            // Generate preview
-            if (result.Success && cliOptions.Preview != null)
-            {
-                string previewPath = GetPreviewPath(inputPath, cliOptions);
-                string previewDirectory = Path.GetDirectoryName(previewPath);
-                if (!Directory.Exists(previewDirectory))
-                    Directory.CreateDirectory(previewDirectory);
-
-                //var preview = PreviewRenderer.GetSvgPreview(result.Description, null, true);
-                //File.WriteAllBytes(previewPath, preview);
-            }
-
-            return extendedResult;
-        }
-        
-        private static X509Certificate2 SelectCertificate()
-        {
-            X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
-            store.Open(OpenFlags.OpenExistingOnly);
-
-            //Put certificates from the store into a collection so user can select one.
-            X509Certificate2Collection fcollection = (X509Certificate2Collection)store.Certificates;
-
-            IntPtr handle = Process.GetCurrentProcess().MainWindowHandle;
-            X509Certificate2Collection collection = X509Certificate2UI.SelectFromCollection(fcollection, "Select an X509 Certificate",
-                "Choose a certificate to sign your component with.", X509SelectionFlag.SingleSelection, handle);
-            return collection[0];
-        }
-
-        private static string GetOutputPath(string inputPath, CliCompileOptions cliOptions)
-        {
-            if (File.Exists(cliOptions.Input) && !Directory.Exists(cliOptions.Output))
-                return cliOptions.Output; // Single file
-
-            string fileName = Path.GetFileNameWithoutExtension(inputPath);
-            string outputName = Path.Combine(cliOptions.Output, fileName + ".cdcom");
-            return outputName;
-        }
-
-        private static string GetPreviewPath(string inputPath, CliCompileOptions cliOptions)
-        {
-            if (File.Exists(cliOptions.Input) && !Directory.Exists(cliOptions.Preview))
-                return cliOptions.Preview; // Single file
-
-            string fileName = Path.GetFileNameWithoutExtension(inputPath);
-            string outputName = Path.Combine(cliOptions.Preview, fileName + ".svg");
-            return outputName;
-        }
-
-        private static void WriteManifest(IList<ExtendedCompileResult> compiledEntries, CliCompileOptions compileOptions)
-        {
-            using (var fs = File.OpenWrite(compileOptions.WriteManifest))
-            {
-                var writer = new XmlTextWriter(fs, Encoding.UTF8)
+                else
                 {
-                    Formatting = Formatting.Indented
-                };
+                    Log.LogError("Unable to infer format from output file extension.");
+                    Environment.Exit(1);
+                }
+            }
+            if (cdcom != null)
+                formats.Add(new BinaryComponentGenerator(), NullIfEmpty(cdcom));
+            if (svg != null)
+                formats.Add(new SvgPreviewRenderer(), NullIfEmpty(svg));
+            if (png != null)
+                formats.Add(new PngPreviewRenderer(), NullIfEmpty(png));
 
-                writer.WriteStartDocument();
-                writer.WriteStartElement("components");
+            var results = new List<CompileResult>();
 
-                foreach (var entry in compiledEntries.Where(c => c.Success))
+            foreach (var i in input)
+            {
+                if (File.Exists(i))
                 {
-                    writer.WriteStartElement("component");
-                    writer.WriteAttributeString("name", entry.ComponentName);
-                    writer.WriteAttributeString("author", entry.Author);
-                    writer.WriteAttributeString("guid", entry.Guid.ToString());
-                    writer.WriteAttributeString("input", entry.Input);
-                    writer.WriteAttributeString("output", entry.Output);
-
-                    foreach (var metaEntry in entry.Description.Metadata.Entries)
+                    var result = Run(i, resourceProvider, formats);
+                    results.Add(result);
+                }
+                else if (Directory.Exists(i))
+                {
+                    foreach (var generator in formats)
                     {
-                        writer.WriteStartElement("meta");
-                        writer.WriteAttributeString("name", metaEntry.Key);
-                        writer.WriteAttributeString("value", metaEntry.Value);
-                        writer.WriteEndElement();
+                        if (!Directory.Exists(generator.Value))
+                            cliOptions.ReportError("Outputs must be directories when the input is a directory.");
                     }
 
-                    writer.WriteEndElement();
+                    foreach (var file in Directory.GetFiles(i, "*.xml",
+                                                            recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
+                    {
+                        var result = Run(file, resourceProvider, formats);
+                        results.Add(result);
+                    }
+                }
+                else
+                {
+                    Log.LogError($"Input is not a valid file or directory: {i}");
+                    Environment.Exit(1);
+                }
+            }
+
+            if (manifest != null)
+            {
+                using (var manifestFs = File.Open(manifest, FileMode.Create))
+                {
+                    Log.LogInformation($"Writing manifest to {manifest}");
+                    ManifestGenerator.WriteManifest(results, manifestFs);
+                }
+            }
+        }
+
+        static CompileResult Run(string inputFile, IResourceProvider resourceProvider, IDictionary<IOutputGenerator, string> formats)
+        {
+            Log.LogInformation(inputFile);
+
+            var loader = new XmlLoader();
+            using (var fs = File.OpenRead(inputFile))
+            {
+                loader.Load(fs);
+
+                if (loader.LoadErrors.Any())
+                {
+                    foreach (var error in loader.LoadErrors)
+                    {
+                        switch (error.Category)
+                        {
+                            case LoadErrorCategory.Error:
+                                Log.LogError(error.Message);
+                                break;
+                        }
+                    }
+
+                    if (loader.LoadErrors.Any(x => x.Category == LoadErrorCategory.Error))
+                        Environment.Exit(1);
                 }
 
-                writer.WriteEndDocument();
+                var description = loader.GetDescriptions()[0];
 
-                writer.Flush();
-                writer.Close();
+                var outputs = Generate(fs, description, Path.GetFileNameWithoutExtension(inputFile), resourceProvider, formats);
+
+                return new CompileResult(description.Metadata.Author,
+                                         description.ComponentName,
+                                         description.Metadata.GUID,
+                                         true,
+                                         description.Metadata.AdditionalInformation,
+                                         inputFile,
+                                         description.Metadata.Entries.ToImmutableDictionary(),
+                                         outputs.ToImmutableDictionary());
             }
-        } 
+        }
+
+        internal static IEnumerable<KeyValuePair<string, string>> Generate(FileStream input, ComponentDescription description, string inputBaseName, IResourceProvider resourceProvider,
+                                                                           IDictionary<IOutputGenerator, string> formats)
+        {
+            foreach (var f in formats)
+            {
+                string format = f.Key.FileExtension.Substring(1);
+                string autoGeneratedName = $"{inputBaseName}{f.Key.FileExtension}";
+                string outputPath = f.Value != null && Directory.Exists(f.Value) ? Path.Combine(f.Value, autoGeneratedName) : f.Value ?? autoGeneratedName;
+                using (var output = File.Open(outputPath, FileMode.Create))
+                {
+                    Log.LogDebug($"Starting {format} generation.");
+                    input.Seek(0, SeekOrigin.Begin);
+                    f.Key.Generate(description, new CircuitDiagram.TypeDescription.ComponentConfiguration("", "", new Dictionary<PropertyName, PropertyValue>()), resourceProvider, true, input, output);
+                    Log.LogInformation($"  {format,-4} -> {outputPath}");
+                }
+
+                yield return new KeyValuePair<string, string>(format, outputPath);
+            }
+        }
+
+        private static string NullIfEmpty(string input)
+        {
+            return string.IsNullOrWhiteSpace(input) ? null : input;
+        }
     }
 }

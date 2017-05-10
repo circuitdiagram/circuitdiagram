@@ -1,124 +1,15 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{313C9117-7047-4BD0-8462-18E898304D8F}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CircuitDiagram</RootNamespace>
-    <AssemblyName>CircuitDiagram.Render</AssemblyName>
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <TargetFramework>netstandard1.3</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <None Include="CircuitDiagram.Render.nuspec">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="project.json" />
-    <!-- A reference to the entire .NET Framework is automatically included -->
+    <PackageReference Include="ImageSharp.Drawing" Version="1.0.0-alpha9-00019" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Drawing\IDrawingContext.cs" />
-    <Compile Include="Drawing\ILayoutContext.cs" />
-    <Compile Include="Drawing\LayoutContext.cs" />
-    <Compile Include="Drawing\Text\TextAlignment.cs" />
-    <Compile Include="Drawing\Text\TextRun.cs" />
-    <Compile Include="Drawing\Text\TextRunFormatting.cs" />
-    <Compile Include="Drawing\Text\TextRunFormattingType.cs" />
-    <Compile Include="Render\CircuitRenderer.cs" />
-    <Compile Include="Render\Connections\ConnectionFlags.cs" />
-    <Compile Include="Render\Connections\ConnectionPoint.cs" />
-    <Compile Include="Render\Connections\ConnectionPositioner.cs" />
-    <Compile Include="Render\Connections\ConnectionVisualiser.cs" />
-    <Compile Include="Render\Connections\IConnectionVisualiser.cs" />
-    <Compile Include="Render\DictionaryComponentDescriptionLookup.cs" />
-    <Compile Include="Render\ICircuitRenderer.cs" />
-    <Compile Include="Render\IComponentDescriptionLookup.cs" />
-    <Compile Include="Render\SVGRenderer.cs" />
-    <Compile Include="TypeDescription\Conditions\Conditional.cs" />
-    <Compile Include="TypeDescription\Conditions\ConditionComparison.cs" />
-    <Compile Include="TypeDescription\Conditions\ConditionFormatException.cs" />
-    <Compile Include="TypeDescription\Conditions\ConditionToken.cs" />
-    <Compile Include="TypeDescription\Conditions\ConditionTree.cs" />
-    <Compile Include="TypeDescription\Conditions\ConditionTreeLeaf.cs" />
-    <Compile Include="TypeDescription\Conditions\ConditionType.cs" />
-    <Compile Include="TypeDescription\Conditions\IConditionTreeItem.cs" />
-    <Compile Include="TypeDescription\Conditions\Parsers\ConditionFormat.cs" />
-    <Compile Include="TypeDescription\Conditions\Parsers\ConditionParser.cs" />
-    <Compile Include="TypeDescription\Conditions\Parsers\IConditionParser.cs" />
-    <Compile Include="TypeDescription\Conditions\Parsers\LegacyConditionParser.cs" />
-    <Compile Include="TypeDescription\Conditions\Parsers\ParseContext.cs" />
-    <Compile Include="TypeDescription\Conditions\PositioningReader.cs" />
-    <Compile Include="TypeDescription\ComponentConfiguration.cs" />
-    <Compile Include="TypeDescription\ComponentDescription.cs" />
-    <Compile Include="TypeDescription\ComponentDescriptionMetadata.cs" />
-    <Compile Include="TypeDescription\ComponentDescriptionSource.cs" />
-    <Compile Include="TypeDescription\ComponentProperty.cs" />
-    <Compile Include="TypeDescription\ComponentPropertyFormat.cs" />
-    <Compile Include="TypeDescription\ConnectionDescription.cs" />
-    <Compile Include="TypeDescription\FlagOptions.cs" />
-    <Compile Include="Drawing\LayoutOptions.cs" />
-    <Compile Include="Drawing\Ellipse.cs" />
-    <Compile Include="Drawing\IRenderCommand.cs" />
-    <Compile Include="Drawing\Line.cs" />
-    <Compile Include="Drawing\RenderPath.cs" />
-    <Compile Include="Drawing\Path\ClosePath.cs" />
-    <Compile Include="Drawing\Path\CommandType.cs" />
-    <Compile Include="Drawing\Path\CurveTo.cs" />
-    <Compile Include="Drawing\Path\EllipticalArcTo.cs" />
-    <Compile Include="Drawing\Path\IPathCommand.cs" />
-    <Compile Include="Drawing\Path\LineTo.cs" />
-    <Compile Include="Drawing\Path\MoveTo.cs" />
-    <Compile Include="Drawing\Path\PathHelper.cs" />
-    <Compile Include="Drawing\Path\QuadraticBeizerCurveTo.cs" />
-    <Compile Include="Drawing\Path\SmoothCurveTo.cs" />
-    <Compile Include="Drawing\Path\SmoothQuadraticBeizerCurveTo.cs" />
-    <Compile Include="Drawing\Rectangle.cs" />
-    <Compile Include="TypeDescription\Extensions\PropertyValueExtensions.cs" />
-    <Compile Include="Render\Connections\IConnectionPositioner.cs" />
-    <Compile Include="TypeDescription\RenderDescription.cs" />
-    <Compile Include="Drawing\RenderText.cs" />
-    <Compile Include="TypeDescription\ComponentPoint.cs" />
-    <Compile Include="TypeDescription\ConnectionGroup.cs" />
-    <Compile Include="TypeDescription\PropertyOtherConditionType.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">
-      <Project>{8ec13aaa-2959-4356-b8a1-0465daffceac}</Project>
-      <Name>CircuitDiagramCore</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

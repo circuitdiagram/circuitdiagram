@@ -19,15 +19,16 @@
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
-using CircuitDiagram.Components.Description;
 using CircuitDiagram.IO;
-using log4net;
+using CircuitDiagram.Logging;
+using CircuitDiagram.TypeDescriptionIO;
+using Microsoft.Extensions.Logging;
 
 namespace CircuitDiagram.Compiler.CompileStages
 {
     class SetIconsCompileStage : ICompileStage
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(SetIconsCompileStage));
+        private static readonly ILogger Log = LogManager.GetLogger<SetIconsCompileStage>();
 
         public void Run(CompileContext context)
         {
@@ -55,7 +56,7 @@ namespace CircuitDiagram.Compiler.CompileStages
                 if (!context.Resources.HasResource(resolutionName))
                 {
                     string warnMessage = $"Icon {resolutionName} not found.";
-                    Log.Warn(warnMessage);
+                    Log.LogWarning(warnMessage);
                     context.Errors.Add(new CompileError(LoadErrorCategory.Warning, warnMessage));
                     continue;
                 }

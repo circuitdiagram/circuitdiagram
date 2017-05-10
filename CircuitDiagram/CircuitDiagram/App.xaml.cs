@@ -10,7 +10,7 @@ using System.Windows.Markup;
 using CircuitDiagram.Dependency;
 using CircuitDiagram.Logging;
 using CircuitDiagram.Updates;
-using LogManager = log4net.LogManager;
+using Microsoft.Extensions.Logging;
 
 namespace CircuitDiagram
 {
@@ -23,11 +23,10 @@ namespace CircuitDiagram
         {
             base.OnStartup(e);
 
-            log4net.Config.XmlConfigurator.Configure();
-            CircuitDiagram.Logging.LogManager.Initialize(t => new Log4NetLogger(LogManager.GetLogger(t)));
+            // TODO: set up logging
 
-            var log = LogManager.GetLogger(typeof(App));
-            log.Info($"Application starting up: Circuit Diagram {UpdateVersionService.GetAppDisplayVersion()}");
+            var log = LogManager.GetLogger<App>();
+            log.LogInformation($"Application starting up: Circuit Diagram {UpdateVersionService.GetAppDisplayVersion()}");
             
             var bootstrapper = new Bootstrapper();
             bootstrapper.Run();
@@ -37,7 +36,7 @@ namespace CircuitDiagram
         {
             base.OnExit(e);
 
-            LogManager.GetLogger(typeof(App)).Info("Application shutting down.");
+            LogManager.GetLogger<App>().LogInformation("Application shutting down.");
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -52,7 +51,7 @@ namespace CircuitDiagram
 
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            LogManager.GetLogger(typeof(App)).Error("Unhandled exception.", e.Exception);
+            LogManager.GetLogger<App>().LogError("Unhandled exception.", e.Exception);
         }
     }
 }

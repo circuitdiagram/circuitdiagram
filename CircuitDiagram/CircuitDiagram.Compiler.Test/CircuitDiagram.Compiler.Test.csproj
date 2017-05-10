@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CircuitDiagram.ComponentCompiler.Test</RootNamespace>
     <AssemblyName>CircuitDiagram.ComponentCompiler.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -16,6 +16,7 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -61,13 +62,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CircuitDiagram.Compiler\CircuitDiagram.Compiler.csproj">
-      <Project>{cf146d9d-208f-41a2-bf8d-a183ff1b1191}</Project>
-      <Name>CircuitDiagram.Compiler</Name>
-    </ProjectReference>
+    <EmbeddedResource Include="Resources\TestComponent.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\TestComponent.xml" />
+    <ProjectReference Include="..\CircuitDiagram.Compiler\CircuitDiagram.Compiler.csproj">
+      <Project>{9d32b6ae-46c1-4c85-9a33-43e99dbeab20}</Project>
+      <Name>CircuitDiagram.Compiler</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
