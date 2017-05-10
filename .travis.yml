@@ -4,6 +4,7 @@ dotnet: 1.0.1
 dist: trusty
 
 script:
-  - dotnet restore CircuitDiagram
-  - dotnet test CircuitDiagram/CircuitDiagram.Compiler.Test/CircuitDiagram.Compiler.Test.csproj
-  - dotnet publish CircuitDiagram/ComponentCompiler/ComponentCompiler.csproj -c Release -r win10-x64
+  - cd CircuitDiagram
+  - dotnet restore
+  - dotnet test CircuitDiagram.Compiler.Test/CircuitDiagram.Compiler.Test.csproj
+  - dotnet publish ComponentCompiler/ComponentCompiler.csproj -c Release -r win10-x64
