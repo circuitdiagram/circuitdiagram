@@ -20,11 +20,10 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using CircuitDiagram.Compiler;
 using Moq;
 using NUnit.Framework;
 
-namespace CircuitDiagram.ComponentCompiler.Test
+namespace CircuitDiagram.Compiler.Test
 {
     [TestFixture]
     public class CompilerServiceTest
