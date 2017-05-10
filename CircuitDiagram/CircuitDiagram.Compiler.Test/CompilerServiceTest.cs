@@ -32,7 +32,7 @@ namespace CircuitDiagram.ComponentCompiler.Test
         [Test]
         public void TestCompile()
         {
-            var assembly = Assembly.GetExecutingAssembly();
+            var assembly = typeof(CompilerServiceTest).GetTypeInfo().Assembly;
             string testComponentResource = assembly.GetManifestResourceNames().First(r => r.EndsWith("TestComponent.xml"));
 
             var compiler = new CompilerService();
