@@ -20,11 +20,10 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using CircuitDiagram.Compiler;
 using Moq;
 using NUnit.Framework;
 
-namespace CircuitDiagram.ComponentCompiler.Test
+namespace CircuitDiagram.Compiler.Test
 {
     [TestFixture]
     public class CompilerServiceTest
@@ -32,7 +31,7 @@ namespace CircuitDiagram.ComponentCompiler.Test
         [Test]
         public void TestCompile()
         {
-            var assembly = Assembly.GetExecutingAssembly();
+            var assembly = typeof(CompilerServiceTest).GetTypeInfo().Assembly;
             string testComponentResource = assembly.GetManifestResourceNames().First(r => r.EndsWith("TestComponent.xml"));
 
             var compiler = new CompilerService();

@@ -1,100 +1,12 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8EC13AAA-2959-4356-B8A1-0465DAFFCEAC}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>netstandard1.3</TargetFramework>
     <RootNamespace>CircuitDiagram</RootNamespace>
-    <AssemblyName>CircuitDiagramCore</AssemblyName>
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
-  </PropertyGroup>
+
   <ItemGroup>
-    <None Include="CircuitDiagramCore.nuspec" />
-    <None Include="project.json" />
-    <!-- A reference to the entire .NET Framework is automatically included -->
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.1" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Circuit\Internal\ObjValue.cs" />
-    <Compile Include="Circuit\IPositionalConnectedElement.cs" />
-    <Compile Include="Circuit\PropertyName.cs" />
-    <Compile Include="Circuit\PropertyValue.cs" />
-    <Compile Include="CommonComponents.cs" />
-    <Compile Include="DocumentMetadata.cs" />
-    <Compile Include="Circuit\Extensions\ConnectionExtensions.cs" />
-    <Compile Include="Circuit\CircuitDocument.cs" />
-    <Compile Include="Circuit\CollectionType.cs" />
-    <Compile Include="Circuit\Component.cs" />
-    <Compile Include="Circuit\ComponentConfiguration.cs" />
-    <Compile Include="Circuit\ComponentName.cs" />
-    <Compile Include="Circuit\ComponentType.cs" />
-    <Compile Include="Circuit\ComponentTypeCollection.cs" />
-    <Compile Include="Circuit\ComponentTypeCollectionItem.cs" />
-    <Compile Include="Circuit\Connection.cs" />
-    <Compile Include="Circuit\ConnectionName.cs" />
-    <Compile Include="Circuit\DependentDictionary.cs" />
-    <Compile Include="Circuit\IConnectedElement.cs" />
-    <Compile Include="Circuit\IElement.cs" />
-    <Compile Include="Circuit\IPositionalElement.cs" />
-    <Compile Include="Circuit\LayoutInformation.cs" />
-    <Compile Include="Circuit\CircuitDocumentMetadata.cs" />
-    <Compile Include="Circuit\NamedConnection.cs" />
-    <Compile Include="Circuit\PositionalComponent.cs" />
-    <Compile Include="Circuit\Wire.cs" />
-    <Compile Include="IO\ICircuitReader.cs" />
-    <Compile Include="IO\ICircuitWriter.cs" />
-    <Compile Include="Logging\ILog.cs" />
-    <Compile Include="Logging\LogManager.cs" />
-    <Compile Include="Plugin\IPlugin.cs" />
-    <Compile Include="Plugin\IPluginMetadata.cs" />
-    <Compile Include="Plugin\IPluginPart.cs" />
-    <Compile Include="Primitives\LinqExtensions.cs" />
-    <Compile Include="Primitives\Orientation.cs" />
-    <Compile Include="Primitives\Point.cs" />
-    <Compile Include="Primitives\Rect.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Primitives\Size.cs" />
-    <Compile Include="Primitives\Vector.cs" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

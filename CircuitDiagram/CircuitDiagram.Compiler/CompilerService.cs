@@ -23,18 +23,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CircuitDiagram.Compiler.CompileStages;
-using log4net;
+using CircuitDiagram.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace CircuitDiagram.Compiler
 {
     public class CompilerService
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(CompilerService));
+        private static readonly ILogger Log = LogManager.GetLogger<CompilerService>();
 
         public ComponentCompileResult Compile(Stream input, Stream output, IResourceProvider resourceProvider,
                                               CompileOptions options)
         {
-            Log.Info($"Compiling {input.StreamToString()}");
+            Log.LogDebug($"Compiling {input.StreamToString()}");
 
             var runner = new CompileStageRunner(new ICompileStage[]
             {
@@ -49,7 +50,7 @@ namespace CircuitDiagram.Compiler
             {
                 result = runner.Run(input, output, options);
 
-                Log.Info($"Compiled to {output.StreamToString()}");
+                Log.LogDebug($"Compiled to {output.StreamToString()}");
             }
             catch (Exception ex)
             {
@@ -58,7 +59,7 @@ namespace CircuitDiagram.Compiler
                     Success = false
                 };
 
-                Log.Error(ex);
+                Log.LogError("An error occurred.", ex);
             }
 
             return result;

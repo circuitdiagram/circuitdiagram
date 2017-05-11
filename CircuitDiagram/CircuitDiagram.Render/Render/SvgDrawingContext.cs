@@ -32,7 +32,7 @@ using CircuitDiagram.Render.Path;
 
 namespace CircuitDiagram.Render
 {
-    public class SvgRenderer : IDrawingContext
+    public class SvgDrawingContext : IDrawingContext
     {
         private readonly double width;
         private readonly double height;
@@ -43,7 +43,7 @@ namespace CircuitDiagram.Render
         /// </summary>
         /// <param name="width">Width of the output SVG.</param>
         /// <param name="height">height of the output SVG.</param>
-        public SvgRenderer(double width, double height)
+        public SvgDrawingContext(double width, double height)
         {
             SvgDocument = new MemoryStream();
             writer = XmlWriter.Create(SvgDocument, new XmlWriterSettings
@@ -60,7 +60,7 @@ namespace CircuitDiagram.Render
 
         public void Begin()
         {
-            string cdlibraryVersion = typeof(SvgRenderer).GetTypeInfo().Assembly.GetName().Version.ToString();
+            string cdlibraryVersion = typeof(SvgDrawingContext).GetTypeInfo().Assembly.GetName().Version.ToString();
 
             writer.WriteStartDocument();
             writer.WriteComment(" Generator: Circuit Diagram, cdlibrary.dll " + cdlibraryVersion + " ");

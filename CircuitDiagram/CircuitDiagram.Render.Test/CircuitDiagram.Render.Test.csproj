@@ -61,11 +61,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CircuitDiagram.Render\CircuitDiagram.Render.csproj">
-      <Project>{313c9117-7047-4bd0-8462-18e898304d8f}</Project>
+      <Project>{def7bf2b-3f45-4406-93db-f990102b0993}</Project>
       <Name>CircuitDiagram.Render</Name>
     </ProjectReference>
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">
-      <Project>{8ec13aaa-2959-4356-b8a1-0465daffceac}</Project>
+      <Project>{03a4001d-947e-48e5-a5f4-732835be95b7}</Project>
       <Name>CircuitDiagramCore</Name>
     </ProjectReference>
   </ItemGroup>

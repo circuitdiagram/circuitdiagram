@@ -169,20 +169,20 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CircuitDiagram.Render\CircuitDiagram.Render.csproj">
-      <Project>{313c9117-7047-4bd0-8462-18e898304d8f}</Project>
-      <Name>CircuitDiagram.Render</Name>
-    </ProjectReference>
     <ProjectReference Include="..\CircuitDiagram.Document\CircuitDiagram.Document.csproj">
       <Project>{f1b212c7-1c4f-40be-9d63-0b053ba4f3de}</Project>
       <Name>CircuitDiagram.Document</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CircuitDiagram.Render\CircuitDiagram.Render.csproj">
+      <Project>{def7bf2b-3f45-4406-93db-f990102b0993}</Project>
+      <Name>CircuitDiagram.Render</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CircuitDiagram.TypeDescriptionIO\CircuitDiagram.TypeDescriptionIO.csproj">
-      <Project>{7b509b50-aae6-4bab-9b3c-e89f50938800}</Project>
+      <Project>{11490e64-2070-4644-9e65-dd0cd8913ef9}</Project>
       <Name>CircuitDiagram.TypeDescriptionIO</Name>
     </ProjectReference>
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj">
-      <Project>{8ec13aaa-2959-4356-b8a1-0465daffceac}</Project>
+      <Project>{03a4001d-947e-48e5-a5f4-732835be95b7}</Project>
       <Name>CircuitDiagramCore</Name>
     </ProjectReference>
     <ProjectReference Include="..\Toolbox\Toolbox.csproj">

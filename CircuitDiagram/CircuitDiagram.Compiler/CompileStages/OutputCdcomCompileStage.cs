@@ -20,6 +20,7 @@ using System;
 using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using CircuitDiagram.IO;
+using CircuitDiagram.TypeDescriptionIO.Binary;
 
 namespace CircuitDiagram.Compiler.CompileStages
 {
