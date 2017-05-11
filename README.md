@@ -1,12 +1,12 @@
-# [Circuit Diagram](http://www.circuit-diagram.org/): Draw Circuit Diagrams
+# Circuit Diagram: Draw Circuit Diagrams
+
+A graphical editor for Circuit Diagrams with support for custom user-defined components. The main editor runs under Windows only, while the supporting tooling and libraries are cross-platform.
 
 | Windows | Ubuntu |
 |:------:|:------:|
 | [![Build status](https://ci.appveyor.com/api/projects/status/8xt15xqjat9ime9f/branch/master?svg=true)](https://ci.appveyor.com/project/CircuitDiagram/circuitdiagram/branch/master) | [![Build Status](https://travis-ci.org/circuitdiagram/circuitdiagram.svg?branch=master)](https://travis-ci.org/circuitdiagram/circuitdiagram) |
 
 _Circuit Diagram 4.0 is currently in development and is not yet feature-complete. Please see [v3.1](https://github.com/circuitdiagram/circuitdiagram/tree/v3.1) for the latest stable release of Circuit Diagram._
-
-A graphical editor for Circuit Diagrams with support for custom user-defined components. The main editor runs under Windows only, while the supporting tooling and libraries are cross-platform.
 
 Diagrams can be exported using one of the built-in image exporters, to formats including SVG and PNG.
 
