@@ -35,7 +35,7 @@ namespace CircuitDiagram.Compiler
         public ComponentCompileResult Compile(Stream input, Stream output, IResourceProvider resourceProvider,
                                               CompileOptions options)
         {
-            Log.LogInformation($"Compiling {input.StreamToString()}");
+            Log.LogDebug($"Compiling {input.StreamToString()}");
 
             var runner = new CompileStageRunner(new ICompileStage[]
             {
@@ -50,7 +50,7 @@ namespace CircuitDiagram.Compiler
             {
                 result = runner.Run(input, output, options);
 
-                Log.LogInformation($"Compiled to {output.StreamToString()}");
+                Log.LogDebug($"Compiled to {output.StreamToString()}");
             }
             catch (Exception ex)
             {

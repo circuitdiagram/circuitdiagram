@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Document", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3C139416-4492-4BD7-884B-51B3DB1E13F7}"
 	ProjectSection(SolutionItems) = preProject
-		Nuget.config = Nuget.config
+		NuGet.Config = NuGet.Config
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Render", "CircuitDiagram.Render\CircuitDiagram.Render.csproj", "{DEF7BF2B-3F45-4406-93DB-F990102B0993}"
