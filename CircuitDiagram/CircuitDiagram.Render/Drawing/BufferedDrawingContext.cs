@@ -66,7 +66,7 @@ namespace CircuitDiagram.Render.Drawing
         public void DrawPath(Point start, IList<IPathCommand> commands, double thickness, bool fill = false)
         {
             // Not supported
-            underlying.DrawPath(start, commands, thickness, fill);
+            underlying?.DrawPath(start, commands, thickness, fill);
         }
 
         public void DrawText(Point anchor, TextAlignment alignment, IList<TextRun> textRuns)
