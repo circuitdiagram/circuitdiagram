@@ -20,6 +20,7 @@ using System.IO;
 using System.Text;
 using CircuitDiagram.Compiler;
 using CircuitDiagram.TypeDescription;
+using ComponentCompiler.ComponentPreview;
 
 namespace ComponentCompiler.OutputGenerators
 {
@@ -34,7 +35,7 @@ namespace ComponentCompiler.OutputGenerators
             compiler = new CompilerService();
         }
 
-        public void Generate(ComponentDescription description, ComponentConfiguration configuration, IResourceProvider resourceProvider, bool horizontal, Stream input, Stream output)
+        public void Generate(ComponentDescription description, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output)
         {
             ComponentCompileResult result = compiler.Compile(input, output, resourceProvider, new CompileOptions());
             if (!result.Success)

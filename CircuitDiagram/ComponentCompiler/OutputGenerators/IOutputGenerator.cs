@@ -20,6 +20,7 @@ using System.IO;
 using System.Text;
 using CircuitDiagram.Compiler;
 using CircuitDiagram.TypeDescription;
+using ComponentCompiler.ComponentPreview;
 
 namespace ComponentCompiler.OutputGenerators
 {
@@ -28,6 +29,6 @@ namespace ComponentCompiler.OutputGenerators
         string FileExtension { get; }
 
         /// <param name="input">Remove this parameter once CircuitDiagram.Compiler supports compiling from a loaded description.</param>
-        void Generate(ComponentDescription description, ComponentConfiguration configuration, IResourceProvider resourceProvider, bool horizontal, Stream input, Stream output);
+        void Generate(ComponentDescription description, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output);
     }
 }

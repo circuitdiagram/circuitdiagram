@@ -52,11 +52,10 @@ namespace CircuitDiagram.View.Editor
                 dc.PushGuidelineSet(guidelines);
 
                 var dr = new DrawingRenderer(dc);
-                dr.Begin();
 
                 dc.DrawRectangle(HighlightBrush, null, ElementDrawing.ContentBounds);
 
-                dr.End();
+                dr.Dispose();
             }
         }
     }

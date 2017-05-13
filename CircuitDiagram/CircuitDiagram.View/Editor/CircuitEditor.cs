@@ -26,14 +26,11 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using CircuitDiagram.Circuit;
-using CircuitDiagram.Drawing;
 using CircuitDiagram.Primitives;
 using CircuitDiagram.Render;
-using CircuitDiagram.Render.Connections;
 using CircuitDiagram.View.Editor;
 using CircuitDiagram.View.Editor.Operations;
 using CircuitDiagram.View.Services;
-using log4net;
 using ResizeHandle = CircuitDiagram.View.Editor.Operations.ResizeHandle;
 using Vector = System.Windows.Vector;
 
@@ -41,8 +38,6 @@ namespace CircuitDiagram.View.Controls
 {
     class CircuitEditor : CircuitEditorDrawing, IEditorOperationalContext
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(CircuitEditor));
-        
         public static readonly DependencyProperty PlaceTypeProperty = DependencyProperty.Register(
             "PlaceType", typeof(IComponentTypeIdentifier), typeof(CircuitEditor), new PropertyMetadata(default(IComponentTypeIdentifier)));
 

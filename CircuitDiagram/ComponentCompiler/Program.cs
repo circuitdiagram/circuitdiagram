@@ -20,12 +20,14 @@ using System.Collections.Immutable;
 using System.CommandLine;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using CircuitDiagram.Circuit;
 using CircuitDiagram.Compiler;
 using CircuitDiagram.IO;
 using CircuitDiagram.IO.Descriptions.Xml;
 using CircuitDiagram.Logging;
 using CircuitDiagram.TypeDescription;
+using ComponentCompiler.ComponentPreview;
 using ComponentCompiler.OutputGenerators;
 using Microsoft.Extensions.Logging;
 
@@ -51,9 +53,16 @@ namespace ComponentCompiler
             string svg = null;
             string png = null;
             string manifest = null;
+
+            // Preview options
+            bool autosize = false;
+            double imgWidth = 640;
+            double imgHeight = 480;
+
             bool recursive = false;
             bool silent = false;
             bool verbose = false;
+            bool version = false;
 
             var cliOptions = ArgumentSyntax.Parse(args, options =>
             {
@@ -78,14 +87,27 @@ namespace ComponentCompiler
                 if (manifestOption.IsSpecified && manifest == null)
                     manifest = "manifest.xml";
 
+                options.DefineOption("autosize", ref autosize, "Automatically sizes the output image to fit the rendered preview.");
+                options.DefineOption("w|width", ref imgWidth, double.Parse, "Width of output images to generate (default=640).");
+                options.DefineOption("h|height", ref imgHeight, double.Parse, "Height of output images to generate (default=480).");
+
                 options.DefineOption("r|recursive", ref recursive, "Recursively searches sub-directories of the input directory.");
                 options.DefineOption("s|silent", ref silent, "Does not output anything to the console on successful operation.");
                 options.DefineOption("v|verbose", ref verbose, "Outputs extra information to the console.");
+
+                options.DefineOption("version", ref version, "Prints the version of this application.");
 
                 options.DefineOptionList("resources", ref resources, "Resources to use in generating the output. Either a directory, or a space-separated list of [key] [filename] pairs.");
 
                 options.DefineParameterList("input", ref input, "Components to compile.");
             });
+
+            if (version)
+            {
+                var assemblyName = typeof(Program).GetTypeInfo().Assembly.GetName();
+                Console.WriteLine($"cdcompile {assemblyName.Version} ({assemblyName.ProcessorArchitecture})");
+                return;
+            }
 
             if (!silent)
                 LogManager.LoggerFactory.AddProvider(new BasicConsoleLogger(verbose ? LogLevel.Debug : LogLevel.Information));
@@ -145,13 +167,21 @@ namespace ComponentCompiler
             if (png != null)
                 formats.Add(new PngPreviewRenderer(), NullIfEmpty(png));
 
+            var previewOptions = new PreviewGenerationOptions
+            {
+                Center = true,
+                Crop = autosize,
+                Width = imgWidth,
+                Height = imgHeight
+            };
+
             var results = new List<CompileResult>();
 
             foreach (var i in input)
             {
                 if (File.Exists(i))
                 {
-                    var result = Run(i, resourceProvider, formats);
+                    var result = Run(i, resourceProvider, previewOptions, formats);
                     results.Add(result);
                 }
                 else if (Directory.Exists(i))
@@ -165,7 +195,7 @@ namespace ComponentCompiler
                     foreach (var file in Directory.GetFiles(i, "*.xml",
                                                             recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
                     {
-                        var result = Run(file, resourceProvider, formats);
+                        var result = Run(file, resourceProvider, previewOptions, formats);
                         results.Add(result);
                     }
                 }
@@ -186,7 +216,10 @@ namespace ComponentCompiler
             }
         }
 
-        static CompileResult Run(string inputFile, IResourceProvider resourceProvider, IDictionary<IOutputGenerator, string> formats)
+        static CompileResult Run(string inputFile, 
+            IResourceProvider resourceProvider,
+            PreviewGenerationOptions previewOptions,
+            IDictionary<IOutputGenerator, string> formats)
         {
             Log.LogInformation(inputFile);
 
@@ -213,7 +246,7 @@ namespace ComponentCompiler
 
                 var description = loader.GetDescriptions()[0];
 
-                var outputs = Generate(fs, description, Path.GetFileNameWithoutExtension(inputFile), resourceProvider, formats);
+                var outputs = Generate(fs, description, Path.GetFileNameWithoutExtension(inputFile), resourceProvider, formats, previewOptions);
 
                 return new CompileResult(description.Metadata.Author,
                                          description.ComponentName,
@@ -226,8 +259,12 @@ namespace ComponentCompiler
             }
         }
 
-        internal static IEnumerable<KeyValuePair<string, string>> Generate(FileStream input, ComponentDescription description, string inputBaseName, IResourceProvider resourceProvider,
-                                                                           IDictionary<IOutputGenerator, string> formats)
+        internal static IEnumerable<KeyValuePair<string, string>> Generate(FileStream input,
+                                                                           ComponentDescription description,
+                                                                           string inputBaseName,
+                                                                           IResourceProvider resourceProvider,
+                                                                           IDictionary<IOutputGenerator, string> formats,
+                                                                           PreviewGenerationOptions previewOptions)
         {
             foreach (var f in formats)
             {
@@ -238,7 +275,11 @@ namespace ComponentCompiler
                 {
                     Log.LogDebug($"Starting {format} generation.");
                     input.Seek(0, SeekOrigin.Begin);
-                    f.Key.Generate(description, new CircuitDiagram.TypeDescription.ComponentConfiguration("", "", new Dictionary<PropertyName, PropertyValue>()), resourceProvider, true, input, output);
+                    f.Key.Generate(description,
+                                   resourceProvider,
+                                   previewOptions,
+                                   input,
+                                   output);
                     Log.LogInformation($"  {format,-4} -> {outputPath}");
                 }
 

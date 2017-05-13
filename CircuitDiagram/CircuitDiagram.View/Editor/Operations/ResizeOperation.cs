@@ -23,15 +23,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CircuitDiagram.Circuit;
+using CircuitDiagram.Logging;
 using CircuitDiagram.Primitives;
-using log4net;
+using Microsoft.Extensions.Logging;
 using Point = System.Windows.Point;
 
 namespace CircuitDiagram.View.Editor.Operations
 {
     class ResizeOperation : IEditorOperation
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ResizeOperation));
+        private static readonly ILogger Log = LogManager.GetLogger<ResizeOperation>();
 
         private IPositionalElement element;
         private bool isResizing;
@@ -60,7 +61,7 @@ namespace CircuitDiagram.View.Editor.Operations
                 return;
             }
 
-            Log.InfoFormat("Starting resize on {0} handle", hitTest.ResizeHandle.Value);
+            Log.LogInformation($"Starting resize on {hitTest.ResizeHandle.Value} handle");
 
             initialMousePosition = mousePosition;
             initialLocation = element.Layout.Location;
@@ -79,7 +80,7 @@ namespace CircuitDiagram.View.Editor.Operations
 
                     if (element != null)
                     {
-                        Log.Info("Nothing prepared for resize");
+                        Log.LogInformation("Nothing prepared for resize");
                         element = null;
                     }
                     return false;
@@ -87,7 +88,7 @@ namespace CircuitDiagram.View.Editor.Operations
 
                 if (element == null && hitTest.Element != null)
                 {
-                    Log.InfoFormat("{0} prepared for resize", hitTest.Element);
+                    Log.LogInformation($"{hitTest.Element} prepared for resize");
 
                     // Mouse is over an element - resize it later
                     element = hitTest.Element;

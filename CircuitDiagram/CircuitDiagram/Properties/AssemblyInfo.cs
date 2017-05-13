@@ -69,5 +69,3 @@ using System.Windows.Media;
 [assembly: DisableDpiAwareness]
 
 [assembly: InternalsVisibleTo("CircuitDiagram.Test")]
-
-[assembly: log4net.Config.XmlConfigurator(ConfigFile = "log.config", Watch = true)]

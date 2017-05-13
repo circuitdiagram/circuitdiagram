@@ -42,17 +42,14 @@ namespace CircuitDiagram.View.Editor
         public DrawingRenderer(DrawingContext context)
         {
             Context = context;
+            Begin();
         }
 
-        public void Begin()
+        void Begin()
         {
             Pen = new Pen(Brushes.Black, 2d);
             Pen.StartLineCap = PenLineCap.Square;
             Pen.EndLineCap = PenLineCap.Square;
-        }
-
-        public void End()
-        {
         }
 
         public void StartSection(object tag)
@@ -88,7 +85,7 @@ namespace CircuitDiagram.View.Editor
             Context.DrawGeometry((fill ? Brushes.Black : null), newPen, RenderHelper.GetGeometry(start.ToWinPoint(), commands, fill));
         }
 
-        public void DrawText(Point anchor, Drawing.Text.TextAlignment alignment, IEnumerable<TextRun> textRuns)
+        public void DrawText(Point anchor, Drawing.Text.TextAlignment alignment, IList<TextRun> textRuns)
         {
             double totalWidth = 0d;
             double totalHeight = 0d;
@@ -135,6 +132,10 @@ namespace CircuitDiagram.View.Editor
                     horizontalOffsetCounter += formattedText.Width;
                 }
             }
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

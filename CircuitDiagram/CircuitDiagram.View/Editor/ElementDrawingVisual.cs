@@ -20,19 +20,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using CircuitDiagram.Circuit;
+using CircuitDiagram.Logging;
 using CircuitDiagram.Primitives;
 using CircuitDiagram.Render;
-using log4net;
+using Microsoft.Extensions.Logging;
 using Point = System.Windows.Point;
 
 namespace CircuitDiagram.View.Editor
 {
     class ElementDrawingVisual : DrawingVisual
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ElementDrawingVisual));
+        private static readonly ILogger Log = LogManager.GetLogger<ElementDrawingVisual>();
 
         private readonly ICircuitRenderer renderer;
         private bool isHighlighted;
@@ -76,7 +76,7 @@ namespace CircuitDiagram.View.Editor
         private void OnIsHighlightedChanged()
         {
             if (IsHighlighted)
-                Log.InfoFormat("{0} is highlighted", CircuitElement);
+                Log.LogInformation($"{CircuitElement} is highlighted");
 
             UpdateVisual();
         }
@@ -98,14 +98,13 @@ namespace CircuitDiagram.View.Editor
                 dc.PushGuidelineSet(guidelines);
 
                 var dr = new DrawingRenderer(dc);
-                dr.Begin();
 
-                renderer.RenderComponent((PositionalComponent)CircuitElement, dr);
+                renderer.RenderComponent(CircuitElement, dr);
 
                 if (IsHighlighted)
                     DrawResizeHandles(dc);
-                
-                dr.End();
+
+                dr.Dispose();
             }
         }
 

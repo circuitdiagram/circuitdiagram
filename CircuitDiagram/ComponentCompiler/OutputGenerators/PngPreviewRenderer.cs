@@ -22,6 +22,7 @@ using CircuitDiagram.Circuit;
 using CircuitDiagram.Compiler;
 using CircuitDiagram.Render;
 using CircuitDiagram.TypeDescription;
+using ComponentCompiler.ComponentPreview;
 using ComponentConfiguration = CircuitDiagram.TypeDescription.ComponentConfiguration;
 
 namespace ComponentCompiler.OutputGenerators
@@ -30,10 +31,11 @@ namespace ComponentCompiler.OutputGenerators
     {
         public string FileExtension => ".png";
 
-        public void Generate(ComponentDescription description, ComponentConfiguration configuration, IResourceProvider resourceProvider, bool horizontal, Stream input, Stream output)
+        public void Generate(ComponentDescription description, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output)
         {
-            var drawingContext = new BitmapDrawingContext(640, 480);
-            PreviewRenderer.RenderPreview(drawingContext, description, new ComponentConfiguration("", "", new Dictionary<PropertyName, PropertyValue>()), true);
+            var drawingContext = PreviewRenderer.RenderPreview(size => new BitmapDrawingContext((int)Math.Ceiling(size.Width), (int)Math.Ceiling(size.Height)),
+                                                               description,
+                                                               options);
             drawingContext.WriteAsPng(output);
         }
     }

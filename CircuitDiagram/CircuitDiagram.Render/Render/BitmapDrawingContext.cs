@@ -28,22 +28,7 @@ namespace CircuitDiagram.Render
         {
             image = new Image<Argb32>(width, height);
         }
-
-        public void Begin()
-        {
-            // Do nothing
-        }
-
-        public void End()
-        {
-            // Do nothing
-        }
-
-        public void StartSection(object tag)
-        {
-            // Do nothing
-        }
-
+        
         public void DrawLine(Point start, Point end, double thickness)
         {
             image.DrawLines(Black, 2.0f, new[]
@@ -74,7 +59,7 @@ namespace CircuitDiagram.Render
             // Not supported
         }
 
-        public void DrawText(Point anchor, TextAlignment alignment, IEnumerable<TextRun> textRuns)
+        public void DrawText(Point anchor, TextAlignment alignment, IList<TextRun> textRuns)
         {
             // Not supported
         }
@@ -82,6 +67,11 @@ namespace CircuitDiagram.Render
         public void WriteAsPng(Stream stream)
         {
             image.Save(stream, new PngEncoder());
+        }
+
+        public void Dispose()
+        {
+            image.Dispose();
         }
     }
 }

@@ -22,6 +22,7 @@ using CircuitDiagram.Circuit;
 using CircuitDiagram.Compiler;
 using CircuitDiagram.Render;
 using CircuitDiagram.TypeDescription;
+using ComponentCompiler.ComponentPreview;
 using ComponentConfiguration = CircuitDiagram.TypeDescription.ComponentConfiguration;
 
 namespace ComponentCompiler.OutputGenerators
@@ -30,11 +31,12 @@ namespace ComponentCompiler.OutputGenerators
     {
         public string FileExtension => ".svg";
 
-        public void Generate(ComponentDescription description, ComponentConfiguration configuration, IResourceProvider resourceProvider, bool horizontal, Stream input, Stream output)
+        public void Generate(ComponentDescription description, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output)
         {
-            var drawingContext = new SvgDrawingContext(640, 480);
-            PreviewRenderer.RenderPreview(drawingContext, description, new ComponentConfiguration("", "", new Dictionary<PropertyName, PropertyValue>()), true);
-            drawingContext.SvgDocument.WriteTo(output);
+            var drawingContext = PreviewRenderer.RenderPreview(size => new SvgDrawingContext(Math.Ceiling(size.Width), Math.Ceiling(size.Height), output),
+                                                               description,
+                                                               options);
+            drawingContext.Dispose();
         }
     }
 }

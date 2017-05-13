@@ -37,16 +37,16 @@ namespace CircuitDiagram.Render
         private readonly double width;
         private readonly double height;
         private readonly XmlWriter writer;
-        
+
         /// <summary>
         /// Creates a new SVGRenderer, which will produce an output SVG with the specified width and height.
         /// </summary>
         /// <param name="width">Width of the output SVG.</param>
         /// <param name="height">height of the output SVG.</param>
-        public SvgDrawingContext(double width, double height)
+        /// <param name="output">Stream to write SVG document to.</param>
+        public SvgDrawingContext(double width, double height, Stream output)
         {
-            SvgDocument = new MemoryStream();
-            writer = XmlWriter.Create(SvgDocument, new XmlWriterSettings
+            writer = XmlWriter.Create(output, new XmlWriterSettings
             {
                 Encoding = Encoding.UTF8,
                 Indent = true,
@@ -54,11 +54,11 @@ namespace CircuitDiagram.Render
             });
             this.width = width;
             this.height = height;
+
+            Begin();
         }
 
-        public MemoryStream SvgDocument { get; }
-
-        public void Begin()
+        private void Begin()
         {
             string cdlibraryVersion = typeof(SvgDrawingContext).GetTypeInfo().Assembly.GetName().Version.ToString();
 
@@ -71,15 +71,10 @@ namespace CircuitDiagram.Render
             writer.WriteAttributeString("height", height.ToString());
         }
 
-        public void End()
+        private void End()
         {
             writer.WriteEndDocument();
             writer.Flush();
-        }
-
-        public void StartSection(object tag)
-        {
-            // Do nothing.
         }
 
         public void DrawLine(Point start, Point end, double thickness)
@@ -135,7 +130,7 @@ namespace CircuitDiagram.Render
             writer.WriteEndElement();
         }
 
-        public void DrawText(Point anchor, TextAlignment alignment, IEnumerable<TextRun> textRuns)
+        public void DrawText(Point anchor, TextAlignment alignment, IList<TextRun> textRuns)
         {
             writer.WriteStartElement("text");
             writer.WriteAttributeString("x", anchor.X.ToString());
@@ -176,6 +171,11 @@ namespace CircuitDiagram.Render
             }
 
             writer.WriteEndElement();
+        }
+
+        public void Dispose()
+        {
+            End();
         }
     }
 }

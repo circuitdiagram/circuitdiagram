@@ -23,30 +23,33 @@ using CircuitDiagram.Circuit;
 using CircuitDiagram.Drawing;
 using CircuitDiagram.Primitives;
 using CircuitDiagram.Render;
+using CircuitDiagram.Render.Drawing;
 using CircuitDiagram.TypeDescription;
-using ComponentConfiguration = CircuitDiagram.TypeDescription.ComponentConfiguration;
 
-namespace ComponentCompiler
+namespace ComponentCompiler.ComponentPreview
 {
     static class PreviewRenderer
     {
-        public static void RenderPreview(IDrawingContext drawingContext, ComponentDescription desc, ComponentConfiguration configuration, bool horizontal)
+        public static T RenderPreview<T>(Func<Size, T> drawingContext,
+            ComponentDescription desc,
+            PreviewGenerationOptions options)
+            where T: IDrawingContext
         {
             var componentType = new ComponentType(desc.Metadata.GUID, desc.ComponentName);
             foreach (var property in desc.Properties)
                 componentType.PropertyNames.Add(property.SerializedName);
 
             var component = new PositionalComponent(componentType);
-            component.Layout.Location = new Point(320 - (horizontal ? 30 : 0), 240 - (!horizontal ? 30 : 0));
-            component.Layout.Orientation = horizontal ? Orientation.Horizontal : Orientation.Vertical;
+            component.Layout.Location = new Point(options.Width / 2 - (options.Horizontal ? options.Size : 0), options.Height / 2 - (!options.Horizontal ? options.Size : 0));
+            component.Layout.Orientation = options.Horizontal ? Orientation.Horizontal : Orientation.Vertical;
 
             // Minimum size
-            component.Layout.Size = Math.Max(desc.MinSize, 60.0);
+            component.Layout.Size = Math.Max(desc.MinSize, options.Size);
 
             // Configuration
-            if (configuration != null)
+            if (options.Configuration != null)
             {
-                foreach (var setter in configuration.Setters)
+                foreach (var setter in options.Configuration.Setters)
                     component.Properties[setter.Key] = setter.Value;
             }
 
@@ -65,16 +68,40 @@ namespace ComponentCompiler
 
             CircuitDocument document = new CircuitDocument();
             document.Elements.Add(component);
-
-            drawingContext.Begin();
-
+            
             var lookup = new DictionaryComponentDescriptionLookup();
             lookup.AddDescription(componentType, desc);
             var docRenderer = new CircuitRenderer(lookup);
 
-            docRenderer.RenderCircuit(document, drawingContext);
+            var buffer = new BufferedDrawingContext();
+            docRenderer.RenderCircuit(document, buffer);
+            var bb = buffer.BoundingBox;
 
-            drawingContext.End();
+            T resultContext;
+            IDrawingContext dc;
+
+            if (options.Crop)
+            {
+                resultContext = drawingContext(options.Crop ? bb.Size : new Size(options.Width, options.Height));
+                dc = new TranslationDrawingContext(new Vector(Math.Round(-bb.X), Math.Round(-bb.Y)), resultContext);
+            }
+            else if (options.Center)
+            {
+                resultContext = drawingContext(new Size(options.Width, options.Height));
+
+                var x = bb.X - options.Width / 2 + bb.Width / 2;
+                var y = bb.Y - options.Height / 2 + bb.Height / 2;
+                dc = new TranslationDrawingContext(new Vector(Math.Round(-x), Math.Round(-y)), resultContext);
+            }
+            else
+            {
+                resultContext = drawingContext(new Size(options.Width, options.Height));
+                dc = resultContext;
+            }
+
+            docRenderer.RenderCircuit(document, dc);
+
+            return resultContext;
         }
     }
 }

@@ -11,6 +11,7 @@ using CircuitDiagram.Dependency;
 using CircuitDiagram.Logging;
 using CircuitDiagram.Updates;
 using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 
 namespace CircuitDiagram
 {
@@ -22,9 +23,8 @@ namespace CircuitDiagram
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-
-            // TODO: set up logging
-
+            
+            LogManager.LoggerFactory.AddNLog();
             var log = LogManager.GetLogger<App>();
             log.LogInformation($"Application starting up: Circuit Diagram {UpdateVersionService.GetAppDisplayVersion()}");
             

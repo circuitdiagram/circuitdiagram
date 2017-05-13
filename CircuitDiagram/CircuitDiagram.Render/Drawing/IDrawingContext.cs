@@ -31,24 +31,8 @@ namespace CircuitDiagram.Drawing
     /// <summary>
     /// Provides a common interface for rendering drawing elements.
     /// </summary>
-    public interface IDrawingContext
+    public interface IDrawingContext : IDisposable
     {
-        /// <summary>
-        /// Initializes the renderer.
-        /// </summary>
-        void Begin();
-
-        /// <summary>
-        /// Closes the renderer.
-        /// </summary>
-        void End();
-
-        /// <summary>
-        /// Starts a new section.
-        /// </summary>
-        /// <param name="tag">A custom object which is related to the new section.</param>
-        void StartSection(object tag);
-
         /// <summary>
         /// Draws a line with the specified parameters.
         /// </summary>
@@ -91,6 +75,6 @@ namespace CircuitDiagram.Drawing
         /// <param name="anchor">The anchor point for the text.</param>
         /// <param name="alignment">How the text should be aligned relative to the anchor point.</param>
         /// <param name="textRuns">The text runs to render.</param>
-        void DrawText(Point anchor, TextAlignment alignment, IEnumerable<TextRun> textRuns);
+        void DrawText(Point anchor, TextAlignment alignment, IList<TextRun> textRuns);
     }
 }

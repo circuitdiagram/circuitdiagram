@@ -25,18 +25,19 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using CircuitDiagram.Circuit;
 using CircuitDiagram.IO.Descriptions.Xml;
+using CircuitDiagram.Logging;
 using CircuitDiagram.Render;
 using CircuitDiagram.TypeDescription;
 using CircuitDiagram.TypeDescriptionIO;
 using CircuitDiagram.TypeDescriptionIO.Binary;
-using log4net;
+using Microsoft.Extensions.Logging;
 using ComponentConfiguration = CircuitDiagram.Circuit.ComponentConfiguration;
 
 namespace CircuitDiagram.View.Services
 {
     class ComponentDescriptionService : DictionaryComponentDescriptionLookup, IComponentDescriptionService
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ComponentDescriptionService));
+        private static readonly ILogger Log = LogManager.GetLogger<ComponentDescriptionService>();
 
         private readonly IConfigurationValues configurationValues;
 
@@ -50,15 +51,15 @@ namespace CircuitDiagram.View.Services
 
         public void LoadDescriptions()
         {
-            foreach (var directory in configurationValues.ComponentsDirectories)
+            foreach (var directory in configurationValues.ComponentsDirectories.Select(Path.GetFullPath))
             {
                 if (!Directory.Exists(directory))
                 {
-                    Log.Warn($"Skipping loading components from {directory} as it does not exist.");
+                    Log.LogWarning($"Skipping loading components from {directory} as it does not exist.");
                     continue;
                 }
 
-                Log.Info($"Loading components from {directory}");
+                Log.LogWarning($"Loading components from {directory}");
                 LoadCompiledComponents(directory);
             }
         }
