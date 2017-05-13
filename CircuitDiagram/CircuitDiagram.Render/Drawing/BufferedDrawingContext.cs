@@ -133,6 +133,9 @@ namespace CircuitDiagram.Render.Drawing
 
         private Size MeasureText(TextRun text)
         {
+            if (string.IsNullOrWhiteSpace(text.Text))
+                return new Size(0, 0);
+
             // TODO: Support text.Formatting.FormattingType
             var family = FontCollection.SystemFonts.Find("Arial");
             var font = new Font(family, (float)text.Formatting.Size, FontStyle.Regular);
