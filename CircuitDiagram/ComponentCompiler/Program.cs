@@ -21,7 +21,6 @@ using System.CommandLine;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using CircuitDiagram.Circuit;
 using CircuitDiagram.Compiler;
 using CircuitDiagram.IO;
 using CircuitDiagram.IO.Descriptions.Xml;
@@ -63,6 +62,7 @@ namespace ComponentCompiler
             bool silent = false;
             bool verbose = false;
             bool version = false;
+            bool listGenerators = false;
 
             var cliOptions = ArgumentSyntax.Parse(args, options =>
             {
@@ -97,11 +97,13 @@ namespace ComponentCompiler
 
                 options.DefineOption("version", ref version, "Prints the version of this application.");
 
-                options.DefineOptionList("resources", ref resources, "Resources to use in generating the output. Either a directory, or a space-separated list of [key] [filename] pairs.");
+                options.DefineOption("list-generators", ref listGenerators, "List the available output generators.");
 
+                options.DefineOptionList("resources", ref resources, "Resources to use in generating the output. Either a directory, or a space-separated list of [key] [filename] pairs.");
+                
                 options.DefineParameterList("input", ref input, "Components to compile.");
             });
-
+            
             if (version)
             {
                 var assemblyName = typeof(Program).GetTypeInfo().Assembly.GetName();
@@ -111,6 +113,15 @@ namespace ComponentCompiler
 
             if (!silent)
                 LogManager.LoggerFactory.AddProvider(new BasicConsoleLogger(verbose ? LogLevel.Debug : LogLevel.Information));
+
+            if (listGenerators)
+            {
+                foreach (var generator in new OutputGeneratorRepository().AllGenerators)
+                {
+                    Console.WriteLine($"{generator.Format}: {generator.FileExtension}");
+                }
+                return;
+            }
 
             if (!input.Any())
                 cliOptions.ReportError("At least one input file must be specified.");
@@ -148,8 +159,10 @@ namespace ComponentCompiler
             var formats = new Dictionary<IOutputGenerator, string>();
             if (output != null)
             {
+                var outputGenerators = new OutputGeneratorRepository();
+
                 IOutputGenerator generator;
-                if (Generators.TryGetValue(Path.GetExtension(output), out generator))
+                if (outputGenerators.TryGetGeneratorByFileExtension(Path.GetExtension(output), out generator))
                 {
                     // Use the generator implied by the file extension
                     formats.Add(generator, output);

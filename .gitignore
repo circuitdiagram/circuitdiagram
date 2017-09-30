@@ -10,6 +10,7 @@ packages/
 TestResults/
 Setup/WiX*/
 Setup/Output/
+.vs/
 
 *.exe
 *.suo

@@ -24,8 +24,10 @@ using ComponentCompiler.ComponentPreview;
 
 namespace ComponentCompiler.OutputGenerators
 {
-    interface IOutputGenerator
+    public interface IOutputGenerator
     {
+        string Format { get; }
+        
         string FileExtension { get; }
 
         /// <param name="input">Remove this parameter once CircuitDiagram.Compiler supports compiling from a loaded description.</param>

@@ -5,7 +5,7 @@ using CircuitDiagram.TypeDescription;
 
 namespace ComponentCompiler.ComponentPreview
 {
-    sealed class PreviewGenerationOptions
+    public sealed class PreviewGenerationOptions
     {
         public bool Crop { get; set; }
         public bool Center { get; set; }

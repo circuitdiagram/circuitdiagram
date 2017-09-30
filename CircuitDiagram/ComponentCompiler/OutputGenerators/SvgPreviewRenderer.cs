@@ -18,17 +18,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using CircuitDiagram.Circuit;
 using CircuitDiagram.Compiler;
 using CircuitDiagram.Render;
 using CircuitDiagram.TypeDescription;
 using ComponentCompiler.ComponentPreview;
-using ComponentConfiguration = CircuitDiagram.TypeDescription.ComponentConfiguration;
 
 namespace ComponentCompiler.OutputGenerators
 {
     class SvgPreviewRenderer : IOutputGenerator
     {
+        public string Format => "svg";
+
         public string FileExtension => ".svg";
 
         public void Generate(ComponentDescription description, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output)

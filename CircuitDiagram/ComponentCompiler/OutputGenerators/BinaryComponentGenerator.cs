@@ -26,6 +26,8 @@ namespace ComponentCompiler.OutputGenerators
 {
     class BinaryComponentGenerator : IOutputGenerator
     {
+        public string Format => "binary";
+
         public string FileExtension => ".cdcom";
 
         private readonly CompilerService compiler;
