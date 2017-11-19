@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskDialog", "TaskDialog\Ta
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagramCore.Test", "CircuitDiagramCore.Test\CircuitDiagramCore.Test.csproj", "{045ED5A8-CADD-4CEF-956A-4BB3B66A7DB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Document.Test", "CircuitDiagram.Document.Test\CircuitDiagram.Document.Test.csproj", "{E29D1EBC-009B-406F-B9AF-7E7DBA2C1558}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Render.Test", "CircuitDiagram.Render.Test\CircuitDiagram.Render.Test.csproj", "{3E8AAF2B-825F-4649-B2CA-FC17581DE8EA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.View", "CircuitDiagram.View\CircuitDiagram.View.csproj", "{DC2BCE3E-C1F2-490D-BD7E-10AA0D2C9F0F}"
@@ -36,7 +34,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.Compiler", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.Compiler.Test", "CircuitDiagram.Compiler.Test\CircuitDiagram.Compiler.Test.csproj", "{0D17E8DA-72AB-42EB-B066-4DE71C45FC24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Document", "CircuitDiagram.Document\CircuitDiagram.Document.csproj", "{E7EF12B2-7A86-43D1-90D0-714EC0643CC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.Document", "CircuitDiagram.Document\CircuitDiagram.Document.csproj", "{E7EF12B2-7A86-43D1-90D0-714EC0643CC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Document.Test", "CircuitDiagram.Document.Test\CircuitDiagram.Document.Test.csproj", "{0ED886FC-B337-4040-925B-D70C22AA9329}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,12 +69,6 @@ Global
 		{045ED5A8-CADD-4CEF-956A-4BB3B66A7DB0}.Portable|Any CPU.Build.0 = Release|Any CPU
 		{045ED5A8-CADD-4CEF-956A-4BB3B66A7DB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{045ED5A8-CADD-4CEF-956A-4BB3B66A7DB0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E29D1EBC-009B-406F-B9AF-7E7DBA2C1558}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E29D1EBC-009B-406F-B9AF-7E7DBA2C1558}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E29D1EBC-009B-406F-B9AF-7E7DBA2C1558}.Portable|Any CPU.ActiveCfg = Release|Any CPU
-		{E29D1EBC-009B-406F-B9AF-7E7DBA2C1558}.Portable|Any CPU.Build.0 = Release|Any CPU
-		{E29D1EBC-009B-406F-B9AF-7E7DBA2C1558}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E29D1EBC-009B-406F-B9AF-7E7DBA2C1558}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3E8AAF2B-825F-4649-B2CA-FC17581DE8EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3E8AAF2B-825F-4649-B2CA-FC17581DE8EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E8AAF2B-825F-4649-B2CA-FC17581DE8EA}.Portable|Any CPU.ActiveCfg = Release|Any CPU
@@ -135,6 +129,12 @@ Global
 		{E7EF12B2-7A86-43D1-90D0-714EC0643CC3}.Portable|Any CPU.Build.0 = Debug|Any CPU
 		{E7EF12B2-7A86-43D1-90D0-714EC0643CC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7EF12B2-7A86-43D1-90D0-714EC0643CC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0ED886FC-B337-4040-925B-D70C22AA9329}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0ED886FC-B337-4040-925B-D70C22AA9329}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0ED886FC-B337-4040-925B-D70C22AA9329}.Portable|Any CPU.ActiveCfg = Debug|Any CPU
+		{0ED886FC-B337-4040-925B-D70C22AA9329}.Portable|Any CPU.Build.0 = Debug|Any CPU
+		{0ED886FC-B337-4040-925B-D70C22AA9329}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0ED886FC-B337-4040-925B-D70C22AA9329}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
