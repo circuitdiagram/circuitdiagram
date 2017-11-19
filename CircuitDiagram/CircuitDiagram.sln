@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram", "CircuitDiagram\CircuitDiagram.csproj", "{C01CD61A-6DB0-460A-AC1C-1B96A9038AF6}"
 EndProject
@@ -19,24 +19,24 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.View", "Circ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.View.Test", "CircuitDiagram.View.Test\CircuitDiagram.View.Test.csproj", "{D2B1C0B4-5C68-400B-95A0-4DE957AD8B7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Document", "CircuitDiagram.Document\CircuitDiagram.Document.csproj", "{F1B212C7-1C4F-40BE-9D63-0B053BA4F3DE}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3C139416-4492-4BD7-884B-51B3DB1E13F7}"
 	ProjectSection(SolutionItems) = preProject
 		NuGet.Config = NuGet.Config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Render", "CircuitDiagram.Render\CircuitDiagram.Render.csproj", "{DEF7BF2B-3F45-4406-93DB-F990102B0993}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.Render", "CircuitDiagram.Render\CircuitDiagram.Render.csproj", "{DEF7BF2B-3F45-4406-93DB-F990102B0993}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComponentCompiler", "ComponentCompiler\ComponentCompiler.csproj", "{7B4227A1-26D5-4445-8339-95DA25931EAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComponentCompiler", "ComponentCompiler\ComponentCompiler.csproj", "{7B4227A1-26D5-4445-8339-95DA25931EAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.TypeDescriptionIO", "CircuitDiagram.TypeDescriptionIO\CircuitDiagram.TypeDescriptionIO.csproj", "{11490E64-2070-4644-9E65-DD0CD8913EF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.TypeDescriptionIO", "CircuitDiagram.TypeDescriptionIO\CircuitDiagram.TypeDescriptionIO.csproj", "{11490E64-2070-4644-9E65-DD0CD8913EF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagramCore", "CircuitDiagramCore\CircuitDiagramCore.csproj", "{03A4001D-947E-48E5-A5F4-732835BE95B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagramCore", "CircuitDiagramCore\CircuitDiagramCore.csproj", "{03A4001D-947E-48E5-A5F4-732835BE95B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Compiler", "CircuitDiagram.Compiler\CircuitDiagram.Compiler.csproj", "{9D32B6AE-46C1-4C85-9A33-43E99DBEAB20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.Compiler", "CircuitDiagram.Compiler\CircuitDiagram.Compiler.csproj", "{9D32B6AE-46C1-4C85-9A33-43E99DBEAB20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Compiler.Test", "CircuitDiagram.Compiler.Test\CircuitDiagram.Compiler.Test.csproj", "{0D17E8DA-72AB-42EB-B066-4DE71C45FC24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.Compiler.Test", "CircuitDiagram.Compiler.Test\CircuitDiagram.Compiler.Test.csproj", "{0D17E8DA-72AB-42EB-B066-4DE71C45FC24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Document", "CircuitDiagram.Document\CircuitDiagram.Document.csproj", "{E7EF12B2-7A86-43D1-90D0-714EC0643CC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,12 +93,6 @@ Global
 		{D2B1C0B4-5C68-400B-95A0-4DE957AD8B7D}.Portable|Any CPU.Build.0 = Release|Any CPU
 		{D2B1C0B4-5C68-400B-95A0-4DE957AD8B7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2B1C0B4-5C68-400B-95A0-4DE957AD8B7D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F1B212C7-1C4F-40BE-9D63-0B053BA4F3DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F1B212C7-1C4F-40BE-9D63-0B053BA4F3DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F1B212C7-1C4F-40BE-9D63-0B053BA4F3DE}.Portable|Any CPU.ActiveCfg = Release|Any CPU
-		{F1B212C7-1C4F-40BE-9D63-0B053BA4F3DE}.Portable|Any CPU.Build.0 = Release|Any CPU
-		{F1B212C7-1C4F-40BE-9D63-0B053BA4F3DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F1B212C7-1C4F-40BE-9D63-0B053BA4F3DE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DEF7BF2B-3F45-4406-93DB-F990102B0993}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DEF7BF2B-3F45-4406-93DB-F990102B0993}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEF7BF2B-3F45-4406-93DB-F990102B0993}.Portable|Any CPU.ActiveCfg = Debug|Any CPU
@@ -135,8 +129,17 @@ Global
 		{0D17E8DA-72AB-42EB-B066-4DE71C45FC24}.Portable|Any CPU.Build.0 = Debug|Any CPU
 		{0D17E8DA-72AB-42EB-B066-4DE71C45FC24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D17E8DA-72AB-42EB-B066-4DE71C45FC24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7EF12B2-7A86-43D1-90D0-714EC0643CC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7EF12B2-7A86-43D1-90D0-714EC0643CC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7EF12B2-7A86-43D1-90D0-714EC0643CC3}.Portable|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7EF12B2-7A86-43D1-90D0-714EC0643CC3}.Portable|Any CPU.Build.0 = Debug|Any CPU
+		{E7EF12B2-7A86-43D1-90D0-714EC0643CC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7EF12B2-7A86-43D1-90D0-714EC0643CC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D20C4A3C-E51E-4AC6-88A6-CC58CB30E65A}
 	EndGlobalSection
 EndGlobal

@@ -223,7 +223,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CircuitDiagram.Document\CircuitDiagram.Document.csproj">
-      <Project>{f1b212c7-1c4f-40be-9d63-0b053ba4f3de}</Project>
+      <Project>{e7ef12b2-7a86-43d1-90d0-714ec0643cc3}</Project>
       <Name>CircuitDiagram.Document</Name>
     </ProjectReference>
     <ProjectReference Include="..\CircuitDiagram.Render\CircuitDiagram.Render.csproj">
