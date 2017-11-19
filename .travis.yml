@@ -5,5 +5,5 @@ dist: trusty
 
 script:
   - cd CircuitDiagram
-  - dotnet restore
+  - dotnet restore || true
   - dotnet test CircuitDiagram.Compiler.Test/CircuitDiagram.Compiler.Test.csproj
