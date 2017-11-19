@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Toolbox", "Toolbox\Toolbox.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskDialog", "TaskDialog\TaskDialog.csproj", "{37FD53F7-8A8F-4427-8FF4-6299E2933A7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagramCore.Test", "CircuitDiagramCore.Test\CircuitDiagramCore.Test.csproj", "{045ED5A8-CADD-4CEF-956A-4BB3B66A7DB0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.View", "CircuitDiagram.View\CircuitDiagram.View.csproj", "{DC2BCE3E-C1F2-490D-BD7E-10AA0D2C9F0F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.View.Test", "CircuitDiagram.View.Test\CircuitDiagram.View.Test.csproj", "{D2B1C0B4-5C68-400B-95A0-4DE957AD8B7D}"
@@ -38,6 +36,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Document.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Render.Test", "CircuitDiagram.Render.Test\CircuitDiagram.Render.Test.csproj", "{F7077AC0-9C00-4CFC-98E4-7A51FA2B91B1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagramCore.Test", "CircuitDiagramCore.Test\CircuitDiagramCore.Test.csproj", "{2BB1AA12-F247-4754-885E-7F4867E56666}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,12 +63,6 @@ Global
 		{37FD53F7-8A8F-4427-8FF4-6299E2933A7E}.Portable|Any CPU.Build.0 = Release|Any CPU
 		{37FD53F7-8A8F-4427-8FF4-6299E2933A7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37FD53F7-8A8F-4427-8FF4-6299E2933A7E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{045ED5A8-CADD-4CEF-956A-4BB3B66A7DB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{045ED5A8-CADD-4CEF-956A-4BB3B66A7DB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{045ED5A8-CADD-4CEF-956A-4BB3B66A7DB0}.Portable|Any CPU.ActiveCfg = Release|Any CPU
-		{045ED5A8-CADD-4CEF-956A-4BB3B66A7DB0}.Portable|Any CPU.Build.0 = Release|Any CPU
-		{045ED5A8-CADD-4CEF-956A-4BB3B66A7DB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{045ED5A8-CADD-4CEF-956A-4BB3B66A7DB0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DC2BCE3E-C1F2-490D-BD7E-10AA0D2C9F0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DC2BCE3E-C1F2-490D-BD7E-10AA0D2C9F0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC2BCE3E-C1F2-490D-BD7E-10AA0D2C9F0F}.Portable|Any CPU.ActiveCfg = Release|Any CPU
@@ -135,6 +129,12 @@ Global
 		{F7077AC0-9C00-4CFC-98E4-7A51FA2B91B1}.Portable|Any CPU.Build.0 = Debug|Any CPU
 		{F7077AC0-9C00-4CFC-98E4-7A51FA2B91B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7077AC0-9C00-4CFC-98E4-7A51FA2B91B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BB1AA12-F247-4754-885E-7F4867E56666}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BB1AA12-F247-4754-885E-7F4867E56666}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BB1AA12-F247-4754-885E-7F4867E56666}.Portable|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BB1AA12-F247-4754-885E-7F4867E56666}.Portable|Any CPU.Build.0 = Debug|Any CPU
+		{2BB1AA12-F247-4754-885E-7F4867E56666}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BB1AA12-F247-4754-885E-7F4867E56666}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
