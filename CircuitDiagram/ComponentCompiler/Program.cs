@@ -35,18 +35,12 @@ namespace ComponentCompiler
     class Program
     {
         private static readonly ILogger Log = LogManager.GetLogger<Program>();
-
-        private static readonly IDictionary<string, IOutputGenerator> Generators = new IOutputGenerator[]
-        {
-            new BinaryComponentGenerator(),
-            new SvgPreviewRenderer(),
-            new PngPreviewRenderer()
-        }.ToDictionary(x => x.FileExtension, x => x);
-
+        
         static void Main(string[] args)
         {
             IReadOnlyList<string> input = Array.Empty<string>();
             IReadOnlyList<string> resources = null;
+            IReadOnlyList<string> additionalFormats = null;
             string output = null;
             string cdcom = null;
             string svg = null;
@@ -62,7 +56,9 @@ namespace ComponentCompiler
             bool silent = false;
             bool verbose = false;
             bool version = false;
+#if NET461
             bool listGenerators = false;
+#endif
 
             var cliOptions = ArgumentSyntax.Parse(args, options =>
             {
@@ -97,10 +93,14 @@ namespace ComponentCompiler
 
                 options.DefineOption("version", ref version, "Prints the version of this application.");
 
+#if NET461
                 options.DefineOption("list-generators", ref listGenerators, "List the available output generators.");
+#endif
 
                 options.DefineOptionList("resources", ref resources, "Resources to use in generating the output. Either a directory, or a space-separated list of [key] [filename] pairs.");
-                
+
+                options.DefineOptionList("format", ref additionalFormats, "Output formats to write.");
+
                 options.DefineParameterList("input", ref input, "Components to compile.");
             });
             
@@ -114,6 +114,7 @@ namespace ComponentCompiler
             if (!silent)
                 LogManager.LoggerFactory.AddProvider(new BasicConsoleLogger(verbose ? LogLevel.Debug : LogLevel.Information));
 
+#if NET461
             if (listGenerators)
             {
                 foreach (var generator in new OutputGeneratorRepository().AllGenerators)
@@ -122,6 +123,7 @@ namespace ComponentCompiler
                 }
                 return;
             }
+#endif
 
             if (!input.Any())
                 cliOptions.ReportError("At least one input file must be specified.");
@@ -157,12 +159,11 @@ namespace ComponentCompiler
             }
 
             var formats = new Dictionary<IOutputGenerator, string>();
-            if (output != null)
+            var outputGenerators = new OutputGeneratorRepository();
+            bool outputIsDirectory = Directory.Exists(output);
+            if (output != null && !outputIsDirectory)
             {
-                var outputGenerators = new OutputGeneratorRepository();
-
-                IOutputGenerator generator;
-                if (outputGenerators.TryGetGeneratorByFileExtension(Path.GetExtension(output), out generator))
+                if (outputGenerators.TryGetGeneratorByFileExtension(Path.GetExtension(output), out var generator))
                 {
                     // Use the generator implied by the file extension
                     formats.Add(generator, output);
@@ -179,6 +180,22 @@ namespace ComponentCompiler
                 formats.Add(new SvgPreviewRenderer(), NullIfEmpty(svg));
             if (png != null)
                 formats.Add(new PngPreviewRenderer(), NullIfEmpty(png));
+            if (additionalFormats != null)
+            {
+                foreach (var format in additionalFormats)
+                {
+                    IOutputGenerator generator;
+                    if (outputGenerators.TryGetGeneratorByFormat(format, out generator))
+                    {
+                        formats.Add(generator, outputIsDirectory ? output : null);
+                    }
+                    else
+                    {
+                        Log.LogError($"Unknown format: {format}");
+                        Environment.Exit(1);
+                    }
+                }
+            }
 
             var previewOptions = new PreviewGenerationOptions
             {
@@ -201,7 +218,7 @@ namespace ComponentCompiler
                 {
                     foreach (var generator in formats)
                     {
-                        if (!Directory.Exists(generator.Value))
+                        if (generator.Value != null && !Directory.Exists(generator.Value))
                             cliOptions.ReportError("Outputs must be directories when the input is a directory.");
                     }
 

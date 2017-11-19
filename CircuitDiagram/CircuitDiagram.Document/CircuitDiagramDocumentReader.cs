@@ -43,7 +43,7 @@ namespace CircuitDiagram.Document
         {
             var document = new CircuitDiagramDocument();
 
-            using (var package = Package.Open(stream, FileMode.Open))
+            using (var package = Package.Open(stream, FileMode.Open, FileAccess.Read))
             {
                 var mainDocumentPart = package.GetPart(new Uri(@"/circuitdiagram/Document.xml", UriKind.Relative));
                 using (var mainDoc = mainDocumentPart.GetStream())

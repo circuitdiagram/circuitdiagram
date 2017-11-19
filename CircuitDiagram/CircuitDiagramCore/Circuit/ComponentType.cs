@@ -90,9 +90,8 @@ namespace CircuitDiagram.Circuit
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj is CollectionType) return ((CollectionType)obj).Equals(this);
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((ComponentType) obj);
+            return ((ComponentType)obj).Equals(this);
         }
 
         public override int GetHashCode()

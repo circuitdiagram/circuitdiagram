@@ -82,7 +82,7 @@ namespace CircuitDiagram.Document.InternalWriter
             {
                 var sourceXml = new XElement(Ns.Document + "src");
 
-                if (source.Key != ComponentTypeCollection.Unknown)
+                if (source.Key != null && source.Key != ComponentTypeCollection.Unknown)
                     sourceXml.SetAttributeValue("col", source.Key.Value);
 
                 foreach (var type in source)

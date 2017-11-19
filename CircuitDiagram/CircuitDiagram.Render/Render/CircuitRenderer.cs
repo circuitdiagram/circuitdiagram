@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CircuitDiagram.Circuit;
 using CircuitDiagram.Components.Description;
 using CircuitDiagram.Drawing;
+using CircuitDiagram.Primitives;
 using CircuitDiagram.TypeDescription;
 using CircuitDiagram.TypeDescription.Conditions;
 
@@ -24,7 +25,17 @@ namespace CircuitDiagram.Render
             this.descriptionLookup = descriptionLookup;
         }
 
-        public void RenderComponent(PositionalComponent component, IDrawingContext drawingContext, bool ignoreOffset = true)
+        public void RenderCircuit(CircuitDocument circuit, IDrawingContext drawingContext)
+        {
+            foreach (var component in circuit.Components
+                                             .Where(c => c is PositionalComponent).Cast<PositionalComponent>())
+                RenderComponent(component, drawingContext, ignoreOffset: false);
+
+            foreach (var wire in circuit.Wires)
+                RenderWire(wire, drawingContext);
+        }
+
+        public virtual void RenderComponent(PositionalComponent component, IDrawingContext drawingContext, bool ignoreOffset = true)
         {
             var description = descriptionLookup.GetDescription(component.Type);
             var flags = description.DetermineFlags(component);
@@ -45,11 +56,11 @@ namespace CircuitDiagram.Render
             }
         }
 
-        public void RenderCircuit(CircuitDocument circuit, IDrawingContext drawingContext)
+        public virtual void RenderWire(Wire wire, IDrawingContext drawingContext)
         {
-            foreach (var component in circuit.Components
-                                             .Where(c => c is PositionalComponent).Cast<PositionalComponent>())
-                RenderComponent(component, drawingContext, ignoreOffset: false);
+            var size = wire.Layout.Orientation == Orientation.Horizontal ?
+                new Point(wire.Layout.Size, 0.0) : new Point(0.0, wire.Layout.Size);
+            drawingContext.DrawLine(wire.Layout.Location, Point.Add(wire.Layout.Location, size), 2.0);
         }
 
         private static string GetFormattedVariable(string variableName, PositionalComponent instance, ComponentDescription description)

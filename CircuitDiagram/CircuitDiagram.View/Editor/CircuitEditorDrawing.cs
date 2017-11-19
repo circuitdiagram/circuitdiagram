@@ -143,7 +143,17 @@ namespace CircuitDiagram.View.Editor
             {
                 GridSize = GridSize
             };
+
+            // Recompute connections
+            foreach (var element in Circuit.ConnectedElements)
+            {
+                foreach (var connection in element.Connections)
+                {
+                    connection.Value.Disconnect();
+                }
+            }
             var connections = visualiseConnections.VisualiseConnections(Circuit.PositionalComponents, layoutOptions);
+
             ConnectionsVisual.ConnectionPoints = connections;
         }
 

@@ -29,7 +29,6 @@ namespace CircuitDiagram.Render.Drawing
 {
     public class BufferedDrawingContext : IDrawingContext
     {
-        private readonly TextMeasurer textMeasurer;
         private readonly IDrawingContext underlying;
 
         public BufferedDrawingContext()
@@ -39,7 +38,6 @@ namespace CircuitDiagram.Render.Drawing
 
         public BufferedDrawingContext(IDrawingContext underlying)
         {
-            textMeasurer = new TextMeasurer();
             this.underlying = underlying;
         }
 
@@ -137,9 +135,9 @@ namespace CircuitDiagram.Render.Drawing
                 return new Size(0, 0);
 
             // TODO: Support text.Formatting.FormattingType
-            var family = FontCollection.SystemFonts.Find("Arial");
+            var family = SystemFonts.Find("Arial");
             var font = new Font(family, (float)text.Formatting.Size, FontStyle.Regular);
-            var size = textMeasurer.MeasureText(text.Text, font, 72);
+            var size = TextMeasurer.Measure(text.Text, new RendererOptions(font, 72));
             return new Size(size.Width, size.Height);
         }
 

@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 
 namespace CircuitDiagram.Circuit
 {
-    public class Connection : IComparable
+    public class Connection : IEquatable<Connection>
     {
         private readonly HashSet<NamedConnection> namedConnections;
 
@@ -56,9 +56,9 @@ namespace CircuitDiagram.Circuit
             namedConnections.Remove(namedConnection);
         }
 
-        public int CompareTo(object obj)
+        public bool Equals(Connection other)
         {
-            return ReferenceEquals(this, obj) ? 0 : -1;
+            return ReferenceEquals(this, other);
         }
     }
 }

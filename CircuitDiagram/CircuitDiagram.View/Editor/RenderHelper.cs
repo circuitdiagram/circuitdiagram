@@ -62,7 +62,7 @@ namespace CircuitDiagram.Render
             }
             else if (element is EllipticalArcTo)
             {
-                dc.ArcTo(Point.Add((element as EllipticalArcTo).End.ToWinPoint(), startOffset), (element as EllipticalArcTo).Size.ToWinSize(), (element as EllipticalArcTo).RotationAngle, (element as EllipticalArcTo).IsLargeArc, (element as EllipticalArcTo).SweepDirection == Render.Path.SweepDirection.Clockwise ? System.Windows.Media.SweepDirection.Clockwise : System.Windows.Media.SweepDirection.Counterclockwise, true, true);
+                dc.ArcTo(Point.Add((element as EllipticalArcTo).End.ToWinPoint(), startOffset), (element as EllipticalArcTo).Size.ToWinSize(), (element as EllipticalArcTo).RotationAngle, (element as EllipticalArcTo).IsLargeArc, (element as EllipticalArcTo).SweepDirection == Path.SweepDirection.Clockwise ? System.Windows.Media.SweepDirection.Clockwise : System.Windows.Media.SweepDirection.Counterclockwise, true, true);
             }
             else if (element is SmoothCurveTo)
             {

@@ -42,7 +42,7 @@ namespace CircuitDiagram.View.Services
 
             // Convert wires to components
 
-            var wireType = new ComponentType(Guid.Parse("6353882b-5208-4f88-a83b-2271cc82b94f"), "Wire");
+            var wireType = new ComponentType(Guid.Parse("6353882b-5208-4f88-a83b-2271cc82b94f"), ComponentTypeCollection.Unknown, new ComponentTypeCollectionItem("wire"), "Wire", new PropertyName[0], new[] { new ConnectionName("#") }, new ComponentConfiguration[0]);
 
             var wires = document.Wires.ToList();
             foreach (var wire in wires)

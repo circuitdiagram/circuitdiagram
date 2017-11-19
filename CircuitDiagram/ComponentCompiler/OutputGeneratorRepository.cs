@@ -24,10 +24,11 @@ namespace ComponentCompiler
             new PngPreviewRenderer()
         };
 
-        private readonly IReadOnlyList<IOutputGenerator> externalGenerators;
+        private readonly IReadOnlyList<IOutputGenerator> externalGenerators = new IOutputGenerator[0];
 
         public IEnumerable<IOutputGenerator> AllGenerators => BuiltInGenerators.Concat(externalGenerators);
-        
+
+#if NET461
         public OutputGeneratorRepository()
         {
             var executableLocation = Assembly.GetEntryAssembly().Location;
@@ -41,11 +42,26 @@ namespace ComponentCompiler
 
             var assemblies = Directory
                 .GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly)
+                .Where(x =>
+                {
+                    var fileName = Path.GetFileName(x);
+                    return !fileName.StartsWith("System.") && !fileName.StartsWith("Microsoft.");
+                })
                 .Select(assembly =>
                 {
-                    Log.LogDebug($"Loading assembly {assembly}");
-                    return AssemblyLoadContext.Default.LoadFromAssemblyPath(assembly);
+                    try
+                    {
+                        var asm = Assembly.LoadFrom(assembly);
+                        Log.LogDebug($"Loaded {assembly}");
+                        return asm;
+                    }
+                    catch (FileLoadException ex)
+                    {
+                        Log.LogDebug($"Failed to load {assembly}: {ex}");
+                        return null;
+                    }
                 })
+                .Where(x => x != null)
                 .ToList();
 
             var configuration = new ContainerConfiguration()
@@ -55,10 +71,17 @@ namespace ComponentCompiler
                 externalGenerators = container.GetExports<IOutputGenerator>().ToList();
             }
         }
+#endif
 
         public bool TryGetGeneratorByFileExtension(string extension, out IOutputGenerator generator)
         {
             generator = AllGenerators.FirstOrDefault(x => x.FileExtension == extension);
+            return generator != null;
+        }
+
+        public bool TryGetGeneratorByFormat(string extension, out IOutputGenerator generator)
+        {
+            generator = AllGenerators.FirstOrDefault(x => x.Format == extension);
             return generator != null;
         }
     }
