@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
+    <PackageId>CircuitDiagram.TypeDescriptionIO</PackageId>
+    <PackageVersion>0.0-dev</PackageVersion>
+    <Description>Circuit Diagram functionality for reading and writing component descriptions.</Description>
+    <Authors>Samuel Fisher</Authors>
+    <PackageProjectUrl>https://www.circuit-diagram.org/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/circuitdiagram/circuitdiagram</RepositoryUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/circuitdiagram/circuitdiagram/master/LICENSE.txt</PackageLicenseUrl>
   </PropertyGroup>
 
   <ItemGroup>

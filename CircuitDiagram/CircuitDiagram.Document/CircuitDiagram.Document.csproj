@@ -4,7 +4,7 @@
     <TargetFramework>netstandard1.3</TargetFramework>
     <PackageId>CircuitDiagram.Document</PackageId>
     <PackageVersion>0.0-dev</PackageVersion>
-    <Description>A user-friendly program for making electronic circuit diagrams.</Description>
+    <Description>Circuit Diagram functionality for reading and writing circuits in the Circuit Diagram Document format.</Description>
     <Authors>Samuel Fisher</Authors>
     <PackageProjectUrl>https://www.circuit-diagram.org/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/circuitdiagram/circuitdiagram</RepositoryUrl>
