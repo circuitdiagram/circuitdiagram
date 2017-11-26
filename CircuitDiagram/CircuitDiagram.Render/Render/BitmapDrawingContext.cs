@@ -109,11 +109,51 @@ namespace CircuitDiagram.Render
         public void DrawText(Point anchor, TextAlignment alignment, IList<TextRun> textRuns)
         {
             var font = new Font(SystemFonts.Find("Arial"), 12);
+
             image.Mutate(ctx =>
             {
-                foreach (var textRun in textRuns)
+                float totalWidth = 0f;
+                float totalHeight = 0f;
+
+                foreach (TextRun run in textRuns)
                 {
-                    ctx.DrawText(textRun.Text, font, Black, anchor.ToPointF());
+                    Font renderFont = font;
+                    if (run.Formatting.FormattingType == TextRunFormattingType.Subscript)
+                        renderFont = new Font(font.Family, font.Size / 1.5f);
+                    var size = TextMeasurer.Measure(run.Text, new RendererOptions(renderFont));
+                    totalWidth += size.Width;
+                    totalHeight = Math.Max(totalHeight, size.Height);
+                }
+
+                var startLocation = anchor.ToPointF();
+                if (alignment == TextAlignment.TopCentre || alignment == TextAlignment.CentreCentre || alignment == TextAlignment.BottomCentre)
+                    startLocation.X -= totalWidth / 2;
+                else if (alignment == TextAlignment.TopRight || alignment == TextAlignment.CentreRight || alignment == TextAlignment.BottomRight)
+                    startLocation.X -= totalWidth;
+                if (alignment == TextAlignment.CentreLeft || alignment == TextAlignment.CentreCentre || alignment == TextAlignment.CentreRight)
+                    startLocation.Y -= totalHeight / 2;
+                else if (alignment == TextAlignment.BottomLeft || alignment == TextAlignment.BottomCentre || alignment == TextAlignment.BottomRight)
+                    startLocation.Y -= totalHeight;
+
+                float horizontalOffsetCounter = 0;
+                foreach (TextRun run in textRuns)
+                {
+                    var renderFont = font;
+                    var renderLocation = new PointF(startLocation.X + horizontalOffsetCounter, startLocation.Y);
+
+                    if (run.Formatting.FormattingType == TextRunFormattingType.Subscript)
+                    {
+                        renderFont = new Font(font.Family, font.Size / 1.5f);
+                        renderLocation.X = renderLocation.X + 3f;
+                    }
+                    else if (run.Formatting.FormattingType == TextRunFormattingType.Superscript)
+                    {
+                        renderFont = new Font(font.Family, font.Size / 1.5f);
+                        renderLocation.X = renderLocation.X - 3f;
+                    }
+
+                    ctx.DrawText(run.Text, font, NamedColors<Argb32>.Black, renderLocation);
+                    horizontalOffsetCounter += TextMeasurer.Measure(run.Text, new RendererOptions(renderFont)).Width;
                 }
             });
         }
