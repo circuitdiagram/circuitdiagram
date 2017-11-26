@@ -24,6 +24,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using CircuitDiagram.Circuit;
+using CircuitDiagram.TypeDescription;
 
 namespace CircuitDiagram.View.Controls.ComponentProperties
 {
@@ -37,6 +38,10 @@ namespace CircuitDiagram.View.Controls.ComponentProperties
             {
                 case PropertyValue.Type.Boolean:
                     return propertyValue.BooleanValue;
+                case PropertyValue.Type.String:
+                    return propertyValue.StringValue;
+                case PropertyValue.Type.Numeric:
+                    return propertyValue.NumericValue;
                 default:
                     return null;
             }
@@ -44,10 +49,19 @@ namespace CircuitDiagram.View.Controls.ComponentProperties
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var type = value.GetType();
+            var propertyType = (PropertyType)parameter;
 
-            if (type == typeof(bool))
-                return new PropertyValue((bool)value);
+            switch (propertyType)
+            {
+                case PropertyType.Boolean:
+                    return new PropertyValue((bool)value);
+                case PropertyType.String:
+                case PropertyType.Enum:
+                    return new PropertyValue((string)value);
+                case PropertyType.Decimal:
+                case PropertyType.Integer:
+                    return new PropertyValue(double.Parse((string)value));
+            }
 
             return null;
         }

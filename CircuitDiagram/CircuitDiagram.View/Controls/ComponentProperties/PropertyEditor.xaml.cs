@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -103,6 +104,18 @@ namespace CircuitDiagram.View.Controls
                     ValueChanged = () => ComponentPropertyChanged(EditableComponents[0])
                 });
             }
+        }
+
+        private void DecimalPropertyEditor_OnPreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            var decimalRegex = new Regex("[0-9.-]+");
+            e.Handled = !decimalRegex.IsMatch(e.Text);
+        }
+
+        private void IntegerPropertyEditor_OnPreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            var integerRegex = new Regex("[0-9-]+");
+            e.Handled = !integerRegex.IsMatch(e.Text);
         }
     }
 }

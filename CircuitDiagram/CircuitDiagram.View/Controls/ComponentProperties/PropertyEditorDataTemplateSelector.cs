@@ -38,6 +38,14 @@ namespace CircuitDiagram.View.Controls.ComponentProperties
             {
                 case PropertyType.Boolean:
                     return element.FindResource("BooleanPropertyDataTemplate") as DataTemplate;
+                case PropertyType.String:
+                    return element.FindResource("StringPropertyDataTemplate") as DataTemplate;
+                case PropertyType.Decimal:
+                    return element.FindResource("DecimalPropertyDataTemplate") as DataTemplate;
+                case PropertyType.Integer:
+                    return element.FindResource("IntegerPropertyDataTemplate") as DataTemplate;
+                case PropertyType.Enum:
+                    return element.FindResource("EnumPropertyDataTemplate") as DataTemplate;
                 default:
                     return null;
             }

@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CircuitDiagram.View.Controls"
              xmlns:componentProperties="clr-namespace:CircuitDiagram.View.Controls.ComponentProperties"
+             xmlns:typeDescription="clr-namespace:CircuitDiagram.TypeDescription;assembly=CircuitDiagram.Render"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
@@ -12,12 +13,43 @@
         <componentProperties:PropertyValueConverter x:Key="PropertyValueConverter" />
         
         <DataTemplate x:Key="BooleanPropertyDataTemplate">
-            <CheckBox IsChecked="{Binding Value, Converter={StaticResource PropertyValueConverter}}" Content="{Binding DisplayName}" />
+            <CheckBox IsChecked="{Binding Value, Converter={StaticResource PropertyValueConverter}, ConverterParameter={x:Static typeDescription:PropertyType.Boolean}}" Content="{Binding DisplayName}" />
+        </DataTemplate>
+        <DataTemplate x:Key="StringPropertyDataTemplate">
+            <StackPanel Orientation="Vertical">
+                <Label Content="{Binding DisplayName}" />
+                <TextBox Text="{Binding Value, Converter={StaticResource PropertyValueConverter}, ConverterParameter={x:Static typeDescription:PropertyType.String}}"></TextBox>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="DecimalPropertyDataTemplate">
+            <StackPanel Orientation="Vertical">
+                <Label Content="{Binding DisplayName}" />
+                <TextBox Text="{Binding Value, Converter={StaticResource PropertyValueConverter}, ConverterParameter={x:Static typeDescription:PropertyType.Decimal}}"
+                         PreviewTextInput="DecimalPropertyEditor_OnPreviewTextInput"></TextBox>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="IntegerPropertyDataTemplate">
+            <StackPanel Orientation="Vertical">
+                <Label Content="{Binding DisplayName}" />
+                <TextBox Text="{Binding Value, Converter={StaticResource PropertyValueConverter}, ConverterParameter={x:Static typeDescription:PropertyType.Integer}}"
+                         PreviewTextInput="IntegerPropertyEditor_OnPreviewTextInput"></TextBox>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="EnumPropertyDataTemplate">
+            <StackPanel Orientation="Vertical">
+                <Label Content="{Binding DisplayName}" />
+                <ComboBox ItemsSource="{Binding Property.EnumOptions}" SelectedItem="{Binding Value, Converter={StaticResource PropertyValueConverter}, ConverterParameter={x:Static typeDescription:PropertyType.Enum}}"></ComboBox>
+            </StackPanel>
         </DataTemplate>
     </UserControl.Resources>
     <Grid>
         <ItemsControl ItemsSource="{Binding Properties, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:PropertyEditor}}}"
                       ItemTemplateSelector="{StaticResource DataTemplateSelector}">
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="Margin" Value="5" />
+                </Style>
+            </ItemsControl.ItemContainerStyle>
         </ItemsControl>
     </Grid>
 </UserControl>
