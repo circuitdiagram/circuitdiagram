@@ -23,18 +23,28 @@ namespace CircuitDiagram.Render
     public class BitmapDrawingContext : IDrawingContext
     {
         private static readonly SolidBrush<Argb32> Black = new SolidBrush<Argb32>(NamedColors<Argb32>.Black);
-        
+
+        private readonly FontFamily fontFamily;
         private readonly Image<Argb32> image;
         private readonly bool ownsImage;
 
         public BitmapDrawingContext(int width, int height)
         {
+            fontFamily = SystemFonts.Find("Arial");
             image = new Image<Argb32>(width, height);
             ownsImage = true;
         }
 
         public BitmapDrawingContext(Image<Argb32> target)
         {
+            fontFamily = SystemFonts.Find("Arial");
+            image = target;
+            ownsImage = false;
+        }
+
+        public BitmapDrawingContext(Image<Argb32> target, FontFamily fontFamily)
+        {
+            this.fontFamily = fontFamily;
             image = target;
             ownsImage = false;
         }
@@ -108,7 +118,7 @@ namespace CircuitDiagram.Render
 
         public void DrawText(Point anchor, TextAlignment alignment, IList<TextRun> textRuns)
         {
-            var font = new Font(SystemFonts.Find("Arial"), 12);
+            var font = new Font(fontFamily, 12);
 
             image.Mutate(ctx =>
             {
@@ -120,9 +130,9 @@ namespace CircuitDiagram.Render
                     Font renderFont = font;
                     if (run.Formatting.FormattingType == TextRunFormattingType.Subscript)
                         renderFont = new Font(font.Family, font.Size / 1.5f);
-                    var size = TextMeasurer.Measure(run.Text, new RendererOptions(renderFont));
-                    totalWidth += size.Width;
-                    totalHeight = Math.Max(totalHeight, size.Height);
+                    var dimensions = TextMeasurer.MeasureBounds(run.Text, new RendererOptions(renderFont));
+                    totalWidth += dimensions.Width;
+                    totalHeight = Math.Max(totalHeight, dimensions.Bottom);
                 }
 
                 var startLocation = anchor.ToPointF();
@@ -153,7 +163,7 @@ namespace CircuitDiagram.Render
                     }
 
                     ctx.DrawText(run.Text, font, NamedColors<Argb32>.Black, renderLocation);
-                    horizontalOffsetCounter += TextMeasurer.Measure(run.Text, new RendererOptions(renderFont)).Width;
+                    horizontalOffsetCounter += TextMeasurer.MeasureBounds(run.Text, new RendererOptions(renderFont)).Width;
                 }
             });
         }
