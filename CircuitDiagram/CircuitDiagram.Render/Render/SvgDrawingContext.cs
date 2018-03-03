@@ -148,7 +148,7 @@ namespace CircuitDiagram.Render
             else if (alignment == TextAlignment.TopCentre || alignment == TextAlignment.TopLeft || alignment == TextAlignment.TopRight)
                 dy = "1em";
 
-            writer.WriteAttributeString("style", "font-family:Arial;font-size:" + textRuns.FirstOrDefault().Formatting.Size.ToString() + ";text-anchor:" + textAnchor);
+            writer.WriteAttributeString("style", "font-family:Arial;font-size:" + textRuns.FirstOrDefault().Formatting.Size + "px;text-anchor:" + textAnchor);
             writer.WriteAttributeString("dy", dy);
 
             foreach (TextRun run in textRuns)
