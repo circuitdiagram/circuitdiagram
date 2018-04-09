@@ -59,13 +59,15 @@ namespace CircuitDiagram.Document.InternalReader
 
                 if (componentElement.Attribute("x") != null)
                 {
-                    component = new PositionalComponent(componentType, null, new Point(0, 0));
+                    component = new PositionalComponent(componentType, new LayoutInformation());
 
                     // Layout
                     ReadLayout((PositionalComponent)component, componentElement, context);
                 }
                 else
-                    component = new Component(componentType, null);
+                {
+                    component = new Component(componentType);
+                }
 
                 // Properties
 
@@ -91,9 +93,7 @@ namespace CircuitDiagram.Document.InternalReader
                         context.Log(ReaderErrorCodes.MissingRequiredAttribute, propertyElement, "v");
                         continue;
                     }
-
-                    if (!component.Type.PropertyNames.Contains(keyAttr.Value))
-                        component.Type.PropertyNames.Add(keyAttr.Value);
+                    
                     component.Properties[keyAttr.Value] = PropertyValue.Dynamic(valueAttr.Value);
                 }
 
@@ -120,12 +120,6 @@ namespace CircuitDiagram.Document.InternalReader
                     {
                         context.Log(ReaderErrorCodes.MissingRequiredAttribute, connectionElement, "pt");
                         continue;
-                    }
-
-                    if (component.Connections.All(x => x.Value.Name.Value != pointAttr.Value))
-                    {
-                        // Add new connection definition to component type
-                        component.Type.ConnectionNames.Add(new ConnectionName(pointAttr.Value));
                     }
 
                     context.ApplyConnection(idAttr.Value,

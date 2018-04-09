@@ -25,11 +25,14 @@ using System.Windows.Media;
 using CircuitDiagram.Circuit;
 using CircuitDiagram.Components.Description;
 using CircuitDiagram.Render;
+using CircuitDiagram.TypeDescription;
 
 namespace CircuitDiagram.View.Services
 {
     public interface IComponentDescriptionService : IComponentDescriptionLookup, IComponentIconProvider
     {
+        IReadOnlyCollection<ComponentDescription> AllDescriptions { get; }
+            
         IReadOnlyCollection<ComponentType> AvailableTypes { get; }
 
         void LoadDescriptions();

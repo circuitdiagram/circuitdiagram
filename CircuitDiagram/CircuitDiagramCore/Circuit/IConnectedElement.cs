@@ -8,6 +8,6 @@ namespace CircuitDiagram.Circuit
 {
     public interface IConnectedElement : IElement
     {
-        IReadOnlyDictionary<ConnectionName, NamedConnection> Connections { get; }
+        IDictionary<ConnectionName, NamedConnection> Connections { get; }
     }
 }

@@ -29,16 +29,11 @@ namespace CircuitDiagram.TypeDescription
 {
     public class ComponentDescriptionSource
     {
-        public ReadOnlyCollection<ComponentDescription> ContainedDescriptions { get; private set; }
-
-        private string m_filePath;
-
-        public string Path { get { return m_filePath; } }
-
-        public ComponentDescriptionSource(string path, ReadOnlyCollection<ComponentDescription> descriptions)
+        public ComponentDescriptionSource(string path)
         {
-            ContainedDescriptions = descriptions;
-            m_filePath = path;
+            Path = path;
         }
+
+        public string Path { get; }
     }
 }

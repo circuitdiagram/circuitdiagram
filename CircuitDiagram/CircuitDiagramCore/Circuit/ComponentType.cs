@@ -10,109 +10,63 @@ namespace CircuitDiagram.Circuit
     /// <summary>
     /// Represents the type of a component.
     /// </summary>
-    public class ComponentType : CollectionType
+    public class ComponentType
     {
-        public ComponentType(Guid? id, string name)
-            : base(ComponentTypeCollection.Unknown, (ComponentTypeCollectionItem)null)
+        public static readonly Uri UnknownCollection = new Uri("http://schemas.circuit-diagram.org/unknown");
+
+        public ComponentType(Uri collection, string collectionItem)
         {
-            Id = id;
-            Name = name;
-            PropertyNames = new HashSet<PropertyName>();
-            ConnectionNames = new HashSet<ConnectionName>();
-            Configurations = new List<ComponentConfiguration>();
+            Collection = collection ?? throw new ArgumentNullException(nameof(collection));
+            CollectionItem = collectionItem ?? throw new ArgumentNullException(nameof(collectionItem));
         }
 
         /// <summary>
-        /// Creates a new component type.
+        /// Gets the collection this component type belongs to.
         /// </summary>
-        /// <param name="id">The unique identifier for this component type.</param>
-        /// <param name="collection">The collection this component belongs to, or null if does not belong to one.</param>
-        /// <param name="item">The item this component type implements within the collection.</param>
-        /// <param name="name">The name of this component type.</param>
-        /// <param name="propertyNames">The properties that can be set on this component.</param>
-        /// <param name="connectionNames">The connection names for this component type.</param>
-        public ComponentType(Guid? id,
-                             ComponentTypeCollection collection,
-                             ComponentTypeCollectionItem item,
-                             ComponentName name,
-                             IEnumerable<PropertyName> propertyNames,
-                             IEnumerable<ConnectionName> connectionNames,
-                             IEnumerable<ComponentConfiguration> configurations)
-            : base(collection, item)
-        {
-            Id = id;
-            Name = name;
-            PropertyNames = propertyNames.ToHashSet();
-            ConnectionNames = connectionNames.ToHashSet();
-            Configurations = configurations.ToList();
-        }
+        public Uri Collection { get; }
 
         /// <summary>
-        /// Gets the unique identifier for this component type.
+        /// Gets the item this component type implements within the collection.
         /// </summary>
-        public Guid? Id { get; }
-        
-        /// <summary>
-        /// Gets the name of this component type.
-        /// </summary>
-        public ComponentName Name { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether this is a standard component type.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Standard component types are those that belong to a collection.
-        /// For example, the 'resistor' and 'capacitor' components belong to
-        /// <see cref="http://schemas.circuit-diagram.org/circuitDiagramDocument/2012/components/common">the standard components collection</see>.
-        /// </para>
-        /// </remarks>
-        public bool IsStandard => Collection != null && CollectionItem != null;
-
-        /// <summary>
-        /// Gets a list of properties that can be set on this component.
-        /// </summary>
-        public ISet<PropertyName> PropertyNames { get; } 
-
-        /// <summary>
-        /// Gets a list of connections available on this component.
-        /// </summary>
-        public ISet<ConnectionName> ConnectionNames { get; }
-
-        public ICollection<ComponentConfiguration> Configurations { get; }
+        public string CollectionItem { get; }
 
         protected bool Equals(ComponentType other)
         {
-            return base.Equals(other) && Id.Equals(other.Id) && Equals(Name, other.Name);
+            if (Collection == UnknownCollection || other.Collection == UnknownCollection)
+                return false;
+
+            return Collection.Equals(other.Collection) && string.Equals(CollectionItem, other.CollectionItem);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return ((ComponentType)obj).Equals(this);
+            var other = obj as ComponentType;
+            return other != null && Equals(other);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                int hashCode = base.GetHashCode();
-                hashCode = (hashCode*397) ^ Id.GetHashCode();
-                hashCode = (hashCode*397) ^ (Name != null ? Name.GetHashCode() : 0);
-                return hashCode;
+                return (Collection.GetHashCode() * 397) ^ CollectionItem.GetHashCode();
             }
         }
 
-        public static bool operator ==(ComponentType left, CollectionType right)
+        public static bool operator ==(ComponentType left, ComponentType right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(ComponentType left, CollectionType right)
+        public static bool operator !=(ComponentType left, ComponentType right)
         {
-            return !(left == right);
+            return !Equals(left, right);
+        }
+
+        public static ComponentType Unknown(string name)
+        {
+            return new ComponentType(UnknownCollection, name);
         }
     }
 }

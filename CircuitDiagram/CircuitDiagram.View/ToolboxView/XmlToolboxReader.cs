@@ -26,6 +26,8 @@ using System.Windows.Input;
 using System.Xml.Linq;
 using CircuitDiagram.Circuit;
 using CircuitDiagram.Logging;
+using CircuitDiagram.TypeDescription;
+using CircuitDiagram.TypeDescriptionIO.Util;
 using CircuitDiagram.View.Services;
 using Microsoft.Extensions.Logging;
 
@@ -42,7 +44,7 @@ namespace CircuitDiagram.View.ToolboxView
             this.iconProvider = iconProvider;
         }
 
-        public ToolboxEntry[][] GetToolbox(Stream input, IReadOnlyCollection<ComponentType> availableTypes)
+        public ToolboxEntry[][] GetToolbox(Stream input, IReadOnlyCollection<ComponentDescription> availableDescriptions)
         {
             var doc = XDocument.Load(input);
 
@@ -68,23 +70,23 @@ namespace CircuitDiagram.View.ToolboxView
                     if (Enum.TryParse(keyName, true, out keyValue))
                         key = keyValue;
 
-                    var type = availableTypes.FirstOrDefault(x => x.Id == guid);
+                    var type = availableDescriptions.FirstOrDefault(x => x.ID == guid.ToString());
                     if (type == null)
                     {
                         Log.LogWarning($"Unable to find a component type with GUID '{guid}'. Hiding from the toolbox.");
                         continue;
                     }
 
-                    var configuration = type.Configurations.FirstOrDefault(x => x.Name == configurationName);
+                    var configuration = type.Metadata.Configurations.FirstOrDefault(x => x.Name == configurationName);
 
                     var entry = new ToolboxEntry
                     {
-                        Name = configuration?.Name ?? type.Name.Value,
-                        Type = type,
-                        Configuration = configuration,
+                        Name = configuration?.Name ?? type.ComponentName,
+                        Type = configuration?.GetComponentType(type) ?? type.GetComponentTypes().First(),
+                        Configuration = configuration.Name,
                         Key = key
                     };
-                    entry.Icon = iconProvider.GetIcon(entry);
+                    entry.Icon = iconProvider.GetIcon(Tuple.Create(entry.Type.Id, entry.Configuration));
 
                     categoryItems.Add(entry);
                 }

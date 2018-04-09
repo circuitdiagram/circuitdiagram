@@ -11,7 +11,10 @@ namespace CircuitDiagram.Circuit
     {
         public Wire(Point location)
         {
-            Layout = new LayoutInformation(location);
+            Layout = new LayoutInformation
+            {
+                Location = location
+            };
         }
 
         public LayoutInformation Layout { get; }

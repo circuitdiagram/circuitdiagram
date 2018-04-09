@@ -12,26 +12,16 @@ namespace CircuitDiagram.Circuit
     public class Component : IConnectedElement
     {
         public Component(ComponentType type)
-            :this(type, null)
-        {
-        }
-
-        public Component(ComponentType type, ComponentConfiguration configuration)
         {
             Type = type;
-            Configuration = configuration;
-            Properties = new DependentDictionary<PropertyName, PropertyValue>(type.PropertyNames, p => new PropertyValue(), allowOther: true);
-            Connections = new DependentDictionary<ConnectionName, NamedConnection>(type.ConnectionNames,
-                cn => new NamedConnection(cn, this));
+            Properties = new Dictionary<PropertyName, PropertyValue>();
+            Connections = new Dictionary<ConnectionName, NamedConnection>();
         }
 
         /// <summary>
         /// Gets or sets the type of component.
         /// </summary>
         public ComponentType Type { get; }
-        
-
-        public ComponentConfiguration Configuration { get; set; }
 
         /// <summary>
         /// Additional properties for the component.
@@ -41,16 +31,11 @@ namespace CircuitDiagram.Circuit
         /// <summary>
         /// Connections for the component, in the format Name-ConnectionID.
         /// </summary>
-        public IReadOnlyDictionary<ConnectionName, NamedConnection> Connections { get; }
-
-        public CollectionType GetCollectionType()
-        {
-            return Configuration != null ? new CollectionType(Type.Collection, Configuration.Implements) : Type;
-        }
-
+        public IDictionary<ConnectionName, NamedConnection> Connections { get; }
+        
         public override string ToString()
         {
-            return string.Format("Component of type {0}", Type.Name.Value);
+            return string.Format("Component of type {0}", Type.CollectionItem);
         }
     }
 }

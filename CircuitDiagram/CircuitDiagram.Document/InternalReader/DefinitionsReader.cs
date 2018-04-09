@@ -40,14 +40,11 @@ namespace CircuitDiagram.Document.InternalReader
 
             foreach (var source in sources)
             {
-                ComponentTypeCollection collection = null;
+                var collection = ComponentType.UnknownCollection;
                 var collectionAttr = source.Attribute("col");
                 if (collectionAttr != null)
                 {
-                    Uri collectionUri;
-                    if (Uri.TryCreate(collectionAttr.Value, UriKind.Absolute, out collectionUri))
-                        collection = new ComponentTypeCollection(collectionUri);
-                    else
+                    if (!Uri.TryCreate(collectionAttr.Value, UriKind.Absolute, out collection))
                         context.Log(ReaderErrorCodes.UnableToParseValueAsUri, collectionAttr, collectionAttr.Value);
                 }
 
@@ -63,16 +60,15 @@ namespace CircuitDiagram.Document.InternalReader
 
                     var guid = componentType.GetGuidAttribute(Ns.DocumentComponentDescriptions + "guid", context);
                     var collectionItem = componentType.GetCollectionItemAttribute("item", context);
-                    var componentName =
-                        componentType.GetComponentNameAttribute(Ns.DocumentComponentDescriptions + "name", context);
 
-                    context.RegisterComponentType(id, new ComponentType(guid,
-                        collection,
-                        collectionItem,
-                        componentName,
-                        new List<PropertyName>(),
-                        new List<ConnectionName>(),
-                        new List<ComponentConfiguration>()));
+                    var type = new ComponentType(collection, collectionItem);
+
+                    if (guid.HasValue)
+                    {
+                        type = new TypeDescriptionComponentType(guid ?? Guid.Empty, type);
+                    }
+
+                    context.RegisterComponentType(id, type);
                 }
             }
         }

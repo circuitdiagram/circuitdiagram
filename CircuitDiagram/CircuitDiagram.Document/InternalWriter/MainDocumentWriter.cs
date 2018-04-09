@@ -82,8 +82,8 @@ namespace CircuitDiagram.Document.InternalWriter
             {
                 var sourceXml = new XElement(Ns.Document + "src");
 
-                if (source.Key != null && source.Key != ComponentTypeCollection.Unknown)
-                    sourceXml.SetAttributeValue("col", source.Key.Value);
+                if (source.Key != null && source.Key != ComponentType.UnknownCollection)
+                    sourceXml.SetAttributeValue("col", source.Key);
 
                 foreach (var type in source)
                 {
@@ -93,18 +93,11 @@ namespace CircuitDiagram.Document.InternalWriter
                     if (type.CollectionItem != null)
                         typeXml.SetAttributeValue("item", type.CollectionItem);
 
-                    typeXml.SetAttributeValue(Ns.DocumentComponentDescriptions + "name", type.Name);
+                    var tdComponentType = type as TypeDescriptionComponentType;
 
-                    if (type.Id.HasValue)
-                        typeXml.SetAttributeValue(Ns.DocumentComponentDescriptions + "guid", type.Id);
-
-                    // Only write configurations that are actually used in this document
-                    foreach (var configuration in type.Configurations.Where(cf =>
-                        document.Components.Any(cp => cp.Configuration == cf)))
+                    if (tdComponentType != null)
                     {
-                        typeXml.Add(new XElement(Ns.Document + "configuration",
-                            new XAttribute("name", configuration.Name),
-                            new XAttribute("implements", configuration.Implements)));
+                        typeXml.SetAttributeValue(Ns.DocumentComponentDescriptions + "guid", tdComponentType.Id);
                     }
 
                     sourceXml.Add(typeXml);
@@ -136,10 +129,7 @@ namespace CircuitDiagram.Document.InternalWriter
 
                 // Properties
                 var properties = new XElement(Ns.Document + "prs");
-
-                if (component.Configuration != null)
-                    properties.SetAttributeValue("configuration", component.Configuration.Name);
-
+                
                 foreach (var property in component.Properties)
                 {
                     properties.Add(new XElement(Ns.Document + "p",

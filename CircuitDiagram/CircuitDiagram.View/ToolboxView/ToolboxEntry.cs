@@ -24,17 +24,16 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using CircuitDiagram.Circuit;
 using CircuitDiagram.TypeDescriptionIO;
-using CircuitDiagram.View.Services;
 
 namespace CircuitDiagram.View.ToolboxView
 {
-    public class ToolboxEntry : IComponentTypeIdentifier
+    public class ToolboxEntry
     {
         public string Name { get; set; }
 
-        public ComponentType Type { get; set; }
+        public TypeDescriptionComponentType Type { get; set; }
 
-        public ComponentConfiguration Configuration { get; set; }
+        public string Configuration { get; set; }
 
         public Key? Key { get; set; }
 

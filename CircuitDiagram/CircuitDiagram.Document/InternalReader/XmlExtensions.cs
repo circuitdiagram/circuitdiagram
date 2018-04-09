@@ -72,42 +72,18 @@ namespace CircuitDiagram.Document.InternalReader
             return null;
         }
 
-        public static ComponentTypeCollectionItem GetCollectionItemAttribute(this XElement element,
-                                                                             XName attribute,
-                                                                             ReaderContext context)
+        public static string GetCollectionItemAttribute(this XElement element,
+                                                        XName attribute,
+                                                        ReaderContext context)
         {
-            var attr = element.Attribute(attribute);
-            if (attr == null)
-                return null;
-
-            try
-            {
-                return new ComponentTypeCollectionItem(attr.Value);
-            }
-            catch (ArgumentException)
-            {
-                context.Log(ReaderErrorCodes.UnableToParseValueAsCollectionItem, element, attr.Value);
-                return null;
-            }
+            return element.Attribute(attribute)?.Value;
         }
 
-        public static ComponentName GetComponentNameAttribute(this XElement element,
+        public static string GetComponentNameAttribute(this XElement element,
                                                               XName attribute,
                                                               ReaderContext context)
         {
-            var attr = element.Attribute(attribute);
-            if (attr == null)
-                return null;
-
-            try
-            {
-                return new ComponentName(attr.Value);
-            }
-            catch (ArgumentException)
-            {
-                context.Log(ReaderErrorCodes.UnableToParseValueAsComponentName, element, attr.Value);
-                return null;
-            }
+            return element.Attribute(attribute)?.Value;
         }
 
         public static Orientation? GetComponentOrientationAttribute(this XElement element,

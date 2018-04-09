@@ -55,10 +55,10 @@ namespace CircuitDiagram.View.Editor.Operations
         public void OnMouseDown(Point mousePosition, EditorOperationHitTest hitTest, IEditorOperationalContext context)
         {
             initialMousePosition = mousePosition;
-            element = new PositionalComponent(context.PlaceType.Type, context.PlaceType.Configuration, initialMousePosition.ToCdPoint());
+            element = new PositionalComponent(context.PlaceType.Type, new LayoutInformation { Location = initialMousePosition.ToCdPoint() });
             SizeComponent(element, initialMousePosition.ToCdPoint(), initialMousePosition.ToCdPoint(), context.GridSize);
             SetDefaultProperties(element);
-            SetConfigurationProperties(element);
+            SetConfigurationProperties(element, context.PlaceType.Configuration);
             context.AddElement(element);
         }
 
@@ -181,13 +181,14 @@ namespace CircuitDiagram.View.Editor.Operations
             }
         }
 
-        private void SetConfigurationProperties(Component component)
+        private void SetConfigurationProperties(Component component, string configurationName)
         {
-            if (component.Configuration == null)
+            if (configurationName == null)
                 return;
 
             var description = descriptionLookup.GetDescription(component.Type);
-            var configuration = description.Metadata.Configurations.FirstOrDefault(x => x.ImplementationName == component.Configuration.Implements);
+            
+            var configuration = description.Metadata.Configurations.FirstOrDefault(x => x.Name == configurationName);
             
             foreach (var property in configuration.Setters)
                 component.Properties[property.Key] = property.Value;

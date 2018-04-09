@@ -23,11 +23,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CircuitDiagram.Circuit;
+using CircuitDiagram.TypeDescription;
 
 namespace CircuitDiagram.View.ToolboxView
 {
     public interface IToolboxReader
     {
-        ToolboxEntry[][] GetToolbox(Stream input, IReadOnlyCollection<ComponentType> availableTypes);
+        ToolboxEntry[][] GetToolbox(Stream input, IReadOnlyCollection<ComponentDescription> availableTypes);
     }
 }

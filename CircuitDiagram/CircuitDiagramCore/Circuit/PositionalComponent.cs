@@ -14,22 +14,19 @@ namespace CircuitDiagram.Circuit
     public class PositionalComponent : Component, IPositionalConnectedElement
     {
         public PositionalComponent(ComponentType type)
-            : base(type)
+            : this(type, new LayoutInformation())
         {
-            Layout = new LayoutInformation(new Point(0, 0));
         }
 
-        public PositionalComponent(ComponentType type,
-                                   ComponentConfiguration configuration,
-                                   Point location)
-            : base(type, configuration)
+        public PositionalComponent(ComponentType type, LayoutInformation layout)
+            : base(type)
         {
-            Layout = new LayoutInformation(location);
+            Layout = layout;
         }
 
         /// <summary>
         /// Gets or sets the layout information for this component.
         /// </summary>
-        public LayoutInformation Layout { get; }
+        public LayoutInformation Layout { get; set; }
     }
 }

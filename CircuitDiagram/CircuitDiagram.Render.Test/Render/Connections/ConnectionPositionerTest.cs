@@ -46,7 +46,7 @@ namespace CircuitDiagram.Render.Test.Render
         [Test]
         public void LayoutHorizontal()
         {
-            var instance = new PositionalComponent(new TestComponentType());
+            var instance = new PositionalComponent(new ComponentType(ComponentType.UnknownCollection, "test"));
             instance.Layout.Size = 100;
 
             var connectionGroups = new[]

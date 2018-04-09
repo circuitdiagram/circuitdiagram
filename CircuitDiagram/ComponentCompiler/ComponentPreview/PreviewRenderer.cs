@@ -35,9 +35,7 @@ namespace ComponentCompiler.ComponentPreview
             PreviewGenerationOptions options)
             where T: IDrawingContext
         {
-            var componentType = new ComponentType(desc.Metadata.GUID, desc.ComponentName);
-            foreach (var property in desc.Properties)
-                componentType.PropertyNames.Add(property.SerializedName);
+            var componentType = new TypeDescriptionComponentType(desc.Metadata.GUID, ComponentType.UnknownCollection, desc.ComponentName);
 
             var component = new PositionalComponent(componentType);
             component.Layout.Location = new Point(options.Width / 2 - (options.Horizontal ? options.Size : 0), options.Height / 2 - (!options.Horizontal ? options.Size : 0));

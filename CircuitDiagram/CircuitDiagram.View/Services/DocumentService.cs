@@ -24,6 +24,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CircuitDiagram.Circuit;
 using CircuitDiagram.Document;
+using CircuitDiagram.TypeDescription;
 
 namespace CircuitDiagram.View.Services
 {
@@ -42,16 +43,14 @@ namespace CircuitDiagram.View.Services
 
             // Convert wires to components
 
-            var wireType = new ComponentType(Guid.Parse("6353882b-5208-4f88-a83b-2271cc82b94f"), ComponentTypeCollection.Unknown, new ComponentTypeCollectionItem("wire"), "Wire", new PropertyName[0], new[] { new ConnectionName("#") }, new ComponentConfiguration[0]);
+            var wireType = new TypeDescriptionComponentType(Guid.Parse("6353882b-5208-4f88-a83b-2271cc82b94f"), ComponentType.UnknownCollection, "wire");
 
             var wires = document.Wires.ToList();
             foreach (var wire in wires)
             {
                 document.Elements.Remove(wire);
 
-                var component = new PositionalComponent(wireType, null, wire.Layout.Location);
-                component.Layout.Size = wire.Layout.Size;
-                component.Layout.Orientation = wire.Layout.Orientation;
+                var component = new PositionalComponent(wireType, wire.Layout);
 
                 document.Elements.Add(component);
             }

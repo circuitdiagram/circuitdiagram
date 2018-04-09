@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using CircuitDiagram.Circuit;
 using CircuitDiagram.View.Services;
+using CircuitDiagram.View.ToolboxView;
 
 namespace CircuitDiagram.View.Editor.Operations
 {
@@ -31,7 +32,7 @@ namespace CircuitDiagram.View.Editor.Operations
     {
         Cursor Cursor { get; set; }
         double GridSize { get; }
-        IComponentTypeIdentifier PlaceType { get; }
+        ToolboxEntry PlaceType { get; }
         ICollection<PositionalComponent> SelectedElements { get; }
         void AddElement(IPositionalElement element);
         void ReRenderElement(IPositionalElement element);

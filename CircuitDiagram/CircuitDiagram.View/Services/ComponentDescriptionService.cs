@@ -30,8 +30,9 @@ using CircuitDiagram.Render;
 using CircuitDiagram.TypeDescription;
 using CircuitDiagram.TypeDescriptionIO;
 using CircuitDiagram.TypeDescriptionIO.Binary;
+using CircuitDiagram.TypeDescriptionIO.Util;
+using CircuitDiagram.View.ToolboxView;
 using Microsoft.Extensions.Logging;
-using ComponentConfiguration = CircuitDiagram.Circuit.ComponentConfiguration;
 
 namespace CircuitDiagram.View.Services
 {
@@ -41,8 +42,7 @@ namespace CircuitDiagram.View.Services
 
         private readonly IConfigurationValues configurationValues;
 
-        private readonly Dictionary<Tuple<ComponentType, ComponentConfiguration>, MultiResolutionImage> icons =
-            new Dictionary<Tuple<ComponentType, ComponentConfiguration>, MultiResolutionImage>();
+        private readonly Dictionary<Tuple<Guid, string>, MultiResolutionImage> icons = new Dictionary<Tuple<Guid, string>, MultiResolutionImage>();
 
         public ComponentDescriptionService(IConfigurationValues configurationValues)
         {
@@ -64,13 +64,14 @@ namespace CircuitDiagram.View.Services
             }
         }
 
-        public MultiResolutionImage GetIcon(IComponentTypeIdentifier identifier)
+        public MultiResolutionImage GetIcon(Tuple<Guid, string> identifier)
         {
-            MultiResolutionImage icon;
-            if (icons.TryGetValue(Tuple.Create(identifier.Type, identifier.Configuration), out icon))
+            if (icons.TryGetValue(identifier, out MultiResolutionImage icon))
                 return icon;
             return null;
         }
+
+        public IReadOnlyCollection<ComponentDescription> AllDescriptions => LookupDictionary.Values.Distinct().ToList();
 
         public IReadOnlyCollection<ComponentType> AvailableTypes => LookupDictionary.Keys;
 
@@ -88,10 +89,10 @@ namespace CircuitDiagram.View.Services
                         {
                             ComponentDescription description = xmlLoader.GetDescriptions()[0];
                             description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;
-                            description.Source = new ComponentDescriptionSource(file, new System.Collections.ObjectModel.ReadOnlyCollection<ComponentDescription>(new ComponentDescription[] { description }));
+                            description.Source = new ComponentDescriptionSource(file);
                             
-                            var type = GetTypeFromDescription(description);
-                            AddDescription(type, description);
+                            foreach (var type in description.GetComponentTypes())
+                                AddDescription(type, description);
                         }
                     }
                 }
@@ -110,43 +111,17 @@ namespace CircuitDiagram.View.Services
                         foreach (var description in binaryLoader.ComponentDescriptions)
                         {
                             description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;
-                            description.Source = new ComponentDescriptionSource(file,
-                                                                                new System.Collections.ObjectModel.ReadOnlyCollection<ComponentDescription>(new ComponentDescription[] {description}));
+                            description.Source = new ComponentDescriptionSource(file);
 
-                            var type = GetTypeFromDescription(description);
-                            AddDescription(type, description);
+                            foreach (var type in description.GetComponentTypes())
+                                AddDescription(type, description);
 
-                            var icon = description.Metadata.Icon as MultiResolutionImage;
-                            if (icon != null)
-                                icons.Add(Tuple.Create(type, (ComponentConfiguration)null), icon);
+                            if (description.Metadata.Icon is MultiResolutionImage icon)
+                                icons.Add(Tuple.Create(Guid.Parse(description.ID), (string)null), icon);
                         }
                     }
                 }
             }
-        }
-
-        private ComponentType GetTypeFromDescription(ComponentDescription description)
-        {
-            var collection = !string.IsNullOrEmpty(description.Metadata.ImplementSet) ? new ComponentTypeCollection(new Uri(description.Metadata.ImplementSet)) : null;
-            var collectionItem = !string.IsNullOrEmpty(description.Metadata.ImplementItem) ? new ComponentTypeCollectionItem(description.Metadata.ImplementItem) : null;
-            var properties = description.Properties.Select(p => p.SerializedName);
-            var connections = description.Connections.SelectMany(c => c.Value)
-                                         .Select(c => c.Name)
-                                         .Distinct()
-                                         .Select(c => c);
-            var configurations = description.Metadata.Configurations.Select(c => new ComponentConfiguration
-            {
-                Name = c.Name,
-                Implements = c.ImplementationName
-            });
-
-            return new ComponentType(description.Metadata.GUID,
-                                     collection,
-                                     collectionItem,
-                                     description.ComponentName,
-                                     properties,
-                                     connections,
-                                     configurations);
         }
     }
 }

@@ -21,12 +21,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CircuitDiagram.Circuit;
 using CircuitDiagram.TypeDescriptionIO;
 
 namespace CircuitDiagram.View.Services
 {
     public interface IComponentIconProvider
     {
-        MultiResolutionImage GetIcon(IComponentTypeIdentifier identifier);
+        MultiResolutionImage GetIcon(Tuple<Guid, string> identifier);
     }
 }

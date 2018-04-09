@@ -34,6 +34,6 @@ namespace CircuitDiagram.IO.Test.Data
 
         public Dictionary<ConnectionName, NamedConnection> Connections { get; }
 
-        IReadOnlyDictionary<ConnectionName, NamedConnection> IConnectedElement.Connections => Connections;
+        IDictionary<ConnectionName, NamedConnection> IConnectedElement.Connections => Connections;
     }
 }

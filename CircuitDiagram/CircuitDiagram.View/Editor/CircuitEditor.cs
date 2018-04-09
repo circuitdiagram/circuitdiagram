@@ -31,6 +31,7 @@ using CircuitDiagram.Render;
 using CircuitDiagram.View.Editor;
 using CircuitDiagram.View.Editor.Operations;
 using CircuitDiagram.View.Services;
+using CircuitDiagram.View.ToolboxView;
 using ResizeHandle = CircuitDiagram.View.Editor.Operations.ResizeHandle;
 using Vector = System.Windows.Vector;
 
@@ -39,7 +40,7 @@ namespace CircuitDiagram.View.Controls
     class CircuitEditor : CircuitEditorDrawing, IEditorOperationalContext
     {
         public static readonly DependencyProperty PlaceTypeProperty = DependencyProperty.Register(
-            "PlaceType", typeof(IComponentTypeIdentifier), typeof(CircuitEditor), new PropertyMetadata(default(IComponentTypeIdentifier)));
+            "PlaceType", typeof(ToolboxEntry), typeof(CircuitEditor), new PropertyMetadata(default(ToolboxEntry)));
 
         private readonly HashSet<IPositionalElement> highlighted = new HashSet<IPositionalElement>();
 
@@ -102,9 +103,9 @@ namespace CircuitDiagram.View.Controls
             RenderConnections();
         }
 
-        public IComponentTypeIdentifier PlaceType
+        public ToolboxEntry PlaceType
         {
-            get { return (IComponentTypeIdentifier)GetValue(PlaceTypeProperty); }
+            get { return (ToolboxEntry)GetValue(PlaceTypeProperty); }
             set { SetValue(PlaceTypeProperty, value); }
         }
 

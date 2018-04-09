@@ -12,9 +12,9 @@ namespace CircuitDiagram.Circuit
     /// </summary>
     public class LayoutInformation
     {
-        internal LayoutInformation(Point location)
+        public LayoutInformation()
         {
-            Location = location;
+            Location = new Point();
         }
 
         /// <summary>

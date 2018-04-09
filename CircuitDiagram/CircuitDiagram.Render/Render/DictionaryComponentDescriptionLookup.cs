@@ -12,30 +12,26 @@ namespace CircuitDiagram.Render
     {
         protected readonly Dictionary<ComponentType, ComponentDescription> LookupDictionary;
         private readonly Dictionary<Guid, ComponentDescription> guidLookup;
-        private readonly Dictionary<ComponentName, ComponentDescription> nameLookup; 
 
         public DictionaryComponentDescriptionLookup()
         {
             LookupDictionary = new Dictionary<ComponentType, ComponentDescription>();
             guidLookup = new Dictionary<Guid, ComponentDescription>();
-            nameLookup = new Dictionary<ComponentName, ComponentDescription>();
         }
 
         public ComponentDescription GetDescription(ComponentType componentType)
         {
-            // 1. Exact match
+            var tdComponentType = componentType as  TypeDescriptionComponentType;
             ComponentDescription description;
+
+            // 1. ID match
+            if (tdComponentType?.Id != null && guidLookup.TryGetValue(tdComponentType.Id, out description))
+                return description;
+
+            // 2. ComponentType match
             if (LookupDictionary.TryGetValue(componentType, out description))
                 return description;
-
-            // 2. ID match
-            if (componentType.Id.HasValue && guidLookup.TryGetValue(componentType.Id.Value, out description))
-                return description;
-
-            // 3. Name match
-            if (nameLookup.TryGetValue(componentType.Name, out description))
-                return description;
-
+            
             // Not found
             return null;
         }
@@ -43,12 +39,11 @@ namespace CircuitDiagram.Render
         public void AddDescription(ComponentType componentType, ComponentDescription description)
         {
             LookupDictionary.Add(componentType, description);
+            
+            var tdComponentType = componentType as TypeDescriptionComponentType;
 
-            if (componentType.Id.HasValue)
-                guidLookup.Add(componentType.Id.Value, description);
-
-            if (!nameLookup.ContainsKey(componentType.Name))
-                nameLookup.Add(componentType.Name, description);
+            if (tdComponentType?.Id != null)
+                guidLookup.Add(tdComponentType.Id, description);
         }
     }
 }

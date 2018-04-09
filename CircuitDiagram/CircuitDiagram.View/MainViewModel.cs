@@ -80,7 +80,7 @@ namespace CircuitDiagram.View
             descriptionService.LoadDescriptions();
 
             using (var toolboxStream = File.OpenRead(configurationValues.ToolboxConfigurationFile))
-                AvailableComponents = new[] {new[] {select}}.Concat(toolboxReader.GetToolbox(toolboxStream, descriptionService.AvailableTypes)).ToArray();
+                AvailableComponents = new[] {new[] {select}}.Concat(toolboxReader.GetToolbox(toolboxStream, descriptionService.AllDescriptions)).ToArray();
 
             Document = new CircuitDocument
             {
