@@ -38,12 +38,13 @@ namespace CircuitDiagram.Render
 
         public void AddDescription(ComponentType componentType, ComponentDescription description)
         {
-            LookupDictionary.Add(componentType, description);
-            
+            if (!LookupDictionary.ContainsKey(componentType))
+                LookupDictionary.Add(componentType, description);
+
             var tdComponentType = componentType as TypeDescriptionComponentType;
 
             if (tdComponentType?.Id != null)
-                guidLookup.Add(tdComponentType.Id, description);
+                guidLookup[tdComponentType.Id] = description;
         }
     }
 }

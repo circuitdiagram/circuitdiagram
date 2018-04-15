@@ -122,8 +122,9 @@ namespace CircuitDiagram.Document.InternalReader
                         continue;
                     }
 
-                    context.ApplyConnection(idAttr.Value,
-                        component.Connections.First(x => x.Value.Name.Value == pointAttr.Value).Value);
+                    var namedConnection =
+                        component.Connections.FirstOrDefault(x => x.Value.Name.Value == pointAttr.Value).Value ?? new NamedConnection(pointAttr.Value, component);
+                    context.ApplyConnection(idAttr.Value, namedConnection);
                 }
 
                 document.Elements.Add(component);
@@ -135,7 +136,7 @@ namespace CircuitDiagram.Document.InternalReader
 
             foreach (var wireElement in wires)
             {
-                var wire = new Wire(new Point());
+                var wire = new Wire(new LayoutInformation());
                 ReadLayout(wire, wireElement, context);
 
                 document.Elements.Add(wire);

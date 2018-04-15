@@ -129,7 +129,7 @@ namespace CircuitDiagram.Render.Drawing
             underlying?.DrawRectangle(topLeft, new Size(totalWidth, height), 1.0);
         }
 
-        private Size MeasureText(TextRun text)
+        protected virtual Size MeasureText(TextRun text)
         {
             if (string.IsNullOrWhiteSpace(text.Text))
                 return new Size(0, 0);

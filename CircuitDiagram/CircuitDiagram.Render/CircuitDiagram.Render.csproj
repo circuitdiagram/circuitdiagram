@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>CircuitDiagram.Render</PackageId>
     <PackageVersion>0.0-dev</PackageVersion>
     <Description>Circuit Diagram functionality for rendering circuits.</Description>
@@ -9,6 +9,7 @@
     <PackageProjectUrl>https://www.circuit-diagram.org/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/circuitdiagram/circuitdiagram</RepositoryUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/circuitdiagram/circuitdiagram/master/LICENSE.txt</PackageLicenseUrl>
+    <RootNamespace>CircuitDiagram</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

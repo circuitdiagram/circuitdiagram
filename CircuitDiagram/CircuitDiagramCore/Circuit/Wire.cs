@@ -9,12 +9,9 @@ namespace CircuitDiagram.Circuit
 {
     public class Wire : IPositionalElement
     {
-        public Wire(Point location)
+        public Wire(LayoutInformation layout)
         {
-            Layout = new LayoutInformation
-            {
-                Location = location
-            };
+            Layout = layout;
         }
 
         public LayoutInformation Layout { get; }

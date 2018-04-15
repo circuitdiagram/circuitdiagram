@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CircuitDiagram.Circuit
 {
-    public sealed class PropertyValue : IComparable<PropertyValue>
+    public sealed class PropertyValue : IComparable<PropertyValue>, IEquatable<PropertyValue>
     {
         public PropertyValue()
         {
@@ -72,6 +72,58 @@ namespace CircuitDiagram.Circuit
 
         public Type PropertyType { get; private set; }
 
+        public bool IsNumeric()
+        {
+            if (PropertyType == Type.Numeric)
+                return true;
+
+            double val;
+            if (double.TryParse(ToString(), out val))
+            {
+                PropertyType = Type.Numeric;
+                NumericValue = val;
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool Equals(PropertyValue other)
+        {
+            var thisProperty = this;
+            if (PropertyType == Type.Unknown && other.PropertyType != Type.Unknown)
+            {
+                // Convert the type of this property
+                switch (other.PropertyType)
+                {
+                    case Type.String:
+                        thisProperty = new PropertyValue(ToString());
+                        break;
+                    case Type.Numeric:
+                        thisProperty = PropertyValue.Parse(ToString(), Type.Numeric);
+                        break;
+                    case Type.Boolean:
+                        thisProperty = new PropertyValue(ToString().ToLowerInvariant() == "true");
+                        break;
+                }
+            }
+
+            if (thisProperty.PropertyType != other.PropertyType)
+                return false;
+
+            switch (thisProperty.PropertyType)
+            {
+                case Type.Boolean:
+                    return thisProperty.BooleanValue.Equals(other.BooleanValue);
+                case Type.Numeric:
+                    return thisProperty.NumericValue.Equals(other.NumericValue);
+                case Type.String:
+                    return thisProperty.StringValue.Equals(other.StringValue);
+                default:
+                    return false;
+            }
+        }
+
         public int CompareTo(PropertyValue other)
         {
             var thisProperty = this;
@@ -106,22 +158,6 @@ namespace CircuitDiagram.Circuit
                 default:
                     return 0;
             }
-        }
-
-        public bool IsNumeric()
-        {
-            if (PropertyType == Type.Numeric)
-                return true;
-
-            double val;
-            if (double.TryParse(ToString(), out val))
-            {
-                PropertyType = Type.Numeric;
-                NumericValue = val;
-                return true;
-            }
-
-            return false;
         }
 
         public override string ToString()

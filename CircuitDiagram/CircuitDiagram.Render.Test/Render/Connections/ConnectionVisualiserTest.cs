@@ -30,12 +30,12 @@ namespace CircuitDiagram.Render.Test.Render.Connections
     [TestFixture]
     public class ConnectionVisualiserTest
     {
-        private IConnectionVisualiser connectionVisualiser;
+        private ConnectionVisualiser connectionVisualiser;
 
         [SetUp]
         public void Setup()
         {
-            connectionVisualiser = new ConnectionVisualiser();
+            connectionVisualiser = new ConnectionVisualiser(null);
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace CircuitDiagram.Render.Test.Render.Connections
                 new ConnectionPoint(new Point(0, 0), "a", ConnectionFlags.Horizontal),
             };
 
-            bool visualise = connectionVisualiser.VisualiseConnections(connections);
+            bool visualise = connectionVisualiser.VisualiseConnection(connections);
             Assert.That(visualise, Is.True);
         }
 
@@ -59,7 +59,7 @@ namespace CircuitDiagram.Render.Test.Render.Connections
                 new ConnectionPoint(new Point(0, 0), "a", ConnectionFlags.Edge | ConnectionFlags.Vertical),
             };
 
-            bool visualise = connectionVisualiser.VisualiseConnections(connections);
+            bool visualise = connectionVisualiser.VisualiseConnection(connections);
             Assert.That(visualise, Is.False);
         }
 
@@ -72,7 +72,7 @@ namespace CircuitDiagram.Render.Test.Render.Connections
                 new ConnectionPoint(new Point(0, 0), "a", ConnectionFlags.Edge | ConnectionFlags.Horizontal),
             };
 
-            bool visualise = connectionVisualiser.VisualiseConnections(connections);
+            bool visualise = connectionVisualiser.VisualiseConnection(connections);
             Assert.That(visualise, Is.False);
         }
 
@@ -86,7 +86,7 @@ namespace CircuitDiagram.Render.Test.Render.Connections
                 new ConnectionPoint(new Point(0, 0), "a", ConnectionFlags.Edge | ConnectionFlags.Horizontal),
             };
 
-            bool visualise = connectionVisualiser.VisualiseConnections(connections);
+            bool visualise = connectionVisualiser.VisualiseConnection(connections);
             Assert.That(visualise, Is.True);
         }
     }

@@ -13,5 +13,15 @@ namespace CircuitDiagram.CircuitExtensions
         {
             return connection == other || connection.ConnectedTo.Contains(other);
         }
+
+        public static NamedConnection GetConnection(this IDictionary<ConnectionName, NamedConnection> connections, ConnectionName connectionName, IConnectedElement owner)
+        {
+            if (connections.TryGetValue(connectionName, out var namedConnection))
+                return namedConnection;
+
+            namedConnection = new NamedConnection(connectionName, owner);
+            connections[connectionName] = namedConnection;
+            return namedConnection;
+        }
     }
 }

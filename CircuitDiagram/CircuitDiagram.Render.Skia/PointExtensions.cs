@@ -18,18 +18,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using CircuitDiagram.Circuit;
+using CircuitDiagram.Primitives;
+using SkiaSharp;
 
-namespace CircuitDiagram.Render.Test
+namespace CircuitDiagram.Render.Skia
 {
-    class TestComponentType : ComponentType
+    public static class PointExtensions
     {
-        public TestComponentType()
-            : base(UnknownCollection, "test")
+        public static SKPoint ToSkPoint(this Point point)
         {
+            return new SKPoint((float)point.X, (float)point.Y);
         }
     }
 }

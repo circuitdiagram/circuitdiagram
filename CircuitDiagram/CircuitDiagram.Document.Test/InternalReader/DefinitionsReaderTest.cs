@@ -74,7 +74,7 @@ namespace CircuitDiagram.Document.Test.InternalReader
 
             Assert.That(context.Warnings, Is.Empty);
             Assert.That(context.GetComponentType("0"), Is.Not.Null);
-            Assert.That(context.GetComponentType("0").CollectionItem.Item, Is.EqualTo("component"));
+            Assert.That(context.GetComponentType("0").CollectionItem, Is.EqualTo("component"));
         }
     }
 }

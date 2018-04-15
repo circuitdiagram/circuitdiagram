@@ -60,8 +60,9 @@ namespace CircuitDiagram.Document.InternalReader
 
                     var guid = componentType.GetGuidAttribute(Ns.DocumentComponentDescriptions + "guid", context);
                     var collectionItem = componentType.GetCollectionItemAttribute("item", context);
+                    var name = componentType.GetComponentNameAttribute("name", context);
 
-                    var type = new ComponentType(collection, collectionItem);
+                    var type = collectionItem != null ? new ComponentType(collection ?? ComponentType.UnknownCollection, collectionItem) : ComponentType.Unknown(name ?? guid.ToString());
 
                     if (guid.HasValue)
                     {

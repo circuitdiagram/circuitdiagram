@@ -21,7 +21,7 @@ namespace CircuitDiagram.Circuit
         /// <summary>
         /// Gets or sets the type of component.
         /// </summary>
-        public ComponentType Type { get; }
+        public ComponentType Type { get; set; }
 
         /// <summary>
         /// Additional properties for the component.

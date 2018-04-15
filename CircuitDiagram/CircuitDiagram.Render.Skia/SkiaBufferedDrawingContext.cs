@@ -18,18 +18,30 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using CircuitDiagram.Circuit;
+using CircuitDiagram.Drawing.Text;
+using CircuitDiagram.Primitives;
+using CircuitDiagram.Render.Drawing;
+using SkiaSharp;
 
-namespace CircuitDiagram.Render.Test
+namespace CircuitDiagram.Render.Skia
 {
-    class TestComponentType : ComponentType
+    public class SkiaBufferedDrawingContext : BufferedDrawingContext
     {
-        public TestComponentType()
-            : base(UnknownCollection, "test")
+        protected override Size MeasureText(TextRun text)
         {
+            var paint = new SKPaint
+            {
+                Color = SKColors.Black,
+                IsAntialias = true,
+                Style = SKPaintStyle.Fill,
+                TextSize = (float)text.Formatting.Size,
+            };
+
+            var bounds = new SKRect();
+            paint.MeasureText(Encoding.UTF8.GetBytes(text.Text), ref bounds);
+
+            return new Size(bounds.Width, bounds.Height);
         }
     }
 }

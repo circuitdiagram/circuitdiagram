@@ -1,0 +1,5 @@
+﻿<Directives>
+  <Application>
+    <Assembly Name="SkiaSharp" Dynamic="Required All" />
+  </Application>
+</Directives>

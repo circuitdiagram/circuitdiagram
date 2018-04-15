@@ -18,18 +18,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using CircuitDiagram.Circuit;
+using CircuitDiagram.Primitives;
 
-namespace CircuitDiagram.Render.Test
+namespace CircuitDiagram.Render.Connections
 {
-    class TestComponentType : ComponentType
+    public class VisualisedConnection
     {
-        public TestComponentType()
-            : base(UnknownCollection, "test")
-        {
-        }
+        public Point Location { get; set; }
+        public Connection Connection { get; set; }
+        public bool Render { get; set; }
     }
 }

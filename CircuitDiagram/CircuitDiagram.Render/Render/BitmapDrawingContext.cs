@@ -29,10 +29,21 @@ namespace CircuitDiagram.Render
         private readonly bool ownsImage;
 
         public BitmapDrawingContext(int width, int height)
+        : this(width, height, NamedColors<Argb32>.Transparent)
         {
             fontFamily = SystemFonts.Find("Arial");
             image = new Image<Argb32>(width, height);
             ownsImage = true;
+        }
+
+        public BitmapDrawingContext(int width, int height, Argb32 backgroundColor)
+        {
+            fontFamily = SystemFonts.Find("Consolas");
+            image = new Image<Argb32>(width, height);
+            ownsImage = true;
+
+            // Fill background
+            image.Mutate(ctx => { ctx.Fill(backgroundColor, new RectangleF(0, 0, width, height)); });
         }
 
         public BitmapDrawingContext(Image<Argb32> target)
@@ -76,7 +87,6 @@ namespace CircuitDiagram.Render
 
         public void DrawPath(Point start, IList<IPathCommand> commands, double thickness, bool fill = false)
         {
-            // Not supported
             var builder = new PathBuilder();
             builder.SetOrigin(new PointF((float)start.X, (float)start.Y));
             builder.StartFigure();

@@ -1,6 +1,6 @@
 ﻿// Circuit Diagram http://www.circuit-diagram.org/
 // 
-// Copyright (C) 2016  Samuel Fisher
+// Copyright (C) 2018  Samuel Fisher
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -62,10 +62,10 @@ namespace CircuitDiagram.Document.Test
             Assert.That(document.Components.Count(), Is.EqualTo(2));
 
             var c0 = document.Components.ElementAt(0);
-            Assert.That(c0.Type.Name.Value, Is.EqualTo("Resistor"));
+            Assert.That(c0.Type.CollectionItem, Is.EqualTo("resistor"));
 
             var c1 = document.Components.ElementAt(1);
-            Assert.That(c1.Type.Name.Value, Is.EqualTo("Source"));
+            Assert.That(c1.Type.CollectionItem, Is.EqualTo("cell"));
         }
 
         [Test]
