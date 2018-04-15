@@ -30,11 +30,17 @@ namespace CircuitDiagram.Render.Skia
 {
     public class SkiaDrawingContext : IDrawingContext
     {
+        private readonly SKTypeface typeface;
         private readonly SKSurface surface;
 
         public SkiaDrawingContext(int width, int height, SKColor background)
+            : this(width, height, background, null)
         {
-            //var info = new SKImageInfo(width, height);
+        }
+
+        public SkiaDrawingContext(int width, int height, SKColor background, SKTypeface typeface)
+        {
+            this.typeface = typeface;
             surface = SKSurface.Create(width, height, SKImageInfo.PlatformColorType, SKAlphaType.Opaque);
             surface.Canvas.Clear(background);
         }
@@ -162,20 +168,22 @@ namespace CircuitDiagram.Render.Skia
                 IsAntialias = true,
                 Style = SKPaintStyle.Fill,
                 TextSize = 12f,
+                Typeface = typeface,
             };
-
-            var subPaint = paint;
 
             float totalWidth = 0f;
             float totalHeight = 0f;
 
             foreach (TextRun run in textRuns)
             {
-                var renderPaint = paint;
-                if (run.Formatting.FormattingType == TextRunFormattingType.Subscript)
-                    renderPaint = subPaint;
+                paint.TextSize = (float)run.Formatting.Size;
+
+                if (run.Formatting.FormattingType == TextRunFormattingType.Subscript ||
+                    run.Formatting.FormattingType == TextRunFormattingType.Superscript)
+                    paint.TextSize /= 1.5f;
+
                 var bounds = new SKRect();
-                renderPaint.MeasureText(Encoding.UTF8.GetBytes(run.Text), ref bounds);
+                paint.MeasureText(Encoding.UTF8.GetBytes(run.Text), ref bounds);
                 totalWidth += bounds.Width;
                 totalHeight = Math.Max(totalHeight, bounds.Height);
             }
@@ -193,23 +201,23 @@ namespace CircuitDiagram.Render.Skia
             float horizontalOffsetCounter = 0;
             foreach (TextRun run in textRuns)
             {
-                var renderPaint = paint;
+                paint.TextSize = (float)run.Formatting.Size;
                 var renderLocation = new SKPoint(startLocation.X + horizontalOffsetCounter, startLocation.Y);
 
                 if (run.Formatting.FormattingType == TextRunFormattingType.Subscript)
                 {
-                    renderPaint = subPaint;
+                    paint.TextSize /= 1.5f;
                     renderLocation.X = renderLocation.X + 3f;
                 }
                 else if (run.Formatting.FormattingType == TextRunFormattingType.Superscript)
                 {
-                    renderPaint = subPaint;
+                    paint.TextSize /= 1.5f;
                     renderLocation.X = renderLocation.X - 3f;
                 }
 
                 var bounds = new SKRect();
-                renderPaint.MeasureText(run.Text, ref bounds);
-                surface.Canvas.DrawText(run.Text, renderLocation.X, renderLocation.Y - bounds.Top, renderPaint);
+                paint.MeasureText(run.Text, ref bounds);
+                surface.Canvas.DrawText(run.Text, renderLocation.X, renderLocation.Y - bounds.Top, paint);
                 horizontalOffsetCounter += bounds.Width;
             }
         }
