@@ -20,17 +20,23 @@ using System.IO;
 using System.Text;
 using CircuitDiagram.CLI.ComponentPreview;
 using CircuitDiagram.Compiler;
+using CircuitDiagram.Render;
 using CircuitDiagram.TypeDescription;
 
-namespace CircuitDiagram.CLI.Compiler.OutputGenerators
+namespace CircuitDiagram.CLI.Component.OutputGenerators
 {
-    public interface IOutputGenerator
+    class SvgPreviewRenderer : IOutputGenerator
     {
-        string Format { get; }
-        
-        string FileExtension { get; }
+        public string Format => "svg";
 
-        /// <param name="input">Remove this parameter once CircuitDiagram.Compiler supports compiling from a loaded description.</param>
-        void Generate(ComponentDescription description, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output);
+        public string FileExtension => ".svg";
+
+        public void Generate(ComponentDescription description, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output)
+        {
+            var drawingContext = PreviewRenderer.RenderPreview(size => new SvgDrawingContext(Math.Ceiling(size.Width), Math.Ceiling(size.Height), output),
+                                                               description,
+                                                               options);
+            drawingContext.Dispose();
+        }
     }
 }

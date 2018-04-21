@@ -20,25 +20,17 @@ using System.IO;
 using System.Text;
 using CircuitDiagram.CLI.ComponentPreview;
 using CircuitDiagram.Compiler;
-using CircuitDiagram.Render;
-using CircuitDiagram.Render.Skia;
 using CircuitDiagram.TypeDescription;
-using SkiaSharp;
 
-namespace CircuitDiagram.CLI.Compiler.OutputGenerators
+namespace CircuitDiagram.CLI.Component.OutputGenerators
 {
-    class PngPreviewRenderer : IOutputGenerator
+    public interface IOutputGenerator
     {
-        public string Format => "png";
+        string Format { get; }
+        
+        string FileExtension { get; }
 
-        public string FileExtension => ".png";
-
-        public void Generate(ComponentDescription description, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output)
-        {
-            var drawingContext = PreviewRenderer.RenderPreview(size => new SkiaDrawingContext((int)Math.Ceiling(size.Width), (int)Math.Ceiling(size.Height), SKColors.White),
-                                                               description,
-                                                               options);
-            drawingContext.WriteAsPng(output);
-        }
+        /// <param name="input">Remove this parameter once CircuitDiagram.Compiler supports compiling from a loaded description.</param>
+        void Generate(ComponentDescription description, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output);
     }
 }

@@ -20,28 +20,25 @@ using System.IO;
 using System.Text;
 using CircuitDiagram.CLI.ComponentPreview;
 using CircuitDiagram.Compiler;
+using CircuitDiagram.Render;
+using CircuitDiagram.Render.Skia;
 using CircuitDiagram.TypeDescription;
+using SkiaSharp;
 
-namespace CircuitDiagram.CLI.Compiler.OutputGenerators
+namespace CircuitDiagram.CLI.Component.OutputGenerators
 {
-    class BinaryComponentGenerator : IOutputGenerator
+    class PngPreviewRenderer : IOutputGenerator
     {
-        public string Format => "binary";
+        public string Format => "png";
 
-        public string FileExtension => ".cdcom";
-
-        private readonly CompilerService compiler;
-
-        public BinaryComponentGenerator()
-        {
-            compiler = new CompilerService();
-        }
+        public string FileExtension => ".png";
 
         public void Generate(ComponentDescription description, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output)
         {
-            ComponentCompileResult result = compiler.Compile(input, output, resourceProvider, new CompileOptions());
-            if (!result.Success)
-                throw new Exception();
+            var drawingContext = PreviewRenderer.RenderPreview(size => new SkiaDrawingContext((int)Math.Ceiling(size.Width), (int)Math.Ceiling(size.Height), SKColors.White),
+                                                               description,
+                                                               options);
+            drawingContext.WriteAsPng(output);
         }
     }
 }

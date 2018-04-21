@@ -18,145 +18,79 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.CommandLine;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using CircuitDiagram.CLI.Compiler;
+using CircuitDiagram.CLI.Circuit;
+using CircuitDiagram.CLI.Component;
 using CircuitDiagram.CLI.Render;
-using CircuitDiagram.Compiler;
-using CircuitDiagram.Logging;
-using Microsoft.Extensions.Logging;
 
 namespace CircuitDiagram.CLI
 {
     class Program
     {
-        private static readonly ILogger Log = LogManager.GetLogger<Program>();
-
         static void Main(string[] args)
         {
-            IReadOnlyList<string> input = Array.Empty<string>();
-            string singleInput = null;
-            IReadOnlyList<string> resources = null;
-            IReadOnlyList<string> additionalFormats = null;
-            string output = null;
-            string manifest = null;
-            IReadOnlyList<string> componentDirectories = Array.Empty<string>();
+            var command = Command.Help;
 
-            // Preview options
-            bool autosize = false;
-            double imgWidth = 640;
-            double imgHeight = 480;
+            IEnumerable<string> firstLevelArgs = args;
+            if (args.Length == 0)
+                firstLevelArgs = new[] {"-h"};
+            if (args.Length > 1 && (args.Last() == "-h" || args.Last() == "--help"))
+                firstLevelArgs = firstLevelArgs.SkipLast(1);
 
-            bool recursive = false;
-            bool silent = false;
-            bool verbose = false;
-            var command = Command.None;
+            if (firstLevelArgs.First() == "-h" || firstLevelArgs.First() == "--help")
+            {
+                PrintHeader();
+            }
 
-            var cliOptions = ArgumentSyntax.Parse(args, options =>
+            ArgumentSyntax.Parse(firstLevelArgs, options =>
             {
                 options.ApplicationName = "cdcli";
-
-                options.DefineCommand("version", ref command, Command.Version, "Prints the version of this application.");
-
-                options.DefineCommand("compile", ref command, Command.Compile, "Compile components.");
-
-                options.DefineOption("o|output", ref output,
-                                     "Output file (the format will be inferred from the extension). Cannot be used for directory inputs or in combination with specific output format options.");
-                var manifestOption = options.DefineOption("manifest", ref manifest, false, "Writes a manifest file listing the compiled components.");
-                if (manifestOption.IsSpecified && manifest == null)
-                    manifest = "manifest.xml";
-                options.DefineOption("autosize", ref autosize, "Automatically sizes the output image to fit the rendered preview.");
-                options.DefineOption("w|width", ref imgWidth, double.Parse, "Width of output images to generate (default=640).");
-                options.DefineOption("h|height", ref imgHeight, double.Parse, "Height of output images to generate (default=480).");
-                options.DefineOption("r|recursive", ref recursive, "Recursively searches sub-directories of the input directory.");
-                options.DefineOption("s|silent", ref silent, "Does not output anything to the console on successful operation.");
-                options.DefineOption("v|verbose", ref verbose, "Outputs extra information to the console.");
-                options.DefineOptionList("resources", ref resources, "Resources to use in generating the output. Either a directory, or a space-separated list of [key] [filename] pairs.");
-                options.DefineOptionList("format", ref additionalFormats, "Output formats to write.");
-                options.DefineParameterList("input", ref input, "Components to compile.");
-
-                options.DefineCommand("list-generators", ref command, Command.ListGenerators, "List the available output formats for compiling components.");
-
-                options.DefineCommand("render", ref command, Command.Render, "Render a cddx circuit as an image.");
-                options.DefineOption("o|output", ref output, "Path to output image file.");
-                options.DefineOptionList("components", ref componentDirectories, "Paths to directories containing component definitions.");
-                options.DefineParameter("input", ref singleInput, "Path to cddx circuit to render.");
+                options.ErrorOnUnexpectedArguments = false;
+                
+                options.DefineCommand("circuit", ref command, Command.Circuit, "Render a cddx circuit as an image.");
+                options.DefineCommand("component", ref command, Command.Component, "Compile and render components.");
+                options.DefineCommand("render", ref command, Command.Render, "Render a component as an image.");
             });
-
-            if (!silent)
-                LogManager.LoggerFactory.AddProvider(new BasicConsoleLogger(verbose ? LogLevel.Debug : LogLevel.Information));
-
-            IResourceProvider resourceProvider = null;
-            if (resources != null && resources.Count == 1)
-            {
-                string directory = resources.Single();
-                if (!Directory.Exists(directory))
-                    cliOptions.ReportError($"Directory '{directory}' used for --resources does not exist.");
-
-                Log.LogDebug($"Using directory '{directory}' as resource provider.");
-                resourceProvider = new DirectoryResourceProvider(resources.Single());
-            }
-            else if (resources != null && resources.Count % 2 == 0)
-            {
-                Log.LogDebug("Mapping resources as key-file pairs.");
-                resourceProvider = new FileMapResourceProvider();
-                for (int i = 0; i + 1 < resources.Count; i += 2)
-                    ((FileMapResourceProvider)resourceProvider).Mappings.Add(resources[i], resources[i + 1]);
-            }
-            else if (resources != null)
-            {
-                cliOptions.ReportError("--resources must either be a directory or a space-separated list of [key] [filename] pairs.");
-            }
-            else
-            {
-                Log.LogDebug("Not supplying resources.");
-                resourceProvider = new FileMapResourceProvider();
-            }
-
+            
             switch (command)
             {
-                case Command.None:
-                    cliOptions.ReportError("You must specify a command.");
-                    Environment.Exit(1);
-                    return;
-                case Command.Version:
-                    var assemblyName = typeof(Program).GetTypeInfo().Assembly.GetName();
-                    Console.WriteLine($"Circuit Diagram CLI Tool {assemblyName.Version} ({assemblyName.ProcessorArchitecture})");
-                    return;
-                case Command.Compile:
+                case Command.Circuit:
                 {
-                    var app = new CompilerApp(LogManager.LoggerFactory, resourceProvider);
-                    app.Run(input, recursive, manifest, output, autosize, imgWidth, imgHeight, additionalFormats);
-                    return;
+                    CircuitApp.Run(args.Skip(1).ToArray());
+                    break;
                 }
-                case Command.ListGenerators:
+                case Command.Component:
                 {
-                    foreach (var generator in new OutputGeneratorRepository().AllGenerators)
-                    {
-                        Console.WriteLine($"{generator.Format}: {generator.FileExtension}");
-                    }
-
-                    return;
+                    ComponentApp.Run(args.Skip(1).ToArray());
+                    break;
                 }
                 case Command.Render:
                 {
-                    var app = new RenderApp();
-                    app.Run(singleInput, output, componentDirectories.ToArray());
-                    return;
+                    RenderApp.Run(args.Skip(1).ToArray());
+                    break;
                 }
             }
         }
 
+        private static void PrintHeader()
+        {
+            Console.WriteLine("Circuit Diagram CLI Tool");
+
+            var assemblyName = typeof(Program).Assembly.GetName();
+            Console.WriteLine($"Version {assemblyName.Version}");
+            Console.WriteLine("See http://www.circuit-diagram.org/ for more information.");
+            Console.WriteLine();
+        }
+        
         enum Command
         {
-            None,
-            Version,
-            Compile,
-            ListGenerators,
-            Render
+            Help,
+            Circuit,
+            Component,
+            Render,
         }
     }
 }

@@ -5,6 +5,13 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <AssemblyName>cdcli</AssemblyName>
     <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
+    <PackageId>CircuitDiagram.CLI</PackageId>
+    <PackageVersion>0.0-dev</PackageVersion>
+    <Description>Command-line utility for Circuit Diagram.</Description>
+    <Authors>Samuel Fisher</Authors>
+    <PackageProjectUrl>https://www.circuit-diagram.org/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/circuitdiagram/circuitdiagram</RepositoryUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/circuitdiagram/circuitdiagram/master/LICENSE.txt</PackageLicenseUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,10 +36,6 @@
     <ProjectReference Include="..\CircuitDiagram.Render\CircuitDiagram.Render.csproj" />
     <ProjectReference Include="..\CircuitDiagram.TypeDescriptionIO\CircuitDiagram.TypeDescriptionIO.csproj" />
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

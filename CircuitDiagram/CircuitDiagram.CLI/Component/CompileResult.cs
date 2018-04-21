@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CircuitDiagram.CLI.Compiler
+namespace CircuitDiagram.CLI.Component
 {
     class CompileResult
     {

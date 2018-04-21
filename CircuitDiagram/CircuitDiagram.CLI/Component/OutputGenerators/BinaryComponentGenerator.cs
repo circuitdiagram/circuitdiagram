@@ -20,23 +20,28 @@ using System.IO;
 using System.Text;
 using CircuitDiagram.CLI.ComponentPreview;
 using CircuitDiagram.Compiler;
-using CircuitDiagram.Render;
 using CircuitDiagram.TypeDescription;
 
-namespace CircuitDiagram.CLI.Compiler.OutputGenerators
+namespace CircuitDiagram.CLI.Component.OutputGenerators
 {
-    class SvgPreviewRenderer : IOutputGenerator
+    class BinaryComponentGenerator : IOutputGenerator
     {
-        public string Format => "svg";
+        public string Format => "binary";
 
-        public string FileExtension => ".svg";
+        public string FileExtension => ".cdcom";
+
+        private readonly CompilerService compiler;
+
+        public BinaryComponentGenerator()
+        {
+            compiler = new CompilerService();
+        }
 
         public void Generate(ComponentDescription description, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output)
         {
-            var drawingContext = PreviewRenderer.RenderPreview(size => new SvgDrawingContext(Math.Ceiling(size.Width), Math.Ceiling(size.Height), output),
-                                                               description,
-                                                               options);
-            drawingContext.Dispose();
+            ComponentCompileResult result = compiler.Compile(input, output, resourceProvider, new CompileOptions());
+            if (!result.Success)
+                throw new Exception();
         }
     }
 }

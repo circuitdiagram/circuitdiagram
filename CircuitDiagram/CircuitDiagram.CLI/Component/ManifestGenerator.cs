@@ -21,7 +21,7 @@ using System.Text;
 using System.Xml;
 using System.Linq;
 
-namespace CircuitDiagram.CLI.Compiler
+namespace CircuitDiagram.CLI.Component
 {
     class ManifestGenerator
     {

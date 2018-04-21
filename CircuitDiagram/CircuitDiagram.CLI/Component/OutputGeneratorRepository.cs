@@ -7,11 +7,11 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text;
-using CircuitDiagram.CLI.Compiler.OutputGenerators;
+using CircuitDiagram.CLI.Component.OutputGenerators;
 using CircuitDiagram.Logging;
 using Microsoft.Extensions.Logging;
 
-namespace CircuitDiagram.CLI.Compiler
+namespace CircuitDiagram.CLI.Component
 {
     class OutputGeneratorRepository
     {

@@ -48,7 +48,8 @@ namespace CircuitDiagram.CLI.ComponentPreview
             // Configuration
             if (options.Configuration != null)
             {
-                foreach (var setter in options.Configuration.Setters)
+                var configurationDesc = desc.Metadata.Configurations.First(x => x.Name == options.Configuration);
+                foreach (var setter in configurationDesc.Setters)
                     component.Properties[setter.Key] = setter.Value;
             }
 
@@ -63,6 +64,16 @@ namespace CircuitDiagram.CLI.ComponentPreview
             {
                 component.Layout.Orientation = Orientation.Vertical;
                 component.Layout.Size = desc.MinSize;
+            }
+            
+            // Properties
+            foreach (var property in options.Properties)
+            {
+                // Look up serialized name
+                var propertyInfo = desc.Properties.FirstOrDefault(x => x.Name == property.Key);
+
+                if (propertyInfo != null)
+                    component.Properties[propertyInfo.SerializedName] = PropertyValue.Dynamic(property.Value);
             }
 
             CircuitDocument document = new CircuitDocument();
