@@ -1,6 +1,6 @@
 ﻿// Circuit Diagram http://www.circuit-diagram.org/
 // 
-// Copyright (C) 2016  Samuel Fisher
+// Copyright (C) 2018  Samuel Fisher
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -16,28 +16,20 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-using System.IO;
-using System.Linq;
-using CircuitDiagram.Components.Description;
-using CircuitDiagram.IO;
-using CircuitDiagram.TypeDescriptionIO.Xml;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Text;
 
-namespace CircuitDiagram.Compiler.CompileStages
+namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
 {
-    class LoadFromXmlCompileStage : ICompileStage
+    public class DefinitionsSection
     {
-        public void Run(CompileContext context)
+        public DefinitionsSection(IDictionary<string, ConditionalCollection<string>> definitions)
         {
-            XmlLoader loader = new XmlLoader();
-
-            // TODO: Add errors to context
-            if (!loader.Load(context.Input, out var description))
-                return;
-
-            // The component XML format doesn't provide an ID, so make one now
-            description.ID = "C0";
-
-            context.Description = description;
+            Definitions = new ReadOnlyDictionary<string, ConditionalCollection<string>>(definitions);
         }
+
+        public IReadOnlyDictionary<string, ConditionalCollection<string>> Definitions { get; }
     }
 }

@@ -71,12 +71,5 @@ namespace CircuitDiagram.Drawing
             else
                 drawingContext.DrawPath(start, commands, Thickness, Fill);
         }
-
-        public static RenderPath Parse(string start, string data, double thickness = 2d, bool fill = false)
-        {
-            List<IPathCommand> pathCommands = PathHelper.ParseCommands(data);
-
-            return new RenderPath(new ComponentPoint(start), thickness, fill, pathCommands);
-        }
     }
 }

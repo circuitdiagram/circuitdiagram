@@ -18,38 +18,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Xml;
 using System.Xml.Linq;
-using CircuitDiagram.TypeDescriptionIO.Xml.Logging;
 
-namespace CircuitDiagram.TypeDescriptionIO.Xml
+namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions.ComponentPoints
 {
-    public static class XElementExtensions
+    public static class ComponentPointTemplateParserExtensions
     {
-        public static bool GetAttribute(this XElement element, string name, IXmlLoadLogger logger, out XAttribute attr)
+        public static bool TryParse(this IComponentPointTemplateParser parser, XAttribute x, XAttribute y, out ComponentPointTemplate componentPointTemplate)
         {
-            attr = element.Attribute(name);
-            if (attr == null)
-            {
-                logger.LogError(element, $"Missing attribute '{name}' for <{element.Name.LocalName}> tag");
-                return false;
-            }
-
-            return true;
+            return parser.TryParse(x.Value, y.Value, x, y, out componentPointTemplate);
         }
 
-        public static bool GetAttributeValue(this XElement element, string name, IXmlLoadLogger logger, out string value)
+        public static bool TryParse(this IComponentPointTemplateParser parser, XAttribute location, out ComponentPointTemplate componentPointTemplate)
         {
-            if (element.GetAttribute(name, logger, out var attribute))
-            {
-                value = attribute.Value;
-                return true;
-            }
-
-            value = null;
-            return false;
+            return parser.TryParse(location.Value, location, out componentPointTemplate);
         }
     }
 }

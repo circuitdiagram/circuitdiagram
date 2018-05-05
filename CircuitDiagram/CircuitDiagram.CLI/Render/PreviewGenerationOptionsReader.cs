@@ -19,33 +19,39 @@ namespace CircuitDiagram.CLI.Render
                 Height = 480.0,
                 Properties = new Dictionary<string, string>(),
             };
-            
-            using (var fs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+
+            if (!File.Exists(path))
+                return options;
+
+            Retry<IOException>.Times(2, TimeSpan.FromMilliseconds(100), () =>
             {
-                var reader = new StreamReader(fs);
-
-                while (!reader.EndOfStream)
+                using (var fs = File.Open(path, FileMode.Open, FileAccess.Read))
                 {
-                    var tokens = reader.ReadLine().Split('=');
+                    var reader = new StreamReader(fs);
 
-                    if (tokens.Length < 2)
-                        continue;
-
-                    switch (tokens[0].Trim())
+                    while (!reader.EndOfStream)
                     {
-                        case "horizontal":
-                            options.Horizontal = bool.Parse(tokens[1]);
-                            break;
-                        case "configuration":
-                            options.Configuration = tokens[1];
-                            break;
-                        default:
-                            if (tokens[0].StartsWith("$"))
-                            options.Properties[tokens[0].Substring(1)] = tokens[1];
-                            break;
+                        var tokens = reader.ReadLine().Split('=');
+
+                        if (tokens.Length < 2)
+                            continue;
+
+                        switch (tokens[0].Trim())
+                        {
+                            case "horizontal":
+                                options.Horizontal = bool.Parse(tokens[1]);
+                                break;
+                            case "configuration":
+                                options.Configuration = tokens[1];
+                                break;
+                            default:
+                                if (tokens[0].StartsWith("$"))
+                                    options.Properties[tokens[0].Substring(1)] = tokens[1];
+                                break;
+                        }
                     }
                 }
-            }
+            });
 
             return options;
         }

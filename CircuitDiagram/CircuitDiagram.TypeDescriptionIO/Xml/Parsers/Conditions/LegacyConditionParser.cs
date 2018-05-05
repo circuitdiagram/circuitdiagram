@@ -19,22 +19,30 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using CircuitDiagram.Circuit;
+using CircuitDiagram.TypeDescription;
 using CircuitDiagram.TypeDescription.Conditions;
 
-namespace CircuitDiagram.TypeDescription.Conditions.Parsers
+namespace CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions
 {
     /// <summary>
     /// Parses conditions in the form "$prop(eq_a),$prop2(eq_b)".
     /// </summary>
     public class LegacyConditionParser : IConditionParser
     {
-        public IConditionTreeItem Parse(string input, ParseContext context)
+        private readonly ComponentDescription description;
+
+        public LegacyConditionParser(ComponentDescription description)
+        {
+            this.description = description;
+        }
+
+        public IConditionTreeItem Parse(ComponentDescription description, string input)
         {
             var andList = new Stack<ConditionTreeLeaf>();
 
             string[] conditions = input.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string condition in conditions)
-                andList.Push(ParseLeaf(condition, context));
+                andList.Push(ParseLeaf(condition));
 
             return LegacyConditionParser.AndListToTree(andList);
         }
@@ -54,7 +62,7 @@ namespace CircuitDiagram.TypeDescription.Conditions.Parsers
                 return ConditionTree.Empty;
         }
 
-        private ConditionTreeLeaf ParseLeaf(string value, ParseContext context)
+        private ConditionTreeLeaf ParseLeaf(string value)
         {
             ConditionType type;
             if (value.IndexOf("_") <= 1 && value.IndexOf("_") != -1)
@@ -116,16 +124,22 @@ namespace CircuitDiagram.TypeDescription.Conditions.Parsers
                 else if (comparisonType == ConditionComparison.Empty)
                     comparisonType = ConditionComparison.NotEmpty;
             }
-
+            
             string variableName = Regex.Match(value, "\\$[a-zA-Z]+").Value.Replace("$", "").Replace("!", "");
+            ComponentProperty property;
             if (type == ConditionType.State)
+            {
                 variableName = value.Replace("_", "").Replace("!", "").ToLowerInvariant();
-
-            var propertyType = PropertyValue.Type.Boolean;
-            if (type == ConditionType.Property && !context.PropertyTypes.TryGetValue(variableName, out propertyType))
+                return new ConditionTreeLeaf(type, variableName, comparisonType, PropertyValue.Parse(compareTo, PropertyValue.Type.Boolean));
+            }
+            else if ((property = description.Properties.FirstOrDefault(x => x.Name == variableName)) != null)
+            {
+                return new ConditionTreeLeaf(type, variableName, comparisonType, PropertyValue.Parse(compareTo, ConditionParser.ToSimplePropertyType(property.Type)));
+            }
+            else
+            {
                 throw new ConditionFormatException(string.Format("Unknown property '{0}'", variableName), 0, 0);
-
-            return new ConditionTreeLeaf(type, variableName, comparisonType, PropertyValue.Parse(compareTo, propertyType));
+            }
         }
     }
 }

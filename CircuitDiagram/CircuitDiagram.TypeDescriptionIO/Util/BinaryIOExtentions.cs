@@ -20,7 +20,7 @@ using CircuitDiagram.Circuit;
 using CircuitDiagram.Primitives;
 using CircuitDiagram.TypeDescription;
 using CircuitDiagram.TypeDescription.Conditions;
-using CircuitDiagram.TypeDescription.Conditions.Parsers;
+using CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions;
 
 namespace CircuitDiagram.TypeDescriptionIO.Util
 {

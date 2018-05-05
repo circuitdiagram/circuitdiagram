@@ -18,38 +18,23 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Xml;
-using System.Xml.Linq;
-using CircuitDiagram.TypeDescriptionIO.Xml.Logging;
 
-namespace CircuitDiagram.TypeDescriptionIO.Xml
+namespace CircuitDiagram.TypeDescriptionIO.Xml.Parsers
 {
-    public static class XElementExtensions
+    public class ConditionFormatException : IOException
     {
-        public static bool GetAttribute(this XElement element, string name, IXmlLoadLogger logger, out XAttribute attr)
+        public int PositionStart { get; set; }
+
+        public int Length { get; set; }
+
+        public ConditionFormatException(string message, int positionStart, int length)
+            : base(message)
         {
-            attr = element.Attribute(name);
-            if (attr == null)
-            {
-                logger.LogError(element, $"Missing attribute '{name}' for <{element.Name.LocalName}> tag");
-                return false;
-            }
-
-            return true;
-        }
-
-        public static bool GetAttributeValue(this XElement element, string name, IXmlLoadLogger logger, out string value)
-        {
-            if (element.GetAttribute(name, logger, out var attribute))
-            {
-                value = attribute.Value;
-                return true;
-            }
-
-            value = null;
-            return false;
+            PositionStart = positionStart;
+            Length = length;
         }
     }
 }

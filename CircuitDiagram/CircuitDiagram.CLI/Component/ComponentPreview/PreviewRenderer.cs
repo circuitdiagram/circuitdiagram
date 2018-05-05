@@ -46,9 +46,9 @@ namespace CircuitDiagram.CLI.ComponentPreview
             component.Layout.Size = Math.Max(desc.MinSize, options.Size);
 
             // Configuration
-            if (options.Configuration != null)
+            var configurationDesc = desc.Metadata.Configurations.FirstOrDefault(x => x.Name == options.Configuration);
+            if (configurationDesc != null)
             {
-                var configurationDesc = desc.Metadata.Configurations.First(x => x.Name == options.Configuration);
                 foreach (var setter in configurationDesc.Setters)
                     component.Properties[setter.Key] = setter.Value;
             }

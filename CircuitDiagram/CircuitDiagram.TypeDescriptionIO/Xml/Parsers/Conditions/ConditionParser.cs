@@ -12,7 +12,6 @@
  */
 #endregion
 
-using CircuitDiagram.Components.Conditions.Parsers;
 using CircuitDiagram.IO;
 using System;
 using System.Collections.Generic;
@@ -21,10 +20,11 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using CircuitDiagram.Circuit;
+using CircuitDiagram.Components.Conditions;
+using CircuitDiagram.TypeDescription;
 using CircuitDiagram.TypeDescription.Conditions;
-using CircuitDiagram.TypeDescription.Conditions.Parsers;
 
-namespace CircuitDiagram.Components.Conditions.Parsers
+namespace CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions
 {
     /// <summary>
     /// Parses conditions in the form "$prop==a||$prop2==b".
@@ -57,7 +57,7 @@ namespace CircuitDiagram.Components.Conditions.Parsers
             ParseFormat = parseFormat;
         }
 
-        public IConditionTreeItem Parse(string input, ParseContext context)
+        public IConditionTreeItem Parse(ComponentDescription description, string input)
         {
             // Tokenize
 
@@ -117,7 +117,7 @@ namespace CircuitDiagram.Components.Conditions.Parsers
 
             // Convert to tree
             Queue<ConditionToken> reversed = new Queue<ConditionToken>(output.Reverse());
-            return (ParseToken(reversed, context) as IConditionTreeItem);
+            return ParseToken(reversed, description);
         }
 
         private ConditionToken? ReadToken(PositioningReader r)
@@ -149,18 +149,18 @@ namespace CircuitDiagram.Components.Conditions.Parsers
             }
         }
 
-        private IConditionTreeItem ParseToken(Queue<ConditionToken> r, ParseContext context)
+        private IConditionTreeItem ParseToken(Queue<ConditionToken> r, ComponentDescription description)
         {
             if (r.Count == 0)
                 throw new ConditionFormatException("Invalid condition", 0, 0);
 
             ConditionToken t = r.Dequeue();
             if (t.Type == ConditionToken.TokenType.Symbol)
-                return ParseLeaf(t, context);
+                return ParseLeaf(t, description);
             else if (t.Type == ConditionToken.TokenType.Operator && t.Operator == ConditionToken.OperatorType.AND)
             {
-                IConditionTreeItem right = ParseToken(r, context);
-                IConditionTreeItem left = ParseToken(r, context);
+                IConditionTreeItem right = ParseToken(r, description);
+                IConditionTreeItem left = ParseToken(r, description);
 
                 return new ConditionTree(
                     ConditionTree.ConditionOperator.AND,
@@ -169,8 +169,8 @@ namespace CircuitDiagram.Components.Conditions.Parsers
             }
             else if (t.Type == ConditionToken.TokenType.Operator && t.Operator == ConditionToken.OperatorType.OR)
             {
-                IConditionTreeItem right = ParseToken(r, context);
-                IConditionTreeItem left = ParseToken(r, context);
+                IConditionTreeItem right = ParseToken(r, description);
+                IConditionTreeItem left = ParseToken(r, description);
 
                 return new ConditionTree(
                     ConditionTree.ConditionOperator.OR,
@@ -181,14 +181,14 @@ namespace CircuitDiagram.Components.Conditions.Parsers
                 throw new ArgumentException("Invalid queue.", "r");
         }
 
-        private ConditionTreeLeaf ParseLeaf(ConditionToken token, ParseContext context)
+        private ConditionTreeLeaf ParseLeaf(ConditionToken token, ComponentDescription description)
         {
             bool isNegated;
             bool isState;
-            string property;
+            string propertyName;
             string comparisonStr;
             string compareToStr;
-            SplitLeaf(token, out isNegated, out isState, out property, out comparisonStr, out compareToStr);
+            SplitLeaf(token, out isNegated, out isState, out propertyName, out comparisonStr, out compareToStr);
 
             if (compareToStr == String.Empty)
                 compareToStr = "true"; // Implicit true
@@ -229,18 +229,35 @@ namespace CircuitDiagram.Components.Conditions.Parsers
 
             if (isState)
             {
-                if (!legalStateNames.Contains(property))
-                    throw new ConditionFormatException(String.Format("Unknown component state '{0}'", property), token.Position, token.Symbol.Length);
+                if (!legalStateNames.Contains(propertyName))
+                    throw new ConditionFormatException(String.Format("Unknown component state '{0}'", propertyName), token.Position, token.Symbol.Length);
 
-                return new ConditionTreeLeaf(ConditionType.State, property, comparison, PropertyValue.Parse(compareToStr, PropertyValue.Type.Boolean));
+                return new ConditionTreeLeaf(ConditionType.State, propertyName, comparison, PropertyValue.Parse(compareToStr, PropertyValue.Type.Boolean));
             }
             else
             {
-                PropertyValue.Type propertyType;
-                if (!context.PropertyTypes.TryGetValue(property, out propertyType))
-                    throw new ConditionFormatException(String.Format("Unknown property '{0}'", property), token.Position, token.Symbol.Length);
+                ComponentProperty property;
+                if ((property = description.Properties.FirstOrDefault(x => x.Name == propertyName)) == null)
+                    throw new ConditionFormatException(String.Format("Unknown property '{0}'", propertyName), token.Position, token.Symbol.Length);
 
-                return new ConditionTreeLeaf(ConditionType.Property, property, comparison, PropertyValue.Parse(compareToStr, propertyType));
+                return new ConditionTreeLeaf(ConditionType.Property, propertyName, comparison, PropertyValue.Parse(compareToStr, ToSimplePropertyType(property.Type)));
+            }
+        }
+
+        public static PropertyValue.Type ToSimplePropertyType(PropertyType type)
+        {
+            switch (type)
+            {
+                case PropertyType.Boolean:
+                    return PropertyValue.Type.Boolean;
+                case PropertyType.Decimal:
+                case PropertyType.Integer:
+                    return PropertyValue.Type.Numeric;
+                case PropertyType.Enum:
+                case PropertyType.String:
+                    return PropertyValue.Type.String;
+                default:
+                    throw new NotSupportedException($"Unsupported property type: '{type}'");
             }
         }
 

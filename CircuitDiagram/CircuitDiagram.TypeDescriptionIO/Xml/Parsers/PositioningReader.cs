@@ -18,38 +18,48 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Xml;
-using System.Xml.Linq;
-using CircuitDiagram.TypeDescriptionIO.Xml.Logging;
 
-namespace CircuitDiagram.TypeDescriptionIO.Xml
+namespace CircuitDiagram.TypeDescriptionIO.Xml.Parsers
 {
-    public static class XElementExtensions
+    class PositioningReader : TextReader
     {
-        public static bool GetAttribute(this XElement element, string name, IXmlLoadLogger logger, out XAttribute attr)
-        {
-            attr = element.Attribute(name);
-            if (attr == null)
-            {
-                logger.LogError(element, $"Missing attribute '{name}' for <{element.Name.LocalName}> tag");
-                return false;
-            }
+        private StringReader internalReader;
+        private int pos = 0;
 
-            return true;
+        /// <summary>
+        /// Gets a value indicating the character position of the reader.
+        /// </summary>
+        public int CharPos
+        {
+            get { return pos; }
         }
 
-        public static bool GetAttributeValue(this XElement element, string name, IXmlLoadLogger logger, out string value)
+        public PositioningReader(StringReader inner)
         {
-            if (element.GetAttribute(name, logger, out var attribute))
-            {
-                value = attribute.Value;
-                return true;
-            }
+            internalReader = inner;
+        }
 
-            value = null;
-            return false;
+        public override int Peek()
+        {
+            return internalReader.Peek();
+        }
+
+        public override int Read()
+        {
+            var c = internalReader.Read();
+
+            if (c >= 0)
+                AdvancePosition((Char)c);
+
+            return c;
+        }
+
+        private void AdvancePosition(Char c)
+        {
+            pos++;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿// Circuit Diagram http://www.circuit-diagram.org/
 // 
-// Copyright (C) 2016  Samuel Fisher
+// Copyright (C) 2018  Samuel Fisher
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -16,28 +16,17 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-using System.IO;
-using System.Linq;
-using CircuitDiagram.Components.Description;
-using CircuitDiagram.IO;
-using CircuitDiagram.TypeDescriptionIO.Xml;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Xml;
 
-namespace CircuitDiagram.Compiler.CompileStages
+namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions.ComponentPoints
 {
-    class LoadFromXmlCompileStage : ICompileStage
+    public interface IComponentPointTemplateParser
     {
-        public void Run(CompileContext context)
-        {
-            XmlLoader loader = new XmlLoader();
+        bool TryParse(string x, string y, IXmlLineInfo xLine, IXmlLineInfo yLine, out ComponentPointTemplate componentPointTemplate);
 
-            // TODO: Add errors to context
-            if (!loader.Load(context.Input, out var description))
-                return;
-
-            // The component XML format doesn't provide an ID, so make one now
-            description.ID = "C0";
-
-            context.Description = description;
-        }
+        bool TryParse(string location, IXmlLineInfo line, out ComponentPointTemplate componentPointTemplate);
     }
 }

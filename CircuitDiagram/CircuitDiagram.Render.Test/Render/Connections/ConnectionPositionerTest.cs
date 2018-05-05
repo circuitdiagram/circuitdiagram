@@ -53,7 +53,10 @@ namespace CircuitDiagram.Render.Test.Render
             {
                 new ConnectionGroup(ConditionTree.Empty, new[]
                 {
-                    new ConnectionDescription(new ComponentPoint("_Start"), new ComponentPoint("_Start+45x"), ConnectionEdge.Start, "Connection1"),
+                    new ConnectionDescription(new ComponentPoint(ComponentPosition.Start, ComponentPosition.Start, new Vector()),
+                                              new ComponentPoint(ComponentPosition.Start, ComponentPosition.Start, new Vector(45, 0)),
+                                              ConnectionEdge.Start,
+                                              "Connection1"),
                 })
             };
 

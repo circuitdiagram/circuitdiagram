@@ -18,38 +18,32 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Xml;
-using System.Xml.Linq;
-using CircuitDiagram.TypeDescriptionIO.Xml.Logging;
+using System.Threading;
 
-namespace CircuitDiagram.TypeDescriptionIO.Xml
+namespace CircuitDiagram.CLI.Render
 {
-    public static class XElementExtensions
+    static class Retry<T> where T : Exception
     {
-        public static bool GetAttribute(this XElement element, string name, IXmlLoadLogger logger, out XAttribute attr)
+        public static void Times(int numTimes, TimeSpan delay, Action action)
         {
-            attr = element.Attribute(name);
-            if (attr == null)
+            int attempt = 1;
+            while (true)
             {
-                logger.LogError(element, $"Missing attribute '{name}' for <{element.Name.LocalName}> tag");
-                return false;
+                try
+                {
+                    action();
+                    return;
+                }
+                catch (T)
+                {
+                    if (attempt == numTimes)
+                        throw;
+                }
+
+                attempt++;
+                Thread.Sleep(delay);
             }
-
-            return true;
-        }
-
-        public static bool GetAttributeValue(this XElement element, string name, IXmlLoadLogger logger, out string value)
-        {
-            if (element.GetAttribute(name, logger, out var attribute))
-            {
-                value = attribute.Value;
-                return true;
-            }
-
-            value = null;
-            return false;
         }
     }
 }

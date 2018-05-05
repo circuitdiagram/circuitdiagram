@@ -6,9 +6,10 @@ using System.Linq;
 using System.Text;
 using CircuitDiagram.CLI.ComponentPreview;
 using CircuitDiagram.IO;
-using CircuitDiagram.IO.Descriptions.Xml;
 using CircuitDiagram.Logging;
 using CircuitDiagram.Render.Skia;
+using CircuitDiagram.TypeDescriptionIO.Xml;
+using CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
@@ -19,6 +20,7 @@ namespace CircuitDiagram.CLI.Render
         public static void Run(string[] args)
         {
             string input = null;
+            string propertiesPath = "render.properties";
             string output = "render.png";
             bool watch = false;
             bool silent = false;
@@ -30,6 +32,7 @@ namespace CircuitDiagram.CLI.Render
                 options.DefineOption("o|output", ref output, "Path to output file (default: render.png).");
                 options.DefineOption("s|silent", ref silent, "Does not output anything to the console on successful operation.");
                 options.DefineOption("w|watch", ref watch, "Re-render output whenever the input file changes.");
+                options.DefineOption("p|properties", ref propertiesPath, "Path to render properties file.");
                 options.DefineParameter("input", ref input, "Path to input XML component file.");
             });
 
@@ -49,8 +52,7 @@ namespace CircuitDiagram.CLI.Render
                 Horizontal = false,
             };
 
-            if (File.Exists("render.properties"))
-                renderOptions = PreviewGenerationOptionsReader.Read("render.properties");
+            renderOptions = PreviewGenerationOptionsReader.Read(propertiesPath);
 
             Render(logger, input, output, renderOptions);
 
@@ -65,8 +67,7 @@ namespace CircuitDiagram.CLI.Render
 
                     if (changes.Name == input || changes.Name == "render.properties")
                     {
-                        if (File.Exists("render.properties"))
-                            renderOptions = PreviewGenerationOptionsReader.Read("render.properties");
+                        renderOptions = PreviewGenerationOptionsReader.Read(propertiesPath);
 
                         Render(logger, input, output, renderOptions);
                     }
@@ -76,39 +77,26 @@ namespace CircuitDiagram.CLI.Render
 
         private static void Render(ILogger logger, string inputPath, string outputPath, PreviewGenerationOptions renderOptions)
         {
-            logger.LogInformation($"{inputPath} -> {outputPath}");
-
             var loader = new XmlLoader();
+            loader.UseDefinitions();
+
             using (var fs = File.Open(inputPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                loader.Load(fs);
-
-                if (loader.LoadErrors.Any())
+                if (!loader.Load(fs, logger, out var description))
                 {
-                    foreach (var error in loader.LoadErrors)
-                    {
-                        switch (error.Category)
-                        {
-                            case LoadErrorCategory.Error:
-                                logger.LogError(error.Message);
-                                break;
-                        }
-                    }
-
-                    if (loader.LoadErrors.Any(x => x.Category == LoadErrorCategory.Error))
-                    {
-                        logger.LogError("Unable to render due to errors.");
-                        return;
-                    }
+                    logger.LogError("Unable to render due to errors.");
+                    return;
                 }
-
-                var description = loader.GetDescriptions()[0];
-
+                
                 var drawingContext = PreviewRenderer.RenderPreview((size) => new SkiaDrawingContext((int)size.Width, (int)size.Height, SKColors.White), description, renderOptions);
 
                 using (var outputFs = File.OpenWrite(outputPath))
+                {
                     drawingContext.WriteAsPng(outputFs);
+                }
             }
+
+            logger.LogInformation($"{inputPath} -> {outputPath}");
         }
     }
 }

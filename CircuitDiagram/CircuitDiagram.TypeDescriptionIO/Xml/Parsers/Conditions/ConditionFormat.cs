@@ -1,6 +1,6 @@
 ﻿// Circuit Diagram http://www.circuit-diagram.org/
 // 
-// Copyright (C) 2016  Samuel Fisher
+// Copyright (C) 2018  Samuel Fisher
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -16,28 +16,21 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-using System.IO;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using CircuitDiagram.Components.Description;
-using CircuitDiagram.IO;
-using CircuitDiagram.TypeDescriptionIO.Xml;
+using System.Text;
 
-namespace CircuitDiagram.Compiler.CompileStages
+namespace CircuitDiagram.TypeDescriptionIO.Xml.Parsers
 {
-    class LoadFromXmlCompileStage : ICompileStage
+    /// <summary>
+    /// Specifies the format options used to parse conditions.
+    /// </summary>
+    public class ConditionFormat
     {
-        public void Run(CompileContext context)
-        {
-            XmlLoader loader = new XmlLoader();
-
-            // TODO: Add errors to context
-            if (!loader.Load(context.Input, out var description))
-                return;
-
-            // The component XML format doesn't provide an ID, so make one now
-            description.ID = "C0";
-
-            context.Description = description;
-        }
+        /// <summary>
+        /// Gets or sets a value indicating whether states should be preceeded by an underscore.
+        /// </summary>
+        public bool StatesUnderscored { get; set; }
     }
 }

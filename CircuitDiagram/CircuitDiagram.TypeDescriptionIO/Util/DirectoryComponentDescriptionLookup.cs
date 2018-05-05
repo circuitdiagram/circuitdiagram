@@ -5,9 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CircuitDiagram.Circuit;
-using CircuitDiagram.IO.Descriptions.Xml;
 using CircuitDiagram.Render;
 using CircuitDiagram.TypeDescription;
+using CircuitDiagram.TypeDescriptionIO.Xml;
 
 namespace CircuitDiagram.TypeDescriptionIO.Util
 {
@@ -34,10 +34,8 @@ namespace CircuitDiagram.TypeDescriptionIO.Util
                 {
                     using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
-                        xmlLoader.Load(fs);
-                        if (!xmlLoader.LoadErrors.Any())
+                        if (xmlLoader.Load(fs, out var description))
                         {
-                            ComponentDescription description = xmlLoader.GetDescriptions()[0];
                             description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;
                             description.Source = new ComponentDescriptionSource(file);
 

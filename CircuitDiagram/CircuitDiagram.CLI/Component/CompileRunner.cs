@@ -9,8 +9,9 @@ using CircuitDiagram.CLI.Component.OutputGenerators;
 using CircuitDiagram.CLI.ComponentPreview;
 using CircuitDiagram.Compiler;
 using CircuitDiagram.IO;
-using CircuitDiagram.IO.Descriptions.Xml;
 using CircuitDiagram.TypeDescription;
+using CircuitDiagram.TypeDescriptionIO.Xml;
+using CircuitDiagram.TypeDescriptionIO.Xml.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace CircuitDiagram.CLI.Component
@@ -33,25 +34,10 @@ namespace CircuitDiagram.CLI.Component
             var loader = new XmlLoader();
             using (var fs = File.OpenRead(inputFile))
             {
-                loader.Load(fs);
-
-                if (loader.LoadErrors.Any())
+                if (!loader.Load(fs, logger, out var description))
                 {
-                    foreach (var error in loader.LoadErrors)
-                    {
-                        switch (error.Category)
-                        {
-                            case LoadErrorCategory.Error:
-                                logger.LogError(error.Message);
-                                break;
-                        }
-                    }
-
-                    if (loader.LoadErrors.Any(x => x.Category == LoadErrorCategory.Error))
-                        Environment.Exit(1);
+                    Environment.Exit(1);
                 }
-
-                var description = loader.GetDescriptions()[0];
 
                 var outputs = Generate(fs, description, Path.GetFileNameWithoutExtension(inputFile), formats, previewOptions);
 

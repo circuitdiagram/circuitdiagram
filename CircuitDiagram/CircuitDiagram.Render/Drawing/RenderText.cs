@@ -29,7 +29,7 @@ using CircuitDiagram.TypeDescription;
 
 namespace CircuitDiagram.Drawing
 {
-    public class RenderText : IRenderCommand
+    public class RenderText : IRenderCommand, ICloneable
     {
         public ComponentPoint Location { get; set; }
         public TextAlignment Alignment { get; set; }
@@ -164,6 +164,11 @@ namespace CircuitDiagram.Drawing
             return Location.GetHashCode()
                 ^ Alignment.GetHashCode()
                 ^ TextRuns.GetHashCode();
+        }
+
+        public object Clone()
+        {
+            return new RenderText(Location, Alignment, TextRuns);
         }
     }
 }
