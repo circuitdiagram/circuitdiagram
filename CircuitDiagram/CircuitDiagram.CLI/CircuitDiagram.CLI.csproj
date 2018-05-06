@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <AssemblyName>circuit-diagram</AssemblyName>
+    <AssemblyName>circuit-diagram-cli</AssemblyName>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <PackageId>CircuitDiagram.CLI</PackageId>
     <PackageVersion>0.0-dev</PackageVersion>
@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Composition" Version="1.0.31" />
+    <PackageReference Include="Microsoft.DotNet.ILCompiler" Version="1.0.0-alpha-26505-01" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
@@ -37,5 +38,9 @@
     <ProjectReference Include="..\CircuitDiagram.TypeDescriptionIO\CircuitDiagram.TypeDescriptionIO.csproj" />
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj" />
   </ItemGroup>
+  
+  <Target Name="CopyNativeLibraries" AfterTargets="Publish">
+    <Copy SourceFiles="$(NuGetPackageRoot)\skiasharp\1.60.0\runtimes\win7-x64\native\libSkiaSharp.dll" DestinationFolder="$(PublishDir)" />
+  </Target>
 
 </Project>

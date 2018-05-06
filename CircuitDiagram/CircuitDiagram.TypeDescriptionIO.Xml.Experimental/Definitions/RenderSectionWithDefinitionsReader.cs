@@ -29,8 +29,6 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
         private readonly IComponentPointTemplateParser componentPointTemplateParser;
         private readonly IXmlSection<DefinitionsSection> definitionsSection;
 
-        private readonly HashSet<string> availableDefinitions;
-
         public RenderSectionWithDefinitionsReader(IXmlLoadLogger logger,
                                                   IFeatureSwitcher featureSwitcher,
                                                   IConditionParser conditionParser,
@@ -45,11 +43,17 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
             this.componentPointParser = componentPointParser;
             this.componentPointTemplateParser = componentPointTemplateParser;
             this.definitionsSection = definitionsSection;
-            availableDefinitions = definitionsSection.Value.Definitions.Select(x => x.Key).ToHashSet();
         }
 
         public override void ReadSection(XElement element, ComponentDescription description)
         {
+            bool definitionsEnabled = featureSwitcher.IsFeatureEnabled(DefinitionsXmlLoaderExtensions.FeatureName);
+            if (!definitionsEnabled)
+            {
+                base.ReadSection(element, description);
+                return;
+            }
+
             var results = new List<RenderDescription>();
 
             var groupElements = element.Elements(element.GetDefaultNamespace() + "group");
@@ -65,7 +69,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
 
         protected IEnumerable<RenderDescription> ReadRenderDescriptions(ComponentDescription description, XElement renderNode)
         {
-            bool definitionsEnabled = featureSwitcher.IsFeatureEnabled(DefinitionsXmlLoaderExtensions.FeatureName);
+            var availableDefinitions = definitionsSection.Value.Definitions.Select(x => x.Key).ToHashSet();
 
             IConditionTreeItem conditionCollection = ConditionTree.Empty;
             var conditionsAttribute = renderNode.Attribute("conditions");
@@ -112,19 +116,8 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
                 }
                 else if (commandType == "text")
                 {
-                    if (definitionsEnabled)
-                    {
-                        foreach (var renderTextDescription in ReadTextCommand(renderCommandNode, description, conditionCollection, declaredDefinitions))
-                            yield return renderTextDescription;
-                    }
-                    else
-                    {
-                        if (ReadTextCommand(renderCommandNode, description, out var command))
-                        {
-                            base.ReadTextLocation(renderCommandNode, command);
-                            commands.Add(command);
-                        }
-                    }
+                    foreach (var renderTextDescription in ReadTextCommand(renderCommandNode, description, conditionCollection, declaredDefinitions))
+                        yield return renderTextDescription;
                 }
                 else if (commandType == "path")
                 {

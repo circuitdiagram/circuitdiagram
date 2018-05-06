@@ -20,21 +20,21 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Sections
 
             return Activator.CreateInstance(typeof(RegisteredSection<>).MakeGenericType(t));
         }
+    }
 
-        private class RegisteredSection<T> : IXmlSection<T> where T : class
+    public class RegisteredSection<T> : IXmlSection<T> where T : class
+    {
+        public RegisteredSection()
         {
-            public RegisteredSection()
-            {
-            }
-
-            public RegisteredSection(T value)
-            {
-                Value = value;
-            }
-
-            public bool IsAvailable => Value != null;
-
-            public T Value { get; }
         }
+
+        public RegisteredSection(T value)
+        {
+            Value = value;
+        }
+
+        public bool IsAvailable => Value != null;
+
+        public T Value { get; }
     }
 }
