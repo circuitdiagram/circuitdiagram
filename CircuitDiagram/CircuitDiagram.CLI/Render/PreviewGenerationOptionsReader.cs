@@ -23,35 +23,32 @@ namespace CircuitDiagram.CLI.Render
             if (!File.Exists(path))
                 return options;
 
-            Retry<IOException>.Times(2, TimeSpan.FromMilliseconds(100), () =>
+            using (var fs = File.Open(path, FileMode.Open, FileAccess.Read))
             {
-                using (var fs = File.Open(path, FileMode.Open, FileAccess.Read))
+                var reader = new StreamReader(fs);
+
+                while (!reader.EndOfStream)
                 {
-                    var reader = new StreamReader(fs);
+                    var tokens = reader.ReadLine().Split('=');
 
-                    while (!reader.EndOfStream)
+                    if (tokens.Length < 2)
+                        continue;
+
+                    switch (tokens[0].Trim())
                     {
-                        var tokens = reader.ReadLine().Split('=');
-
-                        if (tokens.Length < 2)
-                            continue;
-
-                        switch (tokens[0].Trim())
-                        {
-                            case "horizontal":
-                                options.Horizontal = bool.Parse(tokens[1]);
-                                break;
-                            case "configuration":
-                                options.Configuration = tokens[1];
-                                break;
-                            default:
-                                if (tokens[0].StartsWith("$"))
-                                    options.Properties[tokens[0].Substring(1)] = tokens[1];
-                                break;
-                        }
+                        case "horizontal":
+                            options.Horizontal = bool.Parse(tokens[1]);
+                            break;
+                        case "configuration":
+                            options.Configuration = tokens[1];
+                            break;
+                        default:
+                            if (tokens[0].StartsWith("$"))
+                                options.Properties[tokens[0].Substring(1)] = tokens[1];
+                            break;
                     }
                 }
-            });
+            }
 
             return options;
         }
