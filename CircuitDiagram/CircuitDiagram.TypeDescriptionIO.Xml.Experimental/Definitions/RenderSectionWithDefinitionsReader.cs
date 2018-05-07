@@ -28,6 +28,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
         private readonly IComponentPointParser componentPointParser;
         private readonly IComponentPointTemplateParser componentPointTemplateParser;
         private readonly IXmlSection<DefinitionsSection> definitionsSection;
+        private readonly bool definitionsEnabled;
 
         public RenderSectionWithDefinitionsReader(IXmlLoadLogger logger,
                                                   IFeatureSwitcher featureSwitcher,
@@ -43,11 +44,12 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
             this.componentPointParser = componentPointParser;
             this.componentPointTemplateParser = componentPointTemplateParser;
             this.definitionsSection = definitionsSection;
+
+            definitionsEnabled = featureSwitcher.IsFeatureEnabled(DefinitionsXmlLoaderExtensions.FeatureName);
         }
 
         public override void ReadSection(XElement element, ComponentDescription description)
         {
-            bool definitionsEnabled = featureSwitcher.IsFeatureEnabled(DefinitionsXmlLoaderExtensions.FeatureName);
             if (!definitionsEnabled)
             {
                 base.ReadSection(element, description);
@@ -174,6 +176,9 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
 
         protected override bool ReadTextLocation(XElement element, RenderText command)
         {
+            if (!definitionsEnabled)
+                return base.ReadTextLocation(element, command);
+
             // Do nothing - handled by EnumerateComponentPoint
             return true;
         }
