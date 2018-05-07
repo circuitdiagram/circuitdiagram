@@ -11,7 +11,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Logging
         public static FileRange GetFileRange(this XElement element)
         {
             var line = (IXmlLineInfo)element;
-            return new FileRange(line.LineNumber, line.LinePosition, line.LineNumber, element.Name.LocalName.Length);
+            return new FileRange(line.LineNumber, line.LinePosition, line.LineNumber, line.LinePosition + element.Name.LocalName.Length);
         }
 
         public static FileRange GetFileRange(this XAttribute attribute)
