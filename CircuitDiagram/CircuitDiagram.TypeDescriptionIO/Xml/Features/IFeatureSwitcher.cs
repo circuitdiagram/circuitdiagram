@@ -19,31 +19,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
 
-namespace CircuitDiagram.CLI.Render
+namespace CircuitDiagram.TypeDescriptionIO.Xml.Features
 {
-    static class Retry<T> where T : Exception
+    public interface IFeatureSwitcher
     {
-        public static void Times(int numTimes, TimeSpan delay, Action action)
-        {
-            int attempt = 1;
-            while (true)
-            {
-                try
-                {
-                    action();
-                    return;
-                }
-                catch (T)
-                {
-                    if (attempt == numTimes)
-                        throw;
-                }
-
-                attempt++;
-                Thread.Sleep(delay);
-            }
-        }
+        bool IsFeatureEnabled(string featureKey);
     }
 }

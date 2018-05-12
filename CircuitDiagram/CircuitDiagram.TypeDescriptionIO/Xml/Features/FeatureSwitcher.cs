@@ -19,22 +19,27 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using CircuitDiagram.TypeDescription;
+using System.Xml.Linq;
 
-namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Common.Features
+namespace CircuitDiagram.TypeDescriptionIO.Xml.Features
 {
     public class FeatureSwitcher : IFeatureSwitcher
     {
-        private readonly ComponentDescription description;
+        private readonly Dictionary<string, XElement> enabledFeatures = new Dictionary<string, XElement>();
 
-        public FeatureSwitcher(ComponentDescription description)
+        public void EnableFeatureCandidate(string key, XElement element)
         {
-            this.description = description;
+            enabledFeatures.Add(key, element);
         }
 
         public bool IsFeatureEnabled(string key)
         {
-            return description.Metadata.Entries.TryGetValue(key, out var enabledValue) && enabledValue.ToLowerInvariant() == "true";
+            return enabledFeatures.ContainsKey(key);
+        }
+
+        public bool IsFeatureEnabled(string key, out XElement source)
+        {
+            return enabledFeatures.TryGetValue(key, out source);
         }
     }
 }

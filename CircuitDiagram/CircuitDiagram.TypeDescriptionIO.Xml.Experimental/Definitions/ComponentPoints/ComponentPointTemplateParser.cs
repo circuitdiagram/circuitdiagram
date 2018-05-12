@@ -26,7 +26,7 @@ using System.Xml;
 using Antlr4.Runtime;
 using Autofac.Features.AttributeFilters;
 using CircuitDiagram.TypeDescription;
-using CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Common.Features;
+using CircuitDiagram.TypeDescriptionIO.Xml.Features;
 using CircuitDiagram.TypeDescriptionIO.Xml.Logging;
 using CircuitDiagram.TypeDescriptionIO.Xml.Parsers.ComponentPoints;
 using Microsoft.Extensions.Logging;

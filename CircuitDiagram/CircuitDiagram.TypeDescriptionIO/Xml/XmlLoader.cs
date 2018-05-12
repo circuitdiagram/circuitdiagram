@@ -23,10 +23,13 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using System.Xml.XPath;
 using Autofac;
 using Autofac.Builder;
 using Autofac.Core;
+using Autofac.Core.Activators.Reflection;
 using CircuitDiagram.TypeDescription;
+using CircuitDiagram.TypeDescriptionIO.Xml.Features;
 using CircuitDiagram.TypeDescriptionIO.Xml.Logging;
 using CircuitDiagram.TypeDescriptionIO.Xml.Parsers.ComponentPoints;
 using CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions;
@@ -46,6 +49,8 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml
         private readonly ContainerBuilder builder;
 
         private readonly Lazy<IContainer> container;
+
+        private readonly Dictionary<string, Action<ContainerBuilder>> features = new Dictionary<string, Action<ContainerBuilder>>();
         
         public XmlLoader()
         {
@@ -68,6 +73,11 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml
             configure(builder);
         }
 
+        public void RegisterFeature(string key, Action<ContainerBuilder> configure)
+        {
+            features.Add(key, configure);
+        }
+
         public bool Load(Stream stream, out ComponentDescription description)
         {
             return Load(stream, new NullXmlLoadLogger(), out description);
@@ -88,37 +98,63 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml
             var errorCheckingLogger = new ErrorCheckingLogger(logger);
             var sectionRegistry = new SectionRegistry();
 
-            var descriptionInstance = description;
-            var scope = container.Value.BeginLifetimeScope(configure =>
-            {
-                configure.RegisterInstance(logger);
-                configure.RegisterInstance(sectionRegistry).As<ISectionRegistry>();
-                configure.RegisterInstance(sectionRegistry).AsSelf();
-                configure.RegisterGeneric(typeof(XmlSectionFactory<>)).As(typeof(IXmlSection<>));
-                configure.RegisterInstance(descriptionInstance);
-            });
-            
             try
             {
                 var root = XElement.Load(stream, LoadOptions.SetLineInfo);
                 ReadHeader(root, description);
-                
-                foreach (var element in root.Elements())
-                {
-                    var sectionReader = scope.ResolveOptionalNamed<IXmlSectionReader>(element.Name.NamespaceName + ":" + element.Name.LocalName);
-                    sectionReader?.ReadSection(element, description);
-                }
 
-                return !errorCheckingLogger.HasErrors;
+                var featureSwitcher = new FeatureSwitcher();
+
+                // Read declaration
+                var declaration = root.Element(ComponentNamespace + "declaration");
+                if (declaration == null)
+                {
+                    logger.LogError(root, "Missing required element: 'declaration'");
+                    return false;
+                }
+                var declarationReader = container.Value.ResolveNamed<IXmlSectionReader>(declaration.Name.NamespaceName + ":" + declaration.Name.LocalName,
+                                                                                        new TypedParameter(typeof(IXmlLoadLogger), errorCheckingLogger),
+                                                                                        new TypedParameter(typeof(FeatureSwitcher), featureSwitcher));
+                declarationReader.ReadSection(declaration, description);
+
+                var descriptionInstance = description;
+                var scope = container.Value.BeginLifetimeScope(configure =>
+                {
+                    configure.RegisterInstance(errorCheckingLogger).As<IXmlLoadLogger>();
+                    configure.RegisterInstance(sectionRegistry).As<ISectionRegistry>();
+                    configure.RegisterInstance(descriptionInstance);
+                    configure.RegisterInstance(featureSwitcher).As<IFeatureSwitcher>();
+
+                    foreach (var feature in features)
+                    {
+                        if (featureSwitcher.IsFeatureEnabled(feature.Key, out var featureSourceElement))
+                        {
+                            logger.Log(LogLevel.Information, featureSourceElement, $"Feature enabled: {feature.Key}");
+                            feature.Value(configure);
+                        }
+                    }
+                });
+
+                try
+                {
+                    // Read remaining elements
+                    foreach (var element in root.Elements().Except(new[] { declaration }))
+                    {
+                        var sectionReader = scope.ResolveOptionalNamed<IXmlSectionReader>(element.Name.NamespaceName + ":" + element.Name.LocalName);
+                        sectionReader?.ReadSection(element, description);
+                    }
+
+                    return !errorCheckingLogger.HasErrors;
+                }
+                finally
+                {
+                    scope.Dispose();
+                }
             }
             catch (Exception ex)
             {
                 logger.Log(LogLevel.Error, new FileRange(1, 1, 1, 2), ex.Message, ex);
                 return false;
-            }
-            finally
-            {
-                scope.Dispose();
             }
         }
 
@@ -129,7 +165,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml
             if (root.Attribute("version") != null)
                 formatVersion = new Version(root.Attribute("version").Value);
 
-            description.Metadata.Version = formatVersion;
+            description.Metadata.FormatVersion = formatVersion;
             description.Metadata.Type = $"XML v{formatVersion.ToString(2)}";
         }
     }

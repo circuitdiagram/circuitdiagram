@@ -7,5 +7,6 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Sections
     public interface ISectionRegistry
     {
         void RegisterSection<T>(T section);
+        T GetSection<T>();
     }
 }

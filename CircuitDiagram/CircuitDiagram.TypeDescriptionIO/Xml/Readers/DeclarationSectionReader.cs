@@ -27,6 +27,7 @@ using CircuitDiagram.Components;
 using CircuitDiagram.IO;
 using CircuitDiagram.TypeDescription;
 using CircuitDiagram.TypeDescription.Conditions;
+using CircuitDiagram.TypeDescriptionIO.Xml.Features;
 using CircuitDiagram.TypeDescriptionIO.Xml.Logging;
 using CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions;
 
@@ -35,11 +36,13 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
     class DeclarationSectionReader : IXmlSectionReader
     {
         private readonly IXmlLoadLogger logger;
+        private readonly FeatureSwitcher featureSwitcher;
         private readonly IConditionParser conditionParser;
 
-        public DeclarationSectionReader(IXmlLoadLogger logger, IConditionParser conditionParser)
+        public DeclarationSectionReader(IXmlLoadLogger logger, FeatureSwitcher featureSwitcher, IConditionParser conditionParser)
         {
             this.logger = logger;
+            this.featureSwitcher = featureSwitcher;
             this.conditionParser = conditionParser;
         }
 
@@ -301,8 +304,12 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
                     }
                     break;
                 default:
+                {
                     description.Metadata.Entries.Add(metaName, metaValue);
+                    if (metaValue.ToLowerInvariant() == "true")
+                        featureSwitcher.EnableFeatureCandidate(metaName, metaElement);
                     break;
+                }
             }
         }
 

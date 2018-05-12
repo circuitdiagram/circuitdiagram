@@ -32,6 +32,7 @@ namespace CircuitDiagram.TypeDescription
         public string Author { get; set; }
         public string AdditionalInformation { get; set; }
         public string Type { get; set; }
+        public Version FormatVersion { get; set; }
 
         public object Icon { get; set; }
         //public string IconMimeType { get; set; }

@@ -9,10 +9,17 @@
       <Type Name="SkiaSharp.SKImage" Dynamic="Required All" />
       <Type Name="SkiaSharp.SKData" Dynamic="Required All" />
     </Assembly>
-    <Assembly Name="CircuitDiagram.TypeDescriptionIO" Dynamic="Required All">
-      <Type Name="CircuitDiagram.TypeDescriptionIO.Xml.Sections.XmlSectionFactory`1[[CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions.DefinitionsSection,CircuitDiagram.TypeDescriptionIO.Xml.Experimental]]" Dynamic="Required All" />
-      <Type Name="CircuitDiagram.TypeDescriptionIO.Xml.Sections.RegisteredSection`1[[CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions.DefinitionsSection,CircuitDiagram.TypeDescriptionIO.Xml.Experimental]]" Dynamic="Required All" />
+    <Assembly Name="CircuitDiagram.TypeDescriptionIO">
+      <Type Name="CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions.VersionedConditionParser" Dynamic="Required All" />
+      <Type Name="CircuitDiagram.TypeDescriptionIO.Xml.Parsers.ComponentPoints.ComponentPointParser" Dynamic="Required All" />
+      <Type Name="CircuitDiagram.TypeDescriptionIO.Xml.Readers.ConnectionsSectionReader" Dynamic="Required All" />
+      <Type Name="CircuitDiagram.TypeDescriptionIO.Xml.Readers.DeclarationSectionReader" Dynamic="Required All" />
+      <Type Name="CircuitDiagram.TypeDescriptionIO.Xml.Readers.RenderSectionReader" Dynamic="Required All" />
     </Assembly>
-    <Assembly Name="CircuitDiagram.TypeDescriptionIO.Xml.Experimental" Dynamic="Required All" />
+    <Assembly Name="CircuitDiagram.TypeDescriptionIO.Xml.Experimental">
+      <Type Name="CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions.DefinitionsSectionReader" Dynamic="Required All" />
+      <Type Name="CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions.ComponentPoints.ComponentPointTemplateParser" Dynamic="Required All" />
+      <Type Name="CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions.RenderSectionWithDefinitionsReader" Dynamic="Required All" />
+    </Assembly>
   </Application>
 </Directives>

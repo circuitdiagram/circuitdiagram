@@ -13,28 +13,12 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Sections
             sections[typeof(T)] = section;
         }
 
-        public object GetSection(Type t)
+        public T GetSection<T>()
         {
-            if (sections.TryGetValue(t, out var sectionValue))
-                return Activator.CreateInstance(typeof(RegisteredSection<>).MakeGenericType(t), sectionValue);
+            if (sections.TryGetValue(typeof(T), out var sectionValue))
+                return (T)sectionValue;
 
-            return Activator.CreateInstance(typeof(RegisteredSection<>).MakeGenericType(t));
+            return default(T);
         }
-    }
-
-    public class RegisteredSection<T> : IXmlSection<T> where T : class
-    {
-        public RegisteredSection()
-        {
-        }
-
-        public RegisteredSection(T value)
-        {
-            Value = value;
-        }
-
-        public bool IsAvailable => Value != null;
-
-        public T Value { get; }
     }
 }

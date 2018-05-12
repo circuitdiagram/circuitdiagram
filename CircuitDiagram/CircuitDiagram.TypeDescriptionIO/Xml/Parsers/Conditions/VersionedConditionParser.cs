@@ -19,7 +19,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions
 
         public IConditionTreeItem Parse(ComponentDescription description, string input)
         {
-            var version = description.Metadata.Version;
+            var version = description.Metadata.FormatVersion;
 
             if (version < new Version(1, 1))
                 return new LegacyConditionParser(description).Parse(description, input);

@@ -18,8 +18,19 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Logging
 
         public void Log(LogLevel level, FileRange position, string message, Exception innerException)
         {
-            var formattedMessage = $"{level.ToString().ToUpperInvariant()} {fileName}({position.StartLine},{position.StartCol}:{position.EndLine},{position.EndCol}): {message}";
-            logger.Log(level, new EventId(), (object)null, innerException, (state, ex) => formattedMessage);
+            logger.Log(level, new EventId(), (object)null, innerException, (state, ex) =>
+            {
+                var builder = new StringBuilder();
+                builder.Append($"{level.ToString().ToUpperInvariant()} {fileName}({position.StartLine},{position.StartCol}:{position.EndLine},{position.EndCol}): {message}");
+
+                if (ex != null)
+                {
+                    builder.AppendLine();
+                    builder.Append(ex);
+                }
+
+                return builder.ToString();
+            });
         }
     }
 }

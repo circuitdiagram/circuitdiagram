@@ -9,7 +9,6 @@ using CircuitDiagram.Drawing.Text;
 using CircuitDiagram.Primitives;
 using CircuitDiagram.TypeDescription;
 using CircuitDiagram.TypeDescription.Conditions;
-using CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Common.Features;
 using CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions.ComponentPoints;
 using CircuitDiagram.TypeDescriptionIO.Xml.Logging;
 using CircuitDiagram.TypeDescriptionIO.Xml.Parsers.ComponentPoints;
@@ -23,39 +22,29 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
     public class RenderSectionWithDefinitionsReader : RenderSectionReader
     {
         private readonly IXmlLoadLogger logger;
-        private readonly IFeatureSwitcher featureSwitcher;
         private readonly IConditionParser conditionParser;
         private readonly IComponentPointParser componentPointParser;
         private readonly IComponentPointTemplateParser componentPointTemplateParser;
-        private readonly IXmlSection<DefinitionsSection> definitionsSection;
-        private readonly bool definitionsEnabled;
+        private readonly DefinitionsSection definitionsSection;
+        private readonly HashSet<string> availableDefinitions;
 
         public RenderSectionWithDefinitionsReader(IXmlLoadLogger logger,
-                                                  IFeatureSwitcher featureSwitcher,
                                                   IConditionParser conditionParser,
                                                   IComponentPointParser componentPointParser,
                                                   IComponentPointTemplateParser componentPointTemplateParser,
-                                                  IXmlSection<DefinitionsSection> definitionsSection)
+                                                  ISectionRegistry sectionRegistry)
             : base(logger, conditionParser, componentPointParser)
         {
             this.logger = logger;
-            this.featureSwitcher = featureSwitcher;
             this.conditionParser = conditionParser;
             this.componentPointParser = componentPointParser;
             this.componentPointTemplateParser = componentPointTemplateParser;
-            this.definitionsSection = definitionsSection;
-
-            definitionsEnabled = featureSwitcher.IsFeatureEnabled(DefinitionsXmlLoaderExtensions.FeatureName);
+            definitionsSection = sectionRegistry.GetSection<DefinitionsSection>();
+            availableDefinitions = definitionsSection?.Definitions.Select(x => x.Key).ToHashSet() ?? new HashSet<string>();
         }
 
         public override void ReadSection(XElement element, ComponentDescription description)
         {
-            if (!definitionsEnabled)
-            {
-                base.ReadSection(element, description);
-                return;
-            }
-
             var results = new List<RenderDescription>();
 
             var groupElements = element.Elements(element.GetDefaultNamespace() + "group");
@@ -71,8 +60,6 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
 
         protected IEnumerable<RenderDescription> ReadRenderDescriptions(ComponentDescription description, XElement renderNode)
         {
-            var availableDefinitions = definitionsSection.Value.Definitions.Select(x => x.Key).ToHashSet();
-
             IConditionTreeItem conditionCollection = ConditionTree.Empty;
             var conditionsAttribute = renderNode.Attribute("conditions");
             if (conditionsAttribute != null)
@@ -153,9 +140,6 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
         
         protected override bool ValidateText(ComponentDescription description, string text, out string errorMessage)
         {
-            if (!featureSwitcher.IsFeatureEnabled(DefinitionsXmlLoaderExtensions.FeatureName))
-                return base.ValidateText(description, text, out errorMessage);
-
             if (!text.StartsWith("$"))
             {
                 errorMessage = null;
@@ -163,7 +147,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
             }
 
             var name = text.Substring(1);
-            var validNames = description.Properties.Select(x => x.Name).Union(definitionsSection.Value.Definitions.Select(x => x.Key)).ToHashSet();
+            var validNames = description.Properties.Select(x => x.Name).Union(availableDefinitions).ToHashSet();
             if (validNames.Contains(name))
             {
                 errorMessage = null;
@@ -176,9 +160,6 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
 
         protected override bool ReadTextLocation(XElement element, RenderText command)
         {
-            if (!definitionsEnabled)
-                return base.ReadTextLocation(element, command);
-
             // Do nothing - handled by EnumerateComponentPoint
             return true;
         }
@@ -205,7 +186,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
                 yield break;
 
             var variable = templatePoint.Variables.First();
-            foreach (var condition in definitionsSection.Value.Definitions[variable])
+            foreach (var condition in definitionsSection.Definitions[variable])
             {
                 var cp = templatePoint.Construct(new Dictionary<string, double>
                 {
@@ -219,16 +200,14 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
 
         private IEnumerable<Conditional<RenderText>> EnumerateRenderText(XElement commandElement, RenderText command, IConditionTreeItem baseConditions, IReadOnlyList<string> usedDefinitions)
         {
-            var definitions = definitionsSection.Value.Definitions.Select(x => x.Key).ToHashSet();
-            
             // Only one text run can use a definition variable
-            if (command.TextRuns.Count(r => r.Text.StartsWith("$") && definitions.Contains(r.Text.Substring(1))) > 1)
+            if (command.TextRuns.Count(r => r.Text.StartsWith("$") && availableDefinitions.Contains(r.Text.Substring(1))) > 1)
             {
                 logger.LogError(commandElement, "Only one definition per text element is permitted");
                 yield break;
             }
 
-            var replaceRun = command.TextRuns.FirstOrDefault(r => r.Text.StartsWith("$") && definitions.Contains(r.Text.Substring(1)));
+            var replaceRun = command.TextRuns.FirstOrDefault(r => r.Text.StartsWith("$") && availableDefinitions.Contains(r.Text.Substring(1)));
             var replaceRunIndex = command.TextRuns.IndexOf(replaceRun);
             if (replaceRun == null)
             {
@@ -240,7 +219,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
             if (!ReportUndeclared(commandElement.GetFileRange(), new HashSet<string>(new [] { replaceRun.Text.Substring(1) }).Except(usedDefinitions).ToHashSet()))
                 yield break;
 
-            foreach (var definitionValue in definitionsSection.Value.Definitions[replaceRun.Text.Substring(1)])
+            foreach (var definitionValue in definitionsSection.Definitions[replaceRun.Text.Substring(1)])
             {
                 var conditions = new ConditionTree(ConditionTree.ConditionOperator.AND, baseConditions, definitionValue.Conditions);
                 var replacementRun = new TextRun(definitionValue.Value, replaceRun.Formatting);
