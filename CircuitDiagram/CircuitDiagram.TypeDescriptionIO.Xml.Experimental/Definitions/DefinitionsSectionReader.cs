@@ -48,18 +48,17 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
 
             foreach (var definitionNode in element.Elements(XmlLoader.ComponentNamespace + "define"))
             {
-                bool ok = definitionNode.GetAttributeValue("name", logger, out var name);
+                definitionNode.GetAttributeValue("name", logger, out var name);
 
                 var values = new ConditionalCollection<string>();
                 foreach (var valueWhen in definitionNode.Elements(XmlLoader.ComponentNamespace + "when"))
                 {
-                    ok &= valueWhen.GetAttributeValue("conditions", logger, out var conditions);
-                    ok &= valueWhen.GetAttributeValue("value", logger, out var whenValue);
-                    values.Add(new Conditional<string>(whenValue, conditionParser.Parse(description, conditions)));
-                }
+                    valueWhen.GetAttribute("conditions", logger, out var conditionsAttribute);
+                    valueWhen.GetAttributeValue("value", logger, out var whenValue);
+                    conditionParser.Parse(conditionsAttribute, description, logger, out var conditions);
 
-                if (!ok)
-                    continue;
+                    values.Add(new Conditional<string>(whenValue, conditions));
+                }
 
                 definitions.Add(name, values);
             }

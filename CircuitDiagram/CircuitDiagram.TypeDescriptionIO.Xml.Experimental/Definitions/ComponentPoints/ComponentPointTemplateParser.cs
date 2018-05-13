@@ -124,7 +124,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions.Componen
             {
                 foreach (var message in errors.ToString().Split(new[] {"\r", "\n"}, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    var position = new FileRange(xLine.LineNumber, xLine.LinePosition, xLine.LineNumber, 10);
+                    var position = new FileRange(xLine.LineNumber, xLine.LinePosition, xLine.LineNumber, xLine.LinePosition + x.Length);
                     logger.Log(LogLevel.Error, position, message, null);
                 }
             }

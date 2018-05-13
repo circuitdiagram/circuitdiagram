@@ -16,7 +16,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-using CircuitDiagram.Components.Description;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +48,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions
                 IXmlLineInfo line = conditionsAttribute;
                 int startCol = line.LinePosition + conditionsAttribute.Name.LocalName.Length + 2 + ex.PositionStart;
                 var position = new FileRange(line.LineNumber, startCol, line.LineNumber, startCol + ex.Length);
-                logger.Log(LogLevel.Error, position, ex.Message, ex);
+                logger.Log(LogLevel.Error, position, ex.Message, null);
                 value = null;
                 return false;
             }

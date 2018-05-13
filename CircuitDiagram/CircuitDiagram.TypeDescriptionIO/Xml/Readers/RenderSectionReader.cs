@@ -205,7 +205,10 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
             string tAlignment = "TopLeft";
             if (element.Attribute("align") != null)
                 tAlignment = element.Attribute("align").Value;
-            command.Alignment = (TextAlignment)Enum.Parse(typeof(TextAlignment), tAlignment, true);
+
+            if (!Enum.TryParse(tAlignment, out TextAlignment alignment))
+                logger.LogError(element.Attribute("align"), $"Invalid value for text alignment: '{tAlignment}'");
+            command.Alignment = alignment;
 
             double size = 11d;
             if (element.Attribute("size") != null)
@@ -237,14 +240,18 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
                     command.TextRuns.Add(textRun);
                 }
             }
-            else
+            else if (element.GetAttribute("value", logger, out var value))
             {
-                var textRun = new TextRun(element.Attribute("value").Value, new TextRunFormatting(TextRunFormattingType.Normal, size));
+                var textRun = new TextRun(value.Value, new TextRunFormatting(TextRunFormattingType.Normal, size));
 
-                if (!ValidateText(element.Attribute("value"), description, textRun.Text))
+                if (!ValidateText(value, description, textRun.Text))
                     return false;
 
                 command.TextRuns.Add(textRun);
+            }
+            else
+            {
+                return false;
             }
             
             return true;
