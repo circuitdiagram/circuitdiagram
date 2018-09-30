@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using CircuitDiagram.CLI.Component;
 using CircuitDiagram.CLI.Component.OutputGenerators;
 using CircuitDiagram.CLI.ComponentPreview;
@@ -115,7 +116,8 @@ namespace CircuitDiagram.CLI.Component
 
         private static string SanitizeName(string input)
         {
-            return input.ToLowerInvariant().Replace(" ", "_");
+            input = input.ToLowerInvariant();
+            return Regex.Replace(input, "[^a-z0-9]+", "_");
         }
     }
 }
