@@ -128,6 +128,7 @@ namespace CircuitDiagram.CLI.Component
                 Width = imgWidth,
                 Height = imgHeight,
                 Configuration = configuration,
+                Properties = new Dictionary<string, string>(),
             };
 
             var resourceProvider = ResourceProviderFactory.Create(loggerFactory.CreateLogger(typeof(ResourceProviderFactory)), resources);
