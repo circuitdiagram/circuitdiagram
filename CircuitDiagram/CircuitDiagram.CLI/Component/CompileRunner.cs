@@ -86,16 +86,26 @@ namespace CircuitDiagram.CLI.Component
 
         private static string GetSvgIconPath(string inputDirectory, ComponentDescription description)
         {
+            inputDirectory = inputDirectory.Replace("\\", "/");
+            if (inputDirectory.StartsWith("./"))
+                inputDirectory = inputDirectory.Substring(2);
+
+            var componentName = SanitizeName(description.ComponentName);
             foreach (var configuration in description.Metadata.Configurations)
             {
-                var icon = $"{configuration.Name.ToLowerInvariant().Replace(" ", "_")}.svg";
+                var icon = $"{componentName}--{SanitizeName(configuration.Name)}.svg";
                 if (Directory.EnumerateFiles(inputDirectory, icon).Any())
                 {
-                    return Path.Combine(inputDirectory, icon);
+                    return Path.Combine(inputDirectory, icon).Replace("\\", "/");
                 }
             }
 
             return null;
+        }
+
+        private static string SanitizeName(string input)
+        {
+            return input.ToLowerInvariant().Replace(" ", "_");
         }
     }
 }
