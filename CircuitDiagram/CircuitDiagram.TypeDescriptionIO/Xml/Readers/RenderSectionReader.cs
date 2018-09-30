@@ -89,7 +89,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
                 }
                 else if (commandType == "ellipse")
                 {
-                    if (ReadEllipseCommand(description.Metadata.Version, renderCommandNode, out var command))
+                    if (ReadEllipseCommand(description.Metadata.FormatVersion, renderCommandNode, out var command))
                         commands.Add(command);
                 }
                 else if (commandType == "text")
