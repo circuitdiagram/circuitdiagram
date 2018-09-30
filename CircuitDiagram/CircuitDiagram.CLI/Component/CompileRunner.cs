@@ -52,7 +52,7 @@ namespace CircuitDiagram.CLI.Component
                                          description.Metadata.GUID,
                                          true,
                                          description.Metadata.AdditionalInformation,
-                                         inputFile,
+                                         CleanPath(inputFile),
                                          metadata,
                                          outputs.ToImmutableDictionary());
             }
@@ -87,9 +87,7 @@ namespace CircuitDiagram.CLI.Component
 
         private static string GetSvgIconPath(string inputDirectory, ComponentDescription description)
         {
-            inputDirectory = inputDirectory.Replace("\\", "/");
-            if (inputDirectory.StartsWith("./"))
-                inputDirectory = inputDirectory.Substring(2);
+            inputDirectory = CleanPath(inputDirectory);
 
             var componentName = SanitizeName(description.ComponentName);
 
@@ -116,8 +114,19 @@ namespace CircuitDiagram.CLI.Component
 
         private static string SanitizeName(string input)
         {
-            input = input.ToLowerInvariant();
-            return Regex.Replace(input, "[^a-z0-9]+", "_");
+            var result = input.ToLowerInvariant();
+            result = Regex.Replace(result, "[^a-z0-9]+", "_");
+            if (result.EndsWith("_"))
+                result = result.Substring(0, result.Length - 1);
+            return result;
+        }
+
+        private static string CleanPath(string input)
+        {
+            var result = input.Replace("\\", "/").Replace("//", "/");
+            if (result.StartsWith("./"))
+                result = result.Substring(2);
+            return result;
         }
     }
 }
