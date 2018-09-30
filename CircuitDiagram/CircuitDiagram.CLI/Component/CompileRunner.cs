@@ -41,13 +41,18 @@ namespace CircuitDiagram.CLI.Component
 
                 var outputs = Generate(fs, description, Path.GetFileNameWithoutExtension(inputFile), formats, previewOptions);
 
+                var metadata = description.Metadata.Entries.ToDictionary(x => x.Key, x => x.Value);
+                var svgIcon = GetSvgIconPath(Path.GetDirectoryName(inputFile), description);
+                if (svgIcon != null)
+                    metadata["org.circuit-diagram.icon-svg"] = svgIcon;
+                
                 return new CompileResult(description.Metadata.Author,
                                          description.ComponentName,
                                          description.Metadata.GUID,
                                          true,
                                          description.Metadata.AdditionalInformation,
                                          inputFile,
-                                         description.Metadata.Entries.ToImmutableDictionary(),
+                                         metadata,
                                          outputs.ToImmutableDictionary());
             }
         }
@@ -77,6 +82,20 @@ namespace CircuitDiagram.CLI.Component
 
                 yield return new KeyValuePair<string, string>(format, outputPath);
             }
+        }
+
+        private static string GetSvgIconPath(string inputDirectory, ComponentDescription description)
+        {
+            foreach (var configuration in description.Metadata.Configurations)
+            {
+                var icon = $"{configuration.Name.ToLowerInvariant().Replace(" ", "_")}.svg";
+                if (Directory.EnumerateFiles(inputDirectory, icon).Any())
+                {
+                    return Path.Combine(inputDirectory, icon);
+                }
+            }
+
+            return null;
         }
     }
 }
