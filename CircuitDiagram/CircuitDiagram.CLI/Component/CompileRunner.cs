@@ -91,6 +91,16 @@ namespace CircuitDiagram.CLI.Component
                 inputDirectory = inputDirectory.Substring(2);
 
             var componentName = SanitizeName(description.ComponentName);
+
+            if (!description.Metadata.Configurations.Any())
+            {
+                var icon = $"{componentName}.svg";
+                if (Directory.EnumerateFiles(inputDirectory, icon).Any())
+                {
+                    return Path.Combine(inputDirectory, icon).Replace("\\", "/");
+                }
+            }
+
             foreach (var configuration in description.Metadata.Configurations)
             {
                 var icon = $"{componentName}--{SanitizeName(configuration.Name)}.svg";
