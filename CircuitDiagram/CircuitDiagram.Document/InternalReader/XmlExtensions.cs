@@ -118,15 +118,15 @@ namespace CircuitDiagram.Document.InternalReader
 
             switch (attr.Value)
             {
-                case "n":
-                case "false": // Obsolete
+                case "false":
+                case "none":
                     return FlipState.None;
-                case "p":
-                case "true": // Obsolete
+                case "true":
+                case "primary":
                     return FlipState.Primary;
-                case "s":
+                case "secondary":
                     return FlipState.Secondary;
-                case "b":
+                case "both":
                     return FlipState.Both;
                 default:
                 {

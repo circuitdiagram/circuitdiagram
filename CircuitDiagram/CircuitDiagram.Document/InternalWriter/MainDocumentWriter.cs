@@ -32,7 +32,7 @@ namespace CircuitDiagram.Document.InternalWriter
 {
     class MainDocumentWriter
     {
-        private const string Version = "1.2";
+        private const string Version = "1.3";
 
         public void Write(CircuitDocument document, Stream stream)
         {
@@ -173,7 +173,20 @@ namespace CircuitDiagram.Document.InternalWriter
 
             targetElement.SetAttributeValue("sz", layout.Size);
 
-            targetElement.SetAttributeValue("flp", layout.Flip.ToString().Substring(0, 1).ToLowerInvariant());
+            var flipValue = "false";
+            switch (layout.Flip)
+            {
+                case FlipState.Primary:
+                    flipValue = "true";
+                    break;
+                case FlipState.Secondary:
+                    flipValue = "secondary";
+                    break;
+                case FlipState.Both:
+                    flipValue = "both";
+                    break;
+            }
+            targetElement.SetAttributeValue("flp", flipValue);
         }
     }
 }
