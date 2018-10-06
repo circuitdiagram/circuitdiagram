@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <AssemblyName>circuit-diagram-cli</AssemblyName>
-    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
     <PackageId>CircuitDiagram.CLI</PackageId>
     <PackageVersion>0.0-dev</PackageVersion>
     <Description>Command-line utility for Circuit Diagram.</Description>
