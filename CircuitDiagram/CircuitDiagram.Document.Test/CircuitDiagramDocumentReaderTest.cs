@@ -23,6 +23,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using CircuitDiagram.Circuit;
 using CircuitDiagram.Primitives;
 using NUnit.Framework;
 
@@ -77,14 +78,14 @@ namespace CircuitDiagram.Document.Test
             Assert.That(w0.Layout.Location.X, Is.EqualTo(100.0));
             Assert.That(w0.Layout.Location.Y, Is.EqualTo(100.0));
             Assert.That(w0.Layout.Size, Is.EqualTo(100.0));
-            Assert.That(w0.Layout.IsFlipped, Is.False);
+            Assert.That(w0.Layout.Flip, Is.EqualTo(FlipState.None));
             Assert.That(w0.Layout.Orientation, Is.EqualTo(Orientation.Vertical));
 
             var w1 = document.Wires.ElementAt(1);
             Assert.That(w1.Layout.Location.X, Is.EqualTo(280.0));
             Assert.That(w1.Layout.Location.Y, Is.EqualTo(100.0));
             Assert.That(w1.Layout.Size, Is.EqualTo(100.0));
-            Assert.That(w1.Layout.IsFlipped, Is.False);
+            Assert.That(w0.Layout.Flip, Is.EqualTo(FlipState.None));
             Assert.That(w1.Layout.Orientation, Is.EqualTo(Orientation.Vertical));
         }
     }

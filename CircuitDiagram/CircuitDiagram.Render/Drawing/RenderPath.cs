@@ -56,12 +56,16 @@ namespace CircuitDiagram.Drawing
 
         public void Render(LayoutInformation layout, ILayoutContext layoutContext, IDrawingContext drawingContext)
         {
-            IList<IPathCommand> commands = Commands;
-            if (layout.IsFlipped)
+            var commands = new List<IPathCommand>(Commands.Count);
+            var flipType = layout.GetFlipType();
+            foreach (IPathCommand command in Commands)
             {
-                commands = new List<IPathCommand>(Commands.Count);
-                foreach (IPathCommand command in Commands)
-                    commands.Add(command.Flip(layout.Orientation == Orientation.Horizontal));
+                var flippedCommand = command;
+                if ((flipType & FlipType.Horizontal) == FlipType.Horizontal)
+                    flippedCommand = flippedCommand.Flip(true);
+                if ((flipType & FlipType.Vertical) == FlipType.Vertical)
+                    flippedCommand = flippedCommand.Flip(false);
+                commands.Add(flippedCommand);
             }
 
             Point start = Start.Resolve(layout, layoutContext.Options);

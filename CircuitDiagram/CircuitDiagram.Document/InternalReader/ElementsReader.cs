@@ -148,7 +148,7 @@ namespace CircuitDiagram.Document.InternalReader
             int? x = element.GetIntAttribute("x", context);
             int? y = element.GetIntAttribute("y", context);
             int? size = element.GetIntAttribute("sz", context);
-            bool? flipped = element.GetBoolAttribute("flp", context);
+            FlipState? flipState = element.GetComponentFlipStateAttribute("flp", context);
             Orientation? orientation = element.GetComponentOrientationAttribute("o", context);
 
             if (!x.HasValue || !y.HasValue)
@@ -157,7 +157,7 @@ namespace CircuitDiagram.Document.InternalReader
             positionalElement.Layout.Location = positionalElement.Layout.Location.WithNewX(x.Value);
             positionalElement.Layout.Location = positionalElement.Layout.Location.WithNewY(y.Value);
             positionalElement.Layout.Size = size ?? 0;
-            positionalElement.Layout.IsFlipped = flipped ?? false;
+            positionalElement.Layout.Flip = flipState ?? FlipState.None;
             positionalElement.Layout.Orientation = orientation ?? Orientation.Horizontal;
         }
 

@@ -173,7 +173,7 @@ namespace CircuitDiagram.Document.InternalWriter
 
             targetElement.SetAttributeValue("sz", layout.Size);
 
-            targetElement.SetAttributeValue("flp", layout.IsFlipped.ToString().ToLowerInvariant());
+            targetElement.SetAttributeValue("flp", layout.Flip.ToString().Substring(0, 1).ToLowerInvariant());
         }
     }
 }

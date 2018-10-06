@@ -2,7 +2,7 @@
 //
 // Circuit Diagram http://www.circuit-diagram.org/
 //
-// Copyright (C) 2012  Sam Fisher
+// Copyright (C) 2018  Sam Fisher
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -51,9 +51,8 @@ namespace CircuitDiagram.TypeDescription
         
         public Point Resolve(LayoutInformation layout, LayoutOptions options)
         {
-            ComponentPoint tempPoint = this;
-            if (layout.IsFlipped)
-                tempPoint = Flip(layout.Orientation == Orientation.Horizontal);
+            var flipType = layout.GetFlipType();
+            ComponentPoint tempPoint = Flip(flipType, layout.Flip);
 
             double x = tempPoint.Offset.X;
             double y = tempPoint.Offset.Y;
@@ -110,13 +109,21 @@ namespace CircuitDiagram.TypeDescription
             return base.GetHashCode();
         }
 
-        public ComponentPoint Flip(bool horizontal)
+        public ComponentPoint Flip(FlipType type, FlipState flipState)
         {
-            ComponentPoint returnPoint = new ComponentPoint();
-            if (horizontal)
+            if (type == FlipType.None)
+                return this;
+
+            var returnPoint = new ComponentPoint(RelativeToX, RelativeToY, Offset);
+            if (type == FlipType.Horizontal)
                 returnPoint.Offset = new Vector(-Offset.X, Offset.Y);
-            else
+            else if (type == FlipType.Vertical)
                 returnPoint.Offset = new Vector(Offset.X, -Offset.Y);
+            else if (type == FlipType.Both)
+                returnPoint.Offset = new Vector(-Offset.X, -Offset.Y);
+
+            if (flipState == FlipState.Secondary)
+                return returnPoint;
 
             if (RelativeToX == ComponentPosition.Start)
                 returnPoint.RelativeToX = ComponentPosition.End;

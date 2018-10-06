@@ -64,7 +64,9 @@ namespace CircuitDiagram.Drawing
             Point renderLocation = Location.Resolve(layout, layoutContext.Options);
 
             TextAlignment tempAlignment = Alignment;
-            if (layout.IsFlipped && layout.Orientation == Orientation.Horizontal)
+            var flipType = layout.GetFlipType();
+
+            if ((flipType & FlipType.Horizontal) == FlipType.Horizontal)
             {
                 switch (Alignment)
                 {
@@ -88,7 +90,8 @@ namespace CircuitDiagram.Drawing
                         break;
                 }
             }
-            else if (layout.IsFlipped && layout.Orientation == Orientation.Vertical)
+
+            if ((flipType & FlipType.Vertical) == FlipType.Vertical)
             {
                 switch (Alignment)
                 {

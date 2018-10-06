@@ -60,6 +60,9 @@ namespace CircuitDiagram.Document.ReaderErrors
         public static readonly ReaderErrorCode UnableToParseValueAsOrientation =
             ReaderErrorCode.Warning("RE207", "Unable to parse value as orientation");
 
+        public static readonly ReaderErrorCode UnableToParseValueAsFlipState =
+            ReaderErrorCode.Warning("RE208", "Unable to parse value as flip state");
+
         // Specific
 
         public static readonly ReaderErrorCode UnknownComponentType =

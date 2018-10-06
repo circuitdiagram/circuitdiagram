@@ -262,8 +262,8 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
                     {
                         BW metadataWriter = new BW(metadatSectionStream);
                         metadataWriter.WriteNullString(description.ComponentName);
-                        metadataWriter.Write(description.CanResize);
-                        metadataWriter.Write(description.CanFlip);
+                        metadataWriter.Write(!description.GetDefaultFlag(FlagOptions.NoResize));
+                        metadataWriter.Write(description.GetDefaultFlag(FlagOptions.FlipPrimary));
                         metadataWriter.Write(description.MinSize);
                         metadataWriter.Write(description.Metadata.GUID.ToByteArray());
                         metadataWriter.WriteNullString(description.Metadata.Author);
@@ -301,7 +301,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
                     using (MemoryStream flagsSectionStream = new MemoryStream())
                     {
                         BW flagsWriter = new BW(flagsSectionStream);
-                        flagsWriter.Write((uint)description.Flags.Length);
+                        flagsWriter.Write((uint)description.Flags.Count);
                         foreach (Conditional<FlagOptions> flags in description.Flags)
                         {
                             flagsWriter.Write(flags.Conditions);

@@ -31,36 +31,52 @@ namespace CircuitDiagram.TypeDescription
 
         public string ID { get; set; }
         public string ComponentName { get; set; }
-        public bool CanResize { get; set; }
-        public bool CanFlip { get; set; }
         public double MinSize { get; set; }
         public ComponentProperty[] Properties { get; set; }
         public ConnectionGroup[] Connections { get; set; }
         public RenderDescription[] RenderDescriptions { get; set; }
-        public Conditional<FlagOptions>[] Flags { get; set; }
+        public List<Conditional<FlagOptions>> Flags { get; } = new List<Conditional<FlagOptions>>();
         public ComponentDescriptionMetadata Metadata { get; set; }
         public ComponentDescriptionSource Source { get; set; }  
 
         public ComponentDescription()
         {
-            // Set defaults
-            CanResize = true;
-            CanFlip = false;
             Metadata = new ComponentDescriptionMetadata();
         }
 
-        public ComponentDescription(string id, string componentName, bool canResize, bool canFlip, double minSize, ComponentProperty[] properties, ConnectionGroup[] connections, RenderDescription[] renderDescriptions, Conditional<FlagOptions>[] flags, ComponentDescriptionMetadata metadata)
+        public ComponentDescription(string id, string componentName, double minSize, ComponentProperty[] properties, ConnectionGroup[] connections, RenderDescription[] renderDescriptions, Conditional<FlagOptions>[] flags, ComponentDescriptionMetadata metadata)
         {
             ID = id;
             ComponentName = componentName;
-            CanResize = canResize;
-            CanFlip = canFlip;
             MinSize = minSize;
             Properties = properties;
             Connections = connections;
             RenderDescriptions = renderDescriptions;
-            Flags = flags;
+            Flags = flags.ToList();
             Metadata = metadata;
+        }
+
+        public bool GetDefaultFlag(FlagOptions option)
+        {
+            var defaultFlags = Flags.FirstOrDefault(x => x.Conditions.Equals(ConditionTree.Empty));
+            if (defaultFlags == null)
+                return false;
+            return (defaultFlags.Value & option) == option;
+        }
+
+        public void SetDefaultFlag(FlagOptions option, bool enabled)
+        {
+            var defaultFlags = Flags.FirstOrDefault(x => x.Conditions.Equals(ConditionTree.Empty));
+            if (defaultFlags == null)
+            {
+                defaultFlags = new Conditional<FlagOptions>();
+                Flags.Insert(0, defaultFlags);
+            }
+
+            if (enabled)
+                defaultFlags.Value = defaultFlags.Value | option;
+            else
+                defaultFlags.Value = defaultFlags.Value & ~option;
         }
 
         public FlagOptions DetermineFlags(PositionalComponent component)

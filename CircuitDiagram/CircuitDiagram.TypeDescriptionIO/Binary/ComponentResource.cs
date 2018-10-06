@@ -332,7 +332,12 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
                 #endregion
             }
 
-            ComponentDescription = new ComponentDescription(ID.ToString(), componentName, canResize, canFlip, minSize, properties.ToArray(), connections.ToArray(), renderDescriptions.ToArray(), flagOptions.ToArray(), descriptionMetadata);
+            ComponentDescription = new ComponentDescription(ID.ToString(), componentName, minSize, properties.ToArray(), connections.ToArray(), renderDescriptions.ToArray(), flagOptions.ToArray(), descriptionMetadata);
+
+            if (canFlip)
+                ComponentDescription.SetDefaultFlag(FlagOptions.FlipPrimary, true);
+            if (!canResize)
+                ComponentDescription.SetDefaultFlag(FlagOptions.NoResize, true);
 
             if (iconResourceId.HasValue)
                 MainIconResource = iconResourceId.Value;

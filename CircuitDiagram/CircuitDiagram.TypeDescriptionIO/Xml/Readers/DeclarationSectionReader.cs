@@ -84,7 +84,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
                     flagOptions.Add(flags);
             }
 
-            description.Flags = flagOptions.ToArray();
+            description.Flags.AddRange(flagOptions);
 
             // Read configurations
             var componentConfigurations = new List<ComponentConfiguration>();
@@ -255,10 +255,12 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
                     description.ComponentName = metaValue;
                     break;
                 case "canresize":
-                    description.CanResize = metaValue.ToLower() != "false";
+                    if (description.Metadata.FormatVersion < new Version(1, 3))
+                        description.SetDefaultFlag(FlagOptions.NoResize, metaValue.ToLowerInvariant() == "false");
                     break;
                 case "canflip":
-                    description.CanFlip = metaValue.ToLower() != "false";
+                    if (description.Metadata.FormatVersion < new Version(1, 3))
+                        description.SetDefaultFlag(FlagOptions.FlipPrimary, metaValue.ToLowerInvariant() != "false");
                     break;
                 case "minsize":
                 {

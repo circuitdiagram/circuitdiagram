@@ -69,10 +69,18 @@ namespace CircuitDiagram.Drawing
             Point location = Location.Resolve(layout, layoutContext.Options);
             var drawRect = new Rect(location, new Size(Width, Height));
 
-            if (layout.IsFlipped && layout.Orientation == Orientation.Horizontal)
-                drawRect = new Rect(drawRect.X - Width, drawRect.Y, Width, Height);
-            else if (layout.IsFlipped && layout.Orientation == Orientation.Vertical)
-                drawRect = new Rect(drawRect.X, drawRect.Y - Height, Width, Height);
+            switch (layout.GetFlipType())
+            {
+                case FlipType.Horizontal:
+                    drawRect = new Rect(drawRect.X - Width, drawRect.Y, Width, Height);
+                    break;
+                case FlipType.Vertical:
+                    drawRect = new Rect(drawRect.X, drawRect.Y - Height, Width, Height);
+                    break;
+                case FlipType.Both:
+                    drawRect = new Rect(drawRect.X - Width, drawRect.Y - Height, Width, Height);
+                    break;
+            }
 
             if (layoutContext.Options.Absolute)
                 drawingContext.DrawRectangle(Point.Add(drawRect.TopLeft, layout.Location), drawRect.Size, StrokeThickness, Fill);

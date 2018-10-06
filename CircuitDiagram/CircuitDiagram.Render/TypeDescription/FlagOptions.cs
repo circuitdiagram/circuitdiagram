@@ -29,8 +29,35 @@ namespace CircuitDiagram.TypeDescription
     public enum FlagOptions
     {
         None = 0,
+
+        /// <summary>
+        /// The component can only be placed horizontally.
+        /// </summary>
         HorizontalOnly = 1,
+
+        /// <summary>
+        /// The component can only be placed vertically.
+        /// </summary>
         VerticalOnly = 2,
-        MiddleMustAlign = 4
+
+        /// <summary>
+        /// The middle point of the component must be aligned to the grid.
+        /// </summary>
+        MiddleMustAlign = 4,
+
+        /// <summary>
+        /// The component cannot be resized.
+        /// </summary>
+        NoResize = 8,
+
+        /// <summary>
+        /// The component can be flipped along the same axis as it is placed.
+        /// </summary>
+        FlipPrimary = 16,
+
+        /// <summary>
+        /// The component can be flipped along the other axis to which it is placed.
+        /// </summary>
+        FlipSecondary = 32,
     }
 }

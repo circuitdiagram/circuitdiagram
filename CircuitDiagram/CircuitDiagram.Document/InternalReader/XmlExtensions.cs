@@ -107,5 +107,33 @@ namespace CircuitDiagram.Document.InternalReader
                 }
             }
         }
+
+        public static FlipState? GetComponentFlipStateAttribute(this XElement element,
+                                                                XName attribute,
+                                                                ReaderContext context)
+        {
+            var attr = element.Attribute(attribute);
+            if (attr == null)
+                return null;
+
+            switch (attr.Value)
+            {
+                case "n":
+                case "false": // Obsolete
+                    return FlipState.None;
+                case "p":
+                case "true": // Obsolete
+                    return FlipState.Primary;
+                case "s":
+                    return FlipState.Secondary;
+                case "b":
+                    return FlipState.Both;
+                default:
+                {
+                    context.Log(ReaderErrorCodes.UnableToParseValueAsFlipState, element, attr.Value);
+                    return null;
+                }
+            }
+        }
     }
 }

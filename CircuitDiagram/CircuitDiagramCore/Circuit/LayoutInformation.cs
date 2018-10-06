@@ -30,7 +30,7 @@ namespace CircuitDiagram.Circuit
         /// <summary>
         /// Gets or sets a value indicating whether the component is flipped.
         /// </summary>
-        public bool IsFlipped { get; set; }
+        public FlipState Flip { get; set; }
 
         /// <summary>
         /// Gets or sets the orientation of the component.
