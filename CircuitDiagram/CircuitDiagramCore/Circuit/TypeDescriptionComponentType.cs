@@ -18,5 +18,10 @@ namespace CircuitDiagram.Circuit
         }
 
         public Guid Id { get; }
+
+        public override string ToString()
+        {
+            return $"{Id} ({CollectionItem})";
+        }
     }
 }

@@ -180,10 +180,10 @@ namespace CircuitDiagram.Document.InternalWriter
                     flipValue = "true";
                     break;
                 case FlipState.Secondary:
-                    flipValue = "secondary";
+                    flipValue = "s";
                     break;
                 case FlipState.Both:
-                    flipValue = "both";
+                    flipValue = "p+s";
                     break;
             }
             targetElement.SetAttributeValue("flp", flipValue);

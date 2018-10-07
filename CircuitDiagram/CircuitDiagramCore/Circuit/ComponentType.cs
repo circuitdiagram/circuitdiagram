@@ -68,5 +68,10 @@ namespace CircuitDiagram.Circuit
         {
             return new ComponentType(UnknownCollection, name);
         }
+
+        public override string ToString()
+        {
+            return $"{Collection}:{CollectionItem}";
+        }
     }
 }
