@@ -67,6 +67,9 @@ namespace CircuitDiagram.Render
         public virtual void RenderComponent(PositionalComponent component, IDrawingContext drawingContext, bool ignoreOffset = true)
         {
             var description = descriptionLookup.GetDescription(component.Type);
+            if (description == null)
+                throw new ApplicationException($"No component description available for {component.Type}");
+
             var flags = description.DetermineFlags(component);
 
             var layoutOptions = new LayoutOptions

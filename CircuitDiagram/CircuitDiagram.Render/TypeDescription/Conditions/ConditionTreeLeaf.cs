@@ -25,14 +25,17 @@ namespace CircuitDiagram.TypeDescription.Conditions
 {
     public class ConditionTreeLeaf : IConditionTreeItem
     {
-        public ConditionType Type { get; private set; }
-        public ConditionComparison Comparison { get; private set; }
-        public string VariableName { get; private set; }
-        public PropertyValue CompareTo { get; private set; }
+        public ConditionType Type { get; }
+        public ConditionComparison Comparison { get; }
+        public string VariableName { get; }
+        public PropertyValue CompareTo { get; }
 
         internal ConditionTreeLeaf()
         {
             Type = ConditionType.Empty;
+            Comparison = ConditionComparison.Empty;
+            VariableName = string.Empty;
+            CompareTo = new PropertyValue();
         }
 
         public ConditionTreeLeaf(ConditionType type, string name, ConditionComparison comparison, PropertyValue compareTo)
@@ -130,6 +133,11 @@ namespace CircuitDiagram.TypeDescription.Conditions
             if ((System.Object)o == null)
             {
                 return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
             }
 
             // Return true if the fields match:
