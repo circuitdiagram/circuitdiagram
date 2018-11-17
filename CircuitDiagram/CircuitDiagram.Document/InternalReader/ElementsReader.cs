@@ -35,7 +35,7 @@ namespace CircuitDiagram.Document.InternalReader
                                  XElement elements,
                                  ReaderContext context)
         {
-            var components = from el in elements.Elements()
+            var components = from el in elements.Descendants()
                              where el.Name == Ns.Document + "c"
                              select el;
 
