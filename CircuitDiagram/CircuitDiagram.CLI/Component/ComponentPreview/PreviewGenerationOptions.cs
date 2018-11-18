@@ -6,6 +6,7 @@ namespace CircuitDiagram.CLI.ComponentPreview
 {
     public sealed class PreviewGenerationOptions
     {
+        public bool DebugLayout { get; set; }
         public bool Crop { get; set; }
         public bool Center { get; set; }
         public double Width { get; set; } = 640.0;

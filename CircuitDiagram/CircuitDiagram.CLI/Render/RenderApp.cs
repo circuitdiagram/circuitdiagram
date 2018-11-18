@@ -24,6 +24,7 @@ namespace CircuitDiagram.CLI.Render
             string output = "render.png";
             bool watch = false;
             bool silent = false;
+            bool debugLayout = false;
 
             ArgumentSyntax.Parse(args, options =>
             {
@@ -33,26 +34,19 @@ namespace CircuitDiagram.CLI.Render
                 options.DefineOption("s|silent", ref silent, "Does not output anything to the console on successful operation.");
                 options.DefineOption("w|watch", ref watch, "Re-render output whenever the input file changes.");
                 options.DefineOption("p|properties", ref propertiesPath, "Path to render properties file.");
+                options.DefineOption("d|debug-layout", ref debugLayout, "Draw layout lines.");
                 options.DefineParameter("input", ref input, "Path to input XML component file.");
             });
-
+            
             var loggerFactory = new LoggerFactory();
             if (!silent)
                 loggerFactory.AddProvider(new BasicConsoleLogger(LogLevel.Information));
 
             var logger = loggerFactory.CreateLogger(typeof(RenderApp));
 
-            var renderOptions = new PreviewGenerationOptions
-            {
-                Size = 80.0,
-                Center = true,
-                Crop = false,
-                Width = 640,
-                Height = 480,
-                Horizontal = false,
-            };
-
-            renderOptions = PreviewGenerationOptionsReader.Read(propertiesPath);
+            var renderOptions = PreviewGenerationOptionsReader.Read(propertiesPath);
+            renderOptions.DebugLayout |= debugLayout;
+            renderOptions.Center = !renderOptions.DebugLayout;
 
             Render(logger, input, output, renderOptions);
 

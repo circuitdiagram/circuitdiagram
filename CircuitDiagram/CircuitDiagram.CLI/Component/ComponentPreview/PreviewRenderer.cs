@@ -26,6 +26,7 @@ using CircuitDiagram.Render;
 using CircuitDiagram.Render.Drawing;
 using CircuitDiagram.Render.Skia;
 using CircuitDiagram.TypeDescription;
+using SkiaSharp;
 
 namespace CircuitDiagram.CLI.ComponentPreview
 {
@@ -107,6 +108,28 @@ namespace CircuitDiagram.CLI.ComponentPreview
             {
                 resultContext = drawingContext(new Size(options.Width, options.Height));
                 dc = resultContext;
+            }
+
+            if (options.DebugLayout)
+            {
+                var endOffset = new Vector(component.Layout.Orientation == Orientation.Horizontal ? component.Layout.Size : 0.0,
+                                          component.Layout.Orientation == Orientation.Vertical ? component.Layout.Size : 0.0);
+
+                var skiaContext = resultContext as SkiaDrawingContext;
+                var originalColor = SKColors.Black;
+                if (skiaContext != null)
+                {
+                    originalColor = skiaContext.Color;
+                    skiaContext.Color = SKColors.CornflowerBlue;
+                }
+
+                dc.DrawEllipse(component.Layout.Location, 2d, 2d, 2d, true);
+                dc.DrawEllipse(component.Layout.Location.Add(endOffset), 2d, 2d, 2d, true);
+
+                if (skiaContext != null)
+                {
+                    skiaContext.Color = originalColor;
+                }
             }
 
             docRenderer.RenderCircuit(document, dc);
