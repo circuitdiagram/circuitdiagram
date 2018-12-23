@@ -77,6 +77,11 @@ namespace CircuitDiagram.CLI.ComponentPreview
                     component.Properties[propertyInfo.SerializedName] = PropertyValue.Dynamic(property.Value);
             }
 
+            foreach (var property in options.RawProperties)
+            {
+                component.Properties[property.Key] = property.Value;
+            }
+
             CircuitDocument document = new CircuitDocument();
             document.Elements.Add(component);
             
@@ -86,7 +91,7 @@ namespace CircuitDiagram.CLI.ComponentPreview
 
             var buffer = new SkiaBufferedDrawingContext();
             docRenderer.RenderCircuit(document, buffer);
-            var bb = buffer.BoundingBox;
+            var bb = buffer.BoundingBox ?? new Rect();
 
             T resultContext;
             IDrawingContext dc;

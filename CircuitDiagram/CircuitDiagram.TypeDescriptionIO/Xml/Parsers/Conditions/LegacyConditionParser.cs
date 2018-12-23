@@ -70,7 +70,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions
             else
                 type = ConditionType.Property;
 
-            ConditionComparison comparisonType = ConditionComparison.Equal;
+            ConditionComparison comparisonType = ConditionComparison.Truthy;
             Regex ltCheck = new Regex("\\(lt_[0-9.]+\\)");
             Match ltMatch = ltCheck.Match(value);
             Regex gtCheck = new Regex("\\(gt_[0-9.]+\\)");
@@ -97,6 +97,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions
             }
             else if (eqMatch.Success)
             {
+                comparisonType = ConditionComparison.Equal;
                 compareTo = eqMatch.Value.Replace("(eq_", "").Replace(")", "");
             }
             else if (lteqMatch.Success)
@@ -111,7 +112,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions
             }
             else if (emptyMatch.Success)
             {
-                comparisonType = ConditionComparison.Empty;
+                comparisonType = ConditionComparison.Falsy;
                 compareTo = "";
             }
 
@@ -121,8 +122,10 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions
                     comparisonType = ConditionComparison.NotEqual;
                 else if (comparisonType == ConditionComparison.NotEqual)
                     comparisonType = ConditionComparison.Equal;
-                else if (comparisonType == ConditionComparison.Empty)
-                    comparisonType = ConditionComparison.NotEmpty;
+                else if (comparisonType == ConditionComparison.Falsy)
+                    comparisonType = ConditionComparison.Truthy;
+                else if (comparisonType == ConditionComparison.Truthy)
+                    comparisonType = ConditionComparison.Falsy;
             }
             
             string variableName = Regex.Match(value, "\\$[a-zA-Z]+").Value.Replace("$", "").Replace("!", "");

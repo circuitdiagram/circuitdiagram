@@ -33,7 +33,7 @@ namespace CircuitDiagram.TypeDescription.Conditions
         internal ConditionTreeLeaf()
         {
             Type = ConditionType.Empty;
-            Comparison = ConditionComparison.Empty;
+            Comparison = ConditionComparison.Falsy;
             VariableName = string.Empty;
             CompareTo = new PropertyValue();
         }
@@ -55,7 +55,7 @@ namespace CircuitDiagram.TypeDescription.Conditions
             {
                 if (VariableName.ToLower() == "horizontal")
                 {
-                    if (Comparison == ConditionComparison.Equal)
+                    if (Comparison == ConditionComparison.Truthy || Comparison == ConditionComparison.Equal)
                         return (component.Layout.Orientation == Orientation.Horizontal) == CompareTo.BooleanValue;
                     
                     return (component.Layout.Orientation == Orientation.Horizontal) != CompareTo.BooleanValue;
@@ -65,11 +65,11 @@ namespace CircuitDiagram.TypeDescription.Conditions
             {
                 var propertyValue = description.GetProperty(component, VariableName);
 
-                if (Comparison == ConditionComparison.Empty)
-                    return propertyValue.IsEmpty();
+                if (Comparison == ConditionComparison.Truthy)
+                    return propertyValue.IsTruthy();
 
-                if (Comparison == ConditionComparison.NotEmpty)
-                    return !propertyValue.IsEmpty();
+                if (Comparison == ConditionComparison.Falsy)
+                    return !propertyValue.IsTruthy();
 
                 int cv = propertyValue.CompareTo(CompareTo);
                 switch (Comparison)

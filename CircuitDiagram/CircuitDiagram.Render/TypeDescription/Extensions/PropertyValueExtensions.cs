@@ -9,14 +9,14 @@ namespace CircuitDiagram.TypeDescription.Extensions
 {
     public static class PropertyValueExtensions
     {
-        public static bool IsEmpty(this PropertyValue value)
+        public static bool IsTruthy(this PropertyValue value)
         {
-            bool empty = false;
-            value.Match(s => empty = string.IsNullOrEmpty(s),
-                        n => empty = false,
-                        b => empty = false);
+            bool isTruthy = false;
+            value.Match(s => isTruthy = !string.IsNullOrEmpty(s),
+                        n => isTruthy = Math.Abs(n) > 0.0,
+                        b => isTruthy = b);
 
-            return empty;
+            return isTruthy;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CircuitDiagram.Circuit;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -14,6 +15,7 @@ namespace CircuitDiagram.CLI.ComponentPreview
         public string Configuration { get; set; }
         public bool Horizontal { get; set; } = true;
         public double Size { get; set; } = 60.0;
-        public Dictionary<string, string> Properties { get; set; }
+        public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
+        public Dictionary<PropertyName, PropertyValue> RawProperties { get; set; } = new Dictionary<PropertyName, PropertyValue>();
     }
 }

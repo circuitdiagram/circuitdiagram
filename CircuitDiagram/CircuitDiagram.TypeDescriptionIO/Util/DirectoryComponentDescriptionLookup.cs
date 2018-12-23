@@ -17,7 +17,12 @@ namespace CircuitDiagram.TypeDescriptionIO.Util
 
         public DirectoryComponentDescriptionLookup(params string[] directories)
         {
-            LoadXmlComponents(directories);
+            LoadXmlComponents(directories, SearchOption.TopDirectoryOnly);
+        }
+
+        public DirectoryComponentDescriptionLookup(string directory, bool recursive)
+        {
+            LoadXmlComponents(new[] { directory }, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
         }
 
         public ComponentDescription GetDescription(ComponentType componentType)
@@ -25,12 +30,12 @@ namespace CircuitDiagram.TypeDescriptionIO.Util
             return internalLookup.GetDescription(componentType);
         }
 
-        private void LoadXmlComponents(string[] directories)
+        private void LoadXmlComponents(string[] directories, SearchOption searchOption)
         {
             var xmlLoader = new XmlLoader();
             foreach (string location in directories)
             {
-                foreach (string file in Directory.GetFiles(location, "*.xml", SearchOption.TopDirectoryOnly))
+                foreach (string file in Directory.GetFiles(location, "*.xml", searchOption))
                 {
                     using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {

@@ -32,6 +32,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.Render.Skia"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.TypeDescriptionIO.Xml.Experimental", "CircuitDiagram.TypeDescriptionIO.Xml.Experimental\CircuitDiagram.TypeDescriptionIO.Xml.Experimental.csproj", "{B81499CF-C539-4008-99D4-65C336BCE013}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.TypeDescription.Definition", "CircuitDiagram.ComponentDescription.Template\CircuitDiagram.TypeDescription.Definition.csproj", "{5AAED7D2-FEA4-41FD-B785-7F005ABC6160}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,12 @@ Global
 		{B81499CF-C539-4008-99D4-65C336BCE013}.Portable|Any CPU.Build.0 = Debug|Any CPU
 		{B81499CF-C539-4008-99D4-65C336BCE013}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B81499CF-C539-4008-99D4-65C336BCE013}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AAED7D2-FEA4-41FD-B785-7F005ABC6160}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AAED7D2-FEA4-41FD-B785-7F005ABC6160}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AAED7D2-FEA4-41FD-B785-7F005ABC6160}.Portable|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AAED7D2-FEA4-41FD-B785-7F005ABC6160}.Portable|Any CPU.Build.0 = Debug|Any CPU
+		{5AAED7D2-FEA4-41FD-B785-7F005ABC6160}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AAED7D2-FEA4-41FD-B785-7F005ABC6160}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

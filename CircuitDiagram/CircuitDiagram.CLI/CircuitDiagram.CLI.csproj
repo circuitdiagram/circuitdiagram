@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CircuitDiagram.Compiler\CircuitDiagram.Compiler.csproj" />
+    <ProjectReference Include="..\CircuitDiagram.ComponentDescription.Template\CircuitDiagram.TypeDescription.Definition.csproj" />
     <ProjectReference Include="..\CircuitDiagram.Document\CircuitDiagram.Document.csproj" />
     <ProjectReference Include="..\CircuitDiagram.Render.Skia\CircuitDiagram.Render.Skia.csproj" />
     <ProjectReference Include="..\CircuitDiagram.Render\CircuitDiagram.Render.csproj" />

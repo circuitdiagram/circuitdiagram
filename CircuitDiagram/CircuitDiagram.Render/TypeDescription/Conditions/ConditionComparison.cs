@@ -27,7 +27,7 @@ namespace CircuitDiagram.TypeDescription.Conditions
         LessOrEqual = 3,
         Greater = 4,
         GreaterOrEqual = 5,
-        Empty = 6,
-        NotEmpty = 7
+        Falsy = 6,
+        Truthy = 7
     }
 }

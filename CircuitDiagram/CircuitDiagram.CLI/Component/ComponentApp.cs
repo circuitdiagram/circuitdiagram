@@ -27,6 +27,9 @@ using CircuitDiagram.CLI.Component.OutputGenerators;
 using Microsoft.Extensions.Logging;
 using System.CommandLine;
 using CircuitDiagram.Logging;
+using CircuitDiagram.CLI.Component.InputRunners;
+using CircuitDiagram.CLI.Component.Manifest;
+using CircuitDiagram.TypeDescriptionIO.Util;
 
 namespace CircuitDiagram.CLI.Component
 {
@@ -131,15 +134,24 @@ namespace CircuitDiagram.CLI.Component
                 Properties = new Dictionary<string, string>(),
             };
 
+            DirectoryComponentDescriptionLookup componentDescriptionLookup;
+            if (input.Count == 1 && Directory.Exists(input.Single()))
+                componentDescriptionLookup = new DirectoryComponentDescriptionLookup(input.Single(), true);
+            else
+                componentDescriptionLookup = new DirectoryComponentDescriptionLookup(input.ToArray());
+            
             var resourceProvider = ResourceProviderFactory.Create(loggerFactory.CreateLogger(typeof(ResourceProviderFactory)), resources);
-            var compileRunner = new CompileRunner(loggerFactory.CreateLogger<CompileRunner>(), resourceProvider);
-            var results = new List<CompileResult>();
+            var outputRunner = new OutputRunner(loggerFactory.CreateLogger<OutputRunner>(), resourceProvider);
+            var compileRunner = new ComponentDescriptionRunner(loggerFactory.CreateLogger<ComponentDescriptionRunner>(), outputRunner);
+            var configurationDefinitionRunner = new ConfigurationDefinitionRunner(loggerFactory.CreateLogger<ConfigurationDefinitionRunner>(), componentDescriptionLookup, outputRunner);
+            var results = new List<IManifestEntry>();
+
+            var inputs = new List<string>();
             foreach (var i in input)
             {
                 if (File.Exists(i))
                 {
-                    var result = compileRunner.CompileOne(i, previewOptions, generators);
-                    results.Add(result);
+                    inputs.Add(i);
                 }
                 else if (Directory.Exists(i))
                 {
@@ -155,8 +167,13 @@ namespace CircuitDiagram.CLI.Component
                     foreach (var file in Directory.GetFiles(i, "*.xml",
                                                             recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
                     {
-                        var result = compileRunner.CompileOne(file, previewOptions, generators);
-                        results.Add(result);
+                        inputs.Add(file);
+                    }
+
+                    foreach (var file in Directory.GetFiles(i, "*.yaml",
+                                                            recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
+                    {
+                        inputs.Add(file);
                     }
                 }
                 else
@@ -166,12 +183,31 @@ namespace CircuitDiagram.CLI.Component
                 }
             }
 
+            foreach (var file in inputs.OrderBy(x => x))
+            {
+                IManifestEntry result;
+
+                switch (Path.GetExtension(file))
+                {
+                    case ".xml":
+                        result = compileRunner.CompileOne(file, previewOptions, generators);
+                        break;
+                    case ".yaml":
+                        result = configurationDefinitionRunner.CompileOne(file, previewOptions, generators);
+                        break;
+                    default:
+                        throw new NotSupportedException($"File type '{Path.GetExtension(file)}' not supported.");
+                }
+
+                results.Add(result);
+            }
+
             if (manifest != null)
             {
                 using (var manifestFs = File.Open(manifest, FileMode.Create))
                 {
                     logger.LogInformation($"Writing manifest to {manifest}");
-                    ManifestGenerator.WriteManifest(results, manifestFs);
+                    ManifestWriter.WriteManifest(results, manifestFs);
                 }
             }
         }

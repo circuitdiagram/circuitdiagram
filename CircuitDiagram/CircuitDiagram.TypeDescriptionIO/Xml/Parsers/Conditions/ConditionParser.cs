@@ -215,12 +215,14 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions
                     comparison = ConditionComparison.LessOrEqual;
                     break;
                 default:
-                    comparison = ConditionComparison.Equal;
+                    comparison = ConditionComparison.Truthy;
                     break;
             }
 
             if (isNegated && comparison == ConditionComparison.Equal)
                 comparison = ConditionComparison.NotEqual;
+            else if (isNegated && comparison == ConditionComparison.Truthy)
+                comparison = ConditionComparison.Falsy;
             else if (isNegated)
             {
                 // Operator cannot be negated

@@ -90,13 +90,13 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
                 string commandType = renderCommandNode.Name.LocalName;
                 if (commandType == "line")
                 {
-                    if (ReadLineCommand(renderCommandNode, out var command))
-                        commands.Add(command);
+                    foreach (var renderLineDescription in ReadLineCommand(renderCommandNode, conditionCollection, declaredDefinitions))
+                        yield return renderLineDescription;
                 }
                 else if (commandType == "rect")
                 {
-                    if (ReadRectCommand(renderCommandNode, out var command))
-                        commands.Add(command);
+                    foreach (var renderRectDescription in ReadRectCommand(renderCommandNode, conditionCollection, declaredDefinitions))
+                        yield return renderRectDescription;
                 }
                 else if (commandType == "ellipse")
                 {
@@ -116,6 +116,67 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
             }
 
             yield return new RenderDescription(conditionCollection, commands.ToArray());
+        }
+
+        private IEnumerable<RenderDescription> ReadLineCommand(XElement element, IConditionTreeItem baseConditions, IReadOnlyList<string> usedDefinitions)
+        {
+            if (!element.GetAttribute("start", logger, out var start) ||
+                !element.GetAttribute("end", logger, out var end))
+                yield break;
+
+            Console.WriteLine(start.Value);
+
+            var startPoints = EnumerateComponentPoint(start, baseConditions, usedDefinitions).ToList();
+            var endPoints = EnumerateComponentPoint(end, baseConditions, usedDefinitions).ToList();
+            
+            foreach (var startPoint in startPoints)
+            {
+                foreach (var endPoint in endPoints)
+                {
+                    var command = new Line();
+
+                    command.Start = startPoint.Value;
+                    command.End = endPoint.Value;
+
+                    if (element.Attribute("thickness") != null)
+                        command.Thickness = double.Parse(element.Attribute("thickness").Value);
+
+                    var conditions = new ConditionTree(ConditionTree.ConditionOperator.AND,
+                                                       baseConditions,
+                                                       new ConditionTree(ConditionTree.ConditionOperator.AND, startPoint.Conditions, endPoint.Conditions));
+
+                    yield return new RenderDescription(conditions, new IRenderCommand[] { command });
+                }
+            }
+        }
+
+        private IEnumerable<RenderDescription> ReadRectCommand(XElement element, IConditionTreeItem baseConditions, IReadOnlyList<string> usedDefinitions)
+        {
+            if (!element.GetAttribute("x", logger, out var x) ||
+                !element.GetAttribute("y", logger, out var y))
+                yield break;
+
+            var locationPoints = EnumerateComponentPoint(x, y, baseConditions, usedDefinitions).ToList();
+
+            foreach (var locationPoint in locationPoints)
+            {
+                var command = new Rectangle();
+
+                if (element.Attribute("thickness") != null)
+                    command.StrokeThickness = double.Parse(element.Attribute("thickness").Value);
+
+                var fill = element.Attribute("fill");
+                if (fill != null && fill.Value.ToLowerInvariant() != "false")
+                    command.Fill = true;
+                
+                command.Width = double.Parse(element.Attribute("width").Value);
+                command.Height = double.Parse(element.Attribute("height").Value);
+                
+                command.Location = locationPoint.Value;
+
+                var conditions = new ConditionTree(ConditionTree.ConditionOperator.AND, baseConditions, locationPoint.Conditions);
+                yield return new RenderDescription(conditions, new IRenderCommand[] {command});
+            }
         }
 
         private IEnumerable<RenderDescription> ReadTextCommand(XElement element, ComponentDescription description, IConditionTreeItem baseConditions, IReadOnlyList<string> usedDefinitions)
@@ -185,6 +246,37 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
             if (!ReportUndeclared(y.GetFileRange(), undeclaredYUsages))
                 yield break;
 
+            foreach (var result in EnumerateComponentPoint(templatePoint, baseConditions))
+            {
+                yield return result;
+            }
+        }
+
+        private IEnumerable<Conditional<ComponentPoint>> EnumerateComponentPoint(XAttribute location, IConditionTreeItem baseConditions, IReadOnlyList<string> usedDefinitions)
+        {
+            if (!componentPointTemplateParser.TryParse(location, out var templatePoint))
+                yield break;
+
+            if (!templatePoint.Variables.Any())
+            {
+                if (componentPointParser.TryParse(location, out var componentPoint))
+                    yield return new Conditional<ComponentPoint>(componentPoint, baseConditions);
+
+                yield break;
+            }
+
+            var undeclaredUsages = templatePoint.Variables.Except(usedDefinitions).ToHashSet();
+            if (!ReportUndeclared(location.GetFileRange(), undeclaredUsages))
+                yield break;
+
+            foreach (var result in EnumerateComponentPoint(templatePoint, baseConditions))
+            {
+                yield return result;
+            }
+        }
+
+        private IEnumerable<Conditional<ComponentPoint>> EnumerateComponentPoint(ComponentPointTemplate templatePoint, IConditionTreeItem baseConditions)
+        {
             var variable = templatePoint.Variables.First();
             foreach (var condition in definitionsSection.Definitions[variable])
             {
