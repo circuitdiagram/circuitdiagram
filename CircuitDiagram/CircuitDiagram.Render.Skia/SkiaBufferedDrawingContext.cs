@@ -30,6 +30,9 @@ namespace CircuitDiagram.Render.Skia
     {
         protected override Size MeasureText(TextRun text)
         {
+            if (string.IsNullOrEmpty(text.Text))
+                return new Size();
+
             var paint = new SKPaint
             {
                 Color = SKColors.Black,

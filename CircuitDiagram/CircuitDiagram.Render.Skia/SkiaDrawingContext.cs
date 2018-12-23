@@ -176,6 +176,9 @@ namespace CircuitDiagram.Render.Skia
 
             foreach (TextRun run in textRuns)
             {
+                if (string.IsNullOrEmpty(run.Text))
+                    continue;
+
                 paint.TextSize = (float)run.Formatting.Size;
 
                 if (run.Formatting.FormattingType == TextRunFormattingType.Subscript ||
@@ -184,41 +187,49 @@ namespace CircuitDiagram.Render.Skia
 
                 var bounds = new SKRect();
                 paint.MeasureText(Encoding.UTF8.GetBytes(run.Text), ref bounds);
-                totalWidth += bounds.Width;
+                totalWidth += bounds.Right;
                 totalHeight = Math.Max(totalHeight, bounds.Height);
             }
 
             var startLocation = anchor.ToSkPoint();
+            
+            // Horizontal alignment
             if (alignment == TextAlignment.TopCentre || alignment == TextAlignment.CentreCentre || alignment == TextAlignment.BottomCentre)
                 startLocation.X -= totalWidth / 2;
             else if (alignment == TextAlignment.TopRight || alignment == TextAlignment.CentreRight || alignment == TextAlignment.BottomRight)
                 startLocation.X -= totalWidth;
-            if (alignment == TextAlignment.CentreLeft || alignment == TextAlignment.CentreCentre || alignment == TextAlignment.CentreRight)
-                startLocation.Y -= totalHeight / 2;
-            else if (alignment == TextAlignment.BottomLeft || alignment == TextAlignment.BottomCentre || alignment == TextAlignment.BottomRight)
-                startLocation.Y -= totalHeight;
 
+            // Vertical alignment
+            if (alignment == TextAlignment.TopLeft || alignment == TextAlignment.TopCentre || alignment == TextAlignment.TopRight)
+                startLocation.Y += totalHeight;
+            if (alignment == TextAlignment.CentreLeft || alignment == TextAlignment.CentreCentre || alignment == TextAlignment.CentreRight)
+                startLocation.Y += totalHeight / 2;
+            
             float horizontalOffsetCounter = 0;
             foreach (TextRun run in textRuns)
             {
+                if (string.IsNullOrEmpty(run.Text))
+                    continue;
+
                 paint.TextSize = (float)run.Formatting.Size;
                 var renderLocation = new SKPoint(startLocation.X + horizontalOffsetCounter, startLocation.Y);
 
                 if (run.Formatting.FormattingType == TextRunFormattingType.Subscript)
                 {
                     paint.TextSize /= 1.5f;
-                    renderLocation.X = renderLocation.X + 3f;
+                    renderLocation.Y = renderLocation.Y + 3f;
                 }
                 else if (run.Formatting.FormattingType == TextRunFormattingType.Superscript)
                 {
                     paint.TextSize /= 1.5f;
-                    renderLocation.X = renderLocation.X - 3f;
+                    renderLocation.Y = renderLocation.Y - 3f;
                 }
 
                 var bounds = new SKRect();
                 paint.MeasureText(run.Text, ref bounds);
-                surface.Canvas.DrawText(run.Text, renderLocation.X, renderLocation.Y - bounds.Top, paint);
-                horizontalOffsetCounter += bounds.Width;
+
+                surface.Canvas.DrawText(run.Text, renderLocation.X, renderLocation.Y, paint);
+                horizontalOffsetCounter += bounds.Right;
             }
         }
 
