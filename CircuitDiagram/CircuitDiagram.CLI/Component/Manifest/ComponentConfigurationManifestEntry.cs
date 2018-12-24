@@ -6,6 +6,7 @@ namespace CircuitDiagram.CLI.Component.Manifest
 {
     class ComponentConfigurationManifestEntry : IManifestEntry
     {
+        public Guid Guid { get; set; }
         public string InputFile { get; set; }
         public Guid ComponentGuid { get; set; }
         public string ConfigurationName { get; set; }

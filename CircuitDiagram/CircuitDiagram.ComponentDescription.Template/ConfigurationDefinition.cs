@@ -6,11 +6,14 @@ namespace CircuitDiagram.TypeDescription.Template
 {
     public class ConfigurationDefinition
     {
-        public ConfigurationDefinition(ComponentDescription componentDescription, ComponentConfiguration configuration)
+        public ConfigurationDefinition(Guid guid, ComponentDescription componentDescription, ComponentConfiguration configuration)
         {
+            Guid = guid;
             ComponentDescription = componentDescription;
             Configuration = configuration;
         }
+
+        public Guid Guid { get; }
 
         public ComponentDescription ComponentDescription { get; }
 

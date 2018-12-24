@@ -62,6 +62,10 @@ namespace CircuitDiagram.CLI.Component.Manifest
                 foreach(var configuration in entry.Configurations)
                 {
                     writer.WriteStartElement("configuration");
+
+                    if (configuration.Guid.HasValue)
+                        writer.WriteAttributeString("guid", configuration.Guid.ToString());
+
                     writer.WriteAttributeString("name", configuration.Name);
                     writer.WriteAttributeString("input", configuration.Input);
                     
@@ -98,6 +102,7 @@ namespace CircuitDiagram.CLI.Component.Manifest
 
                 var additionalConfigurations = compiledEntries.Where(x => x is ComponentConfigurationManifestEntry && x.ComponentGuid == g.ComponentGuid).Cast<ComponentConfigurationManifestEntry>().Select(x => new ConfigurationItem
                 {
+                    Guid = x.Guid,
                     Input = x.InputFile,
                     Name = x.ConfigurationName,
                     Outputs = x.OutputFiles,
@@ -129,6 +134,7 @@ namespace CircuitDiagram.CLI.Component.Manifest
 
         private class ConfigurationItem
         {
+            public Guid? Guid { get; set; }
             public string Name { get; set; }
             public string Input { get; set; }
             public IReadOnlyDictionary<string, string> Outputs { get; set; }

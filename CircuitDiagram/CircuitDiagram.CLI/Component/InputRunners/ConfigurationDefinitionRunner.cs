@@ -51,6 +51,7 @@ namespace CircuitDiagram.CLI.Component.InputRunners
 
                 return new ComponentConfigurationManifestEntry
                 {
+                    Guid = configurationDefinition.Guid,
                     InputFile = ComponentDescriptionRunner.CleanPath(inputFile),
                     ComponentGuid = configurationDefinition.ComponentDescription.Metadata.GUID,
                     ConfigurationName = configurationDefinition.Configuration.Name,

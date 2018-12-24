@@ -25,6 +25,7 @@ namespace CircuitDiagram.TypeDescription.Template
         {
             var yaml = deserializer.Deserialize<YamlTemplate>(new StreamReader(input));
 
+            var guid = Guid.Parse(yaml.Guid);
             var descriptionGuid = Guid.Parse(yaml.Template.Guid);
 
             var description = componentDescriptionLookup.GetDescription(new TypeDescriptionComponentType(descriptionGuid, ComponentType.Unknown(yaml.Metadata.Name)));
@@ -73,12 +74,13 @@ namespace CircuitDiagram.TypeDescription.Template
 
             var configuration = new ComponentConfiguration(null, yaml.Metadata.Name, properties);
 
-            return new ConfigurationDefinition(description, configuration);
+            return new ConfigurationDefinition(guid, description, configuration);
         }
     }
 
     class YamlTemplate
     {
+        public string Guid { get; set; }
         public YamlMetadataSection Metadata { get; set; }
         public YamlTemplateSection Template { get; set; }
         public List<YamlProperty> Properties { get; set; }
