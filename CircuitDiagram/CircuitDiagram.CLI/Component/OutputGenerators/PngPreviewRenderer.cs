@@ -33,7 +33,9 @@ namespace CircuitDiagram.CLI.Component.OutputGenerators
 
         public string FileExtension => ".png";
 
-        public void Generate(ComponentDescription description, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output)
+        public bool AcceptsSourceFileType(SourceFileType sourceType) => true;
+
+        public void Generate(ComponentDescription description, ComponentConfiguration configuration, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output, SourceFileType sourceType)
         {
             var drawingContext = PreviewRenderer.RenderPreview(size => new SkiaDrawingContext((int)Math.Ceiling(size.Width), (int)Math.Ceiling(size.Height), SKColors.White),
                                                                description,

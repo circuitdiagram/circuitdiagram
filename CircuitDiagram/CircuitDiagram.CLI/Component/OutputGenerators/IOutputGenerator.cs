@@ -30,7 +30,9 @@ namespace CircuitDiagram.CLI.Component.OutputGenerators
         
         string FileExtension { get; }
 
+        bool AcceptsSourceFileType(SourceFileType sourceType);
+
         /// <param name="input">Remove this parameter once CircuitDiagram.Compiler supports compiling from a loaded description.</param>
-        void Generate(ComponentDescription description, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output);
+        void Generate(ComponentDescription description, ComponentConfiguration configuration, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output, SourceFileType sourceType);
     }
 }

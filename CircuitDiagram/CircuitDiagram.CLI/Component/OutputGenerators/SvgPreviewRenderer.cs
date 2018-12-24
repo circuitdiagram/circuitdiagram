@@ -31,7 +31,9 @@ namespace CircuitDiagram.CLI.Component.OutputGenerators
 
         public string FileExtension => ".svg";
 
-        public void Generate(ComponentDescription description, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output)
+        public bool AcceptsSourceFileType(SourceFileType sourceType) => true;
+
+        public void Generate(ComponentDescription description, ComponentConfiguration configuration, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output, SourceFileType sourceType)
         {
             var drawingContext = PreviewRenderer.RenderPreview(size => new SvgDrawingContext(Math.Ceiling(size.Width), Math.Ceiling(size.Height), output),
                                                                description,

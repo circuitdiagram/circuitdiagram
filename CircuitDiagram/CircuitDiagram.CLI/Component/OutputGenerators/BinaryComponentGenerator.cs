@@ -37,7 +37,9 @@ namespace CircuitDiagram.CLI.Component.OutputGenerators
             compiler = new CompilerService();
         }
 
-        public void Generate(ComponentDescription description, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output)
+        public bool AcceptsSourceFileType(SourceFileType sourceType) => sourceType == SourceFileType.ComponentDescription;
+
+        public void Generate(ComponentDescription description, ComponentConfiguration configuration, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output, SourceFileType sourceType)
         {
             ComponentCompileResult result = compiler.Compile(input, output, resourceProvider, new CompileOptions());
             if (!result.Success)

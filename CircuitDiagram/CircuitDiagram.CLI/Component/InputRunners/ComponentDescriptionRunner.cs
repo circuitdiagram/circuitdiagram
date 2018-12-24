@@ -38,7 +38,7 @@ namespace CircuitDiagram.CLI.Component.InputRunners
                     Environment.Exit(1);
                 }
 
-                var outputs = outputRunner.Generate(fs, description, Path.GetFileNameWithoutExtension(inputFile), formats, previewOptions);
+                var outputs = outputRunner.Generate(fs, description, null, Path.GetFileNameWithoutExtension(inputFile), formats, previewOptions, SourceFileType.ComponentDescription);
 
                 var metadata = description.Metadata.Entries.ToDictionary(x => x.Key, x => x.Value);
                 var svgIcon = GetSvgIconPath(Path.GetDirectoryName(inputFile), description);

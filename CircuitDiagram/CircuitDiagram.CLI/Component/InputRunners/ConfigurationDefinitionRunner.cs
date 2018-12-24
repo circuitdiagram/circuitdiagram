@@ -29,9 +29,7 @@ namespace CircuitDiagram.CLI.Component.InputRunners
         public IManifestEntry CompileOne(string inputFile, PreviewGenerationOptions previewOptions, IDictionary<IOutputGenerator, string> formats)
         {
             logger.LogInformation(inputFile);
-
-            var validFormats = formats.Where(x => new[] { "png", "svg" }.Contains(x.Key.Format)).ToDictionary(x => x.Key, x => x.Value);
-
+            
             var reader = new ConfigurationDefinitionReader(componentDescriptionLookup);
             using (var fs = File.OpenRead(inputFile))
             {
@@ -49,7 +47,7 @@ namespace CircuitDiagram.CLI.Component.InputRunners
                     RawProperties = configurationDefinition.Configuration.Setters,
                 };
 
-                var outputs = outputRunner.Generate(fs, configurationDefinition.ComponentDescription, Path.GetFileNameWithoutExtension(inputFile), validFormats, renderOptions);
+                var outputs = outputRunner.Generate(fs, configurationDefinition.ComponentDescription, configurationDefinition.Configuration, Path.GetFileNameWithoutExtension(inputFile), formats, renderOptions, SourceFileType.ConfigurationDefinition);
 
                 return new ComponentConfigurationManifestEntry
                 {
