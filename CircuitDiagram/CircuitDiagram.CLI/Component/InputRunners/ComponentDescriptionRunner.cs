@@ -26,7 +26,7 @@ namespace CircuitDiagram.CLI.Component.InputRunners
             this.outputRunner = outputRunner;
         }
 
-        public IManifestEntry CompileOne(string inputFile, PreviewGenerationOptions previewOptions, IDictionary<IOutputGenerator, string> formats)
+        public IManifestEntry CompileOne(string inputFile, PreviewGenerationOptions previewOptions, bool allConfigurations, IDictionary<IOutputGenerator, string> formats)
         {
             logger.LogInformation(inputFile);
 
@@ -38,7 +38,30 @@ namespace CircuitDiagram.CLI.Component.InputRunners
                     Environment.Exit(1);
                 }
 
-                var outputs = outputRunner.Generate(fs, description, null, Path.GetFileNameWithoutExtension(inputFile), formats, previewOptions, SourceFileType.ComponentDescription);
+                var baseName = Path.GetFileNameWithoutExtension(inputFile);
+                var outputs = outputRunner.Generate(fs, description, null, baseName, formats, previewOptions, SourceFileType.ComponentDescription);
+
+                Dictionary<string, IReadOnlyDictionary<string, string>> configurationOutputs = new Dictionary<string, IReadOnlyDictionary<string, string>>();
+                if (allConfigurations)
+                {
+                    foreach(var configuration in description.Metadata.Configurations)
+                    {
+                        var renderOptions = new PreviewGenerationOptions
+                        {
+                            Center = previewOptions.Center,
+                            Crop = previewOptions.Crop,
+                            DebugLayout = previewOptions.DebugLayout,
+                            Width = previewOptions.Width,
+                            Height = previewOptions.Height,
+                            Horizontal = previewOptions.Horizontal,
+                            Size = previewOptions.Size,
+                            Configuration = configuration.Name,
+                        };
+
+                        var configurationOutput = outputRunner.Generate(fs, description, configuration, baseName, formats, renderOptions, SourceFileType.ComponentDescriptionConfiguration);
+                        configurationOutputs[configuration.Name] = configurationOutput.ToImmutableDictionary();
+                    }
+                }
 
                 var metadata = description.Metadata.Entries.ToDictionary(x => x.Key, x => x.Value);
                 var svgIcon = GetSvgIconPath(Path.GetDirectoryName(inputFile), description);
@@ -55,6 +78,7 @@ namespace CircuitDiagram.CLI.Component.InputRunners
                     InputFile = CleanPath(inputFile),
                     Metadata = metadata,
                     OutputFiles = outputs.ToImmutableDictionary(),
+                    ConfigurationOutputFiles = configurationOutputs,
                 };
             }
         }

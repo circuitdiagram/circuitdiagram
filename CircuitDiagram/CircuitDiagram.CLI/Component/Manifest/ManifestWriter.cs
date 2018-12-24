@@ -89,6 +89,20 @@ namespace CircuitDiagram.CLI.Component.Manifest
         {
             return compiledEntries.Where(x => x is ComponentDescriptionManifestEntry).Cast<ComponentDescriptionManifestEntry>().Select(g =>
             {
+                var configurations = g.ConfigurationOutputFiles.Select(x => new ConfigurationItem
+                {
+                    Input = g.InputFile,
+                    Name = x.Key,
+                    Outputs = x.Value,
+                });
+
+                var additionalConfigurations = compiledEntries.Where(x => x is ComponentConfigurationManifestEntry && x.ComponentGuid == g.ComponentGuid).Cast<ComponentConfigurationManifestEntry>().Select(x => new ConfigurationItem
+                {
+                    Input = x.InputFile,
+                    Name = x.ConfigurationName,
+                    Outputs = x.OutputFiles,
+                });
+
                 return new ComponentManifestItem
                 {
                     Guid = g.ComponentGuid,
@@ -97,12 +111,7 @@ namespace CircuitDiagram.CLI.Component.Manifest
                     Input = g.InputFile,
                     Metadata = g.Metadata,
                     Outputs = g.OutputFiles,
-                    Configurations = compiledEntries.Where(x => x is ComponentConfigurationManifestEntry && x.ComponentGuid == g.ComponentGuid).Cast<ComponentConfigurationManifestEntry>().Select(x => new ConfigurationItem
-                    {
-                        Input = x.InputFile,
-                        Name = x.ConfigurationName,
-                        Outputs = x.OutputFiles,
-                    }).ToList(),
+                    Configurations = configurations.Concat(additionalConfigurations).ToList(),
                 };
             });
         }

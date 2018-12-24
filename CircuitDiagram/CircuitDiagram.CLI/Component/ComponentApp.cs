@@ -42,6 +42,7 @@ namespace CircuitDiagram.CLI.Component
             IReadOnlyList<string> additionalFormats = null;
             string output = null;
             string manifest = null;
+            bool allConfigurations = false;
 
             // Preview options
             bool autosize = false;
@@ -69,6 +70,7 @@ namespace CircuitDiagram.CLI.Component
                 options.DefineOption("s|silent", ref silent, "Does not output anything to the console on successful operation.");
                 options.DefineOption("v|verbose", ref verbose, "Outputs extra information to the console.");
                 options.DefineOption("c|configuration", ref configuration, "Name of component configuration to use.");
+                options.DefineOption("all-configurations", ref allConfigurations, "Produce an output for every component configuration (supported output formats only).");
                 options.DefineOptionList("resources", ref resources, "Resources to use in generating the output. Either a directory, or a space-separated list of [key] [filename] pairs.");
                 options.DefineOptionList("format", ref additionalFormats, "Output formats to write.");
                 options.DefineParameterList("input", ref input, "Components to compile.");
@@ -190,7 +192,7 @@ namespace CircuitDiagram.CLI.Component
                 switch (Path.GetExtension(file))
                 {
                     case ".xml":
-                        result = compileRunner.CompileOne(file, previewOptions, generators);
+                        result = compileRunner.CompileOne(file, previewOptions, allConfigurations, generators);
                         break;
                     case ".yaml":
                         result = configurationDefinitionRunner.CompileOne(file, previewOptions, generators);

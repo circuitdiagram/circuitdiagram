@@ -14,5 +14,6 @@ namespace CircuitDiagram.CLI.Component.Manifest
         public string Description { get; set; }
         public IReadOnlyDictionary<string, string> Metadata { get; set; }
         public IReadOnlyDictionary<string, string> OutputFiles { get; set; }
+        public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> ConfigurationOutputFiles { get; set; }
     }
 }

@@ -9,5 +9,6 @@ namespace CircuitDiagram.CLI.Component.OutputGenerators
         Unknown = 0,
         ComponentDescription = 1,
         ConfigurationDefinition = 2,
+        ComponentDescriptionConfiguration = 3,
     }
 }
