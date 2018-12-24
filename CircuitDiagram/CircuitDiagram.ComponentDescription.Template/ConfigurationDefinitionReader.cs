@@ -26,6 +26,7 @@ namespace CircuitDiagram.TypeDescription.Template
             var yaml = deserializer.Deserialize<YamlTemplate>(new StreamReader(input));
 
             var descriptionGuid = Guid.Parse(yaml.Template.Guid);
+
             var description = componentDescriptionLookup.GetDescription(new TypeDescriptionComponentType(descriptionGuid, ComponentType.Unknown(yaml.Metadata.Name)));
             if (description == null)
                 throw new InvalidOperationException("Base description for template not found.");
@@ -74,29 +75,29 @@ namespace CircuitDiagram.TypeDescription.Template
 
             return new ConfigurationDefinition(description, configuration);
         }
+    }
 
-        private class YamlTemplate
-        {
-            public YamlMetadataSection Metadata { get; set; }
-            public YamlTemplateSection Template { get; set; }
-            public List<YamlProperty> Properties { get; set; }
-        }
+    class YamlTemplate
+    {
+        public YamlMetadataSection Metadata { get; set; }
+        public YamlTemplateSection Template { get; set; }
+        public List<YamlProperty> Properties { get; set; }
+    }
 
-        private class YamlMetadataSection
-        {
-            public string Name { get; set; }
-        }
+    class YamlMetadataSection
+    {
+        public string Name { get; set; }
+    }
 
-        private class YamlTemplateSection
-        {
-            public string Name { get; set; }
-            public string Guid { get; set; }
-        }
+    class YamlTemplateSection
+    {
+        public string Name { get; set; }
+        public string Guid { get; set; }
+    }
 
-        private class YamlProperty
-        {
-            public string Name { get; set; }
-            public object Value { get; set; }
-        }
+    class YamlProperty
+    {
+        public string Name { get; set; }
+        public object Value { get; set; }
     }
 }

@@ -39,7 +39,7 @@ namespace CircuitDiagram.CLI.Component.InputRunners
                 }
 
                 var baseName = Path.GetFileNameWithoutExtension(inputFile);
-                var outputs = outputRunner.Generate(fs, description, null, baseName, formats, previewOptions, SourceFileType.ComponentDescription);
+                var outputs = outputRunner.Generate(fs, description, null, baseName, formats, previewOptions, SourceFileType.ComponentDescription).ToList();
 
                 Dictionary<string, IReadOnlyDictionary<string, string>> configurationOutputs = new Dictionary<string, IReadOnlyDictionary<string, string>>();
                 if (allConfigurations)

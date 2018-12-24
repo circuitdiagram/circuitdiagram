@@ -42,7 +42,7 @@
   </ItemGroup>
   
   <Target Name="CopyNativeLibraries" AfterTargets="Publish">
-    <Copy SourceFiles="$(NuGetPackageRoot)\skiasharp\1.60.0\runtimes\win7-x64\native\libSkiaSharp.dll" DestinationFolder="$(PublishDir)" />
+    <Copy SourceFiles="$(NuGetPackageRoot)\skiasharp\1.68.0\runtimes\win-x64\native\libSkiaSharp.dll" DestinationFolder="$(PublishDir)" />
   </Target>
 
 </Project>
