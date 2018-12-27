@@ -22,10 +22,10 @@
       <Type Name="CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions.RenderSectionWithDefinitionsReader" Dynamic="Required All" />
     </Assembly>
     <Assembly Name="CircuitDiagram.TypeDescription.Definition">
-      <Type Name="CircuitDiagram.TypeDescription.Template.YamlTemplate" Dynamic="Required All" />
-      <Type Name="CircuitDiagram.TypeDescription.Template.YamlMetadataSection" Dynamic="Required All" />
-      <Type Name="CircuitDiagram.TypeDescription.Template.YamlTemplateSection" Dynamic="Required All" />
-      <Type Name="CircuitDiagram.TypeDescription.Template.YamlProperty" Dynamic="Required All" />
+      <Type Name="CircuitDiagram.TypeDescription.Definition.YamlTemplate" Dynamic="Required All" />
+      <Type Name="CircuitDiagram.TypeDescription.Definition.YamlMetadataSection" Dynamic="Required All" />
+      <Type Name="CircuitDiagram.TypeDescription.Definition.YamlTemplateSection" Dynamic="Required All" />
+      <Type Name="CircuitDiagram.TypeDescription.Definition.YamlProperty" Dynamic="Required All" />
     </Assembly>
   </Application>
 </Directives>

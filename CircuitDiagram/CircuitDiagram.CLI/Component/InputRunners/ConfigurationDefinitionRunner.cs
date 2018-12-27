@@ -2,7 +2,7 @@
 using CircuitDiagram.CLI.Component.OutputGenerators;
 using CircuitDiagram.CLI.ComponentPreview;
 using CircuitDiagram.Render;
-using CircuitDiagram.TypeDescription.Template;
+using CircuitDiagram.TypeDescription.Definition;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -51,7 +51,7 @@ namespace CircuitDiagram.CLI.Component.InputRunners
 
                 return new ComponentConfigurationManifestEntry
                 {
-                    Guid = configurationDefinition.Guid,
+                    Metadata = configurationDefinition.Metadata,
                     InputFile = ComponentDescriptionRunner.CleanPath(inputFile),
                     ComponentGuid = configurationDefinition.ComponentDescription.Metadata.GUID,
                     ConfigurationName = configurationDefinition.Configuration.Name,

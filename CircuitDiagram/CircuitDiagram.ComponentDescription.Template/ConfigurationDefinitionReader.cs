@@ -8,7 +8,7 @@ using System.Text;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace CircuitDiagram.TypeDescription.Template
+namespace CircuitDiagram.TypeDescription.Definition
 {
     public class ConfigurationDefinitionReader
     {
@@ -25,12 +25,18 @@ namespace CircuitDiagram.TypeDescription.Template
         {
             var yaml = deserializer.Deserialize<YamlTemplate>(new StreamReader(input));
 
-            var guid = Guid.Parse(yaml.Guid);
+            var guid = Guid.Parse(yaml.Metadata.Guid);
             var descriptionGuid = Guid.Parse(yaml.Template.Guid);
 
             var description = componentDescriptionLookup.GetDescription(new TypeDescriptionComponentType(descriptionGuid, ComponentType.Unknown(yaml.Metadata.Name)));
             if (description == null)
                 throw new InvalidOperationException("Base description for template not found.");
+
+            var metadata = new DefinitionMetadata
+            {
+                Guid = guid,
+                Description = yaml.Metadata.Description,
+            };
 
             var properties = new Dictionary<PropertyName, PropertyValue>();
             foreach (var setter in yaml.Properties)
@@ -74,13 +80,12 @@ namespace CircuitDiagram.TypeDescription.Template
 
             var configuration = new ComponentConfiguration(null, yaml.Metadata.Name, properties);
 
-            return new ConfigurationDefinition(guid, description, configuration);
+            return new ConfigurationDefinition(metadata, description, configuration);
         }
     }
 
     class YamlTemplate
     {
-        public string Guid { get; set; }
         public YamlMetadataSection Metadata { get; set; }
         public YamlTemplateSection Template { get; set; }
         public List<YamlProperty> Properties { get; set; }
@@ -88,7 +93,9 @@ namespace CircuitDiagram.TypeDescription.Template
 
     class YamlMetadataSection
     {
+        public string Guid { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
     }
 
     class YamlTemplateSection

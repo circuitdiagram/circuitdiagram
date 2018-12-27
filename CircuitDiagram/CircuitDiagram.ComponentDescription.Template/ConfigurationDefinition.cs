@@ -2,18 +2,20 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CircuitDiagram.TypeDescription.Template
+namespace CircuitDiagram.TypeDescription.Definition
 {
     public class ConfigurationDefinition
     {
-        public ConfigurationDefinition(Guid guid, ComponentDescription componentDescription, ComponentConfiguration configuration)
+        public ConfigurationDefinition(DefinitionMetadata metadata,
+                                       ComponentDescription componentDescription,
+                                       ComponentConfiguration configuration)
         {
-            Guid = guid;
+            Metadata = metadata;
             ComponentDescription = componentDescription;
             Configuration = configuration;
         }
 
-        public Guid Guid { get; }
+        public DefinitionMetadata Metadata { get; }
 
         public ComponentDescription ComponentDescription { get; }
 

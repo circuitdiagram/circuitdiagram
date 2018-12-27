@@ -68,8 +68,16 @@ namespace CircuitDiagram.CLI.Component.Manifest
 
                     writer.WriteAttributeString("name", configuration.Name);
                     writer.WriteAttributeString("input", configuration.Input);
-                    
-                    foreach(var output in configuration.Outputs)
+
+                    foreach (var metaEntry in configuration.Metadata.Where(x => x.Value != null))
+                    {
+                        writer.WriteStartElement("meta");
+                        writer.WriteAttributeString("name", metaEntry.Key);
+                        writer.WriteAttributeString("value", metaEntry.Value);
+                        writer.WriteEndElement();
+                    }
+
+                    foreach (var output in configuration.Outputs)
                     {
                         writer.WriteStartElement("output");
                         writer.WriteAttributeString("format", output.Key);
@@ -97,14 +105,19 @@ namespace CircuitDiagram.CLI.Component.Manifest
                 {
                     Input = g.InputFile,
                     Name = x.Key,
+                    Metadata = new Dictionary<string, string>(),
                     Outputs = x.Value,
                 });
 
                 var additionalConfigurations = compiledEntries.Where(x => x is ComponentConfigurationManifestEntry && x.ComponentGuid == g.ComponentGuid).Cast<ComponentConfigurationManifestEntry>().Select(x => new ConfigurationItem
                 {
-                    Guid = x.Guid,
+                    Guid = x.Metadata.Guid,
                     Input = x.InputFile,
                     Name = x.ConfigurationName,
+                    Metadata = new Dictionary<string, string>
+                    {
+                        ["description"] = x.Metadata.Description,
+                    },
                     Outputs = x.OutputFiles,
                 });
 
@@ -137,6 +150,7 @@ namespace CircuitDiagram.CLI.Component.Manifest
             public Guid? Guid { get; set; }
             public string Name { get; set; }
             public string Input { get; set; }
+            public IReadOnlyDictionary<string, string> Metadata { get; set; }
             public IReadOnlyDictionary<string, string> Outputs { get; set; }
         }
     }

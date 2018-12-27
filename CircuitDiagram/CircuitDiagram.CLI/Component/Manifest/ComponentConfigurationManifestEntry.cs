@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CircuitDiagram.TypeDescription.Definition;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,7 +7,7 @@ namespace CircuitDiagram.CLI.Component.Manifest
 {
     class ComponentConfigurationManifestEntry : IManifestEntry
     {
-        public Guid Guid { get; set; }
+        public DefinitionMetadata Metadata { get; set; }
         public string InputFile { get; set; }
         public Guid ComponentGuid { get; set; }
         public string ConfigurationName { get; set; }
