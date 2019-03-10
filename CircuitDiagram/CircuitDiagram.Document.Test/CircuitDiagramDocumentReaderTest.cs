@@ -95,8 +95,16 @@ namespace CircuitDiagram.Document.Test
             var resistor = document.Components().First(x => x.Type.CollectionItem == "resistor");
 
             Assert.That(resistor.Connections, Is.Not.Empty);
-            Assert.That(resistor.Connections.Count(x => x.Key == "a"), Is.EqualTo(1), "Connection 'a' is missing");
-            Assert.That(resistor.Connections.Count(x => x.Key == "b"), Is.EqualTo(1), "Connection 'b' is missing");
+
+            var connectionA = resistor.Connections.SingleOrDefault(x => x.Key == "a");
+            Assert.That(connectionA, Is.Not.Null, "Connection 'a' is missing");
+            Assert.That(connectionA.Value.ConnectedTo.Count(), Is.EqualTo(1));
+            Assert.That(connectionA.Value.Connection.ConnectionId, Is.EqualTo("0"), "ConnectionId for 'a' was not preserved");
+
+            var connectionB = resistor.Connections.SingleOrDefault(x => x.Key == "b");
+            Assert.That(connectionB, Is.Not.Null, "Connection 'b' is missing");
+            Assert.That(connectionB.Value.ConnectedTo.Count(), Is.EqualTo(1));
+            Assert.That(connectionB.Value.Connection.ConnectionId, Is.EqualTo("1"), "ConnectionId for 'b' was not preserved");
         }
     }
 }

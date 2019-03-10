@@ -30,18 +30,27 @@ namespace CircuitDiagram.Circuit
     {
         private readonly HashSet<NamedConnection> namedConnections;
 
-        internal Connection(NamedConnection onlyConnection)
+        internal Connection(NamedConnection onlyConnection, string connectionId)
         {
             namedConnections = new HashSet<NamedConnection>
             {
                 onlyConnection
             };
+            ConnectionId = connectionId;
         }
+
+        public string ConnectionId { get; private set; }
 
         internal IReadOnlyCollection<NamedConnection> NamedConnections => new ReadOnlyCollection<NamedConnection>(namedConnections.ToList());
 
         internal void ConnectTo(NamedConnection other)
         {
+            // Unset the connection ID if the other connection has a different ID
+            if (other.Connection.ConnectionId != null && other.Connection.ConnectionId != ConnectionId)
+            {
+                ConnectionId = null;
+            }
+
             // Add all connections 'other' points to
             namedConnections.UnionWith(other.Connection.NamedConnections);
 

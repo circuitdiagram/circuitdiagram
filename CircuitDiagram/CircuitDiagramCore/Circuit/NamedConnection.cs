@@ -11,10 +11,15 @@ namespace CircuitDiagram.Circuit
     public sealed class NamedConnection
     {
         public NamedConnection(ConnectionName name, IConnectedElement owner)
+            : this(name, owner, null)
+        {
+        }
+
+        public NamedConnection(ConnectionName name, IConnectedElement owner, string connectionId)
         {
             Name = name;
             Owner = owner;
-            Connection = new Connection(this);
+            Connection = new Connection(this, connectionId);
         }
 
         public ConnectionName Name { get; }
@@ -30,7 +35,7 @@ namespace CircuitDiagram.Circuit
         public void Disconnect()
         {
             Connection.Disconnect(this);
-            Connection = new Connection(this);
+            Connection = new Connection(this, null);
         }
     }
 }

@@ -127,7 +127,7 @@ namespace CircuitDiagram.Document.InternalReader
                     {
                         // Connection not defined on component (loading without a component description)
                         var connectionName = new ConnectionName(pointAttr.Value);
-                        namedConnection = new NamedConnection(connectionName, component);
+                        namedConnection = new NamedConnection(connectionName, component, idAttr.Value);
                         component.Connections[connectionName] = namedConnection;
                     }
                     context.ApplyConnection(idAttr.Value, namedConnection);
