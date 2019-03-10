@@ -60,28 +60,28 @@ namespace CircuitDiagram.Document.Test
         [Test]
         public void ReadsComponents()
         {
-            Assert.That(document.Components.Count(), Is.EqualTo(2));
+            Assert.That(document.Components().Count(), Is.EqualTo(2));
 
-            var c0 = document.Components.ElementAt(0);
+            var c0 = document.Components().ElementAt(0);
             Assert.That(c0.Type.CollectionItem, Is.EqualTo("resistor"));
 
-            var c1 = document.Components.ElementAt(1);
+            var c1 = document.Components().ElementAt(1);
             Assert.That(c1.Type.CollectionItem, Is.EqualTo("cell"));
         }
 
         [Test]
         public void ReadsWires()
         {
-            Assert.That(document.Wires.Count(), Is.EqualTo(2));
+            Assert.That(document.Wires().Count(), Is.EqualTo(2));
 
-            var w0 = document.Wires.ElementAt(0);
+            var w0 = document.Wires().ElementAt(0);
             Assert.That(w0.Layout.Location.X, Is.EqualTo(100.0));
             Assert.That(w0.Layout.Location.Y, Is.EqualTo(100.0));
             Assert.That(w0.Layout.Size, Is.EqualTo(100.0));
             Assert.That(w0.Layout.Flip, Is.EqualTo(FlipState.None));
             Assert.That(w0.Layout.Orientation, Is.EqualTo(Orientation.Vertical));
 
-            var w1 = document.Wires.ElementAt(1);
+            var w1 = document.Wires().ElementAt(1);
             Assert.That(w1.Layout.Location.X, Is.EqualTo(280.0));
             Assert.That(w1.Layout.Location.Y, Is.EqualTo(100.0));
             Assert.That(w1.Layout.Size, Is.EqualTo(100.0));

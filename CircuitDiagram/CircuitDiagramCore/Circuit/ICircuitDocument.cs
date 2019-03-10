@@ -17,30 +17,20 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CircuitDiagram.Circuit.Metadata;
 using CircuitDiagram.Primitives;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace CircuitDiagram.Circuit
 {
-    public class CircuitDocument : IReadOnlyCircuitDocument
+    public interface IReadOnlyCircuitDocument
     {
-        public CircuitDocument()
-        {
-            Elements = new List<IElement>();
-            Metadata = new CircuitDocumentMetadata();
-        }
+        CircuitDocumentMetadata Metadata { get; }
 
-        public CircuitDocumentMetadata Metadata { get; }
+        Size Size { get; }
 
-        public Size Size { get; set; }
-
-        public ICollection<IElement> Elements { get; }
-
-        IEnumerable<IElement> IReadOnlyCircuitDocument.Elements => Elements;
+        IEnumerable<IElement> Elements { get; }
     }
 }

@@ -53,10 +53,10 @@ namespace CircuitDiagram.Render
 
         public void RenderCircuit(CircuitDocument circuit, IDrawingContext drawingContext)
         {
-            foreach (var component in circuit.PositionalComponents)
+            foreach (var component in circuit.PositionalComponents())
                 RenderComponent(component, drawingContext, ignoreOffset: false);
 
-            foreach (var wire in circuit.Wires)
+            foreach (var wire in circuit.Wires())
                 RenderWire(wire, drawingContext);
 
             var connections = connectionVisualiser.PositionConnections(circuit, new LayoutOptions() {GridSize = 10.0});

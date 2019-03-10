@@ -113,7 +113,7 @@ namespace CircuitDiagram.Document.InternalWriter
         {
             var documentXml = new XElement(Ns.Document + "elements");
 
-            foreach (var component in document.Components)
+            foreach (var component in document.Components())
             {
                 var componentXml = new XElement(Ns.Document + "c");
 
@@ -151,7 +151,7 @@ namespace CircuitDiagram.Document.InternalWriter
                 documentXml.Add(componentXml);
             }
 
-            foreach (var wire in document.Wires)
+            foreach (var wire in document.Wires())
             {
                 var wireXml = new XElement(Ns.Document + "w");
                 WriteLayout(wire.Layout, wireXml);

@@ -43,14 +43,14 @@ namespace CircuitDiagram.Render.Connections
 
         public IList<VisualisedConnection> PositionConnections(CircuitDocument document, LayoutOptions layoutOptions)
         {
-            foreach (var wire in document.Wires.ToList())
+            foreach (var wire in document.Wires().ToList())
             {
                 document.Elements.Remove(wire);
                 document.Elements.Add(WireToComponent(wire));
             }
 
             // Compute connections
-            var connectionPoints = document.PositionalComponents.SelectMany(x => GetConnectionPoints(x, layoutOptions).Select(c => Tuple.Create(x, c)));
+            var connectionPoints = document.PositionalComponents().SelectMany(x => GetConnectionPoints(x, layoutOptions).Select(c => Tuple.Create(x, c)));
             var connectionsByLocation = connectionPoints.GroupBy(x => x.Item2.Location).Where(x => x.Any(c => c.Item2.IsEdge) && x.Count() > 1).ToList();
 
             // Connect components
@@ -76,7 +76,7 @@ namespace CircuitDiagram.Render.Connections
                              Render = VisualiseConnection(x.Select(y => y.Item2).ToList())
                          }).ToList();
 
-            foreach (var wire in document.PositionalComponents.Where(x => x.Type == WireType).ToList())
+            foreach (var wire in document.PositionalComponents().Where(x => x.Type == WireType).ToList())
             {
                 document.Elements.Remove(wire);
                 document.Elements.Add(ComponentToWire(wire));

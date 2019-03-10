@@ -21,26 +21,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using CircuitDiagram.Circuit.Metadata;
-using CircuitDiagram.Primitives;
 
 namespace CircuitDiagram.Circuit
 {
-    public class CircuitDocument : IReadOnlyCircuitDocument
+    public static class CircuitDocumentExtensions
     {
-        public CircuitDocument()
-        {
-            Elements = new List<IElement>();
-            Metadata = new CircuitDocumentMetadata();
-        }
+        public static IEnumerable<Component> Components(this IReadOnlyCircuitDocument document) => document.Elements.Where(el => el is Component).Cast<Component>();
 
-        public CircuitDocumentMetadata Metadata { get; }
+        public static IEnumerable<PositionalComponent> PositionalComponents(this IReadOnlyCircuitDocument document) => document.Elements.Where(el => el is PositionalComponent).Cast<PositionalComponent>();
 
-        public Size Size { get; set; }
+        public static IEnumerable<Wire> Wires(this IReadOnlyCircuitDocument document) => document.Elements.Where(el => el is Wire).Cast<Wire>();
 
-        public ICollection<IElement> Elements { get; }
-
-        IEnumerable<IElement> IReadOnlyCircuitDocument.Elements => Elements;
+        public static IEnumerable<IPositionalElement> PositionalElements(this IReadOnlyCircuitDocument document) => document.Elements.Where(el => el is IPositionalElement).Cast<IPositionalElement>();
     }
 }
