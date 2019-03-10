@@ -122,8 +122,14 @@ namespace CircuitDiagram.Document.InternalReader
                         continue;
                     }
 
-                    var namedConnection =
-                        component.Connections.FirstOrDefault(x => x.Value.Name.Value == pointAttr.Value).Value ?? new NamedConnection(pointAttr.Value, component);
+                    var namedConnection = component.Connections.FirstOrDefault(x => x.Value.Name.Value == pointAttr.Value).Value;
+                    if (namedConnection == null)
+                    {
+                        // Connection not defined on component (loading without a component description)
+                        var connectionName = new ConnectionName(pointAttr.Value);
+                        namedConnection = new NamedConnection(connectionName, component);
+                        component.Connections[connectionName] = namedConnection;
+                    }
                     context.ApplyConnection(idAttr.Value, namedConnection);
                 }
 

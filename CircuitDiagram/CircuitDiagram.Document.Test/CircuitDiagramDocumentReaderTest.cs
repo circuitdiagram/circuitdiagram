@@ -88,5 +88,15 @@ namespace CircuitDiagram.Document.Test
             Assert.That(w0.Layout.Flip, Is.EqualTo(FlipState.None));
             Assert.That(w1.Layout.Orientation, Is.EqualTo(Orientation.Vertical));
         }
+
+        [Test]
+        public void ReadsConnections()
+        {
+            var resistor = document.Components().First(x => x.Type.CollectionItem == "resistor");
+
+            Assert.That(resistor.Connections, Is.Not.Empty);
+            Assert.That(resistor.Connections.Count(x => x.Key == "a"), Is.EqualTo(1), "Connection 'a' is missing");
+            Assert.That(resistor.Connections.Count(x => x.Key == "b"), Is.EqualTo(1), "Connection 'b' is missing");
+        }
     }
 }
