@@ -30,6 +30,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
 
         public void ReadSection(XElement connectionsElement, ComponentDescription description)
         {
+            int unnamedConnectionId = 0;
             List<ConnectionGroup> parsedConnectionGroups = new List<ConnectionGroup>();
             var connectionGroupNodes = connectionsElement.Elements(XmlLoader.ComponentNamespace + "group");
             foreach (var connectionGroupNode in connectionGroupNodes)
@@ -57,9 +58,11 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
                         else if (edgeText == "both")
                             edge = ConnectionEdge.Both;
                     }
-                    string connectionName = "#";
+                    string connectionName;
                     if (connectionNode.Attribute("name") != null)
                         connectionName = connectionNode.Attribute("name").Value;
+                    else
+                        connectionName = $"#{unnamedConnectionId++}";
 
                     if (!componentPointParser.TryParse(connectionNode.Attribute("start"), out var start) ||
                         !componentPointParser.TryParse(connectionNode.Attribute("end"), out var end))
