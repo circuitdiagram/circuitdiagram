@@ -108,7 +108,7 @@ namespace CircuitDiagram.Render
             writer.WriteAttributeString("cy", centre.Y.ToString());
             writer.WriteAttributeString("rx", radiusX.ToString());
             writer.WriteAttributeString("ry", radiusY.ToString());
-            writer.WriteAttributeString("style", string.Format("fill-opacity:" + fillOpacity + ";fill:rgb({0},{1},{2});stroke:rgb(0,0,0);stroke-width:" + thickness.ToString(), 0, 0, 0));
+            writer.WriteAttributeString("style", $"fill-opacity:{fillOpacity};fill:rgb(0,0,0);stroke:rgb(0,0,0);stroke-width:{thickness}");
             writer.WriteEndElement();
         }
 
@@ -126,7 +126,7 @@ namespace CircuitDiagram.Render
 
             writer.WriteStartElement("path");
             writer.WriteAttributeString("d", data);
-            writer.WriteAttributeString("style", "fill-opacity:" + fillOpacity + ";fill:rgb(0,0,0);stroke:rgb(0,0,0);stroke-width:" + thickness.ToString());
+            writer.WriteAttributeString("style", "fill-opacity:" + fillOpacity + ";fill:rgb(0,0,0);stroke:rgb(0,0,0);stroke-linecap:square;stroke-width:" + thickness.ToString());
             writer.WriteEndElement();
         }
 

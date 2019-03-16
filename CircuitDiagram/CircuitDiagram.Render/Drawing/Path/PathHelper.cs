@@ -232,9 +232,9 @@ namespace CircuitDiagram.Render.Path
                         lastY = y;
                     }
                 }
-                else // close path
+                else if (pCommand == CommandType.ClosePath)
                 {
-                    //pathCommands.Add(new ClosePath());
+                    pathCommands.Add(new ClosePath());
                 }
             }
 
