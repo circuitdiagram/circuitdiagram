@@ -90,12 +90,14 @@ namespace CircuitDiagram.Render
 
         public void DrawRectangle(Point start, Size size, double thickness, bool fill = false)
         {
+            string fillOpacity = ((fill ? 255f : 0f) / 255f).ToString();
+
             writer.WriteStartElement("rect");
             writer.WriteAttributeString("x", start.X.ToString());
             writer.WriteAttributeString("y", start.Y.ToString());
             writer.WriteAttributeString("width", size.Width.ToString());
             writer.WriteAttributeString("height", size.Height.ToString());
-            writer.WriteAttributeString("style", "fill-opacity:0;stroke:rgb(0,0,0);stroke-width:" + thickness.ToString());
+            writer.WriteAttributeString("style", $"fill-opacity:{fillOpacity};fill:rgb(0,0,0);stroke:rgb(0,0,0);stroke-width:{thickness}");
             writer.WriteEndElement();
         }
 
@@ -126,7 +128,7 @@ namespace CircuitDiagram.Render
 
             writer.WriteStartElement("path");
             writer.WriteAttributeString("d", data);
-            writer.WriteAttributeString("style", "fill-opacity:" + fillOpacity + ";fill:rgb(0,0,0);stroke:rgb(0,0,0);stroke-linecap:square;stroke-width:" + thickness.ToString());
+            writer.WriteAttributeString("style", $"fill-opacity:{fillOpacity};fill:rgb(0,0,0);stroke:rgb(0,0,0);stroke-linecap:square;stroke-width:{thickness}");
             writer.WriteEndElement();
         }
 
