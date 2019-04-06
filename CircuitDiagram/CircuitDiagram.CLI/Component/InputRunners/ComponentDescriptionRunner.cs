@@ -75,6 +75,7 @@ namespace CircuitDiagram.CLI.Component.InputRunners
                     ComponentGuid = description.Metadata.GUID,
                     Success = true,
                     Description = description.Metadata.AdditionalInformation,
+                    Version = description.Metadata.Version.ToString(),
                     InputFile = CleanPath(inputFile),
                     Metadata = metadata,
                     OutputFiles = outputs.ToImmutableDictionary(),

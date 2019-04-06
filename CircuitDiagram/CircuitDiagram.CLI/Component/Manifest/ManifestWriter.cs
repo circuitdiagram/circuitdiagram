@@ -41,6 +41,7 @@ namespace CircuitDiagram.CLI.Component.Manifest
                 writer.WriteAttributeString("name", entry.ComponentName);
                 writer.WriteAttributeString("author", entry.Author);
                 writer.WriteAttributeString("guid", entry.Guid.ToString());
+                writer.WriteAttributeString("version", entry.Version);
                 writer.WriteAttributeString("input", entry.Input);
 
                 foreach (var metaEntry in entry.Metadata)
@@ -127,6 +128,7 @@ namespace CircuitDiagram.CLI.Component.Manifest
                     Author = g.Author,
                     ComponentName = g.ComponentName,
                     Input = g.InputFile,
+                    Version = g.Version,
                     Metadata = g.Metadata,
                     Outputs = g.OutputFiles,
                     Configurations = configurations.Concat(additionalConfigurations).ToList(),
@@ -139,6 +141,7 @@ namespace CircuitDiagram.CLI.Component.Manifest
             public string ComponentName { get; set; }
             public string Author { get; set; }
             public Guid Guid { get; set; }
+            public string Version { get; set; }
             public string Input { get; set; }
             public IReadOnlyDictionary<string, string> Metadata { get; set; }
             public IReadOnlyDictionary<string, string> Outputs { get; set; }
