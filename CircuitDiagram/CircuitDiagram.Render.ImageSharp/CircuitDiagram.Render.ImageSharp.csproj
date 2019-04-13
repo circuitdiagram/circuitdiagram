@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>CircuitDiagram.Render</PackageId>
+    <PackageId>CircuitDiagram.Render.ImageSharp</PackageId>
     <PackageVersion>0.0-dev</PackageVersion>
-    <Description>Circuit Diagram functionality for rendering circuits.</Description>
+    <Description>Circuit Diagram functionality for rendering circuits using the ImageSharp graphics library.</Description>
     <Authors>Samuel Fisher</Authors>
     <PackageProjectUrl>https://www.circuit-diagram.org/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/circuitdiagram/circuitdiagram</RepositoryUrl>
@@ -12,6 +12,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0002" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CircuitDiagram.Render\CircuitDiagram.Render.csproj" />
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj" />
   </ItemGroup>
 

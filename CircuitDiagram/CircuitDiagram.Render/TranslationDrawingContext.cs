@@ -22,7 +22,7 @@ using CircuitDiagram.Drawing.Text;
 using CircuitDiagram.Primitives;
 using CircuitDiagram.Render.Path;
 
-namespace CircuitDiagram.Render.Drawing
+namespace CircuitDiagram.Render
 {
     public class TranslationDrawingContext : IDrawingContext
     {

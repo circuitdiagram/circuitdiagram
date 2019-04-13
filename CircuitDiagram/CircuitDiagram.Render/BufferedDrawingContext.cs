@@ -1,33 +1,14 @@
-﻿// This file is part of Circuit Diagram.
-// Copyright (c) 2017 Samuel Fisher
-//  
-// Circuit Diagram is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with Circuit Diagram. If not, see <http://www.gnu.org/licenses/>.
-
-using System;
-using System.Collections.Generic;
-using System.Text;
-using CircuitDiagram.Drawing;
+﻿using CircuitDiagram.Drawing;
 using CircuitDiagram.Drawing.Text;
 using CircuitDiagram.Primitives;
 using CircuitDiagram.Render.Path;
-using SixLabors.Fonts;
-using Size = CircuitDiagram.Primitives.Size;
-using TextAlignment = CircuitDiagram.Drawing.Text.TextAlignment;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace CircuitDiagram.Render.Drawing
+namespace CircuitDiagram.Render
 {
-    public class BufferedDrawingContext : IDrawingContext
+    public abstract class BufferedDrawingContext : IDrawingContext
     {
         private readonly IDrawingContext underlying;
 
@@ -129,17 +110,7 @@ namespace CircuitDiagram.Render.Drawing
             underlying?.DrawRectangle(topLeft, new Size(totalWidth, height), 1.0);
         }
 
-        protected virtual Size MeasureText(TextRun text)
-        {
-            if (string.IsNullOrWhiteSpace(text.Text))
-                return new Size(0, 0);
-
-            // TODO: Support text.Formatting.FormattingType
-            var family = SystemFonts.Find("Arial");
-            var font = new Font(family, (float)text.Formatting.Size, FontStyle.Regular);
-            var size = TextMeasurer.Measure(text.Text, new RendererOptions(font, 72));
-            return new Size(size.Width, size.Height);
-        }
+        protected abstract Size MeasureText(TextRun text);
 
         private void Expand(Rect rect)
         {

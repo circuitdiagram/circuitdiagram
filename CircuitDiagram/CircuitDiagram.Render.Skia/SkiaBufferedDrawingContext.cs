@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Text;
 using CircuitDiagram.Drawing.Text;
 using CircuitDiagram.Primitives;
-using CircuitDiagram.Render.Drawing;
 using SkiaSharp;
 
 namespace CircuitDiagram.Render.Skia

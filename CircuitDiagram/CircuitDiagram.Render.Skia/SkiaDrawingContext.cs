@@ -41,7 +41,7 @@ namespace CircuitDiagram.Render.Skia
         public SkiaDrawingContext(int width, int height, SKColor background, SKTypeface typeface)
         {
             this.typeface = typeface;
-            surface = SKSurface.Create(width, height, SKImageInfo.PlatformColorType, SKAlphaType.Opaque);
+            surface = SKSurface.Create(new SKImageInfo(width, height, SKImageInfo.PlatformColorType, SKAlphaType.Opaque));
             surface.Canvas.Clear(background);
         }
 

@@ -1,4 +1,20 @@
-﻿using System;
+﻿// This file is part of Circuit Diagram.
+// Copyright (c) 2017 Samuel Fisher
+//  
+// Circuit Diagram is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Circuit Diagram. If not, see <http://www.gnu.org/licenses/>.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,9 +34,9 @@ using SixLabors.Shapes;
 using Point = CircuitDiagram.Primitives.Point;
 using Size = CircuitDiagram.Primitives.Size;
 
-namespace CircuitDiagram.Render
+namespace CircuitDiagram.Render.ImageSharp
 {
-    public class BitmapDrawingContext : IDrawingContext
+    public class ImageSharpDrawingContext : IDrawingContext
     {
         private static readonly SolidBrush<Argb32> Black = new SolidBrush<Argb32>(NamedColors<Argb32>.Black);
 
@@ -28,7 +44,7 @@ namespace CircuitDiagram.Render
         private readonly Image<Argb32> image;
         private readonly bool ownsImage;
 
-        public BitmapDrawingContext(int width, int height)
+        public ImageSharpDrawingContext(int width, int height)
         : this(width, height, NamedColors<Argb32>.Transparent)
         {
             fontFamily = SystemFonts.Find("Arial");
@@ -36,7 +52,7 @@ namespace CircuitDiagram.Render
             ownsImage = true;
         }
 
-        public BitmapDrawingContext(int width, int height, Argb32 backgroundColor)
+        public ImageSharpDrawingContext(int width, int height, Argb32 backgroundColor)
         {
             fontFamily = SystemFonts.Find("Consolas");
             image = new Image<Argb32>(width, height);
@@ -46,14 +62,14 @@ namespace CircuitDiagram.Render
             image.Mutate(ctx => { ctx.Fill(backgroundColor, new RectangleF(0, 0, width, height)); });
         }
 
-        public BitmapDrawingContext(Image<Argb32> target)
+        public ImageSharpDrawingContext(Image<Argb32> target)
         {
             fontFamily = SystemFonts.Find("Arial");
             image = target;
             ownsImage = false;
         }
 
-        public BitmapDrawingContext(Image<Argb32> target, FontFamily fontFamily)
+        public ImageSharpDrawingContext(Image<Argb32> target, FontFamily fontFamily)
         {
             this.fontFamily = fontFamily;
             image = target;

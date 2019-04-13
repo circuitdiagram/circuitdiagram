@@ -23,7 +23,6 @@ using CircuitDiagram.Circuit;
 using CircuitDiagram.Drawing;
 using CircuitDiagram.Primitives;
 using CircuitDiagram.Render;
-using CircuitDiagram.Render.Drawing;
 using CircuitDiagram.Render.Skia;
 using CircuitDiagram.TypeDescription;
 using SkiaSharp;
