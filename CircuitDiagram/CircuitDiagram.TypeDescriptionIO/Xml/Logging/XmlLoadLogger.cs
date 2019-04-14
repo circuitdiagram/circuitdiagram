@@ -13,7 +13,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Logging
         public XmlLoadLogger(ILogger logger, string fileName)
         {
             this.logger = logger;
-            this.fileName = fileName.Replace(Environment.CurrentDirectory, "."); ;
+            this.fileName = fileName?.Replace(Environment.CurrentDirectory, ".") ?? "File.xml";
         }
 
         public void Log(LogLevel level, FileRange position, string message, Exception innerException)
