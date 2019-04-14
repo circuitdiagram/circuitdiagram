@@ -54,6 +54,8 @@ namespace CircuitDiagram.TypeDescription.Definition
             {
                 Guid = guid,
                 Description = yaml.Metadata.Description,
+                Name = yaml.Metadata.Name,
+                Version = yaml.Metadata.Version,
             };
 
             var properties = new Dictionary<PropertyName, PropertyValue>();
@@ -114,6 +116,7 @@ namespace CircuitDiagram.TypeDescription.Definition
     {
         public string Guid { get; set; }
         public string Name { get; set; }
+        public string Version { get; set; }
         public string Description { get; set; }
     }
 
