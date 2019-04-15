@@ -137,7 +137,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Util
             else if (value is ConditionTreeLeaf)
             {
                 var condition = value as ConditionTreeLeaf;
-                writer.Write((byte)2); // 0 for condition
+                writer.Write((byte)2); // 2 for condition
                 writer.Write((int)condition.Type);
                 writer.Write((int)condition.Comparison);
                 writer.Write(condition.VariableName);

@@ -38,10 +38,10 @@ namespace CircuitDiagram.TypeDescription.Conditions
             CompareTo = new PropertyValue();
         }
 
-        public ConditionTreeLeaf(ConditionType type, string name, ConditionComparison comparison, PropertyValue compareTo)
+        public ConditionTreeLeaf(ConditionType type, string variableName, ConditionComparison comparison, PropertyValue compareTo)
         {
             Type = type;
-            VariableName = name;
+            VariableName = variableName;
             Comparison = comparison;
             CompareTo = compareTo;
         }

@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using CircuitDiagram.IO;
 using CircuitDiagram.TypeDescriptionIO.Binary;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CircuitDiagram.Compiler.CompileStages
 {
@@ -34,7 +35,11 @@ namespace CircuitDiagram.Compiler.CompileStages
                 settings.Certificate = FindCertificate(context.Options.CertificateThumbprint);
 
             var writer = new BinaryWriter(context.Output, settings);
-            writer.Descriptions.Add(context.Description);
+
+            var transformer = new BinaryCompatibilityTransformer(new NullLogger<BinaryCompatibilityTransformer>());
+            var compatibleDescription = transformer.Transform(context.Description);
+
+            writer.Descriptions.Add(compatibleDescription);
             writer.Write();
         }
 

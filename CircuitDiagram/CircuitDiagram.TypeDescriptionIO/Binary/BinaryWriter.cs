@@ -110,7 +110,8 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
             Properties = 3,
             Configurations = 4,
             Connections = 5,
-            Render = 6
+            Render = 6,
+            ExtendedMetadata = 7,
         }
 
         public enum MetadataPropertyType : ushort
@@ -134,6 +135,12 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
             Image_Png = 11,
             Image_Jpeg = 12,
             Image_Gif = 13
+        }
+
+        public enum ExtendedMetadataField : byte
+        {
+            Unknown = 0,
+            SemanticVersion = 10,
         }
 
         public static string ResourceMimeTypeToString(uint type)
@@ -243,7 +250,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
                     BW writer = new BW(tempStream);
 
                     writer.Write(NewResourceID()); // ID
-                    writer.Write(6u); // 6 sections
+                    writer.Write((uint)(6 + (Settings.WriteExtendedMetadada ? 1 : 0))); // 6 sections
 
                     #region Metadata
                     // Write METADATA
@@ -516,6 +523,22 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
                     }
                     #endregion
 
+                    #region ExtendedMetadata 
+                    if (Settings.WriteExtendedMetadada)
+                    {
+                        using (var extendedMetadataStream = new MemoryStream())
+                        {
+                            var extendedMetadataWriter = new BW(extendedMetadataStream);
+                            extendedMetadataWriter.Write((byte)BinaryConstants.ExtendedMetadataField.SemanticVersion);
+                            extendedMetadataWriter.WriteType(new Circuit.PropertyValue(description.Metadata.Version.ToString()));
+
+                            writer.Write((ushort)BinaryConstants.ComponentSectionType.ExtendedMetadata);
+                            writer.Write((uint)extendedMetadataStream.Length);
+                            writer.Write(extendedMetadataStream.ToArray());
+                        }
+                    }
+                    #endregion
+
                     mainWriter.Write((ushort)BinaryConstants.ContentItemType.Component);
                     mainWriter.Write((uint)tempStream.Length);
                     mainWriter.Write(tempStream.ToArray());
@@ -566,7 +589,16 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
             /// Don't embed icons.
             /// </summary>
             public bool IgnoreIcons { get; set; }
-            public System.Security.Cryptography.X509Certificates.X509Certificate2 Certificate { get; set; }
+
+            /// <summary>
+            /// Sign with the supplied certificate.
+            /// </summary>
+            public X509Certificate2 Certificate { get; set; }
+
+            /// <summary>
+            /// Writes an extended metadata section.
+            /// </summary>
+            public bool WriteExtendedMetadada { get; set; }
         }
     }
 }

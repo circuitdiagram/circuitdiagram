@@ -58,10 +58,13 @@ namespace CircuitDiagram.TypeDescription
 
         public bool GetDefaultFlag(FlagOptions option)
         {
-            var defaultFlags = Flags.FirstOrDefault(x => x.Conditions.Equals(ConditionTree.Empty));
-            if (defaultFlags == null)
-                return false;
-            return (defaultFlags.Value & option) == option;
+            foreach (var flagSet in Flags)
+            {
+                if (flagSet.Conditions.Equals(ConditionTree.Empty) && (flagSet.Value & option) == option)
+                    return true;
+            }
+
+            return false;
         }
 
         public void SetDefaultFlag(FlagOptions option, bool enabled)
