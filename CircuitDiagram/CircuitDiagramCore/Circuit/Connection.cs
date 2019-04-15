@@ -1,7 +1,7 @@
 ﻿// This file is part of Circuit Diagram.
 // http://www.circuit-diagram.org/
 // 
-// Copyright (c) 2017 Samuel Fisher
+// Copyright (c) 2019 Samuel Fisher
 //  
 // Circuit Diagram is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,7 +39,7 @@ namespace CircuitDiagram.Circuit
             ConnectionId = connectionId;
         }
 
-        public string ConnectionId { get; private set; }
+        public string ConnectionId { get; set; }
 
         internal IReadOnlyCollection<NamedConnection> NamedConnections => new ReadOnlyCollection<NamedConnection>(namedConnections.ToList());
 
