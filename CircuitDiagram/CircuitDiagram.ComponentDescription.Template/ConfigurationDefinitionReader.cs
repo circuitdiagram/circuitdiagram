@@ -46,7 +46,7 @@ namespace CircuitDiagram.TypeDescription.Definition
             var guid = Guid.Parse(yaml.Metadata.Guid);
             var descriptionGuid = Guid.Parse(yaml.Template.Guid);
 
-            var description = componentDescriptionLookup.GetDescription(new TypeDescriptionComponentType(descriptionGuid, ComponentType.Unknown(yaml.Metadata.Name)));
+            var description = componentDescriptionLookup.GetDescription(new TypeDescriptionComponentType(descriptionGuid, ComponentType.Unknown(yaml.Template.Name)));
             if (description == null)
                 throw new InvalidOperationException("Base description for template not found.");
 
