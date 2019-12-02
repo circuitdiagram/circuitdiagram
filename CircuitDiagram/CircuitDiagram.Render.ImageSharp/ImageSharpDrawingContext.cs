@@ -26,9 +26,9 @@ using CircuitDiagram.Drawing.Text;
 using CircuitDiagram.Render.Path;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Drawing.Brushes;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
 using SixLabors.Shapes;
 using Point = CircuitDiagram.Primitives.Point;
@@ -38,23 +38,23 @@ namespace CircuitDiagram.Render.ImageSharp
 {
     public class ImageSharpDrawingContext : IDrawingContext
     {
-        private static readonly SolidBrush<Argb32> Black = new SolidBrush<Argb32>(NamedColors<Argb32>.Black);
+        private static readonly SolidBrush Black = new SolidBrush(Color.Black);
 
         private readonly FontFamily fontFamily;
         private readonly Image<Argb32> image;
         private readonly bool ownsImage;
 
         public ImageSharpDrawingContext(int width, int height)
-        : this(width, height, NamedColors<Argb32>.Transparent)
+        : this(width, height, Color.Transparent)
         {
             fontFamily = SystemFonts.Find("Arial");
             image = new Image<Argb32>(width, height);
             ownsImage = true;
         }
 
-        public ImageSharpDrawingContext(int width, int height, Argb32 backgroundColor)
+        public ImageSharpDrawingContext(int width, int height, Color backgroundColor)
         {
-            fontFamily = SystemFonts.Find("Consolas");
+            fontFamily = SystemFonts.Find("Arial");
             image = new Image<Argb32>(width, height);
             ownsImage = true;
 
@@ -142,8 +142,10 @@ namespace CircuitDiagram.Render.ImageSharp
             image.Mutate(ctx => ctx.Draw(Black, 2.0f, builder.Build()));
         }
 
-        public void DrawText(Point anchor, TextAlignment alignment, IList<TextRun> textRuns)
+        public void DrawText(Point anchor, TextAlignment alignment, double rotation, IList<TextRun> textRuns)
         {
+            // TODO: support rotation
+
             var font = new Font(fontFamily, 12);
 
             image.Mutate(ctx =>
@@ -188,7 +190,7 @@ namespace CircuitDiagram.Render.ImageSharp
                         renderLocation.X = renderLocation.X - 3f;
                     }
 
-                    ctx.DrawText(run.Text, font, NamedColors<Argb32>.Black, renderLocation);
+                    ctx.DrawText(run.Text, font, Color.Black, renderLocation);
                     horizontalOffsetCounter += TextMeasurer.MeasureBounds(run.Text, new RendererOptions(renderFont)).Width;
                 }
             });

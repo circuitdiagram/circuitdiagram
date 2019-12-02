@@ -160,7 +160,7 @@ namespace CircuitDiagram.Render.Skia
             surface.Canvas.DrawPath(path, paint);
         }
 
-        public void DrawText(Point anchor, TextAlignment alignment, IList<TextRun> textRuns)
+        public void DrawText(Point anchor, TextAlignment alignment, double rotation, IList<TextRun> textRuns)
         {
             var paint = new SKPaint
             {
@@ -169,6 +169,8 @@ namespace CircuitDiagram.Render.Skia
                 Style = SKPaintStyle.Fill,
                 TextSize = 12f,
                 Typeface = typeface,
+                SubpixelText = true,
+                IsLinearText = rotation != 0.0,
             };
 
             float totalWidth = 0f;
@@ -192,7 +194,10 @@ namespace CircuitDiagram.Render.Skia
             }
 
             var startLocation = anchor.ToSkPoint();
-            
+
+            surface.Canvas.Save();
+            surface.Canvas.RotateDegrees((float)rotation, startLocation.X, startLocation.Y);
+
             // Horizontal alignment
             if (alignment == TextAlignment.TopCentre || alignment == TextAlignment.CentreCentre || alignment == TextAlignment.BottomCentre)
                 startLocation.X -= totalWidth / 2;
@@ -204,7 +209,7 @@ namespace CircuitDiagram.Render.Skia
                 startLocation.Y += totalHeight;
             if (alignment == TextAlignment.CentreLeft || alignment == TextAlignment.CentreCentre || alignment == TextAlignment.CentreRight)
                 startLocation.Y += totalHeight / 2;
-            
+
             float horizontalOffsetCounter = 0;
             foreach (TextRun run in textRuns)
             {
@@ -231,6 +236,8 @@ namespace CircuitDiagram.Render.Skia
                 surface.Canvas.DrawText(run.Text, renderLocation.X, renderLocation.Y, paint);
                 horizontalOffsetCounter += bounds.Right;
             }
+
+            surface.Canvas.Restore();
         }
 
         public void Mutate(Action<SKCanvas> action)

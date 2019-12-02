@@ -95,7 +95,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
     public static class BinaryConstants
     {
         public const byte FormatVersion = 2;
-        public const byte FormattedTextVersion = 1;
+        public const byte FormattedTextVersion = 2;
 
         public enum ContentItemType : ushort
         {
@@ -500,9 +500,12 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
                                     case RenderCommandType.Text:
                                         {
                                             var text = command as RenderText;
-                                            renderWriter.Write(BinaryConstants.FormattedTextVersion); // Formatted text version
-                                            renderWriter.Write(text.Location); // Text location
-                                            renderWriter.Write((uint)text.Alignment); // Text alignment
+                                            renderWriter.Write(BinaryConstants.FormattedTextVersion);
+                                            renderWriter.Write(text.Location);
+                                            renderWriter.Write((byte)text.Alignment);
+                                            renderWriter.Write((byte)text.Rotation);
+                                            renderWriter.Write((byte)0);
+                                            renderWriter.Write((byte)0);
 
                                             renderWriter.Write((uint)text.TextRuns.Count); // Number of text runs
                                             foreach (TextRun run in text.TextRuns)

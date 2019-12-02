@@ -132,7 +132,7 @@ namespace CircuitDiagram.Render
             writer.WriteEndElement();
         }
 
-        public void DrawText(Point anchor, TextAlignment alignment, IList<TextRun> textRuns)
+        public void DrawText(Point anchor, TextAlignment alignment, double rotation, IList<TextRun> textRuns)
         {
             writer.WriteStartElement("text");
             writer.WriteAttributeString("x", anchor.X.ToString());
@@ -152,6 +152,7 @@ namespace CircuitDiagram.Render
 
             writer.WriteAttributeString("style", "font-family:Arial;font-size:" + textRuns.FirstOrDefault().Formatting.Size + "px;text-anchor:" + textAnchor);
             writer.WriteAttributeString("dy", dy);
+            writer.WriteAttributeString("transform", $"rotate({rotation}, {anchor.X}, {anchor.Y})");
 
             foreach (TextRun run in textRuns)
             {

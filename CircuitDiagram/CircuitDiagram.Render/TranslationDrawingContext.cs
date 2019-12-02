@@ -55,9 +55,9 @@ namespace CircuitDiagram.Render
             underlying.DrawPath(start.Add(offset), commands, thickness, fill);
         }
 
-        public void DrawText(Point anchor, TextAlignment alignment, IList<TextRun> textRuns)
+        public void DrawText(Point anchor, TextAlignment alignment, double rotation, IList<TextRun> textRuns)
         {
-            underlying.DrawText(anchor.Add(offset), alignment, textRuns);
+            underlying.DrawText(anchor.Add(offset), alignment, rotation, textRuns);
         }
 
         public void Dispose()

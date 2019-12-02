@@ -36,6 +36,8 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
 {
     public class RenderSectionReader : IXmlSectionReader
     {
+        private static readonly Version TextRotationMinFormatVersion = new Version(1, 4);
+
         private readonly IXmlLoadLogger logger;
         private readonly IConditionParser conditionParser;
         private readonly IComponentPointParser componentPointParser;
@@ -209,6 +211,31 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
             if (!Enum.TryParse(tAlignment, out TextAlignment alignment))
                 logger.LogError(element.Attribute("align"), $"Invalid value for text alignment: '{tAlignment}'");
             command.Alignment = alignment;
+
+            var tRotation = "0";
+            if (description.Metadata.FormatVersion >= TextRotationMinFormatVersion && element.Attribute("rotate") != null)
+                tRotation = element.Attribute("rotate").Value;
+
+            var rotation = TextRotation.None;
+            switch (tRotation)
+            {
+                case "0":
+                    rotation = TextRotation.None;
+                    break;
+                case "90":
+                    rotation = TextRotation.Rotate90;
+                    break;
+                case "180":
+                    rotation = TextRotation.Rotate180;
+                    break;
+                case "270":
+                    rotation = TextRotation.Rotate270;
+                    break;
+                default:
+                    logger.LogError(element.Attribute("rotate"), $"Invalid value for text rotation: '{tRotation}'");
+                    break;
+            }
+            command.Rotation = rotation;
 
             double size = 11d;
             if (element.Attribute("size") != null)

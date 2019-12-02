@@ -33,6 +33,7 @@ namespace CircuitDiagram.Drawing
     {
         public ComponentPoint Location { get; set; }
         public TextAlignment Alignment { get; set; }
+        public TextRotation Rotation { get; set; }
         public List<TextRun> TextRuns { get; private set; }
         public RenderCommandType Type => RenderCommandType.Text;
         
@@ -134,9 +135,9 @@ namespace CircuitDiagram.Drawing
             }
 
             if (layoutContext.Options.Absolute)
-                drawingContext.DrawText(Point.Add(renderLocation, layout.Location), tempAlignment, renderTextRuns);
+                drawingContext.DrawText(Point.Add(renderLocation, layout.Location), tempAlignment, (int)Rotation * 90, renderTextRuns);
             else
-                drawingContext.DrawText(renderLocation, tempAlignment, renderTextRuns);
+                drawingContext.DrawText(renderLocation, tempAlignment, (int)Rotation * 90, renderTextRuns);
         }
 
         public override bool Equals(object obj)

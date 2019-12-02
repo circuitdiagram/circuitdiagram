@@ -74,7 +74,8 @@ namespace CircuitDiagram.Drawing
         /// </summary>
         /// <param name="anchor">The anchor point for the text.</param>
         /// <param name="alignment">How the text should be aligned relative to the anchor point.</param>
+        /// <param name="rotation">Rotation of the text in degrees.</param>
         /// <param name="textRuns">The text runs to render.</param>
-        void DrawText(Point anchor, TextAlignment alignment, IList<TextRun> textRuns);
+        void DrawText(Point anchor, TextAlignment alignment, double rotation, IList<TextRun> textRuns);
     }
 }

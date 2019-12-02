@@ -48,7 +48,7 @@ namespace CircuitDiagram.Render
             underlying?.DrawPath(start, commands, thickness, fill);
         }
 
-        public void DrawText(Point anchor, TextAlignment alignment, IList<TextRun> textRuns)
+        public void DrawText(Point anchor, TextAlignment alignment, double rotation, IList<TextRun> textRuns)
         {
             double totalWidth = 0.0;
             double height = 0.0;
@@ -106,7 +106,7 @@ namespace CircuitDiagram.Render
             var topLeft = new Point(topLeftX, topLeftY);
             Expand(new Rect(topLeft, new Size(totalWidth, height)));
 
-            underlying?.DrawText(anchor, alignment, textRuns);
+            underlying?.DrawText(anchor, alignment, rotation, textRuns);
             underlying?.DrawRectangle(topLeft, new Size(totalWidth, height), 1.0);
         }
 
