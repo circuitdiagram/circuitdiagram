@@ -27,6 +27,7 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0007" />
     <PackageReference Include="System.CommandLine" Version="0.1.0-preview2-180414-3" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="1.68.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,9 +41,10 @@
     <ProjectReference Include="..\CircuitDiagram.TypeDescriptionIO\CircuitDiagram.TypeDescriptionIO.csproj" />
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj" />
   </ItemGroup>
-  
+
   <Target Name="CopyNativeLibraries" AfterTargets="Publish">
-    <Copy SourceFiles="$(NuGetPackageRoot)\skiasharp\1.68.0\runtimes\win-x64\native\libSkiaSharp.dll" DestinationFolder="$(PublishDir)" />
+    <Copy Condition="'$(RuntimeIdentifier)' == 'win-x64'" SourceFiles="$(NuGetPackageRoot)\skiasharp\1.68.1\runtimes\win-x64\native\libSkiaSharp.dll" DestinationFolder="$(PublishDir)" />
+    <Copy Condition="'$(RuntimeIdentifier)' == 'linux-x64'" SourceFiles="$(NuGetPackageRoot)\skiasharp.nativeassets.linux\1.68.1\runtimes\linux-x64\native\libSkiaSharp.so" DestinationFolder="$(PublishDir)" />
   </Target>
 
 </Project>
