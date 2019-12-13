@@ -17,5 +17,6 @@ namespace CircuitDiagram.CLI.ComponentPreview
         public double Size { get; set; } = 60.0;
         public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
         public Dictionary<PropertyName, PropertyValue> RawProperties { get; set; } = new Dictionary<PropertyName, PropertyValue>();
+        public PngRenderer Renderer { get; set; } = PngRenderer.Skia;
     }
 }

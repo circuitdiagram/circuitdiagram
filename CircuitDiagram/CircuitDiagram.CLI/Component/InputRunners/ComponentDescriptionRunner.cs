@@ -35,7 +35,7 @@ namespace CircuitDiagram.CLI.Component.InputRunners
             {
                 if (!loader.Load(fs, logger, out var description))
                 {
-                    Environment.Exit(1);
+                    return null;
                 }
 
                 var baseName = Path.GetFileNameWithoutExtension(inputFile);

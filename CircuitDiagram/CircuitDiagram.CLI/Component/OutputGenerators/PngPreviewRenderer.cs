@@ -21,6 +21,7 @@ using System.Text;
 using CircuitDiagram.CLI.ComponentPreview;
 using CircuitDiagram.Compiler;
 using CircuitDiagram.Render;
+using CircuitDiagram.Render.ImageSharp;
 using CircuitDiagram.Render.Skia;
 using CircuitDiagram.TypeDescription;
 using SkiaSharp;
@@ -35,12 +36,31 @@ namespace CircuitDiagram.CLI.Component.OutputGenerators
 
         public bool AcceptsSourceFileType(SourceFileType sourceType) => true;
 
+        public PngRenderer Renderer { get; set; }
+
         public void Generate(ComponentDescription description, ComponentConfiguration configuration, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output, SourceFileType sourceType)
         {
-            var drawingContext = PreviewRenderer.RenderPreview(size => new SkiaDrawingContext((int)Math.Ceiling(size.Width), (int)Math.Ceiling(size.Height), SKColors.White),
-                                                               description,
-                                                               options);
-            drawingContext.WriteAsPng(output);
+            switch (Renderer)
+            {
+                case PngRenderer.Skia:
+                    {
+                        var drawingContext = PreviewRenderer.RenderPreview(size => new SkiaDrawingContext((int)Math.Ceiling(size.Width), (int)Math.Ceiling(size.Height), SKColors.White),
+                                                                           description,
+                                                                           options);
+                        drawingContext.WriteAsPng(output);
+                        break;
+                    }
+                case PngRenderer.ImageSharp:
+                    {
+                        var drawingContext = PreviewRenderer.RenderPreview(size => new ImageSharpDrawingContext((int)Math.Ceiling(size.Width), (int)Math.Ceiling(size.Height), SixLabors.ImageSharp.Color.White),
+                                                                           description,
+                                                                           options);
+                        drawingContext.WriteAsPng(output);
+                        break;
+                    }
+                default:
+                    throw new InvalidOperationException($"Unknown renderer: {Renderer}");
+            }
         }
     }
 }

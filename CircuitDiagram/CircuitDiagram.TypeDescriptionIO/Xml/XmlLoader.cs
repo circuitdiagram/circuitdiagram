@@ -58,7 +58,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml
 
             builder.RegisterType<VersionedConditionParser>().As<IConditionParser>().InstancePerLifetimeScope();
             builder.RegisterType<ComponentPointParser>().As<IComponentPointParser>().Named<IComponentPointParser>("default").InstancePerLifetimeScope();
-            builder.RegisterType<DeclarationSectionReader>().Named<IXmlSectionReader>(ComponentNamespace.NamespaceName + ":declaration").InstancePerLifetimeScope();
+            builder.RegisterType<DeclarationSectionReader>().Named<IXmlSectionReader>(ComponentNamespace.NamespaceName + ":declaration").InstancePerDependency();
             builder.RegisterType<ConnectionsSectionReader>().Named<IXmlSectionReader>(ComponentNamespace.NamespaceName + ":connections").InstancePerLifetimeScope();
             builder.RegisterType<RenderSectionReader>().Named<IXmlSectionReader>(ComponentNamespace.NamespaceName + ":render").InstancePerLifetimeScope();
 

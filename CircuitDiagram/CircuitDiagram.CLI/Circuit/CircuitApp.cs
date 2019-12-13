@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.CommandLine;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -26,48 +25,60 @@ using CircuitDiagram.Document;
 using CircuitDiagram.Render;
 using CircuitDiagram.Render.Skia;
 using CircuitDiagram.TypeDescriptionIO.Util;
+using CommandLine;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using SkiaSharp;
 
 namespace CircuitDiagram.CLI.Circuit
 {
     static class CircuitApp
     {
-        public static void Run(string[] args)
+        public static int Run(Options options)
         {
-            string input = null;
-            IReadOnlyList<string> componentDirectories = Array.Empty<string>();
-            string output = null;
-
-            var cliOptions = ArgumentSyntax.Parse(args, options =>
-            {
-                options.ApplicationName = "cdcli circuit";
-
-                options.DefineOptionList("components", ref componentDirectories, "Path to components directory.");
-                options.DefineOption("o|output", ref output, "Path to output file.");
-                options.DefineParameter("input", ref input, "Path to input circuit.");
-            });
-
-            if (input == null)
-                cliOptions.ReportError("Input file must be specified.");
-            if (componentDirectories == null)
-                cliOptions.ReportError("Components directory must be specified.");
-            if (output == null)
-                cliOptions.ReportError("Output path must be specified.");
-
-            Console.WriteLine($"{Path.GetFileName(input)} -> {Path.GetFileName(output)}");
+            Console.WriteLine($"{Path.GetFileName(options.Input)} -> {Path.GetFileName(options.Output)}");
 
             var reader = new CircuitDiagramDocumentReader();
             CircuitDiagramDocument circuit;
-            using (var fs = File.Open(input, FileMode.Open, FileAccess.Read))
+            using (var fs = File.Open(options.Input, FileMode.Open, FileAccess.Read))
+            {
                 circuit = reader.ReadCircuit(fs);
+            }
 
-            var descriptionLookup = new DirectoryComponentDescriptionLookup(componentDirectories.ToArray());
+            var loggerFactory = new LoggerFactory();
+
+            if (options.Verbose)
+            {
+                loggerFactory.AddConsole(LogLevel.Information);
+            }
+
+            var descriptionLookup = new DirectoryComponentDescriptionLookup(loggerFactory, options.ComponentsDirectory ?? Path.GetDirectoryName(options.Input), true);
             var renderer = new CircuitRenderer(descriptionLookup);
             var drawingContext = new SkiaDrawingContext((int)circuit.Size.Width, (int)circuit.Size.Height, SKColors.White);
             renderer.RenderCircuit(circuit, drawingContext);
 
-            using (var outputFs = File.OpenWrite(output))
+            using (var outputFs = File.OpenWrite(options.Output))
+            {
                 drawingContext.WriteAsPng(outputFs);
+            }
+
+            return 0;
+        }
+
+        [Verb("circuit", HelpText = "Render a CDDX circuit as an image.")]
+        public class Options
+        {
+            [Value(0, Required = true, HelpText = "Path to components directory.")]
+            public string Input { get; set; }
+
+            [Option('o', Required = true, HelpText = "Path to output file.")]
+            public string Output { get; set; }
+
+            [Option("components", HelpText = "Paths to components directory.")]
+            public string ComponentsDirectory { get; set; }
+
+            [Value('v')]
+            public bool Verbose { get; set; }
         }
     }
 }

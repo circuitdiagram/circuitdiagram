@@ -8,6 +8,8 @@ using CircuitDiagram.Circuit;
 using CircuitDiagram.Render;
 using CircuitDiagram.TypeDescription;
 using CircuitDiagram.TypeDescriptionIO.Xml;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CircuitDiagram.TypeDescriptionIO.Util
 {
@@ -15,14 +17,9 @@ namespace CircuitDiagram.TypeDescriptionIO.Util
     {
         private readonly DictionaryComponentDescriptionLookup internalLookup = new DictionaryComponentDescriptionLookup();
 
-        public DirectoryComponentDescriptionLookup(params string[] directories)
+        public DirectoryComponentDescriptionLookup(ILoggerFactory loggerFactory, string directory, bool recursive)
         {
-            LoadXmlComponents(directories, SearchOption.TopDirectoryOnly);
-        }
-
-        public DirectoryComponentDescriptionLookup(string directory, bool recursive)
-        {
-            LoadXmlComponents(new[] { directory }, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+            LoadXmlComponents(loggerFactory, new[] { directory }, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
         }
 
         public ComponentDescription GetDescription(ComponentType componentType)
@@ -30,8 +27,10 @@ namespace CircuitDiagram.TypeDescriptionIO.Util
             return internalLookup.GetDescription(componentType);
         }
 
-        private void LoadXmlComponents(string[] directories, SearchOption searchOption)
+        private void LoadXmlComponents(ILoggerFactory loggerFactory, string[] directories, SearchOption searchOption)
         {
+            var logger = loggerFactory.CreateLogger<DirectoryComponentDescriptionLookup>();
+
             var xmlLoader = new XmlLoader();
             foreach (string location in directories)
             {
@@ -39,13 +38,17 @@ namespace CircuitDiagram.TypeDescriptionIO.Util
                 {
                     using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
-                        if (xmlLoader.Load(fs, out var description))
+                        if (xmlLoader.Load(fs, loggerFactory.CreateLogger<XmlLoader>(), out var description))
                         {
                             description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;
                             description.Source = new ComponentDescriptionSource(file);
 
                             foreach(var type in description.GetComponentTypes())
                                 internalLookup.AddDescription(type, description);
+                        }
+                        else
+                        {
+                            logger.LogError($"Failed to load {file}");
                         }
                     }
                 }
