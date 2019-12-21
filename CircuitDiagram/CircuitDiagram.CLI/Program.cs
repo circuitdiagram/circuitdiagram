@@ -23,6 +23,7 @@ using System.Linq;
 using System.Reflection;
 using CircuitDiagram.CLI.Circuit;
 using CircuitDiagram.CLI.Component;
+using CircuitDiagram.CLI.ComponentOutline;
 using CommandLine;
 
 namespace CircuitDiagram.CLI
@@ -31,10 +32,11 @@ namespace CircuitDiagram.CLI
     {
         static int Main(string[] args)
         {
-            return CommandLine.Parser.Default.ParseArguments<CircuitApp.Options, ComponentApp.Options>(args)
+            return CommandLine.Parser.Default.ParseArguments<CircuitApp.Options, ComponentApp.Options, ComponentOutlineApp.Options>(args)
                 .MapResult(
                     (CircuitApp.Options options) => CircuitApp.Run(options),
                     (ComponentApp.Options options) => ComponentApp.Run(options),
+                    (ComponentOutlineApp.Options options) => ComponentOutlineApp.Run(options),
                     err => 1
                 );
         }

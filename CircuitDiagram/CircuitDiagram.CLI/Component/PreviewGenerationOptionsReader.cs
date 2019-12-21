@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using CircuitDiagram.CLI.ComponentPreview;
 
@@ -34,12 +35,12 @@ namespace CircuitDiagram.CLI.Component
 
                 while (!reader.EndOfStream)
                 {
-                    var tokens = reader.ReadLine().Split('=');
+                    var tokens = reader.ReadLine().Split('=').Select(x => x.Trim()).ToArray();
 
                     if (tokens.Length < 2)
                         continue;
 
-                    switch (tokens[0].Trim())
+                    switch (tokens[0])
                     {
                         case "horizontal":
                             options.Horizontal = bool.Parse(tokens[1]);
