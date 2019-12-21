@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <AssemblyName>circuit-diagram-cli</AssemblyName>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
     <PackageId>CircuitDiagram.CLI</PackageId>
     <PackageVersion>0.0-dev</PackageVersion>
     <Description>Command-line utility for Circuit Diagram.</Description>
@@ -37,10 +37,5 @@
     <ProjectReference Include="..\CircuitDiagram.TypeDescriptionIO\CircuitDiagram.TypeDescriptionIO.csproj" />
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj" />
   </ItemGroup>
-
-  <Target Name="CopyNativeLibraries" AfterTargets="Publish">
-    <Copy Condition="'$(RuntimeIdentifier)' == 'win-x64'" SourceFiles="$(NuGetPackageRoot)\skiasharp\1.68.1\runtimes\win-x64\native\libSkiaSharp.dll" DestinationFolder="$(PublishDir)" />
-    <Copy Condition="'$(RuntimeIdentifier)' == 'linux-x64'" SourceFiles="$(NuGetPackageRoot)\skiasharp.nativeassets.linux\1.68.1\runtimes\linux-x64\native\libSkiaSharp.so" DestinationFolder="$(PublishDir)" />
-  </Target>
 
 </Project>
