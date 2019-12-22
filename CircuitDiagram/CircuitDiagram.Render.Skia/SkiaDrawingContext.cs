@@ -33,16 +33,17 @@ namespace CircuitDiagram.Render.Skia
         private readonly SKTypeface typeface;
         private readonly SKSurface surface;
 
-        public SkiaDrawingContext(int width, int height, SKColor background)
-            : this(width, height, background, null)
+        public SkiaDrawingContext(int width, int height, SKColor background, float scale = 1.0f)
+            : this(width, height, background, scale, null)
         {
         }
 
-        public SkiaDrawingContext(int width, int height, SKColor background, SKTypeface typeface)
+        public SkiaDrawingContext(int width, int height, SKColor background, float scale, SKTypeface typeface)
         {
             this.typeface = typeface;
-            surface = SKSurface.Create(new SKImageInfo(width, height, SKImageInfo.PlatformColorType, SKAlphaType.Opaque));
+            surface = SKSurface.Create(new SKImageInfo((int)(width * scale), (int)(height * scale), SKImageInfo.PlatformColorType, SKAlphaType.Opaque));
             surface.Canvas.Clear(background);
+            surface.Canvas.Scale(scale);
         }
 
         public SKColor Color { get; set; } = SKColors.Black;

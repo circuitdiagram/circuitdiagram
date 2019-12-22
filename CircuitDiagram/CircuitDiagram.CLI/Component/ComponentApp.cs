@@ -98,6 +98,8 @@ namespace CircuitDiagram.CLI.Component
                 Height = options.Height,
                 Configuration = options.Configuration,
                 DebugLayout = options.DebugLayout,
+                Grid = options.Grid,
+                Scale = options.Scale,
                 Properties = new Dictionary<string, string>(),
             };
 
@@ -257,6 +259,12 @@ namespace CircuitDiagram.CLI.Component
 
             [Option('d', "debug-layout", HelpText = "Draw component start and end points.")]
             public bool DebugLayout { get; set; }
+
+            [Option("grid", HelpText = "Draw a background grid.")]
+            public bool Grid { get; set; }
+
+            [Option("scale", HelpText = "Scale the output image.", Default = 1.0)]
+            public double Scale { get; set; }
         }
     }
 }

@@ -44,7 +44,7 @@ namespace CircuitDiagram.CLI.Component.OutputGenerators
             {
                 case PngRenderer.Skia:
                     {
-                        var drawingContext = PreviewRenderer.RenderPreview(size => new SkiaDrawingContext((int)Math.Ceiling(size.Width), (int)Math.Ceiling(size.Height), SKColors.White),
+                        var drawingContext = PreviewRenderer.RenderPreview(size => new SkiaDrawingContext((int)Math.Ceiling(size.Width), (int)Math.Ceiling(size.Height), SKColors.White, (float)options.Scale),
                                                                            description,
                                                                            options);
                         drawingContext.WriteAsPng(output);

@@ -23,6 +23,7 @@ using CircuitDiagram.Circuit;
 using CircuitDiagram.Drawing;
 using CircuitDiagram.Primitives;
 using CircuitDiagram.Render;
+using CircuitDiagram.Render.Connections;
 using CircuitDiagram.Render.Skia;
 using CircuitDiagram.TypeDescription;
 using SkiaSharp;
@@ -95,9 +96,10 @@ namespace CircuitDiagram.CLI.ComponentPreview
             T resultContext;
             IDrawingContext dc;
 
+            Vector translationOffset = new Vector(0, 0);
             if (options.Crop)
             {
-                resultContext = drawingContext(options.Crop ? bb.Size : new Size(options.Width, options.Height));
+                resultContext = drawingContext(options.Crop ? bb.Size : new Size(options.Width * options.Scale, options.Height * options.Scale));
                 dc = new TranslationDrawingContext(new Vector(Math.Round(-bb.X), Math.Round(-bb.Y)), resultContext);
             }
             else if (options.Center)
@@ -106,7 +108,8 @@ namespace CircuitDiagram.CLI.ComponentPreview
 
                 var x = bb.X - options.Width / 2 + bb.Width / 2;
                 var y = bb.Y - options.Height / 2 + bb.Height / 2;
-                dc = new TranslationDrawingContext(new Vector(Math.Round(-x), Math.Round(-y)), resultContext);
+                translationOffset = new Vector(Math.Round(-x), Math.Round(-y));
+                dc = new TranslationDrawingContext(translationOffset, resultContext);
             }
             else
             {
@@ -114,31 +117,185 @@ namespace CircuitDiagram.CLI.ComponentPreview
                 dc = resultContext;
             }
 
-            if (options.DebugLayout)
+            if (options.Grid && resultContext is SkiaDrawingContext gridSkiaContext)
             {
-                var endOffset = new Vector(component.Layout.Orientation == Orientation.Horizontal ? component.Layout.Size : 0.0,
-                                          component.Layout.Orientation == Orientation.Vertical ? component.Layout.Size : 0.0);
+                RenderGrid(gridSkiaContext, options.Width, options.Height, translationOffset);
+            }
 
-                var skiaContext = resultContext as SkiaDrawingContext;
-                var originalColor = SKColors.Black;
-                if (skiaContext != null)
-                {
-                    originalColor = skiaContext.Color;
-                    skiaContext.Color = SKColors.CornflowerBlue;
-                }
-
-                dc.DrawEllipse(component.Layout.Location, 2d, 2d, 2d, true);
-                dc.DrawEllipse(component.Layout.Location.Add(endOffset), 2d, 2d, 2d, true);
-
-                if (skiaContext != null)
-                {
-                    skiaContext.Color = originalColor;
-                }
+            if (options.DebugLayout && resultContext is SkiaDrawingContext debugSkiaContext)
+            {
+                RenderDebugLayout(debugSkiaContext, component, desc, translationOffset);
             }
 
             docRenderer.RenderCircuit(document, dc);
 
             return resultContext;
+        }
+
+        private static void RenderGrid(SkiaDrawingContext skiaContext, double width, double height, Vector translationOffset)
+        {
+            skiaContext.Mutate(canvas =>
+            {
+                int offsetX = (int)translationOffset.X % 10;
+                int offsetY = (int)translationOffset.Y % 10;
+
+                canvas.Save();
+                canvas.Translate(offsetX, offsetY);
+
+                var gridPaint = new SKPaint
+                {
+                    Color = SKColors.LightGray.WithAlpha(75),
+                    StrokeWidth = 1.0f,
+                };
+
+                for (int x = -10; x < width + 10; x += 10)
+                {
+                    canvas.DrawLine(
+                        x,
+                        -10,
+                        x,
+                        (int)height + 10,
+                        gridPaint);
+                }
+
+                for (int y = -10; y < height + 10; y += 10)
+                {
+                    canvas.DrawLine(
+                        -10,
+                        y,
+                        (int)width + 10,
+                        y,
+                        gridPaint);
+                }
+
+                canvas.Restore();
+            });
+        }
+
+        private static void RenderDebugLayout(
+            SkiaDrawingContext skiaContext,
+            PositionalComponent component,
+            ComponentDescription desc,
+            Vector translationOffset)
+        {
+            var layoutOptions = new LayoutOptions
+            {
+                AlignMiddle = (desc.DetermineFlags(component) & FlagOptions.MiddleMustAlign) == FlagOptions.MiddleMustAlign,
+                GridSize = 10.0
+            };
+
+            skiaContext.Mutate(canvas =>
+            {
+                canvas.Save();
+                canvas.Translate((float)translationOffset.X, (float)translationOffset.Y);
+
+                var connectionDebugPaint = new SKPaint
+                {
+                    Color = SKColors.CornflowerBlue.WithAlpha(150),
+                    StrokeWidth = 1.0f,
+                    FilterQuality = SKFilterQuality.High,
+                };
+
+                var connectionPositioner = new ConnectionPositioner();
+                var connectionPoints = connectionPositioner.PositionConnections(component, desc, layoutOptions);
+                foreach (var connection in connectionPoints)
+                {
+                    canvas.DrawLine(
+                        (float)connection.Location.X - 4,
+                        (float)connection.Location.Y - 4,
+                        (float)connection.Location.X + 4,
+                        (float)connection.Location.Y + 4,
+                        connectionDebugPaint);
+                    canvas.DrawLine(
+                        (float)connection.Location.X + 4,
+                        (float)connection.Location.Y - 4,
+                        (float)connection.Location.X - 4,
+                        (float)connection.Location.Y + 4,
+                        connectionDebugPaint);
+
+                    if (connection.Orientation == Orientation.Horizontal)
+                    {
+                        if (connection.IsEdge)
+                        {
+                            canvas.DrawLine(
+                                (float)connection.Location.X,
+                                (float)connection.Location.Y - 20,
+                                (float)connection.Location.X,
+                                (float)connection.Location.Y + 20,
+                                connectionDebugPaint);
+                        }
+                        else if (connection.Location.X % 20.0 == 0.0)
+                        {
+                            canvas.DrawLine(
+                                (float)connection.Location.X,
+                                (float)connection.Location.Y - 10,
+                                (float)connection.Location.X,
+                                (float)connection.Location.Y,
+                                connectionDebugPaint);
+                        }
+                        else
+                        {
+                            canvas.DrawLine(
+                                (float)connection.Location.X,
+                                (float)connection.Location.Y,
+                                (float)connection.Location.X,
+                                (float)connection.Location.Y + 10,
+                                connectionDebugPaint);
+                        }
+                    }
+                    else
+                    {
+                        if (connection.IsEdge)
+                        {
+                            canvas.DrawLine(
+                                (float)connection.Location.X - 20,
+                                (float)connection.Location.Y,
+                                (float)connection.Location.X + 20,
+                                (float)connection.Location.Y,
+                                connectionDebugPaint);
+                        }
+                        else if (connection.Location.Y % 20.0 == 0.0)
+                        {
+                            canvas.DrawLine(
+                                (float)connection.Location.X - 10,
+                                (float)connection.Location.Y,
+                                (float)connection.Location.X,
+                                (float)connection.Location.Y,
+                                connectionDebugPaint);
+                        }
+                        else
+                        {
+                            canvas.DrawLine(
+                                (float)connection.Location.X,
+                                (float)connection.Location.Y,
+                                (float)connection.Location.X + 10,
+                                (float)connection.Location.Y,
+                                connectionDebugPaint);
+                        }
+                    }
+                }
+
+                // Start and end points
+
+                var paint = new SKPaint
+                {
+                    Color = SKColors.CornflowerBlue,
+                    IsAntialias = true,
+                    Style = SKPaintStyle.StrokeAndFill,
+                    StrokeWidth = 2f,
+                    StrokeCap = SKStrokeCap.Square,
+                };
+
+                canvas.DrawOval(component.Layout.Location.ToSkPoint(), new SKSize(2f, 2f), paint);
+
+                var endOffset = new Vector(
+                    component.Layout.Orientation == Orientation.Horizontal ? component.Layout.Size : 0.0,
+                    component.Layout.Orientation == Orientation.Vertical ? component.Layout.Size : 0.0);
+
+                canvas.DrawOval(component.Layout.Location.Add(endOffset).ToSkPoint(), new SKSize(2f, 2f), paint);
+
+                canvas.Restore();
+            });
         }
     }
 }
