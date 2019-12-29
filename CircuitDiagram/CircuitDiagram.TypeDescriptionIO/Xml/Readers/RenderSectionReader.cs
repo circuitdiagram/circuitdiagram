@@ -1,6 +1,6 @@
 ﻿// Circuit Diagram http://www.circuit-diagram.org/
 // 
-// Copyright (C) 2018  Samuel Fisher
+// Copyright (C) 2019  Samuel Fisher
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,87 +31,152 @@ using CircuitDiagram.TypeDescription.Conditions;
 using CircuitDiagram.TypeDescriptionIO.Xml.Logging;
 using CircuitDiagram.TypeDescriptionIO.Xml.Parsers.ComponentPoints;
 using CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions;
+using CircuitDiagram.TypeDescriptionIO.Xml.Render;
+using CircuitDiagram.Circuit;
+using CircuitDiagram.TypeDescriptionIO.Xml.Readers.RenderCommands;
+using Autofac.Features.Indexed;
+using CircuitDiagram.TypeDescriptionIO.Xml.Flatten;
 
 namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
 {
     public class RenderSectionReader : IXmlSectionReader
     {
-        private static readonly Version TextRotationMinFormatVersion = new Version(1, 4);
+        private static readonly XName GroupElementName = XmlLoader.ComponentNamespace + "group";
+        private static readonly XName GElementName = XmlLoader.ComponentNamespace + "g";
+        private static readonly XName LineElementName = XmlLoader.ComponentNamespace + "line";
+        private static readonly XName RectElementName = XmlLoader.ComponentNamespace + "rect";
+        private static readonly XName EllipseElementName = XmlLoader.ComponentNamespace + "ellipse";
+        private static readonly XName PathElementName = XmlLoader.ComponentNamespace + "path";
+        private static readonly XName TextElementName = XmlLoader.ComponentNamespace + "text";
 
         private readonly IXmlLoadLogger logger;
         private readonly IConditionParser conditionParser;
         private readonly IComponentPointParser componentPointParser;
+        private readonly IAutoRotateOptionsReader autoRotateOptionsReader;
+        private readonly IIndex<string, IRenderCommandReader> renderCommandReaders;
 
-        public RenderSectionReader(IXmlLoadLogger logger, IConditionParser conditionParser, IComponentPointParser componentPointParser)
+        public RenderSectionReader(
+            IXmlLoadLogger logger,
+            IConditionParser conditionParser,
+            IComponentPointParser componentPointParser,
+            IAutoRotateOptionsReader autoRotateOptionsReader,
+            IIndex<string, IRenderCommandReader> renderCommandReaders)
         {
             this.logger = logger;
             this.conditionParser = conditionParser;
             this.componentPointParser = componentPointParser;
+            this.autoRotateOptionsReader = autoRotateOptionsReader;
+            this.renderCommandReaders = renderCommandReaders;
         }
 
         public virtual void ReadSection(XElement element, ComponentDescription description)
         {
-            var results = new List<RenderDescription>();
+            var groups = new List<XmlRenderGroup>();
+            var defaultGroup = new XmlRenderGroup(ConditionTree.Empty);
+            autoRotateOptionsReader.TrySetAutoRotateOptions(element, defaultGroup);
 
-            var groupElements = element.Elements(element.GetDefaultNamespace() + "group");
-            foreach (var groupElement in groupElements)
+            groups.Add(defaultGroup);
+            foreach (var child in element.Elements())
             {
-                var renderDescription = ReadRenderGroup(description, groupElement);
-                if (renderDescription != null)
-                    results.Add(renderDescription);
+                groups.AddRange(ReadElement(child, description, defaultGroup));
             }
 
-            description.RenderDescriptions = results.ToArray();
+            var flatGroups = groups.SelectMany(x => x.FlattenRoot(logger)).ToArray();
+            description.RenderDescriptions = flatGroups.GroupBy(x => ConditionsReducer.SimplifyConditions(x.Conditions)).Select(g => new RenderDescription(g.Key, g.SelectMany(x => x.Value).ToArray())).ToArray();
         }
 
-        protected virtual RenderDescription ReadRenderGroup(ComponentDescription description, XElement renderNode)
+        public virtual IEnumerable<XmlRenderGroup> ReadElement(XElement element, ComponentDescription description, XmlRenderGroup groupContext)
+        {
+            if (element.Name == GroupElementName || element.Name == GElementName)
+            {
+                return ReadRenderGroup(description, element, groupContext);
+            }
+            else if (renderCommandReaders.TryGetValue($"{XmlLoader.ComponentNamespace.NamespaceName}:{element.Name.LocalName}", out var renderCommandReader))
+            {
+                if (renderCommandReader.ReadRenderCommand(element, description, out var command))
+                {
+                    groupContext.Value.Add(command);
+                }
+                return Enumerable.Empty<XmlRenderGroup>();
+            }
+            else if (element.Name == LineElementName)
+            {
+                if (ReadLineCommand(element, out var line))
+                {
+                    groupContext.Value.Add(line);
+                }
+                return Enumerable.Empty<XmlRenderGroup>();
+            }
+            else if (element.Name == RectElementName)
+            {
+                if (ReadRectCommand(element, out var rect))
+                {
+                    groupContext.Value.Add(rect);
+                }
+                return Enumerable.Empty<XmlRenderGroup>();
+            }
+            else if (element.Name == EllipseElementName)
+            {
+                if (ReadEllipseCommand(element, out var ellipse))
+                {
+                    groupContext.Value.Add(ellipse);
+                }
+                return Enumerable.Empty<XmlRenderGroup>();
+            }
+            else if (element.Name == PathElementName)
+            {
+                if (ReadPathCommand(element, out var path))
+                {
+                    groupContext.Value.Add(path);
+                }
+                return Enumerable.Empty<XmlRenderGroup>();
+            }
+            else if (element.HasElements)
+            {
+                if (element.Name.Namespace == XmlLoader.ComponentNamespace)
+                {
+                    logger.LogWarning(element, $"Descending unknown render element '{element.Name.LocalName}'");
+                }
+                return element.Elements().SelectMany(x => ReadElement(x, description, groupContext));
+            }
+            else
+            {
+                if (element.Name.Namespace == XmlLoader.ComponentNamespace)
+                {
+                    logger.LogWarning(element, $"Unknown render element '{element.Name.LocalName}'");
+                }
+                return Enumerable.Empty<XmlRenderGroup>();
+            }
+        }
+
+        protected virtual IEnumerable<XmlRenderGroup> ReadRenderGroup(ComponentDescription description, XElement renderElement, XmlRenderGroup parentGroup)
         {
             IConditionTreeItem conditionCollection = ConditionTree.Empty;
-            var conditionsAttribute = renderNode.Attribute("conditions");
+            var conditionsAttribute = renderElement.Attribute("conditions");
             if (conditionsAttribute != null)
             {
                 if (!conditionParser.Parse(conditionsAttribute, description, logger, out conditionCollection))
-                    return null;
+                    yield break;
             }
 
-            var commands = new List<IRenderCommand>();
-
-            foreach (var renderCommandNode in renderNode.Descendants())
+            var renderGroup = new XmlRenderGroup(new ConditionTree(ConditionTree.ConditionOperator.AND, parentGroup.Conditions, conditionCollection))
             {
-                string commandType = renderCommandNode.Name.LocalName;
-                if (commandType == "line")
-                {
-                    if (ReadLineCommand(renderCommandNode, out var command))
-                        commands.Add(command);
-                }
-                else if (commandType == "rect")
-                {
-                    if (ReadRectCommand(renderCommandNode, out var command))
-                        commands.Add(command);
-                }
-                else if (commandType == "ellipse")
-                {
-                    if (ReadEllipseCommand(description.Metadata.FormatVersion, renderCommandNode, out var command))
-                        commands.Add(command);
-                }
-                else if (commandType == "text")
-                {
-                    if (ReadTextCommand(renderCommandNode, description, out var command))
-                        commands.Add(command);
-                }
-                else if (commandType == "path")
-                {
-                    if (ReadPathCommand(renderCommandNode, out var command))
-                        commands.Add(command);
-                }
-            }
+                AutoRotate = parentGroup.AutoRotate,
+                AutoRotateFlip = parentGroup.AutoRotateFlip,
+            };
 
-            return new RenderDescription(conditionCollection, commands.ToArray());
+            autoRotateOptionsReader.TrySetAutoRotateOptions(renderElement, renderGroup);
+
+            var childGroups = renderElement.Elements().SelectMany(x => ReadElement(x, description, renderGroup));
+
+            yield return renderGroup;
+            foreach (var child in childGroups)
+                yield return child;
         }
 
-        protected virtual bool ReadLineCommand(XElement element, out Line command)
+        protected virtual bool ReadLineCommand(XElement element, out XmlLineCommand command)
         {
-            command = new Line();
+            command = new XmlLineCommand();
 
             if (element.Attribute("thickness") != null)
                 command.Thickness = double.Parse(element.Attribute("thickness").Value);
@@ -127,9 +192,9 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
             return true;
         }
 
-        protected virtual bool ReadRectCommand(XElement element, out Rectangle command)
+        protected virtual bool ReadRectCommand(XElement element, out XmlRectCommand command)
         {
-            command = new Rectangle();
+            command = new XmlRectCommand();
 
             if (element.Attribute("thickness") != null)
                 command.StrokeThickness = double.Parse(element.Attribute("thickness").Value);
@@ -159,12 +224,12 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
             return true;
         }
 
-        protected virtual bool ReadEllipseCommand(Version formatVersion, XElement element, out Ellipse command)
+        protected virtual bool ReadEllipseCommand(XElement element, out XmlEllipseCommand command)
         {
-            command = new Ellipse();
+            command = new XmlEllipseCommand();
 
             if (element.Attribute("thickness") != null)
-                command.Thickness = double.Parse(element.Attribute("thickness").Value);
+                command.StrokeThickness = double.Parse(element.Attribute("thickness").Value);
 
             var fill = element.Attribute("fill");
             if (fill != null && fill.Value.ToLowerInvariant() != "false")
@@ -173,7 +238,9 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
             if (element.Attribute("centre") != null)
             {
                 if (!componentPointParser.TryParse(element.Attribute("centre"), out var centre))
+                {
                     return false;
+                }
                 command.Centre = centre;
             }
             else
@@ -181,162 +248,24 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
                 var x = element.Attribute("x");
                 var y = element.Attribute("y");
                 if (!componentPointParser.TryParse(x, y, out var centre))
+                {
                     return false;
+                }
                 command.Centre = centre;
             }
 
-            string radius = "r";
-            if (formatVersion <= new Version(1, 1))
-                radius = "radius";
-
-            if (element.GetAttributeValue(radius + "x", logger, out var rx))
+            if (element.GetAttributeValue("rx", logger, out var rx))
                 command.RadiusX = double.Parse(rx);
 
-            if (element.GetAttributeValue(radius + "y", logger, out var ry))
+            if (element.GetAttributeValue("ry", logger, out var ry))
                 command.RadiusY = double.Parse(ry);
 
             return true;
         }
 
-        protected virtual bool ReadTextCommand(XElement element, ComponentDescription description, out RenderText command)
+        protected virtual bool ReadPathCommand(XElement element, out XmlRenderPath command)
         {
-            command = new RenderText();
-
-            ReadTextLocation(element, command);
-
-            string tAlignment = "TopLeft";
-            if (element.Attribute("align") != null)
-                tAlignment = element.Attribute("align").Value;
-
-            if (!Enum.TryParse(tAlignment, out TextAlignment alignment))
-                logger.LogError(element.Attribute("align"), $"Invalid value for text alignment: '{tAlignment}'");
-            command.Alignment = alignment;
-
-            var tRotation = "0";
-            if (description.Metadata.FormatVersion >= TextRotationMinFormatVersion && element.Attribute("rotate") != null)
-                tRotation = element.Attribute("rotate").Value;
-
-            var rotation = TextRotation.None;
-            switch (tRotation)
-            {
-                case "0":
-                    rotation = TextRotation.None;
-                    break;
-                case "90":
-                    rotation = TextRotation.Rotate90;
-                    break;
-                case "180":
-                    rotation = TextRotation.Rotate180;
-                    break;
-                case "270":
-                    rotation = TextRotation.Rotate270;
-                    break;
-                default:
-                    logger.LogError(element.Attribute("rotate"), $"Invalid value for text rotation: '{tRotation}'");
-                    break;
-            }
-            command.Rotation = rotation;
-
-            double size = 11d;
-            if (element.Attribute("size") != null)
-            {
-                if (element.Attribute("size").Value.ToLowerInvariant() == "large")
-                    size = 12d;
-            }
-
-            var textValueNode = element.Element(XmlLoader.ComponentNamespace + "value");
-            if (textValueNode != null)
-            {
-                foreach (var spanNode in textValueNode.Elements())
-                {
-                    string nodeValue = spanNode.Value;
-                    var formatting = TextRunFormatting.Normal;
-
-                    if (spanNode.Name.LocalName == "sub")
-                        formatting = TextRunFormatting.Subscript;
-                    else if (spanNode.Name.LocalName == "sup")
-                        formatting = TextRunFormatting.Superscript;
-                    else if (spanNode.Name.LocalName != "span")
-                        logger.LogWarning(spanNode, $"Unknown node '{spanNode.Name}' will be treated as <span>");
-
-                    var textRun = new TextRun(nodeValue, formatting);
-
-                    if (!ValidateText(element, description, textRun.Text))
-                        return false;
-
-                    command.TextRuns.Add(textRun);
-                }
-            }
-            else if (element.GetAttribute("value", logger, out var value))
-            {
-                var textRun = new TextRun(value.Value, new TextRunFormatting(TextRunFormattingType.Normal, size));
-
-                if (!ValidateText(value, description, textRun.Text))
-                    return false;
-
-                command.TextRuns.Add(textRun);
-            }
-            else
-            {
-                return false;
-            }
-            
-            return true;
-        }
-
-        private bool ValidateText(XAttribute attribute, ComponentDescription description, string text)
-        {
-            if (ValidateText(description, text, out var errorMessage))
-                return true;
-
-            logger.LogError(attribute, errorMessage);
-            return false;
-        }
-
-        private bool ValidateText(XElement element, ComponentDescription description, string text)
-        {
-            if (ValidateText(description, text, out var errorMessage))
-                return true;
-
-            logger.LogError(element, errorMessage);
-            return false;
-        }
-
-        protected virtual bool ValidateText(ComponentDescription description, string text, out string errorMessage)
-        {
-            if (!text.StartsWith("$"))
-            {
-                errorMessage = null;
-                return true;
-            }
-
-            var propertyName = text.Substring(1);
-            if (description.Properties.Any(x => x.Name == propertyName))
-            {
-                errorMessage = null;
-                return true;
-            }
-
-            errorMessage = $"Property {propertyName} used for text value does not exist";
-            return false;
-        }
-
-        protected virtual bool ReadTextLocation(XElement element, RenderText command)
-        {
-            if (!element.GetAttribute("x", logger, out var x) ||
-                !element.GetAttribute("y", logger, out var y))
-                return false;
-
-            if (!componentPointParser.TryParse(x, y, out var location))
-                return false;
-            command.Location = location;
-
-            return true;
-        }
-
-        protected virtual bool ReadPathCommand(XElement element, out RenderPath command)
-        {
-            command = new RenderPath();
+            command = new XmlRenderPath();
 
             if (element.Attribute("thickness") != null)
                 command.Thickness = double.Parse(element.Attribute("thickness").Value);

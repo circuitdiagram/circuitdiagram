@@ -66,5 +66,10 @@ namespace CircuitDiagram.Render.Path
                 return new MoveTo(X, -Y);
             }
         }
+
+        public IPathCommand Reflect()
+        {
+            return new MoveTo(Y, X);
+        }
     }
 }

@@ -25,6 +25,7 @@ using System.Text;
 using CommandLine;
 using CircuitDiagram.TypeDescriptionIO.Xml;
 using System.Text.Json;
+using CircuitDiagram.TypeDescriptionIO.Xml.Extensions.Definitions;
 
 namespace CircuitDiagram.CLI.ComponentOutline
 {
@@ -39,6 +40,8 @@ namespace CircuitDiagram.CLI.ComponentOutline
             }
 
             var loader = new XmlLoader();
+            loader.UseDefinitions();
+
             using (var fs = File.OpenRead(options.Input))
             {
                 if (!loader.Load(fs, out var description))

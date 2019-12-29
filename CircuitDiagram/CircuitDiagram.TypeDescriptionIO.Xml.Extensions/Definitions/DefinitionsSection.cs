@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 
-namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
+namespace CircuitDiagram.TypeDescriptionIO.Xml.Extensions.Definitions
 {
     public class DefinitionsSection
     {

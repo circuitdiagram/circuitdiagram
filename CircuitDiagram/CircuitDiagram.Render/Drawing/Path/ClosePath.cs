@@ -51,7 +51,12 @@ namespace CircuitDiagram.Render.Path
 
         public IPathCommand Flip(bool horizontal)
         {
-            throw new NotImplementedException();
+            return this;
+        }
+
+        public IPathCommand Reflect()
+        {
+            return this;
         }
     }
 }

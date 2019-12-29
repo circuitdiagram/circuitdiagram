@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using CircuitDiagram.TypeDescription;
@@ -27,7 +28,7 @@ using CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions;
 using CircuitDiagram.TypeDescriptionIO.Xml.Readers;
 using CircuitDiagram.TypeDescriptionIO.Xml.Sections;
 
-namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
+namespace CircuitDiagram.TypeDescriptionIO.Xml.Extensions.Definitions
 {
     class DefinitionsSectionReader : IXmlSectionReader
     {
@@ -46,9 +47,12 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
         {
             var definitions = new Dictionary<string, ConditionalCollection<string>>();
 
-            foreach (var definitionNode in element.Elements(XmlLoader.ComponentNamespace + "define"))
+            foreach (var definitionNode in element.Elements(XmlLoader.ComponentNamespace + "def"))
             {
-                definitionNode.GetAttributeValue("name", logger, out var name);
+                if (!definitionNode.GetAttributeValue("name", logger, out var name))
+                {
+                    continue;
+                }
 
                 var values = new ConditionalCollection<string>();
                 foreach (var valueWhen in definitionNode.Elements(XmlLoader.ComponentNamespace + "when"))
@@ -59,6 +63,20 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Experimental.Definitions
 
                     values.Add(new Conditional<string>(whenValue, conditions));
                 }
+
+                definitions.Add(name, values);
+            }
+
+            foreach (var constNode in element.Elements(XmlLoader.ComponentNamespace + "const"))
+            {
+                if (!constNode.GetAttributeValue("name", logger, out var name) ||
+                    !constNode.GetAttributeValue("value", logger, out var value))
+                {
+                    continue;
+                }
+
+                var values = new ConditionalCollection<string>();
+                values.Add(new Conditional<string>(value, ConditionTree.Empty));
 
                 definitions.Add(name, values);
             }

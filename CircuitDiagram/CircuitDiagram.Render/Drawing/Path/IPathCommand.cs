@@ -57,5 +57,10 @@ namespace CircuitDiagram.Render.Path
         /// <param name="horizontal">Whether to flip along the horizontal axis.</param>
         /// <returns>A flipped copy of the path command.</returns>
         IPathCommand Flip(bool horizontal);
+
+        /// <summary>
+        /// Reflects the command in the line y=x.
+        /// </summary>
+        IPathCommand Reflect();
     }
 }

@@ -34,6 +34,7 @@ using CircuitDiagram.TypeDescriptionIO.Xml.Logging;
 using CircuitDiagram.TypeDescriptionIO.Xml.Parsers.ComponentPoints;
 using CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions;
 using CircuitDiagram.TypeDescriptionIO.Xml.Readers;
+using CircuitDiagram.TypeDescriptionIO.Xml.Readers.RenderCommands;
 using CircuitDiagram.TypeDescriptionIO.Xml.Sections;
 using Microsoft.Extensions.Logging;
 
@@ -58,9 +59,13 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml
 
             builder.RegisterType<VersionedConditionParser>().As<IConditionParser>().InstancePerLifetimeScope();
             builder.RegisterType<ComponentPointParser>().As<IComponentPointParser>().Named<IComponentPointParser>("default").InstancePerLifetimeScope();
+            builder.RegisterType<AutoRotateOptionsReader>().As<IAutoRotateOptionsReader>().InstancePerDependency();
             builder.RegisterType<DeclarationSectionReader>().Named<IXmlSectionReader>(ComponentNamespace.NamespaceName + ":declaration").InstancePerDependency();
             builder.RegisterType<ConnectionsSectionReader>().Named<IXmlSectionReader>(ComponentNamespace.NamespaceName + ":connections").InstancePerLifetimeScope();
+
+            // Render
             builder.RegisterType<RenderSectionReader>().Named<IXmlSectionReader>(ComponentNamespace.NamespaceName + ":render").InstancePerLifetimeScope();
+            builder.RegisterType<TextCommandReader>().Named<IRenderCommandReader>(ComponentNamespace.NamespaceName + ":text");
 
             container = new Lazy<IContainer>(() => builder.Build());
         }

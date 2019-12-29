@@ -31,6 +31,7 @@ using CircuitDiagram.CLI.Component.Manifest;
 using CircuitDiagram.TypeDescriptionIO.Util;
 using CommandLine;
 using Microsoft.Extensions.Logging.Abstractions;
+using CircuitDiagram.Render;
 
 namespace CircuitDiagram.CLI.Component
 {
@@ -109,19 +110,15 @@ namespace CircuitDiagram.CLI.Component
                 PreviewGenerationOptionsReader.Read(options.RenderPropertiesPath, previewOptions);
             }
 
-            DirectoryComponentDescriptionLookup componentDescriptionLookup;
+            IComponentDescriptionLookup componentDescriptionLookup;
             var descriptionLookupLoggerFactory = options.Verbose ? loggerFactory : (ILoggerFactory)NullLoggerFactory.Instance;
             if (options.ComponentsDirectory != null)
             {
                 componentDescriptionLookup = new DirectoryComponentDescriptionLookup(descriptionLookupLoggerFactory, options.ComponentsDirectory, true);
             }
-            else if (Directory.Exists(options.Input))
-            {
-                componentDescriptionLookup = new DirectoryComponentDescriptionLookup(descriptionLookupLoggerFactory, options.Input, true);
-            }
             else
             {
-                componentDescriptionLookup = new DirectoryComponentDescriptionLookup(descriptionLookupLoggerFactory, Environment.CurrentDirectory, true);
+                componentDescriptionLookup = new DictionaryComponentDescriptionLookup();
             }
 
             var resourceProvider = ResourceProviderFactory.Create(loggerFactory.CreateLogger(typeof(ResourceProviderFactory)), options.Resources?.ToArray() ?? new string[0]);

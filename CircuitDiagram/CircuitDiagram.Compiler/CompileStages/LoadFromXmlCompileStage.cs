@@ -21,6 +21,7 @@ using System.Linq;
 using CircuitDiagram.Components.Description;
 using CircuitDiagram.IO;
 using CircuitDiagram.TypeDescriptionIO.Xml;
+using CircuitDiagram.TypeDescriptionIO.Xml.Extensions.Definitions;
 
 namespace CircuitDiagram.Compiler.CompileStages
 {
@@ -29,6 +30,7 @@ namespace CircuitDiagram.Compiler.CompileStages
         public void Run(CompileContext context)
         {
             XmlLoader loader = new XmlLoader();
+            loader.UseDefinitions();
 
             // TODO: Add errors to context
             if (!loader.Load(context.Input, out var description))

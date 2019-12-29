@@ -16,6 +16,7 @@ namespace CircuitDiagram.CLI.ComponentPreview
         public string Configuration { get; set; }
         public bool Horizontal { get; set; } = true;
         public double Size { get; set; } = 60.0;
+        public FlipState Flip { get; set; } = FlipState.None;
         public double Scale { get; set; } = 2.0;
         public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
         public Dictionary<PropertyName, PropertyValue> RawProperties { get; set; } = new Dictionary<PropertyName, PropertyValue>();

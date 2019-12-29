@@ -33,7 +33,6 @@
     <ProjectReference Include="..\CircuitDiagram.Render.ImageSharp\CircuitDiagram.Render.ImageSharp.csproj" />
     <ProjectReference Include="..\CircuitDiagram.Render.Skia\CircuitDiagram.Render.Skia.csproj" />
     <ProjectReference Include="..\CircuitDiagram.Render\CircuitDiagram.Render.csproj" />
-    <ProjectReference Include="..\CircuitDiagram.TypeDescriptionIO.Xml.Experimental\CircuitDiagram.TypeDescriptionIO.Xml.Experimental.csproj" />
     <ProjectReference Include="..\CircuitDiagram.TypeDescriptionIO\CircuitDiagram.TypeDescriptionIO.csproj" />
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj" />
   </ItemGroup>

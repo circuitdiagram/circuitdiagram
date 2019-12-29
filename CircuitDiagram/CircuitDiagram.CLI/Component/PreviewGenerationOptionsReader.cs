@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using CircuitDiagram.Circuit;
 using CircuitDiagram.CLI.ComponentPreview;
 
 namespace CircuitDiagram.CLI.Component
@@ -45,8 +46,14 @@ namespace CircuitDiagram.CLI.Component
                         case "horizontal":
                             options.Horizontal = bool.Parse(tokens[1]);
                             break;
+                        case "size":
+                            options.Size = double.Parse(tokens[1]);
+                            break;
                         case "configuration":
                             options.Configuration = tokens[1];
+                            break;
+                        case "flip":
+                            options.Flip = Enum.Parse<FlipState>(tokens[1], ignoreCase: true);
                             break;
                         default:
                             if (tokens[0].StartsWith("$"))

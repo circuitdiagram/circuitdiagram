@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CircuitDiagram.Render\CircuitDiagram.Render.csproj" />
+    <ProjectReference Include="..\CircuitDiagram.TypeDescriptionIO.Xml.Extensions\CircuitDiagram.TypeDescriptionIO.Xml.Extensions.csproj" />
     <ProjectReference Include="..\CircuitDiagram.TypeDescriptionIO\CircuitDiagram.TypeDescriptionIO.csproj" />
     <ProjectReference Include="..\CircuitDiagramCore\CircuitDiagramCore.csproj" />
   </ItemGroup>

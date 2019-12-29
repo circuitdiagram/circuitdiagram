@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CircuitDiagram.TypeDescriptionIO.Xml.Logging
 {
-    class NullXmlLoadLogger : IXmlLoadLogger
+    public class NullXmlLoadLogger : IXmlLoadLogger
     {
         public void Log(LogLevel level, FileRange position, string message, Exception innerException)
         {

@@ -68,5 +68,10 @@ namespace CircuitDiagram.Render.Path
                 return new CurveTo(ControlStart.X, -ControlStart.Y, ControlEnd.X, -ControlEnd.Y, End.X, -End.Y);
             }
         }
+
+        public IPathCommand Reflect()
+        {
+            return new CurveTo(ControlStart.Y, ControlStart.X, ControlEnd.Y, ControlEnd.X, End.Y, End.X);
+        }
     }
 }

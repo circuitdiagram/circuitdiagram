@@ -66,7 +66,18 @@ namespace CircuitDiagram.CLI.ComponentPreview
                 component.Layout.Orientation = Orientation.Vertical;
                 component.Layout.Size = desc.MinSize;
             }
-            
+
+            // Flip
+            if ((flagOptions & FlagOptions.FlipPrimary) == FlagOptions.FlipPrimary && (options.Flip & FlipState.Primary) == FlipState.Primary)
+            {
+                component.Layout.Flip |= FlipState.Primary;
+            }
+            if ((flagOptions & FlagOptions.FlipSecondary) == FlagOptions.FlipSecondary && (options.Flip & FlipState.Secondary) == FlipState.Secondary)
+            {
+                component.Layout.Flip |= FlipState.Secondary;
+            }
+
+
             // Properties
             foreach (var property in options.Properties)
             {

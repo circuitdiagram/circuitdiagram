@@ -48,7 +48,7 @@ namespace CircuitDiagram.Render.Path
 
         public string Shorthand(Point offset, Point previous)
         {
-            return String.Format("T {0},{1}", End.X, End.Y);
+            return string.Format("T {0},{1}", End.X, End.Y);
         }
 
         public IPathCommand Flip(bool horizontal)
@@ -61,6 +61,11 @@ namespace CircuitDiagram.Render.Path
             {
                 return new SmoothQuadraticBeizerCurveTo(End.X, -End.Y);
             }
+        }
+
+        public IPathCommand Reflect()
+        {
+            return new SmoothQuadraticBeizerCurveTo(End.Y, End.X);
         }
     }
 }

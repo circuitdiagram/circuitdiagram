@@ -11,6 +11,7 @@ using CircuitDiagram.CLI.ComponentPreview;
 using CircuitDiagram.Compiler;
 using CircuitDiagram.TypeDescription;
 using CircuitDiagram.TypeDescriptionIO.Xml;
+using CircuitDiagram.TypeDescriptionIO.Xml.Extensions.Definitions;
 using Microsoft.Extensions.Logging;
 
 namespace CircuitDiagram.CLI.Component.InputRunners
@@ -31,6 +32,8 @@ namespace CircuitDiagram.CLI.Component.InputRunners
             logger.LogInformation(inputFile);
 
             var loader = new XmlLoader();
+            loader.UseDefinitions();
+
             using (var fs = File.OpenRead(inputFile))
             {
                 if (!loader.Load(fs, logger, out var description))
@@ -55,6 +58,7 @@ namespace CircuitDiagram.CLI.Component.InputRunners
                             Height = previewOptions.Height,
                             Horizontal = previewOptions.Horizontal,
                             Size = previewOptions.Size,
+                            Flip = previewOptions.Flip,
                             Configuration = configuration.Name,
                         };
 

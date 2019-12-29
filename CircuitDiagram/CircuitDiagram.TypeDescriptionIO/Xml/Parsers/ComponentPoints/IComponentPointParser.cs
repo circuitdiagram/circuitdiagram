@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using CircuitDiagram.TypeDescription;
+using CircuitDiagram.TypeDescriptionIO.Xml.Logging;
+using CircuitDiagram.TypeDescriptionIO.Xml.Primitives;
 
 namespace CircuitDiagram.TypeDescriptionIO.Xml.Parsers.ComponentPoints
 {
     public interface IComponentPointParser
     {
-        bool TryParse(string x, string y, IXmlLineInfo xLine, IXmlLineInfo yLine, out ComponentPoint componentPoint);
+        bool TryParse(string x, string y, FileRange xRange, FileRange yRange, out XmlComponentPoint componentPoint);
 
-        bool TryParse(string location, IXmlLineInfo line, out ComponentPoint componentPoint);
+        bool TryParse(string location, FileRange range, out XmlComponentPoint componentPoint);
     }
 }

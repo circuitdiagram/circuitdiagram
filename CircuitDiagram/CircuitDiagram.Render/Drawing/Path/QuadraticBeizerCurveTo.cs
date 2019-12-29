@@ -65,5 +65,10 @@ namespace CircuitDiagram.Render.Path
                 return new QuadraticBeizerCurveTo(Control.X, -Control.Y, End.X, -End.Y);
             }
         }
+
+        public IPathCommand Reflect()
+        {
+            return new QuadraticBeizerCurveTo(Control.Y, Control.X, End.Y, End.X);
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2026
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3C139416-4492-4BD7-884B-51B3DB1E13F7}"
 	ProjectSection(SolutionItems) = preProject
@@ -30,11 +30,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagramCore.Test", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.Render.Skia", "CircuitDiagram.Render.Skia\CircuitDiagram.Render.Skia.csproj", "{D81CED39-466E-4149-BCE3-0A5877ED17D0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.TypeDescriptionIO.Xml.Experimental", "CircuitDiagram.TypeDescriptionIO.Xml.Experimental\CircuitDiagram.TypeDescriptionIO.Xml.Experimental.csproj", "{B81499CF-C539-4008-99D4-65C336BCE013}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.TypeDescription.Definition", "CircuitDiagram.ComponentDescription.Template\CircuitDiagram.TypeDescription.Definition.csproj", "{5AAED7D2-FEA4-41FD-B785-7F005ABC6160}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitDiagram.Render.ImageSharp", "CircuitDiagram.Render.ImageSharp\CircuitDiagram.Render.ImageSharp.csproj", "{AFC77A04-22F9-45BD-A5CC-952672ACB42F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.Render.ImageSharp", "CircuitDiagram.Render.ImageSharp\CircuitDiagram.Render.ImageSharp.csproj", "{AFC77A04-22F9-45BD-A5CC-952672ACB42F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.TypeDescriptionIO.Test", "CircuitDiagram.TypeDescriptionIO.Test\CircuitDiagram.TypeDescriptionIO.Test.csproj", "{8FDBA772-3339-4CB7-B7B1-7640EE7D0333}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.TypeDescriptionIO.Xml.Extensions.Test", "CircuitDiagram.TypeDescriptionIO.Xml.Extensions.Test\CircuitDiagram.TypeDescriptionIO.Xml.Extensions.Test.csproj", "{C91ECFC0-551D-43E1-97AB-5E5487E8F79F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircuitDiagram.TypeDescriptionIO.Xml.Extensions", "CircuitDiagram.TypeDescriptionIO.Xml.Extensions\CircuitDiagram.TypeDescriptionIO.Xml.Extensions.csproj", "{4DF9B2AC-5BC6-44AF-A105-39B67B330705}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -109,12 +113,6 @@ Global
 		{D81CED39-466E-4149-BCE3-0A5877ED17D0}.Portable|Any CPU.Build.0 = Debug|Any CPU
 		{D81CED39-466E-4149-BCE3-0A5877ED17D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D81CED39-466E-4149-BCE3-0A5877ED17D0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B81499CF-C539-4008-99D4-65C336BCE013}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B81499CF-C539-4008-99D4-65C336BCE013}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B81499CF-C539-4008-99D4-65C336BCE013}.Portable|Any CPU.ActiveCfg = Debug|Any CPU
-		{B81499CF-C539-4008-99D4-65C336BCE013}.Portable|Any CPU.Build.0 = Debug|Any CPU
-		{B81499CF-C539-4008-99D4-65C336BCE013}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B81499CF-C539-4008-99D4-65C336BCE013}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5AAED7D2-FEA4-41FD-B785-7F005ABC6160}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5AAED7D2-FEA4-41FD-B785-7F005ABC6160}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AAED7D2-FEA4-41FD-B785-7F005ABC6160}.Portable|Any CPU.ActiveCfg = Debug|Any CPU
@@ -127,6 +125,24 @@ Global
 		{AFC77A04-22F9-45BD-A5CC-952672ACB42F}.Portable|Any CPU.Build.0 = Debug|Any CPU
 		{AFC77A04-22F9-45BD-A5CC-952672ACB42F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFC77A04-22F9-45BD-A5CC-952672ACB42F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FDBA772-3339-4CB7-B7B1-7640EE7D0333}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FDBA772-3339-4CB7-B7B1-7640EE7D0333}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FDBA772-3339-4CB7-B7B1-7640EE7D0333}.Portable|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FDBA772-3339-4CB7-B7B1-7640EE7D0333}.Portable|Any CPU.Build.0 = Debug|Any CPU
+		{8FDBA772-3339-4CB7-B7B1-7640EE7D0333}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FDBA772-3339-4CB7-B7B1-7640EE7D0333}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C91ECFC0-551D-43E1-97AB-5E5487E8F79F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C91ECFC0-551D-43E1-97AB-5E5487E8F79F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C91ECFC0-551D-43E1-97AB-5E5487E8F79F}.Portable|Any CPU.ActiveCfg = Debug|Any CPU
+		{C91ECFC0-551D-43E1-97AB-5E5487E8F79F}.Portable|Any CPU.Build.0 = Debug|Any CPU
+		{C91ECFC0-551D-43E1-97AB-5E5487E8F79F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C91ECFC0-551D-43E1-97AB-5E5487E8F79F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DF9B2AC-5BC6-44AF-A105-39B67B330705}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DF9B2AC-5BC6-44AF-A105-39B67B330705}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DF9B2AC-5BC6-44AF-A105-39B67B330705}.Portable|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DF9B2AC-5BC6-44AF-A105-39B67B330705}.Portable|Any CPU.Build.0 = Debug|Any CPU
+		{4DF9B2AC-5BC6-44AF-A105-39B67B330705}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DF9B2AC-5BC6-44AF-A105-39B67B330705}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

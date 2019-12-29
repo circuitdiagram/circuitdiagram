@@ -78,5 +78,10 @@ namespace CircuitDiagram.Render.Path
                 return new LineTo(X, -Y);
             }
         }
+
+        public IPathCommand Reflect()
+        {
+            return new LineTo(Y, X);
+        }
     }
 }

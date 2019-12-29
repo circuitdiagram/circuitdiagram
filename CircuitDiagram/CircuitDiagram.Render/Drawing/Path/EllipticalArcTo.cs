@@ -74,6 +74,11 @@ namespace CircuitDiagram.Render.Path
                 return new EllipticalArcTo(Size.Width, Size.Height, RotationAngle, IsLargeArc, SweepDirection != SweepDirection.Clockwise, End.X, -End.Y);
             }
         }
+
+        public IPathCommand Reflect()
+        {
+            return new EllipticalArcTo(Size.Height, Size.Width, RotationAngle, IsLargeArc, SweepDirection != SweepDirection.Clockwise, End.Y, End.X);
+        }
     }
 
     public enum SweepDirection

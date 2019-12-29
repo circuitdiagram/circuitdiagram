@@ -65,5 +65,10 @@ namespace CircuitDiagram.Render.Path
                 return new SmoothCurveTo(ControlEnd.X, -ControlEnd.Y, End.X, -End.Y);
             }
         }
+
+        public IPathCommand Reflect()
+        {
+            return new SmoothCurveTo(ControlEnd.Y, ControlEnd.X, End.Y, End.X);
+        }
     }
 }

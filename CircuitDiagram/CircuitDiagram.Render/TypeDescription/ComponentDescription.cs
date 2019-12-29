@@ -24,11 +24,6 @@ namespace CircuitDiagram.TypeDescription
 {
     public class ComponentDescription
     {
-        /// <summary>
-        /// A unique ID for this description during runtime.
-        /// </summary>
-        public int RuntimeID { get; set; }
-
         public string ID { get; set; }
         public string ComponentName { get; set; }
         public double MinSize { get; set; }
@@ -42,6 +37,7 @@ namespace CircuitDiagram.TypeDescription
         public ComponentDescription()
         {
             Metadata = new ComponentDescriptionMetadata();
+            Connections = new ConnectionGroup[0];
         }
 
         public ComponentDescription(string id, string componentName, double minSize, ComponentProperty[] properties, ConnectionGroup[] connections, RenderDescription[] renderDescriptions, Conditional<FlagOptions>[] flags, ComponentDescriptionMetadata metadata)
