@@ -120,7 +120,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
             }
             else if (element.Name == EllipseElementName)
             {
-                if (ReadEllipseCommand(element, out var ellipse))
+                if (ReadEllipseCommand(description.Metadata.FormatVersion, element, out var ellipse))
                 {
                     groupContext.Value.Add(ellipse);
                 }
@@ -227,7 +227,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
             return true;
         }
 
-        protected virtual bool ReadEllipseCommand(XElement element, out XmlEllipseCommand command)
+        protected virtual bool ReadEllipseCommand(Version formatVersion, XElement element, out XmlEllipseCommand command)
         {
             command = new XmlEllipseCommand();
 
@@ -257,10 +257,14 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
                 command.Centre = centre;
             }
 
-            if (element.GetAttributeValue("rx", logger, out var rx))
+            string radius = "r";
+            if (formatVersion <= new Version(1, 1))
+                radius = "radius";
+
+            if (element.GetAttributeValue($"{radius}x", logger, out var rx))
                 command.RadiusX = double.Parse(rx);
 
-            if (element.GetAttributeValue("ry", logger, out var ry))
+            if (element.GetAttributeValue($"{radius}y", logger, out var ry))
                 command.RadiusY = double.Parse(ry);
 
             return true;
