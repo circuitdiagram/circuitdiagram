@@ -27,5 +27,7 @@ namespace CircuitDiagram.Compiler
     public class CompileOptions
     {
         public object CertificateThumbprint { get; set; }
+
+        public bool WriteExtendedMetadata { get; set; }
     }
 }

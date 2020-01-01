@@ -29,7 +29,10 @@ namespace CircuitDiagram.Compiler.CompileStages
     {
         public void Run(CompileContext context)
         {
-            var settings = new BinaryWriter.BinaryWriterSettings();
+            var settings = new BinaryWriter.BinaryWriterSettings
+            {
+                WriteExtendedMetadada = context.Options.WriteExtendedMetadata,
+            };
 
             if (context.Options.CertificateThumbprint != null)
                 settings.Certificate = FindCertificate(context.Options.CertificateThumbprint);
