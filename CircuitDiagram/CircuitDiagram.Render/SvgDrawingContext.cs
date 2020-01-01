@@ -144,14 +144,14 @@ namespace CircuitDiagram.Render
             else if (alignment == TextAlignment.BottomRight || alignment == TextAlignment.CentreRight || alignment == TextAlignment.TopRight)
                 textAnchor = "end";
 
-            string dy = "-0.3em";
+            string dominantBaseline = "baseline";
             if (alignment == TextAlignment.CentreCentre || alignment == TextAlignment.CentreLeft || alignment == TextAlignment.CentreRight)
-                dy = ".3em";
+                dominantBaseline = "middle";
             else if (alignment == TextAlignment.TopCentre || alignment == TextAlignment.TopLeft || alignment == TextAlignment.TopRight)
-                dy = "1em";
+                dominantBaseline = "hanging";
 
             writer.WriteAttributeString("style", "font-family:Arial;font-size:" + textRuns.FirstOrDefault().Formatting.Size + "px;text-anchor:" + textAnchor);
-            writer.WriteAttributeString("dy", dy);
+            writer.WriteAttributeString("dominant-baseline", dominantBaseline);
             writer.WriteAttributeString("transform", $"rotate({rotation}, {anchor.X}, {anchor.Y})");
 
             foreach (TextRun run in textRuns)
