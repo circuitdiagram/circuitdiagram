@@ -47,7 +47,8 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
         private static readonly XName RectElementName = XmlLoader.ComponentNamespace + "rect";
         private static readonly XName EllipseElementName = XmlLoader.ComponentNamespace + "ellipse";
         private static readonly XName PathElementName = XmlLoader.ComponentNamespace + "path";
-        private static readonly XName TextElementName = XmlLoader.ComponentNamespace + "text";
+
+        private static readonly Version Version1_5= new Version(1, 5);
 
         private readonly IXmlLoadLogger logger;
         private readonly IConditionParser conditionParser;
@@ -73,7 +74,9 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
         {
             var groups = new List<XmlRenderGroup>();
             var defaultGroup = new XmlRenderGroup(ConditionTree.Empty);
-            autoRotateOptionsReader.TrySetAutoRotateOptions(element, defaultGroup);
+
+            if (description.Metadata.FormatVersion >= Version1_5)
+                autoRotateOptionsReader.TrySetAutoRotateOptions(element, defaultGroup);
 
             groups.Add(defaultGroup);
             foreach (var child in element.Elements())
@@ -87,7 +90,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
 
         public virtual IEnumerable<XmlRenderGroup> ReadElement(XElement element, ComponentDescription description, XmlRenderGroup groupContext)
         {
-            if (element.Name == GroupElementName || element.Name == GElementName)
+            if (element.Name == GroupElementName || (description.Metadata.FormatVersion >= Version1_5 && element.Name == GElementName))
             {
                 return ReadRenderGroup(description, element, groupContext);
             }
