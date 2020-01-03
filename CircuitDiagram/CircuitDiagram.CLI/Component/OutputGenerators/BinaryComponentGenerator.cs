@@ -41,7 +41,7 @@ namespace CircuitDiagram.CLI.Component.OutputGenerators
 
         public void Generate(ComponentDescription description, ComponentConfiguration configuration, IResourceProvider resourceProvider, PreviewGenerationOptions options, Stream input, Stream output, SourceFileType sourceType)
         {
-            ComponentCompileResult result = compiler.Compile(input, output, resourceProvider, new CompileOptions());
+            ComponentCompileResult result = compiler.Compile(input, output, resourceProvider, new CompileOptions() { WriteExtendedMetadata = true });
             if (!result.Success)
                 throw new Exception();
         }

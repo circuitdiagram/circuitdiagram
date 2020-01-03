@@ -57,6 +57,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
             {
                 ushort sectionType = reader.ReadUInt16();
                 uint sectionLength = reader.ReadUInt32();
+                long sectionEnd = reader.BaseStream.Position + sectionLength;
 
                 #region Metadata
                 if (sectionType == (uint)BinaryConstants.ComponentSectionType.Metadata)
@@ -320,6 +321,21 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
                         }
 
                         renderDescriptions.Add(new RenderDescription(conditions, renderCommands.ToArray()));
+                    }
+                }
+                #endregion
+                #region ExtendedMetadata
+                else if (sectionType == (uint)BinaryConstants.ComponentSectionType.ExtendedMetadata)
+                {
+                    while (reader.BaseStream.Position < sectionEnd)
+                    {
+                        var field = (BinaryConstants.ExtendedMetadataField)reader.ReadByte();
+                        var fieldValue = reader.ReadType(out var type);
+
+                        if (field == BinaryConstants.ExtendedMetadataField.SemanticVersion && type == BinaryType.String)
+                        {
+                            descriptionMetadata.Version = new Version((string)fieldValue);
+                        }
                     }
                 }
                 #endregion
