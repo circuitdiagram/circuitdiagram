@@ -302,7 +302,9 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
                                     {
                                         byte formattedTextVersion = reader.ReadByte();
                                         ComponentPoint location = reader.ReadComponentPoint();
-                                        TextAlignment alignment = (TextAlignment)reader.ReadUInt32();
+                                        var alignment = (TextAlignment)reader.ReadByte();
+                                        var rotation = (TextRotation)reader.ReadByte();
+                                        reader.ReadBytes(2); // reserved
 
                                         uint numTextRuns = reader.ReadUInt32();
                                         List<TextRun> textRuns = new List<TextRun>((int)numTextRuns);
@@ -314,7 +316,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
                                             textRuns.Add(new TextRun(runText, new TextRunFormatting(formattingType, runSize)));
                                         }
 
-                                        renderCommands.Add(new RenderText(location, alignment, textRuns));
+                                        renderCommands.Add(new RenderText(location, alignment, textRuns) { Rotation = rotation });
                                     }
                                     continue;
                             }
