@@ -25,16 +25,26 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Render
             double width = context.AutoRotate.Mirror ? Height : Width;
             double height = context.AutoRotate.Mirror ? Width : Height;
 
-            foreach (var location in Location.Flatten(context))
+            foreach (var locationConditional in Location.Flatten(context))
             {
+                var location = locationConditional.Value;
+                if ((context.AutoRotate.FlipType & Circuit.FlipType.Horizontal) != 0)
+                {
+                    location.Offset = new CircuitDiagram.Primitives.Vector(location.Offset.X - width, location.Offset.Y);
+                }
+                if ((context.AutoRotate.FlipType & Circuit.FlipType.Vertical) != 0)
+                {
+                    location.Offset = new CircuitDiagram.Primitives.Vector(location.Offset.X, location.Offset.Y - height);
+                }
+
                 var command = new Rectangle(
-                    location.Value,
+                    location,
                     width,
                     height,
                     StrokeThickness,
                     Fill);
 
-                yield return new Conditional<IRenderCommand>(command, location.Conditions);
+                yield return new Conditional<IRenderCommand>(command, locationConditional.Conditions);
             }
         }
     }
