@@ -30,48 +30,39 @@ namespace CircuitDiagram.Circuit
         /// </summary>
         public string CollectionItem { get; }
 
-        protected bool Equals(ComponentType other)
-        {
-            if (Collection == UnknownCollection || other.Collection == UnknownCollection)
-                return false;
-
-            return Collection.Equals(other.Collection) && string.Equals(CollectionItem, other.CollectionItem);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            var other = obj as ComponentType;
-            return other != null && Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (Collection.GetHashCode() * 397) ^ CollectionItem.GetHashCode();
-            }
-        }
-
-        public static bool operator ==(ComponentType left, ComponentType right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(ComponentType left, ComponentType right)
-        {
-            return !Equals(left, right);
-        }
-
         public static ComponentType Unknown(string name)
         {
             return new ComponentType(UnknownCollection, name);
         }
 
+        public override bool Equals(object obj)
+        {
+            return obj is ComponentType type &&
+                   EqualityComparer<Uri>.Default.Equals(Collection, type.Collection) &&
+                   CollectionItem == type.CollectionItem;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -932068893;
+            hashCode = hashCode * -1521134295 + EqualityComparer<Uri>.Default.GetHashCode(Collection);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(CollectionItem);
+            return hashCode;
+        }
+
         public override string ToString()
         {
             return $"{Collection}:{CollectionItem}";
+        }
+
+        public static bool operator ==(ComponentType left, ComponentType right)
+        {
+            return EqualityComparer<ComponentType>.Default.Equals(left, right);
+        }
+
+        public static bool operator !=(ComponentType left, ComponentType right)
+        {
+            return !(left == right);
         }
     }
 }

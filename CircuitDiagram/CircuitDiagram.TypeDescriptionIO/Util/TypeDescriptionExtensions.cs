@@ -48,8 +48,8 @@ namespace CircuitDiagram.TypeDescriptionIO.Util
         public static TypeDescriptionComponentType GetComponentType(this ComponentConfiguration configuration, ComponentDescription description)
         {
             var collection = !string.IsNullOrEmpty(description.Metadata.ImplementSet) ? new Uri(description.Metadata.ImplementSet) : ComponentType.UnknownCollection;
-            var collectionItem = !string.IsNullOrEmpty(description.Metadata.ImplementItem) ? description.Metadata.ImplementItem : description.ComponentName;
-            return new TypeDescriptionComponentType(description.Metadata.GUID, collection, configuration.ImplementationName ?? collectionItem ?? description.ComponentName);
+            var defaultCollectionItem = !string.IsNullOrEmpty(description.Metadata.ImplementItem) ? description.Metadata.ImplementItem : description.ComponentName;
+            return new TypeDescriptionComponentType(description.Metadata.GUID, collection, string.IsNullOrEmpty(configuration.ImplementationName) ? defaultCollectionItem : configuration.ImplementationName);
         }
 
         public static TypeDescriptionComponentType GetConfigurationComponentType(this Component component, ComponentDescription description)

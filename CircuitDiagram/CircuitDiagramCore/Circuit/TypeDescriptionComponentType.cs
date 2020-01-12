@@ -19,9 +19,34 @@ namespace CircuitDiagram.Circuit
 
         public Guid Id { get; }
 
+        public override bool Equals(object obj)
+        {
+            return obj is TypeDescriptionComponentType type &&
+                   base.Equals(obj) &&
+                   Id.Equals(type.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 1545243542;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + Id.GetHashCode();
+            return hashCode;
+        }
+
         public override string ToString()
         {
             return $"{Id} ({CollectionItem})";
+        }
+
+        public static bool operator ==(TypeDescriptionComponentType left, TypeDescriptionComponentType right)
+        {
+            return EqualityComparer<TypeDescriptionComponentType>.Default.Equals(left, right);
+        }
+
+        public static bool operator !=(TypeDescriptionComponentType left, TypeDescriptionComponentType right)
+        {
+            return !(left == right);
         }
     }
 }
