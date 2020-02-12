@@ -26,7 +26,7 @@ namespace CircuitDiagram.Render
 
         public void DrawLine(Point start, Point end, double thickness)
         {
-            Expand(new Rect(start, end));
+            Expand(new Rect(new Point(Math.Min(start.X, end.X), Math.Min(start.Y, end.Y)), new Point(Math.Max(start.X, end.X), Math.Max(start.Y, end.Y))));
             underlying?.DrawLine(start, end, thickness);
         }
 
