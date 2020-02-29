@@ -59,12 +59,10 @@ namespace CircuitDiagram.CLI.ComponentPreview
             if ((flagOptions & FlagOptions.HorizontalOnly) == FlagOptions.HorizontalOnly && component.Layout.Orientation == Orientation.Vertical)
             {
                 component.Layout.Orientation = Orientation.Horizontal;
-                component.Layout.Size = desc.MinSize;
             }
             else if ((flagOptions & FlagOptions.VerticalOnly) == FlagOptions.VerticalOnly && component.Layout.Orientation == Orientation.Horizontal)
             {
                 component.Layout.Orientation = Orientation.Vertical;
-                component.Layout.Size = desc.MinSize;
             }
 
             // Flip
