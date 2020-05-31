@@ -33,7 +33,7 @@ namespace CircuitDiagram.Render
                 return description;
             
             // Not found
-            return null;
+            throw new MissingComponentDescriptionException(componentType);
         }
 
         public void AddDescription(ComponentType componentType, ComponentDescription description)
@@ -45,6 +45,11 @@ namespace CircuitDiagram.Render
 
             if (tdComponentType?.Id != null)
                 guidLookup[tdComponentType.Id] = description;
+        }
+
+        public IEnumerable<ComponentDescription> GetAllDescriptions()
+        {
+            return LookupDictionary.Values.Distinct();
         }
     }
 }

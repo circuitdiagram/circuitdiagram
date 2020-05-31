@@ -1,6 +1,6 @@
 ﻿// Circuit Diagram http://www.circuit-diagram.org/
 // 
-// Copyright (C) 2018  Samuel Fisher
+// Copyright (C) 2020  Samuel Fisher
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -55,7 +55,33 @@ namespace CircuitDiagram.CLI.Circuit
             var descriptionLookup = new DirectoryComponentDescriptionLookup(loggerFactory, options.ComponentsDirectory ?? Path.GetDirectoryName(options.Input), true);
             var renderer = new CircuitRenderer(descriptionLookup);
             var drawingContext = new SkiaDrawingContext((int)circuit.Size.Width, (int)circuit.Size.Height, SKColors.White);
-            renderer.RenderCircuit(circuit, drawingContext);
+
+            try
+            {
+                renderer.RenderCircuit(circuit, drawingContext);
+            }
+            catch (MissingComponentDescriptionException ex)
+            {
+                Console.Error.WriteLine($"Unable to find component {ex.MissingType}.");
+
+                var allDescriptions = descriptionLookup.GetAllDescriptions().OrderBy(x => x.ComponentName).ToList();
+
+                if (!allDescriptions.Any())
+                {
+                    Console.Error.Write("No components were loaded. Is the --components option set correctly?");
+                }
+                else
+                {
+                    Console.Error.WriteLine("Ensure this component is available in the --components directory. The following components were loaded:");
+
+                    foreach (var description in allDescriptions)
+                    {
+                        Console.Error.WriteLine($"  - {description.ComponentName} ({description.Metadata.GUID})");
+                    }
+                }
+                
+                return 1;
+            }
 
             using (var outputFs = File.OpenWrite(options.Output))
             {

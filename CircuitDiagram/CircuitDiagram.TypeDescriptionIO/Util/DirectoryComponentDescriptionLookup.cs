@@ -10,7 +10,6 @@ using CircuitDiagram.TypeDescription;
 using CircuitDiagram.TypeDescriptionIO.Binary;
 using CircuitDiagram.TypeDescriptionIO.Xml;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CircuitDiagram.TypeDescriptionIO.Util
 {
@@ -28,6 +27,8 @@ namespace CircuitDiagram.TypeDescriptionIO.Util
         {
             return internalLookup.GetDescription(componentType);
         }
+
+        public IEnumerable<ComponentDescription> GetAllDescriptions() => internalLookup.GetAllDescriptions();
 
         private void LoadXmlComponents(ILoggerFactory loggerFactory, string[] directories, SearchOption searchOption)
         {
