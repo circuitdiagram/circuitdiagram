@@ -88,6 +88,12 @@ namespace CircuitDiagram.Render.Connections
         private IList<ConnectionPoint> GetConnectionPoints(PositionalComponent component, LayoutOptions layoutOptions)
         {
             var description = descriptionLookup.GetDescription(component.Type);
+
+            if (description == null)
+            {
+                throw new ApplicationException($"No component description available for {component.Type}");
+            }
+
             return connectionPositioner.PositionConnections(component, description, layoutOptions);
         }
 
