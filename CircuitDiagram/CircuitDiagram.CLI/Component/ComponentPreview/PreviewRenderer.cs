@@ -75,7 +75,6 @@ namespace CircuitDiagram.CLI.ComponentPreview
                 component.Layout.Flip |= FlipState.Secondary;
             }
 
-
             // Properties
             foreach (var property in options.Properties)
             {

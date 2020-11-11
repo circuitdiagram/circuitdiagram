@@ -44,7 +44,13 @@ namespace CircuitDiagram.Render
 
         public void DrawPath(Point start, IList<IPathCommand> commands, double thickness, bool fill = false)
         {
-            // Not supported
+            Expand(new Rect(start, new Size(1, 1)));
+
+            foreach (var command in commands)
+            {
+                Expand(new Rect(start.Add(new Vector(command.End.X, command.End.Y)), new Size(1, 1)));
+            }
+
             underlying?.DrawPath(start, commands, thickness, fill);
         }
 

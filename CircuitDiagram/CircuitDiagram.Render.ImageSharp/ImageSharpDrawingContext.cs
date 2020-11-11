@@ -26,11 +26,11 @@ using CircuitDiagram.Drawing.Text;
 using CircuitDiagram.Render.Path;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing;
+using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.Primitives;
-using SixLabors.Shapes;
 using Point = CircuitDiagram.Primitives.Point;
 using Size = CircuitDiagram.Primitives.Size;
 

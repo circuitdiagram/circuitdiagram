@@ -4,10 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <AssemblyName>circuit-diagram-cli</AssemblyName>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
     <PackageId>CircuitDiagram.CLI</PackageId>
-    <PackageVersion>0.0-dev</PackageVersion>
     <Description>Command-line utility for Circuit Diagram.</Description>
     <Authors>Samuel Fisher</Authors>
     <PackageProjectUrl>https://www.circuit-diagram.org/</PackageProjectUrl>
@@ -21,7 +19,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0007" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-rc0003" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="1.68.1" />
   </ItemGroup>
