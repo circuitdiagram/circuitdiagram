@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageVersion>0.0-dev</PackageVersion>
     <Description>Additional functionality for reading Circuit Diagram XML component descriptions.</Description>
     <Authors>Samuel Fisher</Authors>
     <PackageProjectUrl>https://www.circuit-diagram.org/</PackageProjectUrl>
