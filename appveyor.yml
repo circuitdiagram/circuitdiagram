@@ -1,0 +1,47 @@
+image:
+- Visual Studio 2019
+- Ubuntu
+
+configuration: Release
+
+nuget:
+  disable_publish_on_pr: true
+
+pull_requests:
+  do_not_increment_build_number: true
+
+before_build:
+- ps: |-
+    dotnet tool install --tool-path . nbgv
+    .\nbgv cloud -p ./CircuitDiagram
+    dotnet restore ./CircuitDiagram/CircuitDiagram.sln
+
+build:
+  publish_nuget: false
+  verbosity: minimal
+
+after_test:
+- ps: |-
+    $cliVersionName = $env:APPVEYOR_BUILD_VERSION
+
+    if ($isWindows) {
+      dotnet publish .\CircuitDiagram\CircuitDiagram.CLI\CircuitDiagram.CLI.csproj -c Release -r win-x64 -p:PublishSingleFile=true --self-contained true
+      $files = Get-ChildItem -Path .\CircuitDiagram\CircuitDiagram.CLI\bin\Release\net*\win-x64\publish\ -Exclude *.pdb
+      Compress-Archive -Path $files -DestinationPath .\circuit-diagram-cli.$cliVersionName.win-x64.zip
+
+      dotnet publish .\CircuitDiagram\CircuitDiagram.CLI\CircuitDiagram.CLI.csproj -c Release -r osx-x64 -p:PublishSingleFile=true --self-contained true
+      $files = Get-ChildItem -Path .\CircuitDiagram\CircuitDiagram.CLI\bin\Release\net*\osx-x64\publish\ -Exclude *.pdb
+      Compress-Archive -Path $files -DestinationPath .\circuit-diagram-cli.$cliVersionName.osx-x64.zip
+    }
+
+    if ($isLinux) {
+      dotnet publish ./CircuitDiagram/CircuitDiagram.CLI/CircuitDiagram.CLI.csproj -c Release -r linux-x64 -p:PublishSingleFile=true --self-contained true
+      $build_dir = (pwd)
+      cd ./CircuitDiagram/CircuitDiagram.CLI/bin/Release/net*/linux-x64/publish
+      tar --exclude **/*.pdb -cJf $build_dir/circuit-diagram-cli.$cliVersionName.linux-x64.tar.xz  ./
+    }
+
+artifacts:
+- path: circuit-diagram-cli.*.win-x64.zip
+- path: circuit-diagram-cli.*.linux-x64.tar.xz
+- path: circuit-diagram-cli.*.osx-x64.zip
