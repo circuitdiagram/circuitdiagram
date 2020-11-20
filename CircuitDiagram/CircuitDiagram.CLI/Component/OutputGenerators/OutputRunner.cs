@@ -15,7 +15,7 @@ namespace CircuitDiagram.CLI.Component.OutputGenerators
         private readonly ILogger logger;
         private readonly IResourceProvider resourceProvider;
 
-        public OutputRunner(ILogger logger, IResourceProvider resourceProvider)
+        public OutputRunner(ILogger<OutputRunner> logger, IResourceProvider resourceProvider)
         {
             this.logger = logger;
             this.resourceProvider = resourceProvider;

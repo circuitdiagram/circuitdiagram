@@ -20,7 +20,6 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using CircuitDiagram.IO;
-using CircuitDiagram.Logging;
 using CircuitDiagram.TypeDescriptionIO;
 using Microsoft.Extensions.Logging;
 
@@ -28,7 +27,12 @@ namespace CircuitDiagram.Compiler.CompileStages
 {
     class SetIconsCompileStage : ICompileStage
     {
-        private static readonly ILogger Log = LogManager.GetLogger<SetIconsCompileStage>();
+        private readonly ILogger _logger;
+
+        public SetIconsCompileStage(ILogger<SetIconsCompileStage> logger)
+        {
+            _logger = logger;
+        }
 
         public void Run(CompileContext context)
         {
@@ -46,7 +50,7 @@ namespace CircuitDiagram.Compiler.CompileStages
 
         private MultiResolutionImage LoadIcon(string resourceName, CompileContext context)
         {
-            int[] resolutions = {32, 64};
+            int[] resolutions = { 32, 64 };
 
             var icon = new MultiResolutionImage();
             foreach (int resolution in resolutions)
@@ -56,7 +60,7 @@ namespace CircuitDiagram.Compiler.CompileStages
                 if (!context.Resources.HasResource(resolutionName))
                 {
                     string warnMessage = $"Icon {resolutionName} not found.";
-                    Log.LogWarning(warnMessage);
+                    _logger.LogWarning(warnMessage);
                     context.Errors.Add(new CompileError(LoadErrorCategory.Warning, warnMessage));
                     continue;
                 }

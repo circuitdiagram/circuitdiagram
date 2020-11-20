@@ -18,93 +18,179 @@
 
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.IO;
 using System.Linq;
-using System.Text;
+using CircuitDiagram.Circuit;
+using CircuitDiagram.CLI.Logging;
 using CircuitDiagram.Document;
+using CircuitDiagram.Drawing;
 using CircuitDiagram.Render;
+using CircuitDiagram.Render.ImageSharp;
 using CircuitDiagram.Render.Skia;
 using CircuitDiagram.TypeDescriptionIO.Util;
-using CommandLine;
+using CircuitDiagram.TypeDescriptionIO.Xml;
+using CircuitDiagram.TypeDescriptionIO.Xml.Extensions.Definitions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using SkiaSharp;
 
 namespace CircuitDiagram.CLI.Circuit
 {
-    static class CircuitApp
+    class CircuitApp
     {
-        public static int Run(Options options)
+        private readonly ILogger<CircuitApp> _logger;
+        private readonly DirectoryComponentDescriptionLookup _componentDescriptionLookup;
+
+        public CircuitApp(
+            ILogger<CircuitApp> logger,
+            DirectoryComponentDescriptionLookup componentDescriptionLookup)
         {
-            Console.WriteLine($"{Path.GetFileName(options.Input)} -> {Path.GetFileName(options.Output)}");
+            _logger = logger;
+            _componentDescriptionLookup = componentDescriptionLookup;
+        }
 
-            var reader = new CircuitDiagramDocumentReader();
-            CircuitDiagramDocument circuit;
-            using (var fs = File.Open(options.Input, FileMode.Open, FileAccess.Read))
+        public int Run(Options options)
+        {
+            _logger.LogInformation($"{Path.GetFileName(options.Input)} -> {Path.GetFileName(options.Output)}");
+
+            CircuitDocument circuit;
+            var inputFileExtension = Path.GetExtension(options.Input);
+            switch (inputFileExtension)
             {
-                circuit = reader.ReadCircuit(fs);
+                case ".cddx":
+                {
+                    var reader = new CircuitDiagramDocumentReader();
+                    using (var fs = File.Open(options.Input, FileMode.Open, FileAccess.Read))
+                    {
+                        circuit = reader.ReadCircuit(fs);
+                    }
+                    break;
+                }
+                default:
+                {
+                    _logger.LogError($"Unknown file type: '{inputFileExtension}'.");
+                    return 1;
+                }
             }
 
-            var loggerFactory = new LoggerFactory();
+            var renderer = new CircuitRenderer(_componentDescriptionLookup);
 
-            if (options.Verbose)
+            var bufferRenderer = new SkiaBufferedDrawingContext();
+            renderer.RenderCircuit(circuit, bufferRenderer);
+
+            IPngDrawingContext context;
+            switch (options.Renderer)
             {
-                loggerFactory.AddConsole(LogLevel.Information);
+                case PngRenderer.Skia:
+                    context = new SkiaDrawingContext((int)circuit.Size.Width, (int)circuit.Size.Height, SKColors.White);
+                    break;
+                case PngRenderer.ImageSharp:
+                    context = new ImageSharpDrawingContext((int)circuit.Size.Width, (int)circuit.Size.Height, SixLabors.ImageSharp.Color.White);
+                    break;
+                default:
+                    _logger.LogError("Unsupported renderer.");
+                    return 1;
             }
-
-            var descriptionLookup = new DirectoryComponentDescriptionLookup(loggerFactory, options.ComponentsDirectory ?? Path.GetDirectoryName(options.Input), true);
-            var renderer = new CircuitRenderer(descriptionLookup);
-            var drawingContext = new SkiaDrawingContext((int)circuit.Size.Width, (int)circuit.Size.Height, SKColors.White);
 
             try
             {
-                renderer.RenderCircuit(circuit, drawingContext);
+                renderer.RenderCircuit(circuit, context);
             }
             catch (MissingComponentDescriptionException ex)
             {
-                Console.Error.WriteLine($"Unable to find component {ex.MissingType}.");
+                _logger.LogError($"Unable to find component {ex.MissingType}.");
 
-                var allDescriptions = descriptionLookup.GetAllDescriptions().OrderBy(x => x.ComponentName).ToList();
+                var allDescriptions = _componentDescriptionLookup.GetAllDescriptions().OrderBy(x => x.ComponentName).ToList();
 
                 if (!allDescriptions.Any())
                 {
-                    Console.Error.Write("No components were loaded. Is the --components option set correctly?");
+                    _logger.LogInformation("No components were loaded. Is the --components option set correctly?");
                 }
                 else
                 {
-                    Console.Error.WriteLine("Ensure this component is available in the --components directory. The following components were loaded:");
+                    _logger.LogInformation("Ensure this component is available in the --components directory. The following components were loaded:");
 
                     foreach (var description in allDescriptions)
                     {
-                        Console.Error.WriteLine($"  - {description.ComponentName} ({description.Metadata.GUID})");
+                        _logger.LogInformation($"  - {description.ComponentName} ({description.Metadata.GUID})");
                     }
                 }
-                
+
                 return 1;
             }
 
             using (var outputFs = File.OpenWrite(options.Output))
             {
-                drawingContext.WriteAsPng(outputFs);
+                context.WriteAsPng(outputFs);
             }
 
             return 0;
         }
 
-        [Verb("circuit", HelpText = "Render a CDDX circuit as an image.")]
+        public static int Run(IHost host, Options options)
+        {
+            var services = new ServiceCollection();
+            services.AddLogging(x => x.SetupLogging(options.Verbose, options.Silent));
+
+            var loader = new XmlLoader();
+            loader.UseDefinitions();
+            services.AddSingleton(s => new DirectoryComponentDescriptionLookup(s.GetRequiredService<ILoggerFactory>(), options.Components ?? Path.GetDirectoryName(options.Input), true, loader));
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            var app = ActivatorUtilities.CreateInstance<CircuitApp>(serviceProvider);
+            return app.Run(options);
+        }
+
+        public static Command BuildCommand()
+        {
+            var command = new Command("circuit", "Render a circuit document as an image.");
+
+            var input = new Argument("input");
+            input.Description = "Path to circuit document to render (*.cddx).";
+            input.Arity = ArgumentArity.ExactlyOne;
+            command.AddArgument(input);
+
+            var output = new Option<string>(new[] { "-o", "--output" }, "Path to output file.");
+            output.IsRequired = true;
+            output.Argument.Name = "path";
+            command.AddOption(output);
+
+            var components = new Option<string>("--components", "Path to components directory.");
+            command.AddOption(components);
+
+            var renderer = new Option<PngRenderer>("--renderer", () => PngRenderer.Skia, "Renderer to use for PNG outputs.");
+            command.AddOption(renderer);
+
+            var debugLayout = new Option<bool>(new[] { "-d", "--debug-layout" }, "Draw component start and end points.");
+            command.AddOption(debugLayout);
+
+            var grid = new Option<bool>("--grid", "Draw a background grid.");
+            command.AddOption(grid);
+
+            var scale = new Option<double>("--scale", () => 1.0, "Scale the output image.");
+            command.AddOption(scale);
+
+            command.Handler = CommandHandler.Create<IHost, Options>(Run);
+            return command;
+        }
+
         public class Options
         {
-            [Value(0, Required = true, HelpText = "Path to components directory.")]
             public string Input { get; set; }
 
-            [Option('o', Required = true, HelpText = "Path to output file.")]
             public string Output { get; set; }
 
-            [Option("components", HelpText = "Paths to components directory.")]
-            public string ComponentsDirectory { get; set; }
+            public string Components { get; set; }
 
-            [Value('v')]
+            public PngRenderer Renderer { get; set; }
+
             public bool Verbose { get; set; }
+
+            public bool Silent { get; set; }
         }
     }
 }

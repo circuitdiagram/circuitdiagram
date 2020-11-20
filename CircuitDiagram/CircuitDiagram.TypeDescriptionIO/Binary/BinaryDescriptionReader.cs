@@ -1,21 +1,19 @@
-﻿using CircuitDiagram.Components;
-using CircuitDiagram.Components.Description;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using CircuitDiagram.Logging;
 using CircuitDiagram.TypeDescription;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CircuitDiagram.TypeDescriptionIO.Binary
 {
     public class BinaryDescriptionReader
     {
-        private static readonly ILogger Log = LogManager.GetLogger<BinaryDescriptionReader>();
+        private static ILogger _logger;
 
         bool isSigned;
         bool validSignature;
@@ -28,6 +26,16 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
         public Dictionary<uint, MultiResolutionImage> Images = new Dictionary<uint, MultiResolutionImage>();
 
         public X509Chain CertificateChain { get; set; }
+
+        public BinaryDescriptionReader()
+            : this(NullLogger<BinaryDescriptionReader>.Instance)
+        {
+        }
+
+        public BinaryDescriptionReader(ILogger<BinaryDescriptionReader> logger)
+        {
+            _logger = logger;
+        }
 
         public bool Read(Stream stream)
         {
@@ -115,7 +123,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
             catch (Exception ex)
             {
                 // Invalid binary file
-                Log.LogError("Failed to load component.", ex);
+                _logger.LogError(ex, "Failed to load component.");
                 return false;
             }
         }

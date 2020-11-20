@@ -21,7 +21,7 @@ namespace CircuitDiagram.CLI.Component.InputRunners
         private readonly ILogger logger;
         private readonly OutputRunner outputRunner;
 
-        public ComponentDescriptionRunner(ILogger logger, OutputRunner outputRunner)
+        public ComponentDescriptionRunner(ILogger<ComponentDescriptionRunner> logger, OutputRunner outputRunner)
         {
             this.logger = logger;
             this.outputRunner = outputRunner;
@@ -47,7 +47,7 @@ namespace CircuitDiagram.CLI.Component.InputRunners
                 Dictionary<string, IReadOnlyDictionary<string, string>> configurationOutputs = new Dictionary<string, IReadOnlyDictionary<string, string>>();
                 if (allConfigurations)
                 {
-                    foreach(var configuration in description.Metadata.Configurations)
+                    foreach (var configuration in description.Metadata.Configurations)
                     {
                         var renderOptions = new PreviewGenerationOptions
                         {

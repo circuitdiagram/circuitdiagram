@@ -36,7 +36,7 @@ using Size = CircuitDiagram.Primitives.Size;
 
 namespace CircuitDiagram.Render.ImageSharp
 {
-    public class ImageSharpDrawingContext : IDrawingContext
+    public class ImageSharpDrawingContext : IPngDrawingContext
     {
         private static readonly SolidBrush Black = new SolidBrush(Color.Black);
 

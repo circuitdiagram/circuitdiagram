@@ -8,22 +8,19 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Text;
 using CircuitDiagram.CLI.Component.OutputGenerators;
-using CircuitDiagram.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace CircuitDiagram.CLI.Component
 {
     class OutputGeneratorRepository
     {
-        private static readonly ILogger Log = LogManager.GetLogger<OutputGeneratorRepository>();
-
         private readonly IReadOnlyList<IOutputGenerator> _generators;
 
-        public OutputGeneratorRepository(PngRenderer pngRenderer)
+        public OutputGeneratorRepository(ILoggerFactory loggerFactory, PngRenderer pngRenderer)
         {
             _generators = new IOutputGenerator[]
             {
-                new BinaryComponentGenerator(),
+                new BinaryComponentGenerator(loggerFactory),
                 new SvgPreviewRenderer(),
                 new PngPreviewRenderer()
                 {

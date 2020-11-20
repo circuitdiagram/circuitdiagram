@@ -18,60 +18,69 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Text;
 using CircuitDiagram.CLI.ComponentPreview;
 using CircuitDiagram.CLI.Component.OutputGenerators;
 using Microsoft.Extensions.Logging;
-using CircuitDiagram.Logging;
 using CircuitDiagram.CLI.Component.InputRunners;
 using CircuitDiagram.CLI.Component.Manifest;
 using CircuitDiagram.TypeDescriptionIO.Util;
-using CommandLine;
-using Microsoft.Extensions.Logging.Abstractions;
 using CircuitDiagram.Render;
+using Microsoft.Extensions.Hosting;
+using System.CommandLine;
+using System.CommandLine.Invocation;
+using Microsoft.Extensions.DependencyInjection;
+using CircuitDiagram.Compiler;
+using CircuitDiagram.CLI.Logging;
 
 namespace CircuitDiagram.CLI.Component
 {
-    static class ComponentApp
+    class ComponentApp
     {
-        public static int Run(Options options)
+        private readonly ILogger<ComponentApp> _logger;
+        private readonly OutputGeneratorRepository _outputGeneratorRepository;
+        private readonly ComponentDescriptionRunner _compileRunner;
+        private readonly ConfigurationDefinitionRunner _configurationDefinitionRunner;
+
+        public ComponentApp(
+            ILogger<ComponentApp> logger,
+            OutputGeneratorRepository outputGeneratorRepository,
+            ComponentDescriptionRunner compileRunner,
+            ConfigurationDefinitionRunner configurationDefinitionRunner)
         {
-            var loggerFactory = new LoggerFactory();
-            if (!options.Silent)
-            {
-                loggerFactory.AddProvider(new BasicConsoleLogger(options.Verbose ? LogLevel.Debug : LogLevel.Information));
-            }
+            _logger = logger;
+            _outputGeneratorRepository = outputGeneratorRepository;
+            _compileRunner = compileRunner;
+            _configurationDefinitionRunner = configurationDefinitionRunner;
+        }
 
-            var logger = loggerFactory.CreateLogger(typeof(ComponentApp));
-
+        public int Run(Options options)
+        {
             if (!options.Input.Any())
             {
-                logger.LogError("At least one input file must be specified.");
+                _logger.LogError("At least one input file must be specified.");
                 return 1;
             }
 
             var generators = new Dictionary<IOutputGenerator, string>();
-            var outputGenerators = new OutputGeneratorRepository(options.Renderer);
             bool outputIsDirectory = Directory.Exists(options.Output);
             if (options.Output != null && !outputIsDirectory)
             {
-                if (outputGenerators.TryGetGeneratorByFileExtension(Path.GetExtension(options.Output), out var generator))
+                if (_outputGeneratorRepository.TryGetGeneratorByFileExtension(Path.GetExtension(options.Output), out var generator))
                 {
                     // Use the generator implied by the file extension
                     generators.Add(generator, options.Output);
                 }
                 else if (options.Formats?.Any() != true)
                 {
-                    logger.LogError("Unable to infer format from output file extension." + Environment.NewLine +
+                    _logger.LogError("Unable to infer format from output file extension." + Environment.NewLine +
                                     "Specify a known file extension or specify explicitly using --format");
                     return 1;
                 }
                 else
                 {
-                    logger.LogInformation("Unable to infer format from output file extension. Using formats only.");
+                    _logger.LogInformation("Unable to infer format from output file extension. Using formats only.");
                 }
             }
 
@@ -79,13 +88,13 @@ namespace CircuitDiagram.CLI.Component
             {
                 foreach (var format in options.Formats)
                 {
-                    if (outputGenerators.TryGetGeneratorByFormat(format, out var generator))
+                    if (_outputGeneratorRepository.TryGetGeneratorByFormat(format, out var generator))
                     {
                         generators.Add(generator, outputIsDirectory ? options.Output : null);
                     }
                     else
                     {
-                        logger.LogError($"Unknown format: {format}");
+                        _logger.LogError($"Unknown format: {format}");
                         return 1;
                     }
                 }
@@ -106,41 +115,26 @@ namespace CircuitDiagram.CLI.Component
 
             if (options.RenderPropertiesPath != null && File.Exists(options.RenderPropertiesPath))
             {
-                logger.LogDebug($"Applying render properties from '{options.RenderPropertiesPath}'");
+                _logger.LogDebug($"Applying render properties from '{options.RenderPropertiesPath}'");
                 PreviewGenerationOptionsReader.Read(options.RenderPropertiesPath, previewOptions);
             }
 
-            IComponentDescriptionLookup componentDescriptionLookup;
-            var descriptionLookupLoggerFactory = options.Verbose ? loggerFactory : (ILoggerFactory)NullLoggerFactory.Instance;
-            if (options.ComponentsDirectory != null)
-            {
-                componentDescriptionLookup = new DirectoryComponentDescriptionLookup(descriptionLookupLoggerFactory, options.ComponentsDirectory, true);
-            }
-            else
-            {
-                componentDescriptionLookup = new DictionaryComponentDescriptionLookup();
-            }
-
-            var resourceProvider = ResourceProviderFactory.Create(loggerFactory.CreateLogger(typeof(ResourceProviderFactory)), options.Resources?.ToArray() ?? new string[0]);
-            var outputRunner = new OutputRunner(loggerFactory.CreateLogger<OutputRunner>(), resourceProvider);
-            var compileRunner = new ComponentDescriptionRunner(loggerFactory.CreateLogger<ComponentDescriptionRunner>(), outputRunner);
-            var configurationDefinitionRunner = new ConfigurationDefinitionRunner(loggerFactory.CreateLogger<ConfigurationDefinitionRunner>(), componentDescriptionLookup, outputRunner);
             var results = new List<IManifestEntry>();
 
             var inputs = new List<string>();
             if (File.Exists(options.Input))
             {
-                logger.LogDebug("Input is a file.");
+                _logger.LogDebug("Input is a file.");
                 inputs.Add(options.Input);
             }
             else if (Directory.Exists(options.Input))
             {
-                logger.LogDebug("Input is a directory.");
+                _logger.LogDebug("Input is a directory.");
                 foreach (var generator in generators)
                 {
                     if (generator.Value != null && !Directory.Exists(generator.Value))
                     {
-                        logger.LogError("Outputs must be directories when the input is a directory.");
+                        _logger.LogError("Outputs must be directories when the input is a directory.");
                         return 1;
                     }
                 }
@@ -159,23 +153,23 @@ namespace CircuitDiagram.CLI.Component
             }
             else
             {
-                logger.LogError($"Input is not a valid file or directory: {options.Input}");
+                _logger.LogError($"Input is not a valid file or directory: {options.Input}");
                 return 1;
             }
 
             foreach (var file in inputs.OrderBy(x => x))
             {
-                logger.LogDebug($"Starting '{file}'");
+                _logger.LogDebug($"Starting '{file}'");
 
                 IManifestEntry result;
 
                 switch (Path.GetExtension(file))
                 {
                     case ".xml":
-                        result = compileRunner.CompileOne(file, previewOptions, options.AllConfigurations, generators);
+                        result = _compileRunner.CompileOne(file, previewOptions, options.AllConfigurations, generators);
                         break;
                     case ".yaml":
-                        result = configurationDefinitionRunner.CompileOne(file, previewOptions, generators);
+                        result = _configurationDefinitionRunner.CompileOne(file, previewOptions, generators);
                         break;
                     default:
                         throw new NotSupportedException($"File type '{Path.GetExtension(file)}' not supported.");
@@ -188,14 +182,14 @@ namespace CircuitDiagram.CLI.Component
 
                 results.Add(result);
 
-                logger.LogDebug($"Finshed '{file}'");
+                _logger.LogDebug($"Finshed '{file}'");
             }
 
             if (options.Manifest != null)
             {
                 using (var manifestFs = File.Open(options.Manifest, FileMode.Create))
                 {
-                    logger.LogInformation($"Writing manifest to {options.Manifest}");
+                    _logger.LogInformation($"Writing manifest to {options.Manifest}");
                     ManifestWriter.WriteManifest(results, manifestFs);
                 }
             }
@@ -203,64 +197,136 @@ namespace CircuitDiagram.CLI.Component
             return 0;
         }
 
-        [Verb("component", HelpText = "Compile and render components.")]
+        public static int Run(IHost host, Options options)
+        {
+            var services = new ServiceCollection();
+            services.AddLogging(x => x.SetupLogging(options.Verbose, options.Silent));
+            services.AddSingleton(s => ActivatorUtilities.CreateInstance<OutputGeneratorRepository>(s, options.Renderer));
+
+            if (options.ComponentsDirectory != null)
+            {
+                services.AddSingleton<IComponentDescriptionLookup>(s =>
+                    new DirectoryComponentDescriptionLookup(s.GetRequiredService<ILoggerFactory>(), options.ComponentsDirectory, options.Recursive));
+            }
+            else
+            {
+                services.AddSingleton<IComponentDescriptionLookup, DictionaryComponentDescriptionLookup>();
+            }
+
+            services.AddSingleton(s =>
+                ResourceProviderFactory.Create(s.GetRequiredService<ILogger<ResourceProviderFactory>>(), options.Resources));
+            services.AddSingleton<OutputRunner>();
+            services.AddSingleton<ComponentDescriptionRunner>();
+            services.AddSingleton<ConfigurationDefinitionRunner>();
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            var app = ActivatorUtilities.CreateInstance<ComponentApp>(serviceProvider);
+            return app.Run(options);
+        }
+
+        public static Command BuildCommand()
+        {
+            var command = new Command("component", "Compile and render components.");
+
+            var input = new Argument("input");
+            input.Description = "Path to component or directory containing components to compile.";
+            input.Arity = ArgumentArity.ExactlyOne;
+            command.AddArgument(input);
+
+            var output = new Option<string>(new[] { "-o", "--output" }, "Path to output file (the format will be inferred from the extension). Cannot be used for directory inputs or in combination with specific output format options.");
+            output.IsRequired = true;
+            output.Argument.Name = "path";
+            command.AddOption(output);
+
+            var manifest = new Option<string>("--manifest", "Writes a manifest file listing the compiled components.");
+            manifest.Argument.Name = "path";
+            command.AddOption(manifest);
+
+            var autosize = new Option<bool>("--autosize", "Automatically size the output image to fit the rendered preview.");
+            command.AddOption(autosize);
+
+            var width = new Option<int>(new[] { "--width" }, () => 640, "Width of output images to generate.");
+            command.AddOption(width);
+
+            var height = new Option<int>(new[] { "--height" }, () => 480, "Height of output images to generate.");
+            command.AddOption(height);
+
+            var recursive = new Option<bool>(new[] { "-r", "--recursive" }, "Recursively searches sub-directories of the input directory.");
+            command.AddOption(recursive);
+
+            var configuration = new Option<string>(new[] { "-c", "--configuration" }, "Name of component configuration to use (supported output formats only).");
+            command.AddOption(configuration);
+
+            var allConfigurations = new Option<bool>("--all-configurations", "Produce an output for every component configuration (supported output formats only).");
+            command.AddOption(allConfigurations);
+
+            var components = new Option<string>("--components", "Path to components directory.");
+            command.AddOption(components);
+
+            var format = new Option<string[]>("--format", "Output formats to write.");
+            command.AddOption(format);
+
+            var resources = new Option<string[]>("--resources", "Resources to use in generating the output.");
+            command.AddOption(resources);
+
+            var renderer = new Option<PngRenderer>("--renderer", () => PngRenderer.Skia, "Renderer to use for PNG outputs.");
+            command.AddOption(renderer);
+
+            var renderProperties = new Option<string>(new[] { "-p", "--props" }, "Path to render.properties file for preview generation.");
+            command.AddOption(renderProperties);
+
+            var debugLayout = new Option<bool>(new[] { "-d", "--debug-layout" }, "Draw component start and end points.");
+            command.AddOption(debugLayout);
+
+            var grid = new Option<bool>("--grid", "Draw a background grid.");
+            command.AddOption(grid);
+
+            var scale = new Option<double>("--scale", () => 1.0, "Scale the output image.");
+            command.AddOption(scale);
+
+            command.Handler = CommandHandler.Create<IHost, Options>(Run);
+            return command;
+        }
+
         public class Options
         {
-            [Value(0, Required = true, HelpText = "Path to component or directory containing components to compile.")]
             public string Input { get; set; }
 
-            [Option('o', HelpText = "Path to output file (the format will be inferred from the extension). Cannot be used for directory inputs or in combination with specific output format options.")]
             public string Output { get; set; }
 
-            [Option("manifest", HelpText = "Writes a manifest file listing the compiled components.")]
             public string Manifest { get; set; }
 
-            [Option("autosize", HelpText = "Automatically size the output image to fit the rendered preview.")]
             public bool Autosize { get; set; }
 
-            [Option('w', "width", Default = 640 , HelpText = "Width of output images to generate.")]
             public int Width { get; set; }
 
-            [Option('h', "height", Default = 480, HelpText = "Height of output images to generate.")]
             public int Height { get; set; }
 
-            [Option('r', "recursive", HelpText = "Recursively searches sub-directories of the input directory.")]
             public bool Recursive { get; set; }
 
-            [Option('v')]
             public bool Verbose { get; set; }
 
-            [Option('s', "silent", HelpText = "Does not output anything to the console.")]
             public bool Silent { get; set; }
 
-            [Option('c', "configuration", HelpText = "Name of component configuration to use (supported output formats only).")]
             public string Configuration { get; set; }
 
-            [Option("all-configurations", HelpText = "Produce an output for every component configuration (supported output formats only).")]
             public bool AllConfigurations { get; set; }
 
-            [Option("components", HelpText = "Paths to components directory.")]
             public string ComponentsDirectory { get; set; }
 
-            [Option("format", HelpText = "Output formats to write.")]
-            public IEnumerable<string> Formats { get; set; }
+            public string[] Formats { get; set; }
 
-            [Option("resources", HelpText = "Resources to use in generating the output.")]
-            public IEnumerable<string> Resources { get; set; }
+            public string[] Resources { get; set; }
 
-            [Option("renderer", Default = PngRenderer.Skia, HelpText = "Renderer to use for PNG outputs (Skia or ImageSharp).")]
             public PngRenderer Renderer { get; set; }
 
-            [Option('p', "props", HelpText = "Path to render.properties file for preview generation.")]
             public string RenderPropertiesPath { get; set; }
 
-            [Option('d', "debug-layout", HelpText = "Draw component start and end points.")]
             public bool DebugLayout { get; set; }
 
-            [Option("grid", HelpText = "Draw a background grid.")]
             public bool Grid { get; set; }
 
-            [Option("scale", HelpText = "Scale the output image.", Default = 1.0)]
             public double Scale { get; set; }
         }
     }

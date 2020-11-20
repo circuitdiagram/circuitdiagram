@@ -19,7 +19,7 @@ namespace CircuitDiagram.CLI.Component.InputRunners
         private readonly IComponentDescriptionLookup componentDescriptionLookup;
         private readonly OutputRunner outputRunner;
 
-        public ConfigurationDefinitionRunner(ILogger logger, IComponentDescriptionLookup componentDescriptionLookup, OutputRunner outputRunner)
+        public ConfigurationDefinitionRunner(ILogger<ConfigurationDefinitionRunner> logger, IComponentDescriptionLookup componentDescriptionLookup, OutputRunner outputRunner)
         {
             this.logger = logger;
             this.componentDescriptionLookup = componentDescriptionLookup;
@@ -29,7 +29,7 @@ namespace CircuitDiagram.CLI.Component.InputRunners
         public IManifestEntry CompileOne(string inputFile, PreviewGenerationOptions previewOptions, IDictionary<IOutputGenerator, string> formats)
         {
             logger.LogInformation(inputFile);
-            
+
             var reader = new ConfigurationDefinitionReader(componentDescriptionLookup);
             using (var fs = File.OpenRead(inputFile))
             {

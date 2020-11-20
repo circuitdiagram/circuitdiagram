@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CircuitDiagram.CLI.Component
 {
-    static class ResourceProviderFactory
+    class ResourceProviderFactory
     {
         public static IResourceProvider Create(ILogger logger, IReadOnlyList<string> resources)
         {

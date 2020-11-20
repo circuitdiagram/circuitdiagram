@@ -23,24 +23,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CircuitDiagram.Compiler.CompileStages;
-using CircuitDiagram.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace CircuitDiagram.Compiler
 {
     public class CompilerService
     {
-        private static readonly ILogger Log = LogManager.GetLogger<CompilerService>();
+        private readonly ILogger _logger;
+        private readonly ILoggerFactory _loggerFactory;
+
+        public CompilerService(ILoggerFactory loggerFactory)
+        {
+            _logger = loggerFactory.CreateLogger<CompilerService>();
+            _loggerFactory = loggerFactory;
+        }
 
         public ComponentCompileResult Compile(Stream input, Stream output, IResourceProvider resourceProvider,
                                               CompileOptions options)
         {
-            Log.LogDebug($"Compiling {input.StreamToString()}");
+            _logger.LogDebug($"Compiling {input.StreamToString()}");
 
             var runner = new CompileStageRunner(new ICompileStage[]
             {
                 new LoadFromXmlCompileStage(),
-                new SetIconsCompileStage(),
+                new SetIconsCompileStage(_loggerFactory.CreateLogger<SetIconsCompileStage>()),
                 new OutputCdcomCompileStage()
             }, resourceProvider);
 
@@ -50,7 +56,7 @@ namespace CircuitDiagram.Compiler
             {
                 result = runner.Run(input, output, options);
 
-                Log.LogDebug($"Compiled to {output.StreamToString()}");
+                _logger.LogDebug($"Compiled to {output.StreamToString()}");
             }
             catch (Exception ex)
             {
@@ -59,7 +65,7 @@ namespace CircuitDiagram.Compiler
                     Success = false
                 };
 
-                Log.LogError("An error occurred.", ex);
+                _logger.LogError(ex, "An error occurred.");
             }
 
             return result;

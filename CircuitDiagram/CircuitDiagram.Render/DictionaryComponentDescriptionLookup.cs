@@ -15,13 +15,13 @@ namespace CircuitDiagram.Render
 
         public DictionaryComponentDescriptionLookup()
         {
-            LookupDictionary = new Dictionary<ComponentType, ComponentDescription>();
+            LookupDictionary = new Dictionary<ComponentType, ComponentDescription>(ComponentTypeEqualityComparer.Instance);
             guidLookup = new Dictionary<Guid, ComponentDescription>();
         }
 
         public ComponentDescription GetDescription(ComponentType componentType)
         {
-            var tdComponentType = componentType as  TypeDescriptionComponentType;
+            var tdComponentType = componentType as TypeDescriptionComponentType;
             ComponentDescription description;
 
             // 1. ID match
@@ -31,7 +31,7 @@ namespace CircuitDiagram.Render
             // 2. ComponentType match
             if (LookupDictionary.TryGetValue(componentType, out description))
                 return description;
-            
+
             // Not found
             throw new MissingComponentDescriptionException(componentType);
         }

@@ -21,6 +21,7 @@ using System.Text;
 using CircuitDiagram.CLI.ComponentPreview;
 using CircuitDiagram.Compiler;
 using CircuitDiagram.TypeDescription;
+using Microsoft.Extensions.Logging;
 
 namespace CircuitDiagram.CLI.Component.OutputGenerators
 {
@@ -32,9 +33,9 @@ namespace CircuitDiagram.CLI.Component.OutputGenerators
 
         private readonly CompilerService compiler;
 
-        public BinaryComponentGenerator()
+        public BinaryComponentGenerator(ILoggerFactory loggerFactory)
         {
-            compiler = new CompilerService();
+            compiler = new CompilerService(loggerFactory);
         }
 
         public bool AcceptsSourceFileType(SourceFileType sourceType) => sourceType == SourceFileType.ComponentDescription;

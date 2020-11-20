@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using CircuitDiagram.Drawing;
 using CircuitDiagram.Drawing.Text;
 using CircuitDiagram.Primitives;
@@ -28,7 +29,7 @@ using SkiaSharp;
 
 namespace CircuitDiagram.Render.Skia
 {
-    public class SkiaDrawingContext : IDrawingContext
+    public class SkiaDrawingContext : IPngDrawingContext
     {
         private readonly SKTypeface typeface;
         private readonly SKSurface surface;

@@ -18,27 +18,50 @@
 
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
+using System.CommandLine.Builder;
+using System.CommandLine.Hosting;
+using System.CommandLine.Invocation;
+using System.CommandLine.Parsing;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Threading.Tasks;
 using CircuitDiagram.CLI.Circuit;
 using CircuitDiagram.CLI.Component;
 using CircuitDiagram.CLI.ComponentOutline;
-using CommandLine;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace CircuitDiagram.CLI
 {
     class Program
     {
-        static int Main(string[] args)
+        static async Task<int> Main(string[] args)
         {
-            return CommandLine.Parser.Default.ParseArguments<CircuitApp.Options, ComponentApp.Options, ComponentOutlineApp.Options>(args)
-                .MapResult(
-                    (CircuitApp.Options options) => CircuitApp.Run(options),
-                    (ComponentApp.Options options) => ComponentApp.Run(options),
-                    (ComponentOutlineApp.Options options) => ComponentOutlineApp.Run(options),
-                    err => 1
-                );
+            return await BuildCommandLine()
+                .UseDefaults()
+                .Build()
+                .InvokeAsync(args);
         }
+
+        private static CommandLineBuilder BuildCommandLine()
+        {
+            return new CommandLineBuilder()
+                .AddGlobalOption(SilentOption)
+                .AddGlobalOption(VerboseOption)
+                .AddCommand(CircuitApp.BuildCommand())
+                .AddCommand(ComponentApp.BuildCommand())
+                .AddCommand(ComponentOutlineApp.BuildCommand());
+        }
+
+        private static Option<bool> SilentOption = new Option<bool>("-s", "Does not output anything to the console.")
+        {
+            Name = "silent",
+        };
+
+        private static Option<bool> VerboseOption = new Option<bool>("-v", "Outputs extra information to the console.")
+        {
+            Name = "verbose",
+        };
     }
 }

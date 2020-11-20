@@ -20,6 +20,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NUnit.Framework;
 
@@ -34,7 +35,7 @@ namespace CircuitDiagram.Compiler.Test
             var assembly = typeof(CompilerServiceTest).GetTypeInfo().Assembly;
             string testComponentResource = assembly.GetManifestResourceNames().First(r => r.EndsWith("TestComponent.xml"));
 
-            var compiler = new CompilerService();
+            var compiler = new CompilerService(NullLoggerFactory.Instance);
 
             var output = new MemoryStream();
 

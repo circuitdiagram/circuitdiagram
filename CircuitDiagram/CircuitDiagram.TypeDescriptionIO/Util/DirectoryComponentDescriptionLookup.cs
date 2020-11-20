@@ -18,8 +18,13 @@ namespace CircuitDiagram.TypeDescriptionIO.Util
         private readonly DictionaryComponentDescriptionLookup internalLookup = new DictionaryComponentDescriptionLookup();
 
         public DirectoryComponentDescriptionLookup(ILoggerFactory loggerFactory, string directory, bool recursive)
+            : this(loggerFactory, directory, recursive, new XmlLoader())
         {
-            LoadXmlComponents(loggerFactory, new[] { directory }, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+        }
+
+        public DirectoryComponentDescriptionLookup(ILoggerFactory loggerFactory, string directory, bool recursive, XmlLoader xmlLoader)
+        {
+            LoadXmlComponents(loggerFactory, new[] { directory }, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly, xmlLoader);
             LoadBinaryComponents(loggerFactory, new[] { directory }, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
         }
 
@@ -30,11 +35,10 @@ namespace CircuitDiagram.TypeDescriptionIO.Util
 
         public IEnumerable<ComponentDescription> GetAllDescriptions() => internalLookup.GetAllDescriptions();
 
-        private void LoadXmlComponents(ILoggerFactory loggerFactory, string[] directories, SearchOption searchOption)
+        private void LoadXmlComponents(ILoggerFactory loggerFactory, string[] directories, SearchOption searchOption, XmlLoader xmlLoader)
         {
             var logger = loggerFactory.CreateLogger<DirectoryComponentDescriptionLookup>();
 
-            var xmlLoader = new XmlLoader();
             foreach (string location in directories)
             {
                 foreach (string file in Directory.GetFiles(location, "*.xml", searchOption))
@@ -46,7 +50,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Util
                             description.Metadata.Location = ComponentDescriptionMetadata.LocationType.Installed;
                             description.Source = new ComponentDescriptionSource(file);
 
-                            foreach(var type in description.GetComponentTypes())
+                            foreach (var type in description.GetComponentTypes())
                                 internalLookup.AddDescription(type, description);
                         }
                         else
