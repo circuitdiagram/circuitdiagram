@@ -36,7 +36,7 @@ namespace CircuitDiagram.TypeDescription.Definition
         public ConfigurationDefinitionReader(IComponentDescriptionLookup componentDescriptionLookup)
         {
             this.componentDescriptionLookup = componentDescriptionLookup;
-             deserializer = new DeserializerBuilder().WithNamingConvention(new CamelCaseNamingConvention()).IgnoreUnmatchedProperties().Build();
+             deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).IgnoreUnmatchedProperties().Build();
         }
 
         public ConfigurationDefinition ReadDefinition(Stream input)

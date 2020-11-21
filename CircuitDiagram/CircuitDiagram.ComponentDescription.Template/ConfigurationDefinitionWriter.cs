@@ -32,7 +32,7 @@ namespace CircuitDiagram.TypeDescription.Definition
 
         public ConfigurationDefinitionWriter()
         {
-            serializer = new SerializerBuilder().WithNamingConvention(new CamelCaseNamingConvention()).Build();
+            serializer = new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
         }
 
         public void WriteDefinition(ConfigurationDefinition definition, Stream destination)
