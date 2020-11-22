@@ -17,7 +17,7 @@ before_build:
     dotnet restore ./CircuitDiagram/CircuitDiagram.sln
 
 build:
-  publish_nuget: false
+  publish_nuget: true
   verbosity: minimal
 
 after_test:
