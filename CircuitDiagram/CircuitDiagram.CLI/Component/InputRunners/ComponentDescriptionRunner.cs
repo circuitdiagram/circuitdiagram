@@ -68,7 +68,7 @@ namespace CircuitDiagram.CLI.Component.InputRunners
                 }
 
                 var metadata = description.Metadata.Entries.ToDictionary(x => x.Key, x => x.Value);
-                var svgIcon = GetSvgIconPath(Path.GetDirectoryName(inputFile), description);
+                var svgIcon = GetSvgIconPath(Path.GetDirectoryName(Path.GetFullPath(inputFile)), description);
                 if (svgIcon != null)
                     metadata["org.circuit-diagram.icon-svg"] = svgIcon;
 

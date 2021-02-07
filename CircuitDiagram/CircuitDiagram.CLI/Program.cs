@@ -20,17 +20,12 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Builder;
-using System.CommandLine.Hosting;
-using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CircuitDiagram.CLI.Circuit;
 using CircuitDiagram.CLI.Component;
 using CircuitDiagram.CLI.ComponentOutline;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace CircuitDiagram.CLI
 {
@@ -56,12 +51,12 @@ namespace CircuitDiagram.CLI
 
         private static Option<bool> SilentOption = new Option<bool>("-s", "Does not output anything to the console.")
         {
-            Name = "silent",
+            Name = "--silent",
         };
 
         private static Option<bool> VerboseOption = new Option<bool>("-v", "Outputs extra information to the console.")
         {
-            Name = "verbose",
+            Name = "--verbose",
         };
     }
 }
