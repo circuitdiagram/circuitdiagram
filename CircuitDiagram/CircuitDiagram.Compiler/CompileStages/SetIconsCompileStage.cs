@@ -60,7 +60,7 @@ namespace CircuitDiagram.Compiler.CompileStages
                 if (!context.Resources.HasResource(resolutionName))
                 {
                     string warnMessage = $"Icon {resolutionName} not found.";
-                    _logger.LogWarning(warnMessage);
+                    _logger.LogDebug(warnMessage);
                     context.Errors.Add(new CompileError(LoadErrorCategory.Warning, warnMessage));
                     continue;
                 }

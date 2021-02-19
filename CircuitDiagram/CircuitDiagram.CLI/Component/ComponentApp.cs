@@ -33,6 +33,7 @@ using System.CommandLine.Invocation;
 using Microsoft.Extensions.DependencyInjection;
 using CircuitDiagram.Compiler;
 using CircuitDiagram.CLI.Logging;
+using CircuitDiagram.TypeDescriptionIO.Xml.Extensions.Definitions;
 
 namespace CircuitDiagram.CLI.Component
 {
@@ -72,7 +73,7 @@ namespace CircuitDiagram.CLI.Component
                     // Use the generator implied by the file extension
                     generators.Add(generator, options.Output);
                 }
-                else if (options.Formats?.Any() != true)
+                else if (options.Format?.Any() != true)
                 {
                     _logger.LogError("Unable to infer format from output file extension." + Environment.NewLine +
                                     "Specify a known file extension or specify explicitly using --format");
@@ -84,9 +85,9 @@ namespace CircuitDiagram.CLI.Component
                 }
             }
 
-            if (options.Formats?.Any() == true)
+            if (options.Format?.Any() == true)
             {
-                foreach (var format in options.Formats)
+                foreach (var format in options.Format)
                 {
                     if (_outputGeneratorRepository.TryGetGeneratorByFormat(format, out var generator))
                     {
@@ -203,10 +204,13 @@ namespace CircuitDiagram.CLI.Component
             services.AddLogging(x => x.SetupLogging(options.Verbose, options.Silent));
             services.AddSingleton(s => ActivatorUtilities.CreateInstance<OutputGeneratorRepository>(s, options.Renderer));
 
-            if (options.ComponentsDirectory != null)
+            if (options.Components != null)
             {
+                var xmlLoader = new TypeDescriptionIO.Xml.XmlLoader();
+                xmlLoader.UseDefinitions();
+
                 services.AddSingleton<IComponentDescriptionLookup>(s =>
-                    new DirectoryComponentDescriptionLookup(s.GetRequiredService<ILoggerFactory>(), options.ComponentsDirectory, options.Recursive));
+                    new DirectoryComponentDescriptionLookup(s.GetRequiredService<ILoggerFactory>(), options.Components, options.Recursive, xmlLoader));
             }
             else
             {
@@ -313,9 +317,9 @@ namespace CircuitDiagram.CLI.Component
 
             public bool AllConfigurations { get; set; }
 
-            public string ComponentsDirectory { get; set; }
+            public string Components { get; set; }
 
-            public string[] Formats { get; set; }
+            public string[] Format { get; set; }
 
             public string[] Resources { get; set; }
 
