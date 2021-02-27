@@ -18,6 +18,7 @@ namespace CircuitDiagram.Render.Connections
                                                           LayoutOptions layoutOptions)
         {
             var connections = new List<ConnectionPoint>();
+            var flip = instance.Layout.GetFlipType();
 
             foreach (ConnectionGroup group in description.Connections)
             {
@@ -46,6 +47,8 @@ namespace CircuitDiagram.Render.Connections
                         if (connectionDescription.Start.Resolve(instance.Layout, layoutOptions).X ==
                             connectionDescription.End.Resolve(instance.Layout, layoutOptions).X) // use original coordinates to check correctly when single point
                         {
+                            // Vertical
+
                             for (double i = start.Y; i <= end.Y; i += layoutOptions.GridSize)
                             {
                                 var flags = ConnectionFlags.Vertical;
@@ -57,7 +60,7 @@ namespace CircuitDiagram.Render.Connections
                                     else if (i == end.Y && (connectionDescription.Edge == ConnectionEdge.End || connectionDescription.Edge == ConnectionEdge.Both))
                                         flags |= ConnectionFlags.Edge;
                                 }
-                                else if (instance.Layout.Orientation == Orientation.Vertical)
+                                else if ((flip & FlipType.Vertical) == FlipType.Vertical && reversed)
                                 {
                                     if (i == start.Y && (connectionDescription.Edge == ConnectionEdge.End || connectionDescription.Edge == ConnectionEdge.Both))
                                         flags |= ConnectionFlags.Edge;
@@ -71,6 +74,8 @@ namespace CircuitDiagram.Render.Connections
                         }
                         else if (start.Y == end.Y)
                         {
+                            // Horizontal
+
                             for (double i = start.X; i <= end.X; i += layoutOptions.GridSize)
                             {
                                 ConnectionFlags flags = ConnectionFlags.Horizontal;
@@ -81,7 +86,7 @@ namespace CircuitDiagram.Render.Connections
                                     else if (i == end.X && (connectionDescription.Edge == ConnectionEdge.End || connectionDescription.Edge == ConnectionEdge.Both))
                                         flags |= ConnectionFlags.Edge;
                                 }
-                                else if (instance.Layout.Orientation == Orientation.Horizontal && reversed)
+                                else if ((flip & FlipType.Horizontal) == FlipType.Horizontal && reversed)
                                 {
                                     if (i == start.X && (connectionDescription.Edge == ConnectionEdge.End || connectionDescription.Edge == ConnectionEdge.Both))
                                         flags |= ConnectionFlags.Edge;
