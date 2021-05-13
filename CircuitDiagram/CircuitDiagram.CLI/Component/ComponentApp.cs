@@ -114,10 +114,10 @@ namespace CircuitDiagram.CLI.Component
                 Properties = new Dictionary<string, string>(),
             };
 
-            if (options.RenderPropertiesPath != null && File.Exists(options.RenderPropertiesPath))
+            if (options.Props != null && File.Exists(options.Props))
             {
-                _logger.LogDebug($"Applying render properties from '{options.RenderPropertiesPath}'");
-                PreviewGenerationOptionsReader.Read(options.RenderPropertiesPath, previewOptions);
+                _logger.LogDebug($"Applying render properties from '{options.Props}'");
+                PreviewGenerationOptionsReader.Read(options.Props, previewOptions);
             }
 
             var results = new List<IManifestEntry>();
@@ -325,7 +325,7 @@ namespace CircuitDiagram.CLI.Component
 
             public PngRenderer Renderer { get; set; }
 
-            public string RenderPropertiesPath { get; set; }
+            public string Props { get; set; }
 
             public bool DebugLayout { get; set; }
 
