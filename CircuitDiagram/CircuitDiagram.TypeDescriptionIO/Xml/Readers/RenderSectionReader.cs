@@ -110,14 +110,6 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
                 }
                 return Enumerable.Empty<XmlRenderGroup>();
             }
-            else if (element.Name == RectElementName)
-            {
-                if (ReadRectCommand(element, out var rect))
-                {
-                    groupContext.Value.Add(rect);
-                }
-                return Enumerable.Empty<XmlRenderGroup>();
-            }
             else if (element.Name == EllipseElementName)
             {
                 if (ReadEllipseCommand(description.Metadata.FormatVersion, element, out var ellipse))
@@ -191,38 +183,6 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
             if (!componentPointParser.TryParse(element.Attribute("end"), out var end))
                 return false;
             command.End = end;
-
-            return true;
-        }
-
-        protected virtual bool ReadRectCommand(XElement element, out XmlRectCommand command)
-        {
-            command = new XmlRectCommand();
-
-            if (element.Attribute("thickness") != null)
-                command.StrokeThickness = double.Parse(element.Attribute("thickness").Value);
-
-            var fill = element.Attribute("fill");
-            if (fill != null && fill.Value.ToLowerInvariant() != "false")
-                command.Fill = true;
-
-            if (element.Attribute("location") != null)
-            {
-                if (!componentPointParser.TryParse(element.Attribute("location"), out var location))
-                    return false;
-                command.Location = location;
-            }
-            else
-            {
-                var x = element.Attribute("x");
-                var y = element.Attribute("y");
-                if (!componentPointParser.TryParse(x, y, out var location))
-                    return false;
-                command.Location = location;
-            }
-
-            command.Width = double.Parse(element.Attribute("width").Value);
-            command.Height = double.Parse(element.Attribute("height").Value);
 
             return true;
         }

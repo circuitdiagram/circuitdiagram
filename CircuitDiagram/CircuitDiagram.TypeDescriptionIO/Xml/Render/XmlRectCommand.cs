@@ -20,7 +20,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Render
 
         public bool Fill { get; set; }
 
-        public IEnumerable<Conditional<IRenderCommand>> Flatten(FlattenContext context)
+        public virtual IEnumerable<Conditional<IRenderCommand>> Flatten(FlattenContext context)
         {
             double width = context.AutoRotate.Mirror ? Height : Width;
             double height = context.AutoRotate.Mirror ? Width : Height;

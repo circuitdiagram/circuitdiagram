@@ -20,6 +20,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Extensions.Definitions
                 builder.RegisterType<ComponentPointWithDefinitionParser>().As<IComponentPointParser>();
                 builder.RegisterType<DefinitionsSectionReader>().Named<IXmlSectionReader>(XmlLoader.ComponentNamespace.NamespaceName + ":definitions");
                 builder.RegisterType<TextCommandWithDefinitionsReader>().Named<IRenderCommandReader>(XmlLoader.ComponentNamespace.NamespaceName + ":text");
+                builder.RegisterType<RectCommandWithDefinitionsReader>().Named<IRenderCommandReader>(XmlLoader.ComponentNamespace.NamespaceName + ":rect");
             });
         }
     }

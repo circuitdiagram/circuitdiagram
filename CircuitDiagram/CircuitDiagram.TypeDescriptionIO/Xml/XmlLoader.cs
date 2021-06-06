@@ -66,6 +66,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml
             // Render
             builder.RegisterType<RenderSectionReader>().Named<IXmlSectionReader>(ComponentNamespace.NamespaceName + ":render").InstancePerLifetimeScope();
             builder.RegisterType<TextCommandReader>().Named<IRenderCommandReader>(ComponentNamespace.NamespaceName + ":text");
+            builder.RegisterType<RectCommandReader>().Named<IRenderCommandReader>(ComponentNamespace.NamespaceName + ":rect");
 
             container = new Lazy<IContainer>(() => builder.Build());
         }
