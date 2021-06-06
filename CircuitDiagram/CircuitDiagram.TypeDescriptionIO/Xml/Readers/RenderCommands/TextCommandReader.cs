@@ -73,8 +73,25 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers.RenderCommands
             double size = 11d;
             if (element.Attribute("size") != null)
             {
-                if (element.Attribute("size").Value.ToLowerInvariant() == "large")
-                    size = 12d;
+                switch (element.Attribute("size").Value.ToLowerInvariant())
+                {
+                    case "large":
+                        size = 12.0;
+                        break;
+                    case "sm":
+                    case "small":
+                        size = 10.0;
+                        break;
+                    case "xs":
+                        size = 9.0;
+                        break;
+                    case "xxs":
+                        size = 8.0;
+                        break;
+                    default:
+                        logger.LogWarning(element.Attribute("size"), $"Invalid value for size attribute: '{element.Attribute("size").Value}'");
+                        break;
+                }
             }
 
             var textValueNode = element.Element(XmlLoader.ComponentNamespace + "value");
