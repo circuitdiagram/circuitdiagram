@@ -45,7 +45,7 @@ namespace CircuitDiagram.Drawing.Text
         /// </summary>
         /// <param name="formattingType">Controls</param>
         /// <param name="size"></param>
-        public TextRunFormatting(TextRunFormattingType formattingType, double size = 12d)
+        public TextRunFormatting(TextRunFormattingType formattingType, double size = 11d)
         {
             FormattingType = formattingType;
             Size = size;

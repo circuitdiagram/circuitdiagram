@@ -100,12 +100,12 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers.RenderCommands
                 foreach (var spanNode in textValueNode.Elements())
                 {
                     string nodeValue = spanNode.Value;
-                    var formatting = TextRunFormatting.Normal;
+                    var formatting = new TextRunFormatting(TextRunFormattingType.Normal, size);
 
                     if (spanNode.Name.LocalName == "sub")
-                        formatting = TextRunFormatting.Subscript;
+                        formatting.FormattingType = TextRunFormattingType.Subscript;
                     else if (spanNode.Name.LocalName == "sup")
-                        formatting = TextRunFormatting.Superscript;
+                        formatting.FormattingType = TextRunFormattingType.Superscript;
                     else if (spanNode.Name.LocalName != "span")
                         logger.LogWarning(spanNode, $"Unknown node '{spanNode.Name}' will be treated as <span>");
 
