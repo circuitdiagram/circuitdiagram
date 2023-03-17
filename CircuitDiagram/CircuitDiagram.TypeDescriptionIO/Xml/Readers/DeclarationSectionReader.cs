@@ -30,6 +30,7 @@ using CircuitDiagram.TypeDescription.Conditions;
 using CircuitDiagram.TypeDescriptionIO.Xml.Features;
 using CircuitDiagram.TypeDescriptionIO.Xml.Logging;
 using CircuitDiagram.TypeDescriptionIO.Xml.Parsers.Conditions;
+using Semver;
 
 namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
 {
@@ -272,11 +273,16 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers
                 }
                 case "version":
                 {
-                    try
+                    if (SemVersion.TryParse(metaValue, SemVersionStyles.OptionalMinorPatch, out _))
                     {
-                        description.Metadata.Version = new Version(metaValue);
+                        description.Metadata.Version = metaValue;
+
+                        if (!Version.TryParse(metaValue, out _))
+                        {
+                            logger.LogWarning(metaElement, "Version number is incompatible with Circuit Diagram < 4.0.0. For maximum compatibility, use a version in the format '1.2.3'.");
+                        }
                     }
-                    catch
+                    else
                     {
                         logger.LogError(metaElement, "Illegal value for attribute 'value' on <meta> tag 'version' (expected version number)");
                     }

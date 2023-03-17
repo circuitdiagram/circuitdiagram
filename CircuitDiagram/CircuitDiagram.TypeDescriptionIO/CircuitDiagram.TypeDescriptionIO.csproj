@@ -18,6 +18,7 @@
   <ItemGroup>
     <PackageReference Include="Autofac" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+	<PackageReference Include="Semver" Version="2.3.0" />
   </ItemGroup>
 
 </Project>

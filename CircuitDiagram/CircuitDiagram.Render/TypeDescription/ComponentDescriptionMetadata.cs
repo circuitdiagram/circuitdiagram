@@ -28,7 +28,7 @@ namespace CircuitDiagram.TypeDescription
     public class ComponentDescriptionMetadata
     {
         public Guid GUID { get; set; }
-        public Version Version { get; set; }
+        public string Version { get; set; }
         public string Author { get; set; }
         public string AdditionalInformation { get; set; }
         public string Type { get; set; }
@@ -52,7 +52,7 @@ namespace CircuitDiagram.TypeDescription
         public ComponentDescriptionMetadata()
         {
             GUID = Guid.Empty;
-            Version = new System.Version(1, 0);
+            Version = "1.0";
             Author = "Unknown";
             AdditionalInformation = "";
             Type = "Binary (*.cdcom)";
