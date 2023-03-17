@@ -274,8 +274,18 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
                         metadataWriter.Write(description.MinSize);
                         metadataWriter.Write(description.Metadata.GUID.ToByteArray());
                         metadataWriter.WriteNullString(description.Metadata.Author);
-                        metadataWriter.Write((ushort)description.Metadata.Version.Major);
-                        metadataWriter.Write((ushort)description.Metadata.Version.Minor);
+
+                        if (Version.TryParse(description.Metadata.Version, out var version))
+                        {
+                            metadataWriter.Write((ushort)version.Major);
+                            metadataWriter.Write((ushort)version.Minor);
+                        }
+                        else
+                        {
+                            metadataWriter.Write((ushort)1);
+                            metadataWriter.Write((ushort)0);
+                        }
+
                         metadataWriter.WriteNullString(description.Metadata.AdditionalInformation);
                         metadataWriter.WriteNullString(description.Metadata.ImplementSet);
                         metadataWriter.WriteNullString(description.Metadata.ImplementItem);
@@ -533,7 +543,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
                         {
                             var extendedMetadataWriter = new BW(extendedMetadataStream);
                             extendedMetadataWriter.Write((byte)BinaryConstants.ExtendedMetadataField.SemanticVersion);
-                            extendedMetadataWriter.WriteType(new Circuit.PropertyValue(description.Metadata.Version.ToString()));
+                            extendedMetadataWriter.WriteType(new Circuit.PropertyValue(description.Metadata.Version));
 
                             writer.Write((ushort)BinaryConstants.ComponentSectionType.ExtendedMetadata);
                             writer.Write((uint)extendedMetadataStream.Length);

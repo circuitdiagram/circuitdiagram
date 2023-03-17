@@ -71,7 +71,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
                     descriptionMetadata.Author = reader.ReadString();
                     if (readInfo.IsSignatureValid && readInfo.Certificate != null && readInfo.IsCertificateTrusted)
                         descriptionMetadata.Author = readInfo.Certificate.GetNameInfo(X509NameType.EmailName, false);
-                    descriptionMetadata.Version = new Version(reader.ReadUInt16(), reader.ReadUInt16());
+                    descriptionMetadata.Version = $"{reader.ReadUInt16()}.{reader.ReadUInt16()}";
                     descriptionMetadata.AdditionalInformation = reader.ReadString();
                     descriptionMetadata.ImplementSet = reader.ReadString();
                     descriptionMetadata.ImplementItem = reader.ReadString();
@@ -336,7 +336,7 @@ namespace CircuitDiagram.TypeDescriptionIO.Binary
 
                         if (field == BinaryConstants.ExtendedMetadataField.SemanticVersion && type == BinaryType.String)
                         {
-                            descriptionMetadata.Version = new Version((string)fieldValue);
+                            descriptionMetadata.Version = (string)fieldValue;
                         }
                     }
                 }
