@@ -1,0 +1,34 @@
+name: CI
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # Required for nbgv
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.x'
+    - uses: dotnet/nbgv@v0.4
+      id: nbgv
+      path: ./CircuitDiagram
+    - run: dotnet restore ./CircuitDiagram/CircuitDiagram.sln
+    - run: dotnet test ./CircuitDiagram/CircuitDiagram.sln
+
+    # Windows CLI
+    - run: dotnet publish ./CircuitDiagram/CircuitDiagram.CLI/CircuitDiagram.CLI.csproj -c release -r win-x64 -p:PublishSingleFile=true --self-contained true -o ./cli/win-x64
+    - run: zip -j ./cli/circuit-diagram-cli.${{ steps.nbgv.outputs.SemVer2 }}.win-x64.zip ./cli/win-x64/* -x **/*.pdb
+
+    # Nuget packages
+    - run: dotnet pack -c release ./CircuitDiagram/CircuitDiagram.sln -o packages
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: circuit-diagram-cli.win-x64
+        path: cli/circuit-diagram-cli.${{ steps.nbgv.outputs.SemVer2 }}.win-x64.zip
+    - uses: actions/upload-artifact@v3
+      with:
+        name: nuget-packages
+        path: packages/
