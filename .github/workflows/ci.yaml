@@ -13,7 +13,8 @@ jobs:
         dotnet-version: '5.0.x'
     - uses: dotnet/nbgv@v0.4
       id: nbgv
-      path: ./CircuitDiagram
+      with:
+        path: ./CircuitDiagram
     - run: dotnet restore ./CircuitDiagram/CircuitDiagram.sln
     - run: dotnet test ./CircuitDiagram/CircuitDiagram.sln
 
