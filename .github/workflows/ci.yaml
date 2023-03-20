@@ -30,6 +30,10 @@ jobs:
     - run: tar --exclude **/*.pdb -cJf ../circuit-diagram-cli.${{ steps.nbgv.outputs.SemVer2 }}.linux-x64.tar.gz ./
       working-directory: ./cli/linux-x64
 
+    # OSX CLI
+    - run: dotnet publish ./CircuitDiagram/CircuitDiagram.CLI/CircuitDiagram.CLI.csproj -c release -r osx-x64 -p:PublishSingleFile=true --self-contained true -o ./cli/osx-x64
+    - run: zip -j ./cli/circuit-diagram-cli.${{ steps.nbgv.outputs.SemVer2 }}.osx-x64.zip ./cli/osx-x64/* -x **/*.pdb
+
     # Nuget packages
     - run: dotnet pack -c release ./CircuitDiagram/CircuitDiagram.sln -o packages
 
@@ -41,6 +45,10 @@ jobs:
       with:
         name: circuit-diagram-cli.linux-x64
         path: cli/circuit-diagram-cli.${{ steps.nbgv.outputs.SemVer2 }}.linux-x64.tar.gz
+    - uses: actions/upload-artifact@v3
+      with:
+        name: circuit-diagram-cli.osx-x64
+        path: cli/circuit-diagram-cli.${{ steps.nbgv.outputs.SemVer2 }}.osx-x64.zip
     - uses: actions/upload-artifact@v3
       with:
         name: nuget-packages
