@@ -8,7 +8,7 @@
     <Authors>Samuel Fisher</Authors>
     <PackageProjectUrl>https://www.circuit-diagram.org/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/circuitdiagram/circuitdiagram</RepositoryUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/circuitdiagram/circuitdiagram/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
