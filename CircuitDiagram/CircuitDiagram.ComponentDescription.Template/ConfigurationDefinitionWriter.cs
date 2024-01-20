@@ -45,6 +45,7 @@ namespace CircuitDiagram.TypeDescription.Definition
                     Guid = definition.Metadata.Guid.ToString(),
                     Name = definition.Configuration.Name,
                     Description = definition.Metadata.Description,
+                    Version = definition.Metadata.Version,
                 },
                 Template = new YamlTemplateSection
                 {
