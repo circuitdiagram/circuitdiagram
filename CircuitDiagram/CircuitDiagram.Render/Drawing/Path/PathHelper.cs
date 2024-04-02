@@ -39,7 +39,7 @@ namespace CircuitDiagram.Render.Path
         public static List<IPathCommand> ParseCommands(string data)
         {
             string pathLetters = "mlhvcsqtaz";
-            Regex commandsRegex = new Regex("[" + pathLetters + pathLetters.ToUpperInvariant() + "] ?\\-?[0-9e,\\-. ]+");
+            Regex commandsRegex = new Regex("[" + pathLetters + pathLetters.ToUpperInvariant() + "] ?\\-?[0-9e,\\-. ]*");
             Regex letterRegex = new Regex("[" + pathLetters + pathLetters.ToUpperInvariant() + "]");
             Regex numberRegex = new Regex("[0-9e,\\-. ]+");
             MatchCollection commandsMatch = commandsRegex.Matches(data);
