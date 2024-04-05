@@ -1,11 +1,9 @@
-﻿using CircuitDiagram.Drawing;
+﻿using System.Collections.Generic;
+using CircuitDiagram.Drawing;
 using CircuitDiagram.Render.TypeDescription.Conditions;
 using CircuitDiagram.TypeDescription.Conditions;
 using CircuitDiagram.TypeDescriptionIO.Xml.Flatten;
 using CircuitDiagram.TypeDescriptionIO.Xml.Render;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CircuitDiagram.TypeDescriptionIO.Xml.Extensions.Definitions
 {
@@ -25,10 +23,13 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Extensions.Definitions
                         width.Conditions,
                     });
 
+                    double flatWidth = context.AutoRotate.Mirror ? Height : width.Value;
+                    double flatHeight = context.AutoRotate.Mirror ? width.Value: Height;
+
                     var command = new Rectangle(
                         location.Value,
-                        width.Value,
-                        Height,
+                        flatWidth,
+                        flatHeight,
                         StrokeThickness,
                         Fill);
 
