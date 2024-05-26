@@ -224,7 +224,7 @@ namespace CircuitDiagram.Render.Path
                         switch (pCommand)
                         {
                             case CommandType.EllipticalArcTo:
-                                pathCommands.Add(new EllipticalArcTo(rx, ry, xrotation, islargearc == 0, sweep == 1, x, y));
+                                pathCommands.Add(new EllipticalArcTo(rx, ry, xrotation, islargearc == 1, sweep == 1, x, y));
                                 break;
                         }
 
