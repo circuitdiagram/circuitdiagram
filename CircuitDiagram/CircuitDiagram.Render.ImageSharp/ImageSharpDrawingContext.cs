@@ -17,10 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using CircuitDiagram.Drawing;
 using CircuitDiagram.Drawing.Text;
 using CircuitDiagram.Render.Path;
@@ -33,6 +29,8 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using Point = CircuitDiagram.Primitives.Point;
 using Size = CircuitDiagram.Primitives.Size;
+using TextAlignment = CircuitDiagram.Drawing.Text.TextAlignment;
+using TextRun = CircuitDiagram.Drawing.Text.TextRun;
 
 namespace CircuitDiagram.Render.ImageSharp
 {
@@ -47,14 +45,14 @@ namespace CircuitDiagram.Render.ImageSharp
         public ImageSharpDrawingContext(int width, int height)
         : this(width, height, Color.Transparent)
         {
-            fontFamily = SystemFonts.Find("Arial");
+            fontFamily = SystemFonts.Get("Arial");
             image = new Image<Argb32>(width, height);
             ownsImage = true;
         }
 
         public ImageSharpDrawingContext(int width, int height, Color backgroundColor)
         {
-            fontFamily = SystemFonts.Find("Arial");
+            fontFamily = SystemFonts.Get("Arial");
             image = new Image<Argb32>(width, height);
             ownsImage = true;
 
@@ -64,7 +62,7 @@ namespace CircuitDiagram.Render.ImageSharp
 
         public ImageSharpDrawingContext(Image<Argb32> target)
         {
-            fontFamily = SystemFonts.Find("Arial");
+            fontFamily = SystemFonts.Get("Arial");
             image = target;
             ownsImage = false;
         }
@@ -78,7 +76,7 @@ namespace CircuitDiagram.Render.ImageSharp
         
         public void DrawLine(Point start, Point end, double thickness)
         {
-            image.Mutate(ctx => ctx.DrawLines(Black, 2.0f, new[]
+            image.Mutate(ctx => ctx.DrawLine(Black, 2.0f, new[]
             {
                 new PointF((float)start.X, (float)start.Y),
                 new PointF((float)end.X, (float)end.Y)
@@ -118,7 +116,7 @@ namespace CircuitDiagram.Render.ImageSharp
                     }
                     case CurveTo curve:
                     {
-                        builder.AddBezier(currentPoint, curve.ControlStart.ToPointF(), curve.ControlEnd.ToPointF(), curve.End.ToPointF());
+                        builder.AddCubicBezier(currentPoint, curve.ControlStart.ToPointF(), curve.ControlEnd.ToPointF(), curve.End.ToPointF());
                         break;
                     }
                     case MoveTo move:
@@ -128,9 +126,14 @@ namespace CircuitDiagram.Render.ImageSharp
                     }
                     case QuadraticBeizerCurveTo curve:
                     {
-                        builder.AddBezier(currentPoint, curve.Control.ToPointF(), curve.End.ToPointF());
+                        builder.AddQuadraticBezier(currentPoint, curve.Control.ToPointF(), curve.End.ToPointF());
                         break;
-                        }
+                    }
+                    case EllipticalArcTo arc:
+                    {
+                        builder.AddArc(currentPoint, (float)arc.Size.Width, (float)arc.Size.Height, (float)arc.RotationAngle, arc.IsLargeArc, arc.SweepDirection == SweepDirection.Clockwise, arc.End.ToPointF());
+                        break;
+                    }
                     case ClosePath close:
                     {
                         builder.CloseFigure();
@@ -158,7 +161,7 @@ namespace CircuitDiagram.Render.ImageSharp
                     Font renderFont = font;
                     if (run.Formatting.FormattingType == TextRunFormattingType.Subscript)
                         renderFont = new Font(font.Family, font.Size / 1.5f);
-                    var dimensions = TextMeasurer.MeasureBounds(run.Text, new RendererOptions(renderFont));
+                    var dimensions = TextMeasurer.MeasureBounds(run.Text, new TextOptions(renderFont));
                     totalWidth += dimensions.Width;
                     totalHeight = Math.Max(totalHeight, dimensions.Bottom);
                 }
@@ -191,7 +194,7 @@ namespace CircuitDiagram.Render.ImageSharp
                     }
 
                     ctx.DrawText(run.Text, font, Color.Black, renderLocation);
-                    horizontalOffsetCounter += TextMeasurer.MeasureBounds(run.Text, new RendererOptions(renderFont)).Width;
+                    horizontalOffsetCounter += TextMeasurer.MeasureBounds(run.Text, new TextOptions(renderFont)).Width;
                 }
             });
         }

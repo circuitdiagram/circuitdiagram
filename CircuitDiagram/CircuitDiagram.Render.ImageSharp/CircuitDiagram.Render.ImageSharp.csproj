@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <PackageId>CircuitDiagram.Render.ImageSharp</PackageId>
     <Description>Circuit Diagram functionality for rendering circuits using the ImageSharp graphics library.</Description>
     <Authors>Samuel Fisher</Authors>
@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0010" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.3" />
   </ItemGroup>
 
   <ItemGroup>

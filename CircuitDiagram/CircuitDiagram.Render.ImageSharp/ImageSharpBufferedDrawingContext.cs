@@ -20,6 +20,7 @@ using System.Text;
 using CircuitDiagram.Drawing.Text;
 using SixLabors.Fonts;
 using Size = CircuitDiagram.Primitives.Size;
+using TextRun = CircuitDiagram.Drawing.Text.TextRun;
 
 namespace CircuitDiagram.Render.ImageSharp
 {
@@ -31,9 +32,9 @@ namespace CircuitDiagram.Render.ImageSharp
                 return new Size(0, 0);
 
             // TODO: Support text.Formatting.FormattingType
-            var family = SystemFonts.Find("Arial");
+            var family = SystemFonts.Get("Arial");
             var font = new Font(family, (float)text.Formatting.Size, FontStyle.Regular);
-            var size = TextMeasurer.Measure(text.Text, new RendererOptions(font, 72));
+            var size = TextMeasurer.MeasureSize(text.Text, new TextOptions(font));
             return new Size(size.Width, size.Height);
         }
     }
