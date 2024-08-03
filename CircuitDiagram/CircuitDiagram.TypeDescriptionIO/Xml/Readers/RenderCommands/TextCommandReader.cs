@@ -86,7 +86,11 @@ namespace CircuitDiagram.TypeDescriptionIO.Xml.Readers.RenderCommands
                         size = 9.0;
                         break;
                     case "xxs":
+                    case "2xs":
                         size = 8.0;
+                        break;
+                    case "3xs":
+                        size = 7.0;
                         break;
                     default:
                         logger.LogWarning(element.Attribute("size"), $"Invalid value for size attribute: '{element.Attribute("size").Value}'");
