@@ -291,6 +291,12 @@ namespace CircuitDiagram.CLI.Component
             var scale = new Option<double>("--scale", () => 1.0, "Scale the output image.");
             command.AddOption(scale);
 
+            var fontFamily = new Option<string>(new[] { "--font-family" }, "Font family name to use for PNG outputs.");
+            command.AddOption(fontFamily);
+
+            var fontSizeScale = new Option<float>("--font-size-scale", () => 1.0f, "Scale the font size.");
+            command.AddOption(fontSizeScale);
+
             command.Handler = CommandHandler.Create<IHost, Options>(Run);
             return command;
         }
@@ -334,6 +340,10 @@ namespace CircuitDiagram.CLI.Component
             public bool Grid { get; set; }
 
             public double Scale { get; set; }
+
+            public string FontFamily { get; set; }
+
+            public float FontSizeScale { get; set; }
         }
     }
 }
