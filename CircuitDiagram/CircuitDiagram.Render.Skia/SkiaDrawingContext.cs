@@ -33,15 +33,17 @@ namespace CircuitDiagram.Render.Skia
     {
         private readonly SKTypeface typeface;
         private readonly SKSurface surface;
+        private readonly float fontSizeScale;
 
         public SkiaDrawingContext(int width, int height, SKColor background, float scale = 1.0f)
-            : this(width, height, background, scale, null)
+            : this(width, height, background, scale, null, 1.0f)
         {
         }
 
-        public SkiaDrawingContext(int width, int height, SKColor background, float scale, SKTypeface typeface)
+        public SkiaDrawingContext(int width, int height, SKColor background, float scale, SKTypeface typeface, float fontSizeScale)
         {
             this.typeface = typeface;
+            this.fontSizeScale = fontSizeScale;
             surface = SKSurface.Create(new SKImageInfo((int)(width * scale), (int)(height * scale), SKImageInfo.PlatformColorType, SKAlphaType.Opaque));
             surface.Canvas.Clear(background);
             surface.Canvas.Scale(scale);
@@ -169,7 +171,7 @@ namespace CircuitDiagram.Render.Skia
                 Color = Color,
                 IsAntialias = true,
                 Style = SKPaintStyle.Fill,
-                TextSize = 12f,
+                TextSize = 12f * fontSizeScale,
                 Typeface = typeface,
                 SubpixelText = true,
                 IsLinearText = rotation != 0.0,
@@ -183,7 +185,7 @@ namespace CircuitDiagram.Render.Skia
                 if (string.IsNullOrEmpty(run.Text))
                     continue;
 
-                paint.TextSize = (float)run.Formatting.Size;
+                paint.TextSize = (float)run.Formatting.Size * fontSizeScale;
 
                 if (run.Formatting.FormattingType == TextRunFormattingType.Subscript ||
                     run.Formatting.FormattingType == TextRunFormattingType.Superscript)
@@ -218,7 +220,7 @@ namespace CircuitDiagram.Render.Skia
                 if (string.IsNullOrEmpty(run.Text))
                     continue;
 
-                paint.TextSize = (float)run.Formatting.Size;
+                paint.TextSize = (float)run.Formatting.Size * fontSizeScale;
                 var renderLocation = new SKPoint(startLocation.X + horizontalOffsetCounter, startLocation.Y);
 
                 if (run.Formatting.FormattingType == TextRunFormattingType.Subscript)

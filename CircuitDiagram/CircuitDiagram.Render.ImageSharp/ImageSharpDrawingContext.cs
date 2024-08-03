@@ -49,10 +49,14 @@ namespace CircuitDiagram.Render.ImageSharp
             image = new Image<Argb32>(width, height);
             ownsImage = true;
         }
-
         public ImageSharpDrawingContext(int width, int height, Color backgroundColor)
+            : this(width, height, backgroundColor, null)
         {
-            fontFamily = SystemFonts.Get("Arial");
+        }
+
+        public ImageSharpDrawingContext(int width, int height, Color backgroundColor, string fontFamily)
+        {
+            this.fontFamily = SystemFonts.Get(fontFamily ?? "Arial");
             image = new Image<Argb32>(width, height);
             ownsImage = true;
 

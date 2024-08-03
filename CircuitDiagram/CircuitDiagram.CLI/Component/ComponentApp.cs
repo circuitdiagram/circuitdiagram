@@ -112,6 +112,8 @@ namespace CircuitDiagram.CLI.Component
                 Grid = options.Grid,
                 Scale = options.Scale,
                 Properties = new Dictionary<string, string>(),
+                FontFamily = options.FontFamily,
+                FontSizeScale = options.FontSizeScale,
             };
 
             if (options.Props != null && File.Exists(options.Props))

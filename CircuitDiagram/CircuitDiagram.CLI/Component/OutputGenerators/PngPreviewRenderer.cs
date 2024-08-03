@@ -44,7 +44,7 @@ namespace CircuitDiagram.CLI.Component.OutputGenerators
             {
                 case PngRenderer.Skia:
                     {
-                        var drawingContext = PreviewRenderer.RenderPreview(size => new SkiaDrawingContext((int)Math.Ceiling(size.Width), (int)Math.Ceiling(size.Height), SKColors.White, (float)options.Scale),
+                        var drawingContext = PreviewRenderer.RenderPreview(size => new SkiaDrawingContext((int)Math.Ceiling(size.Width), (int)Math.Ceiling(size.Height), SKColors.White, (float)options.Scale, SKTypeface.FromFamilyName(options.FontFamily), options.FontSizeScale),
                                                                            description,
                                                                            options);
                         drawingContext.WriteAsPng(output);
@@ -52,7 +52,7 @@ namespace CircuitDiagram.CLI.Component.OutputGenerators
                     }
                 case PngRenderer.ImageSharp:
                     {
-                        var drawingContext = PreviewRenderer.RenderPreview(size => new ImageSharpDrawingContext((int)Math.Ceiling(size.Width), (int)Math.Ceiling(size.Height), SixLabors.ImageSharp.Color.White),
+                        var drawingContext = PreviewRenderer.RenderPreview(size => new ImageSharpDrawingContext((int)Math.Ceiling(size.Width), (int)Math.Ceiling(size.Height), SixLabors.ImageSharp.Color.White, options.FontFamily),
                                                                            description,
                                                                            options);
                         drawingContext.WriteAsPng(output);
